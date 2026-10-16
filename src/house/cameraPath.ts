@@ -64,7 +64,7 @@ function sampledStairWaypoints(flight: {
   // Walk the staircase tread by tread instead of cutting diagonally through it.
   const indices = Array.from({ length: flight.steps }, (_, index) => index);
   const direction: readonly [number, number] = runPerStep < 0 ? [0, -1] : [0, 1];
-  return indices.map((index) => {}
+  return indices.map((index) => {
     const treadTop = flight.from[1] + risePerStep * (index + 1);
     const z = flight.from[2] + runPerStep * (index + 0.5);
     return poseFacing([flight.from[0], treadTop + STAIR_HEAD_HEIGHT, z], direction);
