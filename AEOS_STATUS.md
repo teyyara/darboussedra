@@ -53,3 +53,5 @@ Improve/test architectural proportions and circulation against a visual browser 
 - Do not merge/deploy as part of Loop 004. The proportion changes (especially Pets’ Corner/Musalla), circulation arrangement and floor plan require family review before acceptance.
 
 The latest source-code CI run is green, but Loop 004 remains incomplete until real browser review is completed and the family confirms the proposed proportions, room arrangement and circulation.
+
+- **Source/docs revision boundary:** source-code commit `b30f49dfceb36ca8f348d77a6e221817289740ae` has passing CI; docs-only audit synchronization is in commit `d5c20812b74adfb292a1f713dd3a0cb314cf357e`. Neither is merged to `main`.
