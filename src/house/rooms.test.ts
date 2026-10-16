@@ -50,6 +50,13 @@ describe("authoritative room and architectural layout", () => {
     expect(roomBounds(entrance).maxZ).toBeCloseTo(HOUSE_LAYOUT.exterior.depth / 2 - HOUSE_LAYOUT.exterior.wallThickness / 2);
     expect(getRoomPortalOpenings(getRoomBySlug("family-table")!).some((opening) => opening.zone === "stair-hall" && opening.width >= HOUSE_LAYOUT.stairs.width + 0.14)).toBe(true);
   });
+  it("keeps the first ground stair tread inside the rear wall's inner face", () => {
+    const flight = HOUSE_LAYOUT.stairs.groundFlight;
+    const stepRunZ = (flight.to[2] - flight.from[2]) / flight.steps;
+    const firstTreadMinZ = flight.from[2] + stepRunZ / 2 - (Math.abs(stepRunZ) + 0.035) / 2;
+    const rearInteriorFaceZ = -HOUSE_LAYOUT.exterior.depth / 2 + HOUSE_LAYOUT.exterior.wallThickness / 2;
+    expect(firstTreadMinZ).toBeGreaterThanOrEqual(rearInteriorFaceZ + 0.05);
+  });
   it("keeps the ground stair shaft clear of every ground-floor room", () => {
     const flight = HOUSE_LAYOUT.stairs.groundFlight;
     const minZ = Math.min(flight.from[2], flight.to[2]), maxZ = Math.max(flight.from[2], flight.to[2]);
