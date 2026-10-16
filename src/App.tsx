@@ -95,7 +95,7 @@ export default function App() {
       <button className="primary" type="button" onClick={() => select("entrance")}>Enter the house ↗</button>
       <button className="plain" type="button" onClick={openMap}>Explore all rooms →</button>
     </section>}
-    {room && <section className="welcome" aria-labelledby="room-title">
+    {room && <section className="welcome room-welcome" aria-labelledby="room-title">
       <p className="eyebrow">YOU ARE HERE</p>
       <h1 id="room-title">{room.name}</h1>
       <p>A quiet, intentionally empty space. The architecture comes first; what belongs here can be decided over time.</p>
