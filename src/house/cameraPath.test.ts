@@ -146,6 +146,16 @@ describe("3D camera paths", () => {
     expect(Math.max(...path.map((pose) => pose.position[1]))).toBeLessThanOrEqual(HOUSE_LAYOUT.roofY + 1.7);
   });
 
+  it("walks through a curved outdoor approach instead of turning to the garden pose in empty space", () => {
+    const path = makeCameraPath("entrance", "garden", poseFor("garden"));
+    const frontZ = HOUSE_LAYOUT.exterior.depth / 2;
+    expect(path.some((pose) => pose.position[2] > frontZ)).toBe(true);
+    expect(path.some((pose) => pose.position[0] > 1.5 && pose.position[2] > 6.4 && pose.position[2] < 7.5)).toBe(true);
+    const outdoorArc = path.filter((pose) => pose.position[2] > frontZ + 0.3 && pose.position[2] < 8.2);
+    expect(outdoorArc.length).toBeGreaterThanOrEqual(6);
+    expect(path.at(-1)).toEqual(poseFor("garden"));
+  });
+
   it("leaves the garden through the front threshold before entering the house", () => {
     const path = makeCameraPath("garden", "living-room", poseFor("living-room"));
     expect(path.some((pose) => pose.position[2] > frontZ)).toBe(true);

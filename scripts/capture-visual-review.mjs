@@ -157,6 +157,8 @@ await saveScreenshot(desktop, "10-upper-floor-eye-level.png");
 
 await openMap(desktop);
 await selectDirectoryRoom(desktop, "Garden", "garden", [
+  { afterMs: 5500, filename: "15a-garden-doorway-exit.png" },
+  { afterMs: 9000, filename: "15b-garden-approach-arc.png" },
   { afterMs: 12000, filename: "15-stair-descent-midflight.png" },
 ]);
 await saveScreenshot(desktop, "11-garden-eye-level.png");
@@ -164,7 +166,8 @@ await saveScreenshot(desktop, "11-garden-eye-level.png");
 await openMap(desktop);
 await selectDirectoryRoom(desktop, "Rooftop Terrace", "rooftop", [
   { afterMs: 17500, filename: "16-ground-stair-ascent.png" },
-  { afterMs: 23500, filename: "16-roof-stair-ascent.png" },
+  { afterMs: 24500, filename: "16-roof-stair-ascent.png" },
+  { afterMs: 30000, filename: "17-roof-hatch-exit.png" },
 ]);
 await saveScreenshot(desktop, "12-rooftop-eye-level.png");
 

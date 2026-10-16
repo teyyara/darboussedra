@@ -132,11 +132,32 @@ function buildRouteGraph(): Map<NavigationNode, RouteEdge[]> {
       const neighbor = getRoomBySlug(targetSlug);
       const opening = getRoomPortalOpenings(room).find((candidate) => candidate.targetSlug === targetSlug);
       if (!neighbor || !opening) continue;
+      // The entrance↔garden edge is the real front door, but needs an outdoor
+      // approach arc after the threshold rather than a diagonal jump to the final pose.
+      if ((room.slug === "entrance" && neighbor.slug === "garden") ||
+          (room.slug === "garden" && neighbor.slug === "entrance")) continue;
       addEdge(graph, room.slug, neighbor.slug, roomDoorwayPath(room, neighbor, opening));
     }
   }
 
   const frontZ = HOUSE_LAYOUT.exterior.depth / 2;
+  const entrance = getRoomBySlug("entrance");
+  const garden = getRoomBySlug("garden");
+  const gardenDoor = entrance && getRoomPortalOpenings(entrance).find((opening) => opening.targetSlug === "garden");
+  if (entrance && garden && gardenDoor) {
+    const entranceToGarden = [
+      ...roomDoorwayPath(entrance, garden, gardenDoor),
+      poseFacing([0.2, HEAD_HEIGHT, 5.45], [0.3, 0.95]),
+      poseFacing([0.45, HEAD_HEIGHT, 5.9], [0.7, 0.7]),
+      poseFacing([1.1, HEAD_HEIGHT, 6.25], [1, 0]),
+      poseFacing([1.9, HEAD_HEIGHT, 6.6], [0.8, 0.3]),
+      poseFacing([2.35, HEAD_HEIGHT, 7.25], [0.3, 0.95]),
+      poseFacing([2.6, HEAD_HEIGHT, 8.1], [0.05, 1]),
+    ];
+    addEdge(graph, entrance.slug, garden.slug, entranceToGarden);
+    addEdge(graph, garden.slug, entrance.slug, reverseRoute(entranceToGarden));
+  }
+
   const doorDirection: readonly [number, number] = [0, -1];
   const outsideEntry: CameraPose[] = [
     poseFacing([0, HEAD_HEIGHT, frontZ + 2.15], doorDirection),
