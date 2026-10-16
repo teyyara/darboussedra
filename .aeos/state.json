@@ -1,22 +1,28 @@
 {
   "schema_version": "1.0",
-  "run_id": "20261016-darboussedra-aeos-v3-loop001",
+  "run_id": "20261016-darboussedra-aeos-v3-loop002",
   "keyphrase": "read DAR BOUSSEDRA Master Build Strategy — Initial 3D House and Website Foundation",
   "rulebook_version": "AEOS v3",
   "repository": "teyyara/darboussedra",
   "branch": "main",
-  "loop": 1,
-  "candidate": "dar-boussedra-foundation-001",
+  "loop": 2,
+  "candidate": "darboussedra-navigation-and-build-repair-002",
   "state": "WAITING_FOR_CONTINUE",
-  "status": "IMPLEMENTED_CHECKPOINTED_VALIDATION_PENDING",
+  "status": "MERGED_TO_MAIN_CI_PASS_BROWSER_VALIDATION_PENDING",
+  "latest_known_good_commit": "ea7b18db1e5e546ce3eb8f59606094639a01cff3",
   "validation": {
     "repository": "PASS",
+    "pr_1_ci": "PASS",
+    "main_after_pr_1": "PASS",
+    "pr_2_ci": "PASS",
+    "main_after_pr_2": "PASS",
     "local_install": "BLOCKED_NETWORK_DNS",
-    "typecheck": "NOT_RUN",
-    "tests": "NOT_RUN",
-    "build": "NOT_RUN",
-    "browser": "NOT_AVAILABLE",
-    "remote_ci": "PENDING"
+    "local_typecheck": "NOT_RUN",
+    "local_tests": "NOT_RUN",
+    "local_build": "NOT_RUN",
+    "browser_visual_accessibility": "NOT_AVAILABLE",
+    "vercel_preview_inspection": "BLOCKED_ACCESS_403",
+    "deployment_by_agent": "NOT_PERFORMED"
   },
-  "next_high_value_work": "Check CI result; refine architecture and verify browser journeys."
+  "next_high_value_work": "Refine distinct room architecture and circulation, then verify browser journeys and accessibility."
 }

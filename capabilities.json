@@ -14,6 +14,10 @@
   "local_production_build": "NOT RUN",
   "browser_automation": "NOT AVAILABLE",
   "visual_browser_inspection": "NOT AVAILABLE",
-  "remote_ci_result": "pending observation after push",
-  "deployment": "not performed"
+  "vercel_preview_inspection": "BLOCKED: Vercel returned HTTP 403 for the connected project/team scope",
+  "pr_1_ci": "PASS: workflow run 38939325121",
+  "main_after_pr_1": "PASS: workflow run 38939453758",
+  "pr_2_ci": "PASS: workflow run 38939602877",
+  "main_after_pr_2": "PASS: workflow run 38939743480",
+  "deployment": "No explicit Vercel deploy, promote, rollback, or manual deployment action was performed by this agent."
 }
