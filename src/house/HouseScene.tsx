@@ -248,7 +248,7 @@ function ExteriorShell({ location, onDoorActivate, reducedMotion }: { location: 
         <meshStandardMaterial color="#c29b5c" metalness={0.5} roughness={0.38} />
       </mesh>
     </group>
-    {doorAction && <group position={[0, doorHeight + 0.34, frontZ + 0.08]}
+    {doorAction && <group position={[0, doorHeight + 0.34, frontZ + wallThickness / 2 + 0.06]}
       onClick={(event) => { event.stopPropagation(); onDoorActivate(doorAction === "enter"); }}
       onPointerOver={(event) => { event.stopPropagation(); setDoorHovered(true); document.body.style.cursor = "pointer"; }}
       onPointerOut={(event) => { event.stopPropagation(); setDoorHovered(false); document.body.style.cursor = ""; }}>
