@@ -21,12 +21,14 @@ function makeCameraPath(from: HouseLocation, to: HouseLocation, finalPose: Camer
   const high: CameraPose = { position: [0, 8.2, 0], target: [0, 1.3, 0] };
   const roofAccess: CameraPose = { position: [0, 8.1, -1.8], target: [0, 5.7, -1.8] };
   if (from === to) return [finalPose];
+  // Exterior/garden destinations stay outdoors; roof exits leave by the high stairwell/cutaway route.
+  if (from === "exterior" && to === "garden") return [outside, finalPose];
+  if (from === "rooftop") return [roofAccess, high, finalPose];
+  if (to === "rooftop") return [high, roofAccess, finalPose];
   if (from === "exterior") return [outside, threshold, inside, finalPose];
   if (to === "exterior") return [inside, threshold, outside, finalPose];
-  if (from === "garden" && to !== "rooftop") return [outside, threshold, inside, finalPose];
+  if (from === "garden") return [outside, threshold, inside, finalPose];
   if (to === "garden") return [inside, threshold, outside, finalPose];
-  if (to === "rooftop") return [high, roofAccess, finalPose];
-  if (from === "rooftop") return [roofAccess, high, finalPose];
   // Move above the configured wall/roof envelope rather than cutting through walls.
   return [high, finalPose];
 }
