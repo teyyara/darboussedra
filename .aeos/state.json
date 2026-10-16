@@ -16,8 +16,7 @@
     "tests": "NOT_RUN",
     "build": "NOT_RUN",
     "browser": "NOT_AVAILABLE",
-    "remote_ci": "PENDING",
-    "deployment": "NOT_PERFORMED"
+    "remote_ci": "PENDING"
   },
-  "next_high_value_work": "Observe CI and correct any failure before architectural refinement and browser testing."
+  "next_high_value_work": "Check CI result; refine architecture and verify browser journeys."
 }
