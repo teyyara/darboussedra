@@ -93,13 +93,13 @@ export const REQUIRED_ROOM_SLUGS = [
   "pets-corner", "prayer-room", "zakariae-room", "zineb-room", "meryem-room", "fatiha-room",
 ] as const;
 
-export const ROOM_ACCESS_PORTALS = [
+export const ROOM_ACCESS_PORTALS: readonly { readonly room: string; readonly targetSlug?: string; readonly zone: string; readonly side: WallSide; readonly offset: number; readonly width: number }[] = [
   { room: "family-table", zone: "stair-hall", side: "back", offset: 0, width: HOUSE_LAYOUT.stairs.groundDoorwayWidth },
   { room: "zakariae-room", targetSlug: "zakariae-room", zone: "upper-landing", side: "front", offset: 0, width: DEFAULT_DOOR_WIDTH },
   { room: "zineb-room", targetSlug: "zineb-room", zone: "upper-landing", side: "front", offset: 0, width: DEFAULT_DOOR_WIDTH },
   { room: "meryem-room", targetSlug: "meryem-room", zone: "upper-landing", side: "front", offset: 0, width: DEFAULT_DOOR_WIDTH },
   { room: "fatiha-room", targetSlug: "fatiha-room", zone: "upper-landing", side: "front", offset: 0, width: DEFAULT_DOOR_WIDTH },
-] as const satisfies readonly { readonly room: string; readonly targetSlug?: string; readonly zone: string; readonly side: WallSide; readonly offset: number; readonly width: number }[];
+];
 
 export const EXTERIOR_CAMERA = { position: [14, 10, 15] as Vector3Tuple, target: [0, 2.3, 0] as Vector3Tuple };
 export const MAP_CAMERA = { position: [0, 18, 16] as Vector3Tuple, target: [0, 1.4, 0] as Vector3Tuple };
