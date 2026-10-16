@@ -113,6 +113,66 @@ export function roomBounds(room: Room) {
   return { minX: x - width / 2, maxX: x + width / 2, minZ: z - depth / 2, maxZ: z + depth / 2 };
 }
 
+export interface RoomWallInterval { readonly start: number; readonly end: number; }
+
+/**
+ * Partition room boundary wall runs so shared partitions are rendered once.
+ * Coordinates are local to the room along the selected side. The exterior entrance
+ * facade is supplied by the exterior shell, whose actual door is already cut out.
+ */
+export function getRoomWallIntervals(room: Room, side: WallSide): RoomWallInterval[] {
+  if (room.slug === "entrance" && side === "front") return [];
+  const [width, depth] = room.footprint;
+  const length = side === "front" || side === "back" ? width : depth;
+  const bounds = roomBounds(room);
+  const roomIndex = rooms.findIndex((item) => item.slug === room.slug);
+  const neighbors: { start: number; end: number; index: number }[] = [];
+
+  for (const neighbor of rooms) {
+    if (neighbor.slug === room.slug || Math.abs(neighbor.scenePosition[1] - room.scenePosition[1]) > EPSILON) continue;
+    const other = roomBounds(neighbor);
+    let touches = false;
+    let overlapStart = 0;
+    let overlapEnd = 0;
+    if (side === "front" && Math.abs(bounds.maxZ - other.minZ) <= EPSILON) {
+      touches = true; overlapStart = Math.max(bounds.minX, other.minX); overlapEnd = Math.min(bounds.maxX, other.maxX);
+      overlapStart -= room.scenePosition[0]; overlapEnd -= room.scenePosition[0];
+    } else if (side === "back" && Math.abs(bounds.minZ - other.maxZ) <= EPSILON) {
+      touches = true; overlapStart = Math.max(bounds.minX, other.minX); overlapEnd = Math.min(bounds.maxX, other.maxX);
+      overlapStart -= room.scenePosition[0]; overlapEnd -= room.scenePosition[0];
+    } else if (side === "right" && Math.abs(bounds.maxX - other.minX) <= EPSILON) {
+      touches = true; overlapStart = Math.max(bounds.minZ, other.minZ); overlapEnd = Math.min(bounds.maxZ, other.maxZ);
+      overlapStart -= room.scenePosition[2]; overlapEnd -= room.scenePosition[2];
+    } else if (side === "left" && Math.abs(bounds.minX - other.maxX) <= EPSILON) {
+      touches = true; overlapStart = Math.max(bounds.minZ, other.minZ); overlapEnd = Math.min(bounds.maxZ, other.maxZ);
+      overlapStart -= room.scenePosition[2]; overlapEnd -= room.scenePosition[2];
+    }
+    if (touches && overlapEnd - overlapStart > EPSILON) neighbors.push({
+      start: Math.max(-length / 2, overlapStart), end: Math.min(length / 2, overlapEnd),
+      index: rooms.findIndex((item) => item.slug === neighbor.slug),
+    });
+  }
+
+  const breaks = [...new Set([
+    -length / 2, length / 2,
+    ...neighbors.flatMap((item) => [item.start, item.end]),
+  ])].sort((a, b) => a - b);
+  const owned: RoomWallInterval[] = [];
+  for (let i = 0; i < breaks.length - 1; i += 1) {
+    const start = breaks[i], end = breaks[i + 1];
+    if (end - start <= EPSILON) continue;
+    const middle = (start + end) / 2;
+    const touching = neighbors.filter((item) => middle > item.start - EPSILON && middle < item.end + EPSILON);
+    if (touching.length === 0 || touching.every((item) => roomIndex < item.index)) {
+      const previous = owned[owned.length - 1];
+      if (previous && Math.abs(previous.end - start) <= EPSILON) {
+        owned[owned.length - 1] = { start: previous.start, end };
+      } else owned.push({ start, end });
+    }
+  }
+  return owned;
+}
+
 /** Return geometry for a declared door only if the two rooms share a sufficiently wide physical boundary. */
 export function getSharedBoundary(room: Room, neighbor: Room): SharedDoorway | undefined {
   if (Math.abs(room.scenePosition[1] - neighbor.scenePosition[1]) > EPSILON * 4) return undefined;
