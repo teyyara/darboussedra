@@ -61,10 +61,10 @@ function sampledStairWaypoints(flight: {
 }): CameraPose[] {
   const risePerStep = (flight.to[1] - flight.from[1]) / flight.steps;
   const runPerStep = (flight.to[2] - flight.from[2]) / flight.steps;
-  const indices = [...new Set([0, Math.floor(flight.steps / 2), flight.steps - 1].filter((index) => index >= 0 && index < flight.steps))]
-    .sort((a, b) => a - b);
+  // Walk the staircase tread by tread instead of cutting diagonally through it.
+  const indices = Array.from({ length: flight.steps }, (_, index) => index);
   const direction: readonly [number, number] = runPerStep < 0 ? [0, -1] : [0, 1];
-  return indices.map((index) => {
+  return indices.map((index) => {}
     const treadTop = flight.from[1] + risePerStep * (index + 1);
     const z = flight.from[2] + runPerStep * (index + 0.5);
     return poseFacing([flight.from[0], treadTop + STAIR_HEAD_HEIGHT, z], direction);
@@ -78,8 +78,12 @@ function groundStairWalkway(): CameraPose[] {
   return [
     ...sampledStairWaypoints(flight),
     poseFacing(top, [0, -1]),
-    poseFacing(top, [0, 1]),
-    ...[-3.2, -1.5, 0.25, 1.05].map((z) => poseFacing([0, upperEye, z], [0, 1])),
+    // Turn through the landing on a short arc rather than flipping the view at one point.
+    poseFacing([0.34, upperEye, flight.to[2] + 0.25], [0.8, 0.6]),
+    poseFacing([0.55, upperEye, flight.to[2] + 0.62], [0.4, 0.9]),
+    poseFacing([0.42, upperEye, -3.25], [-0.25, 0.97]),
+    poseFacing([0.2, upperEye, -2.55], [-0.3, 0.95]),
+    ...[-1.5, 0.25, 1.05].map((z) => poseFacing([0, upperEye, z], [0, 1])),
   ];
 }
 
@@ -90,11 +94,17 @@ function roofStairWalkway(): CameraPose[] {
   return [
     poseFacing([0, upperEye, HOUSE_LAYOUT.upperLanding.centerZ + 0.38], [0, 1]),
     poseFacing([flight.from[0], upperEye, flight.from[2]], [0, 1]),
-    poseFacing([flight.from[0], upperEye, flight.from[2]], [0, -1]),
+    // Align to the stair direction with a small physical turn on the landing.
+    poseFacing([0.32, upperEye, flight.from[2] + 0.05], [1, 0]),
+    poseFacing([0.42, upperEye, flight.from[2] - 0.15], [0.3, -1]),
+    poseFacing([0.2, upperEye, flight.from[2] - 0.23], [-0.2, -1]),
     ...sampledStairWaypoints(flight),
     poseFacing([flight.to[0], roofEye, flight.to[2]], [0, -1]),
-    poseFacing([flight.to[0], roofEye, flight.to[2]], [0, 1]),
-    ...[-0.25, 0.6].map((z) => poseFacing([0, roofEye, z], [0, 1])),
+    poseFacing([0.35, roofEye, flight.to[2] + 0.35], [1, 0]),
+    poseFacing([0.42, roofEye, flight.to[2] + 0.7], [0.3, 1]),
+    poseFacing([0.22, roofEye, -0.62], [-0.3, 1]),
+    poseFacing([0, roofEye, 0.15], [0, 1]),
+    poseFacing([0, roofEye, 0.6], [0, 1]),
   ];
 }
 

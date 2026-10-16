@@ -153,4 +153,43 @@ describe("3D camera paths", () => {
     expect(path.some((pose) => pose.position[2] < 2.75)).toBe(true);
     expect(path.every((pose) => pose.position[1] < 2.1)).toBe(true);
   });
+  it("follows the individual lower stair treads at a monotonic walking height", () => {
+    const path = makeCameraPath("family-table", "rooftop", poseFor("rooftop"));
+    const flight = HOUSE_LAYOUT.stairs.groundFlight;
+    const stairSamples = path.filter((pose) =>
+      pose.position[1] > 1.7 && pose.position[1] < HOUSE_LAYOUT.upperY + 1.5 &&
+      pose.position[2] <= flight.from[2] + 0.02 && pose.position[2] >= flight.to[2] - 0.05);
+    expect(stairSamples.length).toBeGreaterThanOrEqual(flight.steps - 2);
+    for (let index = 1; index < stairSamples.length; index += 1) {
+      expect(stairSamples[index].position[1]).toBeGreaterThan(stairSamples[index - 1].position[1]);
+      expect(stairSamples[index].position[2]).toBeLessThan(stairSamples[index - 1].position[2]);
+    }
+  });
+
+  it("uses spatial landing turns instead of duplicate-position heading reversals", () => {
+    for (const [from, to] of [
+      ["family-table", "rooftop"],
+      ["rooftop", "prayer-room"],
+    ] as const) {
+      const path = makeCameraPath(from, to, poseFor(to));
+      for (let index = 1; index < path.length; index += 1) {
+        const previous = path[index - 1];
+        const current = path[index];
+        const distance = Math.hypot(
+          current.position[0] - previous.position[0],
+          current.position[1] - previous.position[1],
+          current.position[2] - previous.position[2],
+        );
+        if (distance >= 0.04) continue;
+        const previousHeading = [previous.target[0] - previous.position[0], previous.target[2] - previous.position[2]];
+        const currentHeading = [current.target[0] - current.position[0], current.target[2] - current.position[2]];
+        const previousLength = Math.hypot(...previousHeading);
+        const currentLength = Math.hypot(...currentHeading);
+        const alignment = (previousHeading[0] * currentHeading[0] + previousHeading[1] * currentHeading[1]) /
+          (previousLength * currentLength);
+        expect(alignment, "near-identical positions should not ask the camera to reverse its heading").toBeGreaterThan(-0.7);
+      }
+    }
+  });
+
 });

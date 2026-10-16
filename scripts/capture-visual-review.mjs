@@ -43,7 +43,7 @@ async function saveScreenshot(page, filename) {
   report.screenshots.push(filename);
 }
 
-async function arrivalStatus(page, slug, name, timeout = 9000) {
+async function arrivalStatus(page, slug, name, timeout = 28000) {
   await page.waitForFunction(
     () => {
       const label = document.querySelector(".room-welcome .eyebrow");
@@ -71,11 +71,17 @@ async function openMap(page) {
   await page.locator(".map-panel").waitFor({ state: "visible", timeout: 8000 });
 }
 
-async function selectDirectoryRoom(page, name, slug) {
+async function selectDirectoryRoom(page, name, slug, transitionCaptures = []) {
   const selector = page.locator(".map-directory").getByRole("button", { name, exact: true }).first();
   await selector.waitFor({ state: "visible", timeout: 8000 });
   await selector.click();
   await page.waitForFunction((expected) => window.location.pathname === "/room/" + expected, slug, { timeout: 8000 });
+  const transitionStarted = Date.now();
+  for (const capture of transitionCaptures) {
+    const delay = Math.max(0, capture.afterMs - (Date.now() - transitionStarted));
+    if (delay > 0) await page.waitForTimeout(delay);
+    await saveScreenshot(page, capture.filename);
+  }
   await arrivalStatus(page, slug, name);
 }
 
@@ -87,6 +93,8 @@ const desktop = await browser.newPage({
 captureRuntimeErrors(desktop, "desktop");
 await desktop.goto(baseUrl, { waitUntil: "domcontentloaded" });
 await waitForExperience(desktop);
+report.navigationGuideDetected = await desktop.locator(".navigation-guide").isVisible().catch(() => false);
+report.navigationGuideText = (await desktop.locator(".navigation-guide").innerText().catch(() => "")).trim();
 report.webglCanvasDetected = (await desktop.locator("canvas").count()) > 0;
 report.webgl2ContextAvailable = await desktop.locator("canvas").first().evaluate((canvas) => {
   try { return Boolean(canvas.getContext("webgl2")); } catch { return false; }
@@ -94,7 +102,7 @@ report.webgl2ContextAvailable = await desktop.locator("canvas").first().evaluate
 await saveScreenshot(desktop, "01-exterior-desktop.png");
 
 await desktop.getByRole("button", { name: /enter the house/i }).click();
-await arrivalStatus(desktop, "entrance", "Front Door & Entrance", 10000);
+await arrivalStatus(desktop, "entrance", "Front Door & Entrance", 16000);
 await saveScreenshot(desktop, "02-entrance-eye-level.png");
 
 await openMap(desktop);
@@ -127,15 +135,22 @@ await selectDirectoryRoom(desktop, "Prayer Room / Musalla", "prayer-room");
 await saveScreenshot(desktop, "09-prayer-room-eye-level.png");
 
 await openMap(desktop);
-await selectDirectoryRoom(desktop, "Zineb's Private Room", "zineb-room");
+await selectDirectoryRoom(desktop, "Zineb's Private Room", "zineb-room", [
+  { afterMs: 6500, filename: "13-stair-ascent-midflight.png" },
+  { afterMs: 9800, filename: "14-upper-landing-turn.png" },
+]);
 await saveScreenshot(desktop, "10-upper-floor-eye-level.png");
 
 await openMap(desktop);
-await selectDirectoryRoom(desktop, "Garden", "garden");
+await selectDirectoryRoom(desktop, "Garden", "garden", [
+  { afterMs: 5600, filename: "15-stair-descent-midflight.png" },
+]);
 await saveScreenshot(desktop, "11-garden-eye-level.png");
 
 await openMap(desktop);
-await selectDirectoryRoom(desktop, "Rooftop Terrace", "rooftop");
+await selectDirectoryRoom(desktop, "Rooftop Terrace", "rooftop", [
+  { afterMs: 10800, filename: "16-roof-stair-ascent.png" },
+]);
 await saveScreenshot(desktop, "12-rooftop-eye-level.png");
 
 const mobile = await browser.newPage({
@@ -148,6 +163,7 @@ const mobile = await browser.newPage({
 captureRuntimeErrors(mobile, "mobile");
 await mobile.goto(baseUrl, { waitUntil: "domcontentloaded" });
 await waitForExperience(mobile);
+report.mobileNavigationGuideVisible = await mobile.locator(".navigation-guide").isVisible().catch(() => false);
 report.mobileDocumentWidth = await mobile.evaluate(() => document.documentElement.scrollWidth);
 report.mobileViewportWidth = 390;
 report.mobileHasHorizontalDocumentOverflow = report.mobileDocumentWidth > report.mobileViewportWidth;
@@ -161,6 +177,14 @@ await writeFile(outputDir + "/browser-review.json", JSON.stringify(report, null,
 await browser.close();
 
 console.log(JSON.stringify(report, null, 2));
-if (report.runtimeErrors.length > 0) {
+if (
+  report.runtimeErrors.length > 0 ||
+  report.roomArrivals.some((arrival) => !arrival.arrived) ||
+  !report.navigationGuideDetected ||
+  !report.mobileNavigationGuideVisible ||
+  report.mobileHasHorizontalDocumentOverflow ||
+  report.roomDirectoryButtonCount !== 13 ||
+  report.mobileRoomDirectoryButtonCount !== 13
+) {
   process.exitCode = 1;
 }

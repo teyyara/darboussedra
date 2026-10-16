@@ -14,3 +14,14 @@
 
 /* Keep the real room view visible; legibility belongs to the compact room HUD, not a page-wide veil. */
 .app-shell[data-view="room"] .wash{background:linear-gradient(0deg,rgba(243,236,223,.14),transparent 30%)}
+
+
+/* Discoverable 3D navigation: the in-scene markers match this instruction card. */
+.navigation-guide{position:absolute;z-index:3;right:clamp(12px,3vw,42px);bottom:68px;display:flex;align-items:center;gap:11px;width:min(325px,calc(100% - 24px));padding:13px 15px;border:1px solid #c9b8a1d9;border-radius:6px;background:rgba(249,244,234,.93);box-shadow:0 10px 30px #53452b20;backdrop-filter:blur(14px);color:#4b4033;pointer-events:none}
+.navigation-guide-icon{flex:none;display:grid;place-items:center;width:38px;height:38px;border:1px solid #b99a78;border-radius:50%;background:#f3e5d2;color:#985740;font:22px Georgia,serif}
+.navigation-guide-copy{display:grid;gap:4px;min-width:0}
+.navigation-guide-copy strong{font-size:11px;font-weight:650;letter-spacing:.01em}
+.navigation-guide-copy small{font-size:10px;line-height:1.45;color:#786b59}
+.room-welcome .plain:disabled{opacity:.55;cursor:wait}
+@media(max-width:720px){.navigation-guide{top:72px;bottom:auto;right:12px;width:min(260px,calc(100% - 24px));padding:10px 12px;gap:9px}.navigation-guide-icon{width:32px;height:32px;font-size:19px}.navigation-guide-copy strong{font-size:10px}.navigation-guide-copy small{font-size:9px;line-height:1.4}}
+@media(max-height:600px) and (min-width:721px){.navigation-guide{bottom:48px;padding:9px 11px}}

@@ -13,6 +13,7 @@ export default function App() {
   const [webgl, setWebgl] = useState<"checking" | "yes" | "no">("checking");
   const [settledLocation, setSettledLocation] = useState<HouseLocation>("exterior");
   const pathRef = useRef(path);
+  const walkingRef = useRef(false);
   const previous = useRef("/");
   const reducedMotion = useReducedMotion();
   const room = useMemo(() => roomFromPath(path), [path]);
@@ -56,7 +57,13 @@ export default function App() {
   }, []);
   const openMap = useCallback(() => go("/house/map"), [go]);
   const closeMap = useCallback(() => go(previous.current === "/house/map" ? "/" : previous.current), [go]);
-  const select = useCallback((slug: RoomSlug) => go("/room/" + slug), [go]);
+  const select = useCallback((slug: RoomSlug) => {
+    if (walkingRef.current) return;
+    go("/room/" + slug);
+  }, [go]);
+  const handleTransitionChange = useCallback((moving: boolean) => {
+    walkingRef.current = moving;
+  }, []);
 
   useEffect(() => {
     if (!map) return;
@@ -78,8 +85,12 @@ export default function App() {
           ? <StaticHouseIllustration />
           : <SceneErrorBoundary><Suspense fallback={<StaticHouseIllustration />}>
             <HouseScene location={current} settledLocation={settledLocation} reducedMotion={reducedMotion}
-              onArrive={setSettledLocation}
-              onDoorActivate={(entering) => entering ? select("entrance") : go("/")}
+              onArrive={setSettledLocation} onTransitionChange={handleTransitionChange}
+              onDoorActivate={(entering) => {
+                if (walkingRef.current) return;
+                if (entering) select("entrance");
+                else go("/");
+              }}
               onSelect={select} />
           </Suspense></SceneErrorBoundary>}
     </div>
@@ -101,10 +112,10 @@ export default function App() {
       <p className="eyebrow">{settledLocation === room.slug ? "YOU ARE HERE" : "WALKING TO"}</p>
       <h1 id="room-title">{room.name}</h1>
       <p>{settledLocation === room.slug
-        ? "A quiet, intentionally empty space. The architecture comes first; what belongs here can be decided over time."
-        : "Following the house's connected rooms and stairs to this destination."}</p>
+        ? "Click a terracotta floor marker or doorway to keep exploring the connected house."
+        : "Following the connected rooms and stairs at a slower walking pace."}</p>
       <button className="primary" type="button" onClick={openMap}>Open the house map ↗</button>
-      <button className="plain" type="button" onClick={() => go("/")}>Return outside →</button>
+      <button className="plain" type="button" disabled={settledLocation !== room.slug} onClick={() => go("/")}>Return outside →</button>
     </section>}
     {map && <HouseMap active={activeRoom?.slug} onSelect={select} onClose={closeMap} />}
     {path === "/" && settledLocation !== "exterior" && <section className="welcome room-welcome" aria-label="Returning outside">
@@ -112,6 +123,15 @@ export default function App() {
       <h1>Heading back out</h1>
       <p>Following the same rooms and doorway in reverse.</p>
     </section>}
+    {!map && <aside className="navigation-guide" aria-label="3D navigation instructions">
+      <span className="navigation-guide-icon" aria-hidden="true">{current === "exterior" ? "↘" : "⌖"}</span>
+      <span className="navigation-guide-copy">
+        <strong>{current === "exterior" && settledLocation !== "exterior" ? "Following the route outside" : room ? "Walk to another room" : "Start at the front door"}</strong>
+        <small>{room
+          ? "Click a terracotta floor marker or doorway to walk. Open House map for any destination."
+          : "Click the gold marker above the front door to enter, or use House map."}</small>
+      </span>
+    </aside>}
     {invalid && <section className="welcome" aria-labelledby="missing-title">
       <p className="eyebrow">WRONG TURN</p>
       <h1 id="missing-title">Let's find<br /><em>our way home.</em></h1>

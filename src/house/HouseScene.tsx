@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Vector3, type Group } from "three";
+import { DoubleSide, PerspectiveCamera, Quaternion, Vector3, type Group } from "three";
 import { makeCameraPath, type CameraPose } from "./cameraPath";
 import { getHouseSceneVisibility } from "./sceneVisibility";
 import {
@@ -8,12 +8,23 @@ import {
   type HouseLocation, type Room, type RoomSlug, type RoomPortalOpening, type Vector3Tuple,
 } from "./rooms";
 
-interface AnimatedPose { position: Vector3; target: Vector3; }
+interface AnimatedPose { position: Vector3; rotation: Quaternion; }
+
+function poseRotation(pose: CameraPose): Quaternion {
+  const helper = new PerspectiveCamera();
+  helper.position.set(...pose.position);
+  helper.lookAt(new Vector3(...pose.target));
+  return helper.quaternion.clone();
+}
+
+const WALK_SPEED = 1.35;
+const TURN_RESPONSE = 4.2;
 
 function poseFor(location: HouseLocation): CameraPose {
   if (location === "exterior" || location === "map") return EXTERIOR_CAMERA;
   return getRoomBySlug(location)?.camera ?? EXTERIOR_CAMERA;
 }
+
 function CameraRig({ location, reducedMotion, onArrive, onTransitionChange }: {
   location: HouseLocation;
   reducedMotion: boolean;
@@ -22,21 +33,24 @@ function CameraRig({ location, reducedMotion, onArrive, onTransitionChange }: {
 }) {
   const { camera, invalidate } = useThree();
   const pose = useMemo(() => poseFor(location), [location]);
-  const desired = useMemo(() => ({ position: new Vector3(...pose.position), target: new Vector3(...pose.target) }), [pose]);
+  const desired = useMemo(() => ({
+    position: new Vector3(...pose.position),
+    rotation: poseRotation(pose),
+  }), [pose]);
   const lastLocation = useRef<HouseLocation>("exterior");
   const path = useRef<AnimatedPose[]>([]);
   const index = useRef(0);
   const completedLocation = useRef<HouseLocation | undefined>(undefined);
-  const lookAt = useRef(new Vector3(...EXTERIOR_CAMERA.target));
+
   useEffect(() => {
     const from = lastLocation.current;
     lastLocation.current = location;
     completedLocation.current = undefined;
-    if (reducedMotion) {
+    if (reducedMotion || from === location) {
       camera.position.copy(desired.position);
-      lookAt.current.copy(desired.target);
-      camera.lookAt(desired.target);
+      camera.quaternion.copy(desired.rotation);
       camera.updateProjectionMatrix();
+      camera.updateMatrixWorld();
       path.current = [];
       index.current = 0;
       completedLocation.current = location;
@@ -44,26 +58,35 @@ function CameraRig({ location, reducedMotion, onArrive, onTransitionChange }: {
       onArrive(location);
     } else {
       path.current = makeCameraPath(from, location, pose).map((item) => ({
-        position: new Vector3(...item.position), target: new Vector3(...item.target),
+        position: new Vector3(...item.position),
+        rotation: poseRotation(item),
       }));
       index.current = 0;
       onTransitionChange(true);
     }
     invalidate();
   }, [camera, desired, invalidate, location, onArrive, onTransitionChange, pose, reducedMotion]);
+
   useFrame((_state, delta) => {
     const waypoint = path.current[index.current];
     const nextPosition = waypoint?.position ?? desired.position;
-    const nextTarget = waypoint?.target ?? desired.target;
-    const amount = 1 - Math.exp(-12 * delta);
-    camera.position.lerp(nextPosition, amount);
-    lookAt.current.lerp(nextTarget, amount);
-    camera.lookAt(lookAt.current);
-    if (waypoint && camera.position.distanceToSquared(nextPosition) < 0.012 &&
-      lookAt.current.distanceToSquared(nextTarget) < 0.02) index.current += 1;
+    const nextRotation = waypoint?.rotation ?? desired.rotation;
+    const frameDelta = Math.min(delta, 0.05);
+    const distance = camera.position.distanceTo(nextPosition);
+    const travel = WALK_SPEED * frameDelta;
+    if (distance <= travel || distance <= 0.025) {
+      camera.position.copy(nextPosition);
+    } else {
+      camera.position.addScaledVector(nextPosition.clone().sub(camera.position), travel / distance);
+    }
+    // Quaternion blending avoids lookAt-target crossings that can flip the lens on landings.
+    camera.quaternion.slerp(nextRotation, 1 - Math.exp(-TURN_RESPONSE * frameDelta));
+    if (waypoint && camera.position.distanceToSquared(nextPosition) < 0.0016 &&
+      camera.quaternion.angleTo(nextRotation) < 0.035) index.current += 1;
+
     const stillMoving = index.current < path.current.length ||
-      camera.position.distanceToSquared(desired.position) > 0.002 ||
-      lookAt.current.distanceToSquared(desired.target) > 0.002;
+      camera.position.distanceToSquared(desired.position) > 0.0016 ||
+      camera.quaternion.angleTo(desired.rotation) > 0.018;
     if (stillMoving) invalidate();
     else if (completedLocation.current !== location) {
       completedLocation.current = location;
@@ -185,6 +208,19 @@ function ExteriorShell({ location, onDoorActivate, reducedMotion }: { location: 
         <meshStandardMaterial color="#c29b5c" metalness={0.5} roughness={0.38} />
       </mesh>
     </group>
+    {doorAction && <group position={[0, doorHeight + 0.34, frontZ + 0.08]}
+      onClick={(event) => { event.stopPropagation(); onDoorActivate(doorAction === "enter"); }}
+      onPointerOver={(event) => { event.stopPropagation(); setDoorHovered(true); document.body.style.cursor = "pointer"; }}
+      onPointerOut={(event) => { event.stopPropagation(); setDoorHovered(false); document.body.style.cursor = ""; }}>
+      <mesh>
+        <ringGeometry args={[0.105, 0.17, 24]} />
+        <meshBasicMaterial color={doorHovered ? "#fff0ca" : "#e1b663"} transparent opacity={0.98} side={DoubleSide} toneMapped={false} />
+      </mesh>
+      <mesh position={[0, 0, 0.006]}>
+        <circleGeometry args={[0.065, 24]} />
+        <meshBasicMaterial color="#fff4de" transparent opacity={0.98} side={DoubleSide} toneMapped={false} />
+      </mesh>
+    </group>}
     <mesh position={[0, 0.06, frontZ + 0.32]} receiveShadow>
       <boxGeometry args={[2.15, 0.12, 0.64]} /><meshStandardMaterial color="#c5b08e" roughness={0.98} />
     </mesh>
@@ -243,6 +279,23 @@ function roomWallSegments(room: Room, side: RoomPortalOpening["side"], openings:
       size: [0.12, HOUSE_LAYOUT.roomWallHeight, segmentLength] as Vector3Tuple,
     }];
   });
+}
+
+function NavigationHotspot({ position, onSelect }: { position: Vector3Tuple; onSelect: () => void }) {
+  const [hovered, setHovered] = useState(false);
+  return <group position={position}
+    onClick={(event) => { event.stopPropagation(); onSelect(); }}
+    onPointerOver={(event) => { event.stopPropagation(); setHovered(true); document.body.style.cursor = "pointer"; }}
+    onPointerOut={(event) => { event.stopPropagation(); setHovered(false); document.body.style.cursor = ""; }}>
+    <mesh rotation={[-Math.PI / 2, 0, 0]}>
+      <ringGeometry args={[0.145, 0.205, 28]} />
+      <meshBasicMaterial color={hovered ? "#f8e4b4" : "#b26445"} transparent opacity={0.96} depthWrite={false} side={DoubleSide} toneMapped={false} />
+    </mesh>
+    <mesh position={[0, 0.006, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+      <circleGeometry args={[0.065, 24]} />
+      <meshBasicMaterial color="#fbf0d8" transparent opacity={0.98} depthWrite={false} side={DoubleSide} toneMapped={false} />
+    </mesh>
+  </group>;
 }
 
 function DoorwayFrame({ room, opening, onSelect }: { room: Room; opening: RoomPortalOpening; onSelect: (slug: RoomSlug) => void }) {
@@ -391,6 +444,8 @@ function RoomArea({ room, active, onSelect }: { room: Room; active?: Room; onSel
   const walls = (["front", "back", "left", "right"] as const).flatMap((side) =>
     roomWallSegments(room, side, openings).map((segment, index) => ({ ...segment, key: side + "-" + index })));
   const selected = active?.slug === room.slug;
+  const hintX = Math.max(-width * 0.32, Math.min(width * 0.32, room.camera.position[0] - x));
+  const hintZ = Math.max(-depth * 0.32, Math.min(depth * 0.32, room.camera.position[2] - z));
   const floorColor = selected ? "#d9b9a4" : hovered
     ? room.kind === "spiritual" ? "#e8e5d2" : room.kind === "private" ? "#e7d0b8" : "#ead8c2"
     : room.kind === "spiritual" ? "#d9d8c7" : room.kind === "private" ? "#d8c2a9" : "#e1d4c0";
@@ -402,6 +457,8 @@ function RoomArea({ room, active, onSelect }: { room: Room; active?: Room; onSel
       onPointerOut={() => { setHovered(false); document.body.style.cursor = ""; }}>
       <boxGeometry args={[width, HOUSE_LAYOUT.floorThickness, depth]} /><meshStandardMaterial color={floorColor} roughness={0.94} />
     </mesh>
+    {!selected && <NavigationHotspot position={[hintX, HOUSE_LAYOUT.floorThickness + 0.025, hintZ]}
+      onSelect={() => onSelect(room.slug as RoomSlug)} />}
     <mesh position={[0, HOUSE_LAYOUT.floorThickness + HOUSE_LAYOUT.roomWallHeight - 0.04, 0]} receiveShadow>
       <boxGeometry args={[Math.max(0.2, width - 0.05), 0.08, Math.max(0.2, depth - 0.05)]} />
       <meshStandardMaterial color={room.kind === "spiritual" ? "#ede9dc" : "#f2e9dc"} roughness={0.98} />
@@ -477,6 +534,7 @@ function GardenArea({ onSelect }: { onSelect: () => void }) {
       onPointerOut={() => { setHovered(false); document.body.style.cursor = ""; }}>
       <boxGeometry args={[width, 0.08, depth]} /><meshStandardMaterial color={hovered ? "#b0b98f" : "#9ba27e"} roughness={1} />
     </mesh>
+    <NavigationHotspot position={[x, 0.025, z]} onSelect={onSelect} />
     <mesh position={[x, 0.005, z - 0.1]} receiveShadow>
       <boxGeometry args={[1.55, 0.045, 2.1]} /><meshStandardMaterial color="#c8b89e" roughness={1} />
     </mesh>
@@ -515,6 +573,7 @@ function RoofDeck({ onSelect }: { onSelect: () => void }) {
       <boxGeometry args={[panel.w, 0.18, panel.d]} />
       <meshStandardMaterial color={hovered ? "#ded0b7" : "#c6b79f"} roughness={0.96} />
     </mesh>)}
+    <NavigationHotspot position={[1.1, HOUSE_LAYOUT.roofY + 0.025, 0.35]} onSelect={onSelect} />
     {[
       { position: [0, parapetY, -halfDepth] as Vector3Tuple, size: [width, parapetHeight, 0.14] as Vector3Tuple },
       { position: [-halfWidth, parapetY, 0] as Vector3Tuple, size: [0.14, parapetHeight, depth] as Vector3Tuple },
@@ -593,15 +652,20 @@ function HouseArchitecture({ location, visualLocation, transitioning, onDoorActi
   </>;
 }
 
-export function HouseScene({ location, settledLocation, reducedMotion, onArrive, onDoorActivate, onSelect }: {
+export function HouseScene({ location, settledLocation, reducedMotion, onArrive, onTransitionChange: onNavigationChange, onDoorActivate, onSelect }: {
   location: HouseLocation;
   settledLocation: HouseLocation;
   reducedMotion: boolean;
   onArrive: (location: HouseLocation) => void;
+  onTransitionChange: (transitioning: boolean) => void;
   onDoorActivate: (entering: boolean) => void;
   onSelect: (slug: RoomSlug) => void;
 }) {
   const [transitioning, setTransitioning] = useState(false);
+  const handleTransitionChange = useCallback((moving: boolean) => {
+    setTransitioning(moving);
+    onNavigationChange(moving);
+  }, [onNavigationChange]);
   const visualTransition = transitioning || settledLocation !== location;
   const sceneFov = location === "exterior" || location === "map" ? 58 : 66;
   return <Canvas camera={{ position: EXTERIOR_CAMERA.position, fov: sceneFov, near: 0.1, far: 120 }}
@@ -609,7 +673,7 @@ export function HouseScene({ location, settledLocation, reducedMotion, onArrive,
     <color attach="background" args={["#eee7da"]} /><fog attach="fog" args={["#eee7da", 22, 55]} />
     <ambientLight intensity={1.1} /><hemisphereLight args={["#fff2db", "#8c9479", 1.1]} />
     <directionalLight position={[8, 15, 9]} intensity={2.1} castShadow shadow-mapSize-width={1024} shadow-mapSize-height={1024} />
-    <CameraRig location={location} reducedMotion={reducedMotion} onArrive={onArrive} onTransitionChange={setTransitioning} />
+    <CameraRig location={location} reducedMotion={reducedMotion} onArrive={onArrive} onTransitionChange={handleTransitionChange} />
     <HouseArchitecture location={location} visualLocation={settledLocation} transitioning={visualTransition}
       onDoorActivate={onDoorActivate} onSelectRoom={onSelect} reducedMotion={reducedMotion} />
   </Canvas>;
