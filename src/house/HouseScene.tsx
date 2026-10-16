@@ -80,12 +80,12 @@ function CameraRig({ location, reducedMotion, onArrive, onTransitionChange, onEx
   }, [camera, desired, invalidate, location, onArrive, onTransitionChange, onExteriorShellVisibilityChange, pose, reducedMotion]);
 
   useFrame((_state, delta) => {
-    const frameDelta = Math.min(delta, 0.05);
+    const frameDelta = Math.min(delta, 0.2);
     let travelRemaining = WALK_SPEED * frameDelta;
     let waypoint = path.current[index.current];
 
-    // Carry the unused fraction of this frame across waypoint boundaries. This
-    // removes the tiny stop-start rhythm between staircase treads and door markers.
+    // Carry unused frame distance across waypoint boundaries. The 0.2s cap preserves
+    // walking speed on slower devices while preventing a large jump after a suspended tab.
     while (waypoint && travelRemaining > 0) {
       const distance = camera.position.distanceTo(waypoint.position);
       if (distance <= travelRemaining || distance <= 0.025) {
