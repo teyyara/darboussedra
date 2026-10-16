@@ -64,13 +64,13 @@ function roomCamera(position: Vector3Tuple, footprint: readonly [number, number]
 
 const roomDefinitions = [
   { id: "entrance", slug: "entrance", name: "Front Door & Entrance", kind: "entry", level: "ground",
-    scenePosition: [0, HOUSE_LAYOUT.groundY, 3.695], camera: { position: [0, 1.65, 4.1], target: [0, 1.61, 3.2] },
+    scenePosition: [0, HOUSE_LAYOUT.groundY, 3.695], camera: { position: [0, 1.65, 4.1], target: [-0.25, 1.61, 3.2] },
     footprint: [2.1, 1.89], connectedTo: ["family-table", "garden"] },
   { id: "living-room", slug: "living-room", name: "Living Room", kind: "interior", level: "ground",
     scenePosition: [-3.6, HOUSE_LAYOUT.groundY, 1.175], camera: roomCamera([-3.6, 0, 1.175], [3.6, 3.15], "right"),
     footprint: [3.6, 3.15], connectedTo: ["family-table", "library"] },
   { id: "family-table", slug: "family-table", name: "Family Table", kind: "interior", level: "ground",
-    scenePosition: [0, HOUSE_LAYOUT.groundY, 1.175], camera: roomCamera([0, 0, 1.175], [3.6, 3.15], "front"),
+    scenePosition: [0, HOUSE_LAYOUT.groundY, 1.175], camera: { position: [0.95, 1.65, 2.05], target: [-0.45, 1.61, 0.8] },
     footprint: [3.6, 3.15], connectedTo: ["entrance", "living-room", "kitchen"] },
   { id: "kitchen", slug: "kitchen", name: "Kitchen", kind: "interior", level: "ground",
     scenePosition: [3.6, HOUSE_LAYOUT.groundY, 1.175], camera: roomCamera([3.6, 0, 1.175], [3.6, 3.15], "left"),
@@ -85,22 +85,22 @@ const roomDefinitions = [
     scenePosition: [3.3, HOUSE_LAYOUT.groundY, -2.49], camera: roomCamera([3.3, 0, -2.49], [4.2, 4.18], "front"),
     footprint: [4.2, 4.18], connectedTo: ["kitchen"] },
   { id: "zakariae-room", slug: "zakariae-room", name: "Zakariae's Private Room", kind: "private", level: "upper",
-    scenePosition: [-4.25, HOUSE_LAYOUT.upperY, -1.75], camera: roomCamera([-4.25, HOUSE_LAYOUT.upperY, -1.75], [2.3, 4.4], "front"),
+    scenePosition: [-4.25, HOUSE_LAYOUT.upperY, -1.75], camera: roomCamera([-4.25, HOUSE_LAYOUT.upperY, -1.75], [2.3, 4.4], "back"),
     footprint: [2.3, 4.4], connectedTo: [] },
   { id: "zineb-room", slug: "zineb-room", name: "Zineb's Private Room", kind: "private", level: "upper",
-    scenePosition: [-2.15, HOUSE_LAYOUT.upperY, -1.75], camera: roomCamera([-2.15, HOUSE_LAYOUT.upperY, -1.75], [1.9, 4.4], "front"),
+    scenePosition: [-2.15, HOUSE_LAYOUT.upperY, -1.75], camera: roomCamera([-2.15, HOUSE_LAYOUT.upperY, -1.75], [1.9, 4.4], "back"),
     footprint: [1.9, 4.4], connectedTo: [] },
   { id: "meryem-room", slug: "meryem-room", name: "Meryem's Private Room", kind: "private", level: "upper",
-    scenePosition: [2.15, HOUSE_LAYOUT.upperY, -1.75], camera: roomCamera([2.15, HOUSE_LAYOUT.upperY, -1.75], [1.9, 4.4], "front"),
+    scenePosition: [2.15, HOUSE_LAYOUT.upperY, -1.75], camera: roomCamera([2.15, HOUSE_LAYOUT.upperY, -1.75], [1.9, 4.4], "back"),
     footprint: [1.9, 4.4], connectedTo: [] },
   { id: "fatiha-room", slug: "fatiha-room", name: "Fatiha's Private Room", kind: "private", level: "upper",
-    scenePosition: [4.25, HOUSE_LAYOUT.upperY, -1.75], camera: roomCamera([4.25, HOUSE_LAYOUT.upperY, -1.75], [2.3, 4.4], "front"),
+    scenePosition: [4.25, HOUSE_LAYOUT.upperY, -1.75], camera: roomCamera([4.25, HOUSE_LAYOUT.upperY, -1.75], [2.3, 4.4], "back"),
     footprint: [2.3, 4.4], connectedTo: [] },
   { id: "garden", slug: "garden", name: "Garden", kind: "outdoor", level: "outdoor",
-    scenePosition: [0, HOUSE_LAYOUT.groundY, 7.15], camera: roomCamera([0, 0, 7.15], [5.8, 5.0], "back"),
-    footprint: [5.8, 5.0], connectedTo: ["entrance"] },
+    scenePosition: [0, HOUSE_LAYOUT.groundY, 7.15], camera: { position: [0, 1.65, 9.15], target: [0, 1.9, 6.65] },
+    footprint: [7.4, 5.0], connectedTo: ["entrance"] },
   { id: "rooftop", slug: "rooftop", name: "Rooftop Terrace", kind: "outdoor", level: "roof",
-    scenePosition: [0, HOUSE_LAYOUT.roofY, 0], camera: roomCamera([0, HOUSE_LAYOUT.roofY, 0], [10.6, 8.6], "front"),
+    scenePosition: [0, HOUSE_LAYOUT.roofY, 0], camera: { position: [0, HOUSE_LAYOUT.roofY + 1.65, 2.35], target: [0, HOUSE_LAYOUT.roofY + 0.85, -1.1] },
     footprint: [10.6, 8.6], connectedTo: [] },
 ] as const satisfies readonly Room[];
 
@@ -120,7 +120,7 @@ export const ROOM_ACCESS_PORTALS: readonly { readonly room: string; readonly tar
   { room: "fatiha-room", targetSlug: "fatiha-room", zone: "upper-landing", side: "front", offset: 0, width: DEFAULT_DOOR_WIDTH },
 ];
 
-export const EXTERIOR_CAMERA = { position: [8.7, 5.1, 12.8] as Vector3Tuple, target: [0, 1.75, 3.8] as Vector3Tuple };
+export const EXTERIOR_CAMERA = { position: [6.1, 5.1, 12.8] as Vector3Tuple, target: [0, 1.75, 3.8] as Vector3Tuple };
 // The map is an HTML floor plan; never switch the 3D scene into an overhead view for it.
 export const MAP_CAMERA = EXTERIOR_CAMERA;
 

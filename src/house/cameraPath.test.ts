@@ -10,7 +10,15 @@ describe("3D camera paths", () => {
   it("uses standing eye-height, forward-facing views for every destination", () => {
     for (const room of rooms) {
       expect(room.camera.position[1], room.slug + " eye height").toBeCloseTo(room.scenePosition[1] + 1.65);
-      expect(Math.abs(room.camera.target[1] - room.camera.position[1]), room.slug + " look angle").toBeLessThan(0.1);
+      const verticalLook = Math.abs(room.camera.target[1] - room.camera.position[1]);
+      if (room.slug === "rooftop") {
+        expect(verticalLook, "rooftop looks slightly down across the terrace").toBeGreaterThan(0.5);
+        expect(verticalLook).toBeLessThan(1.0);
+      } else if (room.slug === "garden") {
+        expect(verticalLook, "garden view keeps the door and ground in frame").toBeLessThan(0.35);
+      } else {
+        expect(verticalLook, room.slug + " look angle").toBeLessThan(0.1);
+      }
     }
     expect(EXTERIOR_CAMERA.position[1]).toBeGreaterThan(doorHeight);
     expect(EXTERIOR_CAMERA.position[1]).toBeLessThan(HOUSE_LAYOUT.exterior.wallHeight);

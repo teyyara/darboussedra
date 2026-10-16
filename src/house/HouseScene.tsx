@@ -232,6 +232,10 @@ function RoomArea({ room, active, onSelect }: { room: Room; active?: Room; onSel
       onPointerOut={() => { setHovered(false); document.body.style.cursor = ""; }}>
       <boxGeometry args={[width, HOUSE_LAYOUT.floorThickness, depth]} /><meshStandardMaterial color={floorColor} roughness={0.94} />
     </mesh>
+    <mesh position={[0, HOUSE_LAYOUT.floorThickness + HOUSE_LAYOUT.roomWallHeight - 0.04, 0]} receiveShadow>
+      <boxGeometry args={[Math.max(0.2, width - 0.05), 0.08, Math.max(0.2, depth - 0.05)]} />
+      <meshStandardMaterial color={room.kind === "spiritual" ? "#ede9dc" : "#f2e9dc"} roughness={0.98} />
+    </mesh>
     {walls.map((wall) => <mesh key={wall.key} position={wall.position} castShadow receiveShadow>
       <boxGeometry args={wall.size} /><meshStandardMaterial color={wallColor} roughness={0.97} />
     </mesh>)}
@@ -287,12 +291,12 @@ function GardenArea({ onSelect }: { onSelect: () => void }) {
     <mesh position={[x, 0.005, z - 0.1]} receiveShadow>
       <boxGeometry args={[1.55, 0.045, 2.1]} /><meshStandardMaterial color="#c8b89e" roughness={1} />
     </mesh>
-    {[-width * 0.28, width * 0.28].map((treeX) => <group key={treeX} position={[treeX, 0, z - 1.25]}>
+    {[-width * 0.44, width * 0.44].map((treeX) => <group key={treeX} position={[treeX, 0, z - 1.25]}>
       <mesh position={[0, 0.62, 0]} castShadow><cylinderGeometry args={[0.11, 0.16, 1.24, 7]} /><meshStandardMaterial color="#76563e" roughness={0.95} /></mesh>
       <mesh position={[0, 1.5, 0]} castShadow><coneGeometry args={[0.82, 1.55, 7]} /><meshStandardMaterial color="#829071" roughness={1} /></mesh>
       <mesh position={[0.12, 2.03, 0.08]} castShadow><coneGeometry args={[0.55, 1.1, 7]} /><meshStandardMaterial color="#a0a780" roughness={1} /></mesh>
     </group>)}
-    {[-width * 0.4, -width * 0.31, width * 0.31, width * 0.4].map((bushX) => <mesh key={bushX} position={[bushX, 0.22, z - 1.0]} castShadow>
+    {[-width * 0.47, -width * 0.39, width * 0.39, width * 0.47].map((bushX) => <mesh key={bushX} position={[bushX, 0.22, z - 1.0]} castShadow>
       <sphereGeometry args={[0.42, 10, 8]} /><meshStandardMaterial color="#899477" roughness={1} />
     </mesh>)}
   </group>;
