@@ -80,17 +80,29 @@ function CameraRig({ location, reducedMotion, onArrive, onTransitionChange, onEx
   }, [camera, desired, invalidate, location, onArrive, onTransitionChange, onExteriorShellVisibilityChange, pose, reducedMotion]);
 
   useFrame((_state, delta) => {
-    const waypoint = path.current[index.current];
-    const nextPosition = waypoint?.position ?? desired.position;
-    const nextRotation = waypoint?.rotation ?? desired.rotation;
     const frameDelta = Math.min(delta, 0.05);
-    const distance = camera.position.distanceTo(nextPosition);
-    const travel = WALK_SPEED * frameDelta;
-    if (distance <= travel || distance <= 0.025) {
-      camera.position.copy(nextPosition);
-    } else {
-      camera.position.addScaledVector(nextPosition.clone().sub(camera.position), travel / distance);
+    let travelRemaining = WALK_SPEED * frameDelta;
+    let waypoint = path.current[index.current];
+
+    // Carry the unused fraction of this frame across waypoint boundaries. This
+    // removes the tiny stop-start rhythm between staircase treads and door markers.
+    while (waypoint && travelRemaining > 0) {
+      const distance = camera.position.distanceTo(waypoint.position);
+      if (distance <= travelRemaining || distance <= 0.025) {
+        camera.position.copy(waypoint.position);
+        travelRemaining = Math.max(0, travelRemaining - distance);
+        index.current += 1;
+        waypoint = path.current[index.current];
+      } else {
+        camera.position.addScaledVector(
+          waypoint.position.clone().sub(camera.position),
+          travelRemaining / distance,
+        );
+        travelRemaining = 0;
+      }
     }
+
+    const nextRotation = waypoint?.rotation ?? desired.rotation;
     // Quaternion blending avoids lookAt-target crossings that can flip the lens on landings.
     camera.quaternion.slerp(nextRotation, 1 - Math.exp(-TURN_RESPONSE * frameDelta));
 
