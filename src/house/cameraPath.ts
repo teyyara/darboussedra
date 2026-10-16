@@ -75,15 +75,17 @@ function groundStairWalkway(): CameraPose[] {
   const flight = HOUSE_LAYOUT.stairs.groundFlight;
   const upperEye = HOUSE_LAYOUT.upperY + HEAD_HEIGHT;
   const top: Vector3Tuple = [flight.to[0], flight.to[1] + STAIR_HEAD_HEIGHT, flight.to[2]];
+  const sideLaneX = HOUSE_LAYOUT.upperBridge.centerX + HOUSE_LAYOUT.stairs.openingWidth / 2 + 0.12;
   return [
     ...sampledStairWaypoints(flight),
     poseFacing(top, [0, -1]),
-    // Turn through the landing on a short arc rather than flipping the view at one point.
-    poseFacing([0.34, upperEye, flight.to[2] + 0.25], [0.8, 0.6]),
-    poseFacing([0.55, upperEye, flight.to[2] + 0.62], [0.4, 0.9]),
-    poseFacing([0.42, upperEye, -3.25], [-0.25, 0.97]),
-    poseFacing([0.2, upperEye, -2.55], [-0.3, 0.95]),
-    ...[-1.5, 0.25, 1.05].map((z) => poseFacing([0, upperEye, z], [0, 1])),
+    // Step onto the small head landing, then turn into the guarded side walkway.
+    poseFacing([0.34, upperEye, flight.to[2] - 0.24], [1, 0]),
+    poseFacing([sideLaneX, upperEye, flight.to[2] - 0.16], [0, 1]),
+    ...[-3.7, -2.8, -1.8, -0.8, 0.2].map((z) => poseFacing([sideLaneX, upperEye, z], [0, 1])),
+    // Rejoin the full-width upper landing beyond the end of the open stair shaft.
+    poseFacing([sideLaneX * 0.7, upperEye, 0.72], [0.2, 1]),
+    poseFacing([0, upperEye, 1.05], [0, 1]),
   ];
 }
 
