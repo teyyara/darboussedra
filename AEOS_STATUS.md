@@ -76,32 +76,34 @@ The source-code updates below passed automated validation in [run 38953581339](h
 - **Visual limitation:** the rendered preview still cannot be inspected from this session because Vercel denies access to team scope `tyyr1`. The code changes address concrete source-level causes, but no screenshot/visual pass is claimed.
 
 
-## Latest Loop 004 checkpoint — 2026-10-16 (browser-reviewed)
+## Latest Loop 004 checkpoint — 2026-10-16 (expanded browser-reviewed)
 
-**State:** LOOP 004 — architecture/visual coherence corrections checkpointed; waiting for the next explicit `CONTINUE`.
-**Latest source commit:** `63d1d82a36943dd22ec30e826abc24df0ab6b651`
-**Validated CI:** [run 38965201076](https://github.com/teyyara/darboussedra/actions/runs/38965201076) — PASS.
-**Review artifact:** The run contains a `darboussedra-visual-review` artifact with nine Chromium screenshots and `browser-review.json`.
-**PR:** [#5 — Loop 004: Reconcile shell, room connections, stairs and spatial map](https://github.com/teyyara/darboussedra/pull/5); remains draft and unmerged.
+**State:** LOOP 004 — architecture and room-navigation coherence checkpointed. Continue only when the next explicit `CONTINUE` request arrives.
+**Latest source commit:** `03dcfafd933b768379c9b5799a394f2b7fd86675`
+**Validated CI:** [run 38970488701](https://github.com/teyyara/darboussedra/actions/runs/38970488701) — PASS.
+**Browser artifact:** The run’s `darboussedra-visual-review` artifact includes 12 desktop frames, two mobile frames, and `browser-review.json`.
+**PR:** [#5 — Loop 004: Reconcile shell, room connections, stairs and spatial map](https://github.com/teyyara/darboussedra/pull/5). It remains open and draft, and has not been merged.
 
-### Loop 004 changes now in the source branch
-- Replaced the pitched exterior roof with a flat roof slab and parapet that align with the walkable rooftop terrace and stair hatch; the visible shell and the navigable roof now describe the same architecture.
-- Made the exterior, settled indoor rooms, garden, upper level and rooftop use distinct scene-visibility rules. The opaque exterior shell is no longer drawn across indoor views; the rooftop slab is hidden during transitions to the roof.
-- Retargeted room cameras diagonally across their registered footprints, with modest downward framing to reveal floor and wall relationships. The entrance looks straight down the entry passage; Family Table frames across the shared room rather than into the nearest wall.
-- Enlarged/reframed the garden view to read as an outdoor area, rather than a close-up view directly into the front door.
-- Added ceilings to enclosed room shells and framed rear windows cut into rooms along the back of the house (including the private rooms, library, pet corner and musalla).
-- Moved the rooftop camera off the centreline and toward an oblique view of the stair hatch and terrace.
-- Added a Playwright-based CI review that opens the built local preview, follows actual map/room click paths, records destination arrivals, and uploads desktop/mobile screenshots. This is CI-only; it does not deploy anything.
+### Architecture and camera changes in the branch
+- Separated exterior, indoor ground floor, upper floor, garden and rooftop visibility. Settled indoor views no longer show the opaque exterior shell over the room, and the roof slab is hidden during roof transitions.
+- Aligned the exterior flat roof/parapet and walkable rooftop deck to one roof level, including a visible stair hatch. Replaced the contradictory pitched roof so the house shell and terrace describe the same architecture.
+- Added ceilings to enclosed rooms and framed rear windows in back-facing rooms.
+- Set explicit eye-level camera poses for all 13 registered destinations rather than deriving camera facing from one generic rule. The entrance looks along the passage; Family Table frames across the room; Living Room, Kitchen, Library, Pets’ Corner and Prayer Room are aimed toward their defining contents; bedroom arrival poses start at the shared landing and look into each room; garden and rooftop have dedicated outdoor framing.
+- Added room-specific procedural furnishings using built-in geometry: dining table/chairs, living seating and coffee table, kitchen counter/hob/fridge, bedroom bed/headboard/bedside tables, bookshelf/books, pet bed/scratcher/bowl, prayer mat, and a simple rooftop bench/planter grouping. Scaled down the bedroom headboards and rooftop planting after reviewing the rendered frames.
+- Improved camera-path performance without removing actual passage/stair routing: eased motion is faster, and redundant stair/landing waypoints were removed while keeping sampled stair movement and the roof hatch route.
+- Added regression tests for camera bounds/orientation, room-level visibility, roof/terrace alignment, route waypoints and room-specific framing.
+- Expanded the Playwright CI capture from the initial few locations to ten destination checks across the entrance, shared rooms, private bedroom, garden and rooftop, plus desktop/mobile screenshots. Arrival checks are bounded; a failed arrival is recorded rather than silently treated as settled.
 
-### Latest validation evidence
+### Latest validation and rendered evidence
 - TypeScript: PASS.
-- Unit tests: **34 expected after the flat-roof/terrace alignment invariant is added; verify in the current CI run**.
+- Unit tests: **36 passed across 5 test files**.
 - Production build: PASS.
-- Chromium visual walkthrough: PASS; WebGL canvas and WebGL2 context detected; no browser runtime errors; all tested destinations (Entrance, Family Table, Zineb's room, Garden and Rooftop) settled to the expected room label.
-- Map directory: all **13 room destinations** were present/selectable.
-- Mobile viewport: 390 px wide; document width also 390 px; no horizontal overflow; all 13 room destinations remain available.
-- Screenshot artifact was visually inspected. The exterior now reads more clearly as a small house; the private-room window, garden approach and rooftop hatch are visible in their intended contexts. Interior views still use intentionally empty, procedural geometry and some remain doorway-led/simple; this is a foundation pass, not a claim of photorealistic architecture or final family acceptance.
-- The project build has previously reported a large lazy `HouseScene` chunk (>500 kB). That performance follow-up remains open and should be measured rather than addressed with paid services/assets.
+- Chromium/WebGL2: initial canvas and WebGL2 context detected; **no browser runtime errors**.
+- All **10 tested room arrivals settled** to the expected room title and `YOU ARE HERE` label: Entrance, Family Table, Living Room, Kitchen, Library, Pets’ Corner, Prayer Room / Musalla, Zineb’s Private Room, Garden and Rooftop Terrace.
+- The HTML map contained all **13 room destinations**. On a 390 px mobile viewport, document width remained 390 px and there was no horizontal overflow.
+- The final artifact was visually inspected. Compared with the earlier frames, the camera now settles at the intended destination; room-specific items are visible in the appropriate rooms; the bedroom view shows the bed rather than the landing doorway; and the garden/rooftop show their outdoor context instead of being captured mid-transition.
+- This remains a stylized, procedural 3D house—not photorealistic and not yet final family acceptance. A few rooms remain simple and could benefit from more carefully balanced furnishing, lighting/shadows, facade detailing and garden/terrace context. Continue improving spatial credibility, not by adding unrelated features.
+- Keep performance on the follow-up list: `HouseScene` has previously exceeded Vite’s 500 kB lazy-chunk warning threshold. Re-measure the current production build before making claims about current bundle size, and optimize only if the measurement supports it.
 
-### Next loop candidates
-Refine entrance/Family Table composition further, add window/context treatment only where it improves spatial understanding, and improve the terrace/environment silhouettes without filling the house with furniture or future feature content. Continue to keep the room registry as the source of truth. Do not deploy, promote to `main`, or merge PR #5 as part of this work.
+### Next useful loop
+Inspect the latest frames at full size, especially Kitchen, Library, Pets’ Corner and Rooftop Terrace, and refine any remaining scale/spacing issues without moving items outside their authoritative room footprints. Keep the room registry the source of truth. Do not deploy, promote to `main` or merge PR #5 as part of this work.
