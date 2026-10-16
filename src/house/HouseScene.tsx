@@ -204,18 +204,54 @@ function ExteriorShell({ location, onDoorActivate, reducedMotion }: { location: 
   </group>;
 }
 
+const REAR_WINDOW_BOTTOM = 0.9;
+const REAR_WINDOW_TOP = 1.95;
+
+function roomHasRearWindow(room: Room): boolean {
+  return room.scenePosition[2] - room.footprint[1] / 2 <= -3.8;
+}
+
 function roomWallSegments(room: Room, side: RoomPortalOpening["side"], openings: readonly RoomPortalOpening[]) {
   const [width, depth] = room.footprint;
-  return getRoomWallRuns(room, side, openings).map((run) => {
+  const hasWindow = side === "back" && roomHasRearWindow(room);
+  const windowWidth = Math.min(0.9, width * 0.55);
+  return getRoomWallRuns(room, side, openings).flatMap((run) => {
     const along = (run.start + run.end) / 2, segmentLength = run.end - run.start;
-    if (side === "front" || side === "back") return {
-      position: [along, HOUSE_LAYOUT.floorThickness + HOUSE_LAYOUT.roomWallHeight / 2, side === "front" ? depth / 2 : -depth / 2] as Vector3Tuple,
-      size: [segmentLength, HOUSE_LAYOUT.roomWallHeight, 0.12] as Vector3Tuple,
-    };
-    return {
+    if (side === "front" || side === "back") {
+      const wallZ = side === "front" ? depth / 2 : -depth / 2;
+      if (hasWindow && run.start < -windowWidth / 2 && run.end > windowWidth / 2) {
+        const windowLeft = -windowWidth / 2, windowRight = windowWidth / 2;
+        const wallTop = HOUSE_LAYOUT.floorThickness + HOUSE_LAYOUT.roomWallHeight;
+        const lowerHeight = REAR_WINDOW_BOTTOM - HOUSE_LAYOUT.floorThickness;
+        const upperHeight = wallTop - REAR_WINDOW_TOP;
+        return [
+          ...(windowLeft - run.start > 0.04 ? [{
+            position: [(run.start + windowLeft) / 2, HOUSE_LAYOUT.floorThickness + HOUSE_LAYOUT.roomWallHeight / 2, wallZ] as Vector3Tuple,
+            size: [windowLeft - run.start, HOUSE_LAYOUT.roomWallHeight, 0.12] as Vector3Tuple,
+          }] : []),
+          ...(run.end - windowRight > 0.04 ? [{
+            position: [(windowRight + run.end) / 2, HOUSE_LAYOUT.floorThickness + HOUSE_LAYOUT.roomWallHeight / 2, wallZ] as Vector3Tuple,
+            size: [run.end - windowRight, HOUSE_LAYOUT.roomWallHeight, 0.12] as Vector3Tuple,
+          }] : []),
+          {
+            position: [0, HOUSE_LAYOUT.floorThickness + lowerHeight / 2, wallZ] as Vector3Tuple,
+            size: [windowWidth, lowerHeight, 0.12] as Vector3Tuple,
+          },
+          {
+            position: [0, REAR_WINDOW_TOP + upperHeight / 2, wallZ] as Vector3Tuple,
+            size: [windowWidth, upperHeight, 0.12] as Vector3Tuple,
+          },
+        ];
+      }
+      return [{
+        position: [along, HOUSE_LAYOUT.floorThickness + HOUSE_LAYOUT.roomWallHeight / 2, wallZ] as Vector3Tuple,
+        size: [segmentLength, HOUSE_LAYOUT.roomWallHeight, 0.12] as Vector3Tuple,
+      }];
+    }
+    return [{
       position: [side === "right" ? width / 2 : -width / 2, HOUSE_LAYOUT.floorThickness + HOUSE_LAYOUT.roomWallHeight / 2, along] as Vector3Tuple,
       size: [0.12, HOUSE_LAYOUT.roomWallHeight, segmentLength] as Vector3Tuple,
-    };
+    }];
   });
 }
 
@@ -247,6 +283,10 @@ function DoorwayFrame({ room, opening, onSelect }: { room: Room; opening: RoomPo
 function RoomArea({ room, active, onSelect }: { room: Room; active?: Room; onSelect: (slug: RoomSlug) => void }) {
   const [x, y, z] = room.scenePosition, [width, depth] = room.footprint;
   const [hovered, setHovered] = useState(false);
+  const rearWindow = roomHasRearWindow(room);
+  const rearWindowWidth = Math.min(0.9, width * 0.55);
+  const rearWindowCenterY = (REAR_WINDOW_BOTTOM + REAR_WINDOW_TOP) / 2;
+  const rearWindowHeight = REAR_WINDOW_TOP - REAR_WINDOW_BOTTOM;
   const openings = getRoomPortalOpenings(room);
   const walls = (["front", "back", "left", "right"] as const).flatMap((side) =>
     roomWallSegments(room, side, openings).map((segment, index) => ({ ...segment, key: side + "-" + index })));
@@ -269,6 +309,24 @@ function RoomArea({ room, active, onSelect }: { room: Room; active?: Room; onSel
     {walls.map((wall) => <mesh key={wall.key} position={wall.position} castShadow receiveShadow>
       <boxGeometry args={wall.size} /><meshStandardMaterial color={wallColor} roughness={0.97} />
     </mesh>)}
+    {rearWindow && <group position={[0, 0, -depth / 2 + 0.035]}>
+      <mesh position={[0, rearWindowCenterY, 0]}>
+        <boxGeometry args={[rearWindowWidth - 0.1, rearWindowHeight - 0.1, 0.045]} />
+        <meshStandardMaterial color="#b8d0ca" emissive="#657f78" emissiveIntensity={0.12} roughness={0.34} metalness={0.04} />
+      </mesh>
+      {[-1, 1].map((side) => <mesh key={"jamb-" + side} position={[side * rearWindowWidth / 2, rearWindowCenterY, 0.015]}>
+        <boxGeometry args={[0.06, rearWindowHeight + 0.08, 0.09]} />
+        <meshStandardMaterial color="#a47752" roughness={0.82} />
+      </mesh>)}
+      {[REAR_WINDOW_BOTTOM, REAR_WINDOW_TOP].map((height) => <mesh key={height} position={[0, height, 0.015]}>
+        <boxGeometry args={[rearWindowWidth + 0.06, 0.06, 0.09]} />
+        <meshStandardMaterial color="#a47752" roughness={0.82} />
+      </mesh>)}
+      <mesh position={[0, rearWindowCenterY, 0.018]}>
+        <boxGeometry args={[0.045, rearWindowHeight, 0.095]} />
+        <meshStandardMaterial color="#a47752" roughness={0.82} />
+      </mesh>
+    </group>}
     {openings.filter((opening) => roomOwnsPortalFrame(room, opening)).map((opening, index) => <DoorwayFrame key={(opening.targetSlug ?? opening.zone ?? "portal") + "-" + opening.side + "-" + index}
       room={room} opening={opening} onSelect={onSelect} />)}
     {getRoomWallRuns(room, "back", openings).map((interval, index) => <mesh key={"back-trim-" + index}

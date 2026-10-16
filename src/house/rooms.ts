@@ -106,7 +106,7 @@ const roomDefinitions = [
     scenePosition: [0, HOUSE_LAYOUT.groundY, 7.15], camera: { position: [2.6, 1.65, 8.5], target: [0, 1.75, 7.5] },
     footprint: [7.4, 5.0], connectedTo: ["entrance"] },
   { id: "rooftop", slug: "rooftop", name: "Rooftop Terrace", kind: "outdoor", level: "roof",
-    scenePosition: [0, HOUSE_LAYOUT.roofY, 0], camera: { position: [0, HOUSE_LAYOUT.roofY + 1.65, 2.2], target: [0, HOUSE_LAYOUT.roofY, -0.6] },
+    scenePosition: [0, HOUSE_LAYOUT.roofY, 0], camera: { position: [3.45, HOUSE_LAYOUT.roofY + 1.65, 0.5], target: [0.55, HOUSE_LAYOUT.roofY, -1.7] },
     footprint: [10.6, 8.6], connectedTo: [] },
 ] as const satisfies readonly Room[];
 
