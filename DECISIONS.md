@@ -36,3 +36,8 @@
 25. **3D discoverability.** Room floors give a soft, room-type-aware hover tint before click selection, complementing the active-room ring. This is an input affordance, not new room content; actual colour/contrast still requires visual review.
 
 26. **Preview access and honesty.** The branch preview hostname is known from the Vercel PR status, but this session cannot retrieve it because team scope `tyyr1` returns 403 and direct web access is blocked. Do not mark the 3D work visually approved or claim screenshots exist until an authorized browser review is possible.
+
+27. **Camera routes respect openings.** Exterior transitions cross the front wall at a shared eye-height waypoint under the registered entrance-door height before raising above the interior wall envelope. Camera waypoint logic lives in `src/house/cameraPath.ts` and is covered by tests for entry, exit, garden and rooftop movement.
+28. **3D target discoverability.** The clickable front door, roof-bound stair treads, garden surface and rooftop deck provide a subtle hover material cue. This does not replace keyboard-accessible room directory/map controls or the need to inspect contrast in the real renderer.
+29. **Short viewport containment.** The app shell minimum height cannot exceed the small viewport; short-height layouts compact the welcome controls and keep the map panel inside the available vertical space.
+30. **Visual acceptance evidence stays separate.** Passing CI validates types, tests and bundling only. No screenshots or visual pass may be claimed until the actual authorized preview is reviewed.

@@ -56,3 +56,12 @@ The facade doorway now uses a dedicated 1.5 m entrance-door dimension, and the e
 - Selectable room floors apply a restrained hover tint while the active room keeps its stronger colour/ring.
 
 These refinements passed the latest automated CI run, but remain visually unverified until preview access is authorized.
+
+## Follow-up: camera, hover and small viewport
+
+- Extracted the camera-path helper into `src/house/cameraPath.ts` and made the facade use the registered entrance door height. Camera movement now crosses the front facade at 1.55 m eye height on both sides of the doorway before rising to an interior overview. Four tests cover entry, reverse exit, garden-to-interior transition and rooftop transition ordering.
+- Added restrained hover cues to the actionable front door, rooftop stair treads, garden ground and rooftop deck panels. This improves discoverability without introducing furnishings.
+- Removed the app shell's unconditional 560 px minimum on short screens. A max-height media rule compacts the welcome panel and keeps the map panel within a short landscape viewport.
+- **Automated validation:** [GitHub Actions run 38953581339](https://github.com/teyyara/darboussedra/actions/runs/38953581339) passed TypeScript, test and production-build steps for source revision `810785472787924c98ee2a49deedbf13ee1c1927`. Confirm test count from the run output; older run counts above are historical.
+- **Visual validation is still blocked.** Vercel preview access returns 403 for team scope `tyyr1`; no genuine browser screenshots have been captured, so the actual visual result is not certified.
+- Branch `fix/loop-004-architecture-coherence` remains unmerged; no manual deployment/promotion was performed.

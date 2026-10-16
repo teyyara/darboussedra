@@ -7,7 +7,7 @@
 **Repository:** https://github.com/teyyara/darboussedra  
 **Branch:** fix/loop-004-architecture-coherence  
 **Base main:** 501cc6ccf3e6926504dfcd051ac98147360cd48a  
-**Latest source-code correction commit:** adcc4cff71e3d1487681294c7b9560ee7d484126  
+**Latest source-code correction commit:** 810785472787924c98ee2a49deedbf13ee1c1927  
 **Last updated:** 2026-10-16
 
 ## Loop 003 outcome
@@ -47,12 +47,20 @@ Improve/test architectural proportions and circulation against a visual browser 
 - Moved the first ground stair tread clear of the rear exterior wall and added a regression invariant for tread clearance.
 - Added source-level checks for registry consistency, usable connected boundaries, room/shell overlaps and stair/landing/roof continuity.
 - Added distinct spatial plan tabs for ground, upper, garden and roof, with a stairwell/landing overlay and the semantic room directory retained.
-- **Automated CI:** [run 38951780470](https://github.com/teyyara/darboussedra/actions/runs/38951780470) passed TypeScript typecheck, 16 tests across three files, and production build on source-code commit `adcc4cff71e3d1487681294c7b9560ee7d484126`. Both Vercel Git status checks report success for this revision, but neither constitutes rendered browser evidence.
+- **Earlier automated CI:** [run 38951780470](https://github.com/teyyara/darboussedra/actions/runs/38951780470) passed TypeScript typecheck, 16 tests across three files, and production build on source-code commit `adcc4cff71e3d1487681294c7b9560ee7d484126`. This was superseded by follow-up interaction, camera-path and viewport changes below; Vercel status checks are not rendered browser evidence.
 - **Last recorded bundle-size measurement:** on source-code commit `9b541fdc19dd03f951371c22a0e1528961732304`, the `index` bundle was 244.05 kB minified / 76.23 kB gzip and lazy `HouseScene` was 896.19 kB / 241.56 kB gzip. Vite warned that the deferred chunk exceeds 500 kB. CI passed for the newer source commit, but no separate bundle-size measurement was recorded for that run. The existing lazy boundary is preserved; further splitting remains a measured optimization follow-up, not an architecture acceptance substitute.
 
 - **Browser screenshots/interactive QA: BLOCKED.** No real images captured. The Vercel GitHub PR status identifies the branch preview as [darboussedra-git-fix-loop-004-architecture-coherence-tyyr1.vercel.app](https://darboussedra-git-fix-loop-004-architecture-coherence-tyyr1.vercel.app), but Vercel preview fetch/access-bypass calls returned 403 because this session is not authorized for team scope `tyyr1`; direct web fetching also reports the host inaccessible. Visual correctness is not certified.
 - Do not merge/deploy as part of Loop 004. The proportion changes (especially Pets’ Corner/Musalla), circulation arrangement and floor plan require family review before acceptance.
 
-The latest source-code CI run is green, but Loop 004 remains incomplete until real browser review is completed and the family confirms the proposed proportions, room arrangement and circulation.
+The source-code updates below passed automated validation in [run 38953581339](https://github.com/teyyara/darboussedra/actions/runs/38953581339), including TypeScript, tests, and production build. Loop 004 remains visually unaccepted until real browser review is completed and the family confirms the proposed proportions, room arrangement and circulation.
 
-- **Latest validated source-code revision:** `adcc4cff71e3d1487681294c7b9560ee7d484126`, with passing CI in run 38951780470. Subsequent commits only synchronized audit/status wording and formatting. The Loop 004 branch remains unmerged from `main`.
+- **Latest validated source-code revision:** `810785472787924c98ee2a49deedbf13ee1c1927`, with passing CI in run 38953581339. The Loop 004 branch remains unmerged from `main`.
+
+## Follow-up: movement, feedback and small viewports
+- Extracted the camera route into `src/house/cameraPath.ts`. Entry and exit pass across the front facade at a height below the registered 2.3 m door before the camera rises inside; the garden and rooftop transitions have explicit paths. Four regression tests cover entry, exit, garden transitions and rooftop clearance.
+- `HOUSE_LAYOUT.entrance` now owns both entrance door width and height so the facade and camera route use one source of truth.
+- Added restrained hover colour changes to the actionable front door, rooftop stair treads, garden surface and rooftop deck to make click targets easier to discover without adding furniture.
+- Removed the fixed 560 px minimum that could extend the app below short viewports. A max-height media rule compacts the welcome layout and confines the map panel in short landscape windows.
+- **Automated CI:** [run 38953581339](https://github.com/teyyara/darboussedra/actions/runs/38953581339) passed `npm run typecheck`, `npm test`, and `npm run build`. The exact test count should be confirmed from the run output before recording it here; rendered visual acceptance remains blocked.
+- Vercel project access remains denied to this session by team scope `tyyr1`. No genuine screenshots have been captured; do not claim visual acceptance based on CI/status checks.
