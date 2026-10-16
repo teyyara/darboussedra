@@ -43,7 +43,7 @@ async function saveScreenshot(page, filename) {
   report.screenshots.push(filename);
 }
 
-async function arrivalStatus(page, slug, name, timeout = 22000) {
+async function arrivalStatus(page, slug, name, timeout = 9000) {
   await page.waitForFunction(
     () => {
       const label = document.querySelector(".room-welcome .eyebrow");
@@ -94,7 +94,7 @@ report.webgl2ContextAvailable = await desktop.locator("canvas").first().evaluate
 await saveScreenshot(desktop, "01-exterior-desktop.png");
 
 await desktop.getByRole("button", { name: /enter the house/i }).click();
-await arrivalStatus(desktop, "entrance", "Front Door & Entrance", 18000);
+await arrivalStatus(desktop, "entrance", "Front Door & Entrance", 10000);
 await saveScreenshot(desktop, "02-entrance-eye-level.png");
 
 await openMap(desktop);
