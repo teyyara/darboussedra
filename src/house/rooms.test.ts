@@ -1,7 +1,7 @@
 import {describe, expect, it} from "vitest";
 import {
   HOUSE_LAYOUT, REQUIRED_ROOM_SLUGS, ROOM_ACCESS_PORTALS, getRoomBySlug, getRoomPortalOpenings,
-  getSharedBoundary, roomBounds, roomRegistryIssues, rooms,
+  getRoomWallIntervals, getSharedBoundary, roomBounds, roomOwnsPortalFrame, roomRegistryIssues, rooms,
 } from "./rooms";
 
 describe("authoritative room and architectural layout", () => {
@@ -49,6 +49,21 @@ describe("authoritative room and architectural layout", () => {
     expect(getSharedBoundary(entrance, garden)).toBeDefined();
     expect(roomBounds(entrance).maxZ).toBeCloseTo(HOUSE_LAYOUT.exterior.depth / 2 - HOUSE_LAYOUT.exterior.wallThickness / 2);
     expect(getRoomPortalOpenings(getRoomBySlug("family-table")!).some((opening) => opening.zone === "stair-hall" && opening.width >= HOUSE_LAYOUT.stairs.width + 0.14)).toBe(true);
+  });
+  it("assigns shared partitions and portal frames to one room only", () => {
+    const living = getRoomBySlug("living-room")!;
+    const family = getRoomBySlug("family-table")!;
+    const zakariae = getRoomBySlug("zakariae-room")!;
+    const zineb = getRoomBySlug("zineb-room")!;
+    expect(getRoomWallIntervals(living, "right")).toHaveLength(1);
+    expect(getRoomWallIntervals(family, "left")).toEqual([]);
+    expect(getRoomWallIntervals(zakariae, "right")).toHaveLength(1);
+    expect(getRoomWallIntervals(zineb, "left")).toEqual([]);
+    expect(getRoomWallIntervals(getRoomBySlug("entrance")!, "front")).toEqual([]);
+    const livingDoor = getRoomPortalOpenings(living).find((opening) => opening.targetSlug === family.slug)!;
+    const familyDoor = getRoomPortalOpenings(family).find((opening) => opening.targetSlug === living.slug)!;
+    expect(roomOwnsPortalFrame(living, livingDoor)).toBe(true);
+    expect(roomOwnsPortalFrame(family, familyDoor)).toBe(false);
   });
   it("keeps the first ground stair tread inside the rear wall's inner face", () => {
     const flight = HOUSE_LAYOUT.stairs.groundFlight;
