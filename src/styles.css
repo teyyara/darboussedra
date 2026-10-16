@@ -27,3 +27,8 @@
 @media(max-height:600px) and (min-width:721px){.navigation-guide{bottom:48px;padding:9px 11px}}
 
 .header button:disabled,.room-welcome .primary:disabled{opacity:.55;cursor:wait}
+
+/* Keep the viewport clear while the first-person route is moving; the compact
+   navigation guide already names the destination and explains that we are walking. */
+.room-welcome.is-walking{opacity:0;visibility:hidden;transform:translateY(12px);pointer-events:none;transition:opacity .2s ease,transform .2s ease,visibility 0s linear .2s}
+@media(prefers-reduced-motion:reduce){.room-welcome.is-walking{transition:none}}
