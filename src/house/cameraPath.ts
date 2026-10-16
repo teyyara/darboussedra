@@ -168,7 +168,6 @@ function buildRouteGraph(): Map<NavigationNode, RouteEdge[]> {
   addEdge(graph, "entrance", "exterior", reverseRoute(outsideEntry));
 
   // The garden is approached outdoors rather than through the rooms.
-  const garden = getRoomBySlug("garden");
   if (garden) {
     const [x, , z] = garden.scenePosition;
     const gardenApproach = [
