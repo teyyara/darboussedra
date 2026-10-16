@@ -107,16 +107,36 @@ await selectDirectoryRoom(desktop, "Family Table", "family-table");
 await saveScreenshot(desktop, "04-family-table-eye-level.png");
 
 await openMap(desktop);
+await selectDirectoryRoom(desktop, "Living Room", "living-room");
+await saveScreenshot(desktop, "05-living-room-eye-level.png");
+
+await openMap(desktop);
+await selectDirectoryRoom(desktop, "Kitchen", "kitchen");
+await saveScreenshot(desktop, "06-kitchen-eye-level.png");
+
+await openMap(desktop);
+await selectDirectoryRoom(desktop, "Library", "library");
+await saveScreenshot(desktop, "07-library-eye-level.png");
+
+await openMap(desktop);
+await selectDirectoryRoom(desktop, "Pets' Corner", "pets-corner");
+await saveScreenshot(desktop, "08-pets-corner-eye-level.png");
+
+await openMap(desktop);
+await selectDirectoryRoom(desktop, "Prayer Room / Musalla", "prayer-room");
+await saveScreenshot(desktop, "09-prayer-room-eye-level.png");
+
+await openMap(desktop);
 await selectDirectoryRoom(desktop, "Zineb's Private Room", "zineb-room");
-await saveScreenshot(desktop, "05-upper-floor-eye-level.png");
+await saveScreenshot(desktop, "10-upper-floor-eye-level.png");
 
 await openMap(desktop);
 await selectDirectoryRoom(desktop, "Garden", "garden");
-await saveScreenshot(desktop, "06-garden-eye-level.png");
+await saveScreenshot(desktop, "11-garden-eye-level.png");
 
 await openMap(desktop);
 await selectDirectoryRoom(desktop, "Rooftop Terrace", "rooftop");
-await saveScreenshot(desktop, "07-rooftop-eye-level.png");
+await saveScreenshot(desktop, "12-rooftop-eye-level.png");
 
 const mobile = await browser.newPage({
   viewport: { width: 390, height: 844 },
