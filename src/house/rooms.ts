@@ -23,7 +23,7 @@ const FLOOR_THICKNESS = 0.14;
 
 export const HOUSE_LAYOUT = {
   exterior: { width: 11.2, depth: 9.5, wallThickness: 0.22, wallHeight: 5.55 },
-  entrance: { doorWidth: 1.5 },
+  entrance: { doorWidth: 1.5, doorHeight: 2.3 },
   groundY: 0, upperY: 3, roofY: 5.55,
   floorThickness: FLOOR_THICKNESS, roomWallHeight: 2.41,
   upperLanding: { centerX: 0, centerZ: 1.25, width: 10.2, depth: 1.6, levelY: 3 },

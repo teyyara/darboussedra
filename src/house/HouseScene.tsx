@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Vector3, type Group } from "three";
+import { makeCameraPath, type CameraPose } from "./cameraPath";
 import {
   EXTERIOR_CAMERA, HOUSE_LAYOUT, MAP_CAMERA, getFrontDoorAction, getRoomBySlug, getRoomPortalOpenings, getRoomWallRuns, roomOwnsPortalFrame, rooms,
   type HouseLocation, type Room, type RoomSlug, type RoomPortalOpening, type Vector3Tuple,
 } from "./rooms";
 
-interface CameraPose { position: Vector3Tuple; target: Vector3Tuple; }
 interface AnimatedPose { position: Vector3; target: Vector3; }
 
 function poseFor(location: HouseLocation): CameraPose {
@@ -14,25 +14,6 @@ function poseFor(location: HouseLocation): CameraPose {
   if (location === "map") return MAP_CAMERA;
   return getRoomBySlug(location)?.camera ?? EXTERIOR_CAMERA;
 }
-function makeCameraPath(from: HouseLocation, to: HouseLocation, finalPose: CameraPose): CameraPose[] {
-  const outside: CameraPose = { position: [0, 2.65, 7.2], target: [0, 1.3, 3.65] };
-  const threshold: CameraPose = { position: [0, 2.25, 4.52], target: [0, 1.3, 2.8] };
-  const inside: CameraPose = { position: [0, 6.25, 3.4], target: [0, 1.2, 1.5] };
-  const high: CameraPose = { position: [0, 8.2, 0], target: [0, 1.3, 0] };
-  const roofAccess: CameraPose = { position: [0, 8.1, -1.8], target: [0, 5.7, -1.8] };
-  if (from === to) return [finalPose];
-  // Exterior/garden destinations stay outdoors; roof exits leave by the high stairwell/cutaway route.
-  if (from === "exterior" && to === "garden") return [outside, finalPose];
-  if (from === "rooftop") return [roofAccess, high, finalPose];
-  if (to === "rooftop") return [high, roofAccess, finalPose];
-  if (from === "exterior") return [outside, threshold, inside, finalPose];
-  if (to === "exterior") return [inside, threshold, outside, finalPose];
-  if (from === "garden") return [outside, threshold, inside, finalPose];
-  if (to === "garden") return [inside, threshold, outside, finalPose];
-  // Move above the configured wall/roof envelope rather than cutting through walls.
-  return [high, finalPose];
-}
-
 function CameraRig({ location, reducedMotion }: { location: HouseLocation; reducedMotion: boolean }) {
   const { camera, invalidate } = useThree();
   const pose = useMemo(() => poseFor(location), [location]);
@@ -80,7 +61,7 @@ function ExteriorShell({ location, onDoorActivate, reducedMotion }: { location: 
   const { invalidate } = useThree();
   const doorAction = getFrontDoorAction(location);
   const opening = location !== "exterior";
-  const doorWidth = HOUSE_LAYOUT.entrance.doorWidth, doorHeight = 2.3;
+  const doorWidth = HOUSE_LAYOUT.entrance.doorWidth, doorHeight = HOUSE_LAYOUT.entrance.doorHeight;
   const frontZ = HOUSE_LAYOUT.exterior.depth / 2;
   const wallHeight = HOUSE_LAYOUT.exterior.wallHeight;
   const halfWidth = HOUSE_LAYOUT.exterior.width / 2;
