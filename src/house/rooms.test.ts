@@ -1,7 +1,7 @@
 import {describe, expect, it} from "vitest";
 import {
   HOUSE_LAYOUT, REQUIRED_ROOM_SLUGS, ROOM_ACCESS_PORTALS, getRoomBySlug, getRoomPortalOpenings,
-  getRoomWallIntervals, getRoomWallRuns, getRoomPortalOpenings, getSharedBoundary, roomBounds, roomOwnsPortalFrame, roomRegistryIssues, rooms,
+  getRoomWallIntervals, getRoomWallRuns, getSharedBoundary, roomBounds, roomOwnsPortalFrame, roomRegistryIssues, rooms,
 } from "./rooms";
 
 describe("authoritative room and architectural layout", () => {
