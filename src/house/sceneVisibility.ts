@@ -61,7 +61,8 @@ export function getHouseSceneVisibility(
   // the walls and hides the house interior as soon as the camera exits outdoors.
   if (transitioning && cameraZone) {
     const inside = cameraZone !== "outside";
-    const routeUsesLowerStairs = movingBetweenStoreys || crossingHouseBoundary;
+    const routeUsesLowerStairs = movingBetweenStoreys ||
+      (crossingHouseBoundary && (usesUpperStorey(sourceLevel) || usesUpperStorey(destinationLevel)));
     const routeUsesRoofStairs = sourceLevel === "roof" || destinationLevel === "roof" ||
       settledLocation === "rooftop" || location === "rooftop";
     const showGarden = cameraZone === "outside" &&

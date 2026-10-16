@@ -149,4 +149,13 @@ describe("level-aware house rendering", () => {
     expect(outside.showGarden).toBe(true);
   });
 
+  it("does not reveal stair geometry for an ordinary front-door entry", () => {
+    const entering = getHouseSceneVisibility("entrance", "exterior", true, true, "ground");
+    expect(entering.showGroundRooms).toBe(true);
+    expect(entering.showUpperRooms).toBe(false);
+    expect(entering.showUpperCirculation).toBe(false);
+    expect(entering.showGroundStairs).toBe(false);
+    expect(entering.showRoofStairs).toBe(false);
+  });
+
 });
