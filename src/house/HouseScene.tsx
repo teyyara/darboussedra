@@ -291,7 +291,7 @@ function DiningChair({ position, rotation = 0 }: { position: Vector3Tuple; rotat
 
 /** Quiet, scale-consistent props make each destination read as its intended room. */
 function RoomFurnishings({ room }: { room: Room }) {
-  const [width, depth] = room.footprint;
+  const width = room.footprint[0];
   return <group position={[0, HOUSE_LAYOUT.floorThickness, 0]}>
     {room.slug === "family-table" && <group>
       <PropBox position={[0, 0.025, 0]} size={[2.65, 0.035, 2.35]} color="#c7a88b" />
