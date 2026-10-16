@@ -18,10 +18,12 @@ describe("3D camera paths", () => {
         expect(verticalLook, "garden view keeps the ground in frame").toBeLessThan(0.35);
         expect(Math.abs(room.camera.position[0] - room.camera.target[0]), "garden view looks across the garden rather than down the front-door axis").toBeGreaterThan(1.5);
         expect(room.camera.target[2]).toBeGreaterThan(frontZ);
+      } else if (room.slug === "family-table") {
+        expect(verticalLook, "family table looks down enough to keep the table in view").toBeGreaterThan(0.4);
+        expect(verticalLook).toBeLessThan(0.65);
       } else {
         expect(verticalLook, room.slug + " slight downward room framing").toBeGreaterThan(0.2);
         expect(verticalLook, room.slug + " remains an eye-level view").toBeLessThan(0.45);
-
       }
     }
     expect(EXTERIOR_CAMERA.position[1]).toBeGreaterThan(doorHeight);
