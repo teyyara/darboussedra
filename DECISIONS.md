@@ -1,13 +1,13 @@
 # Architecture and Implementation Decisions
 
-1. **Compatible stable renderer stack.** Use React, TypeScript, Vite, Three.js and React Three Fiber v9-compatible APIs with React 19; avoid alpha APIs.
-2. **Local-first.** No database, backend, account system, media provider, remote asset pack, analytics, tracking or secrets. Geometry is generated locally.
-3. **Single typed room registry.** src/house/rooms.ts supplies room names/slugs, levels, connections, camera poses and map positions. Keep exact slugs from the const source while widening the public list to the Room interface so optional fields remain usable across all rooms.
-4. **Revisable floor plan.** Current room coordinates are an early blockout proposal, not a family-approved or surveyed architectural drawing. Centralize coordinates for iteration.
-5. **Accessible fallback.** Feature-detect WebGL 2; retain semantic HTML controls and show a local 2D illustration if rendering cannot be used.
-6. **Shared route parsing.** A safe helper resolves direct room paths and contains malformed URL decoding; unit tests cover known, unknown and malformed destinations.
-7. **Motion/performance.** Camera position and target ease together. The canvas uses demand-based rendering and invalidates only while a transition is in progress; reduced-motion preference snaps camera state.
-8. **Small routing controller.** A compact pathname/history controller is adequate for the foundation; reconsider if route complexity expands.
-9. **Honest validation.** The implementation environment cannot reach GitHub/npm or run a browser. Remote CI runs install, typecheck, tests and build, and the current main code commit has all four checks passing. Browser visual/accessibility behavior remains unverified.
-10. **Vercel boundary.** The owner manages Vercel. This agent does not manually deploy/promote/rollback; Git integration may act according to the owner's project settings.
-11. **Public-repository data minimization.** Store an actionable project summary instead of duplicating the full source brief or entire operating prompt verbatim.
+1. **Stable renderer stack.** React + TypeScript + Vite; React Three Fiber v9-compatible APIs with React 19; Three.js WebGL 2.
+2. **Local-first.** No backend, database, accounts, family-content collection/storage, remote asset pack, paid API/assets, analytics, tracking or secrets.
+3. **Single typed room registry.** src/house/rooms.ts owns the 13 room identities, levels, positions, footprints, camera presets and connection metadata.
+4. **Revisable floor plan.** Current proportions are an initial blockout, not a surveyed/approved family floor plan.
+5. **Room rendering.** Floors and low cutaway walls use room scene position/footprint; doorway openings and thresholds signal circulation. Indoor, garden and rooftop routes render context-appropriate geometry.
+6. **Reduced motion and render cost.** Camera position and target ease together and the Canvas uses demand rendering. Reduced motion snaps directly to its target.
+7. **Load performance.** HouseScene is lazy-loaded. Latest CI build moved the initial entry chunk from 1,123.97 kB minified (313.07 kB gzip) to 235.24 kB (73.54 kB gzip); the deferred scene itself remains 890.96 kB (240.04 kB gzip) with a Vite warning. Avoid increasing the warning limit simply to hide it; consider further splitting only with actual measurements.
+8. **Route safety.** A shared route helper safely handles unknown and malformed room paths, covered by unit tests.
+9. **Validation honesty.** CI typecheck, unit tests and production build are green on main. Visual browser, keyboard/mobile, real-device performance and accessibility conformance remain unverified because connected browser/Vercel inspection was denied.
+10. **Vercel boundary.** The owner manages Vercel. Git-connected deployments follow the owner's project settings. The agent does not manually deploy/promote/rollback.
+11. **Public-repository data minimization.** Keep an actionable project summary instead of republishing the full source brief or entire operating prompt verbatim.

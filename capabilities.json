@@ -5,19 +5,22 @@
   "repository_write_via_authenticated_github_connector": true,
   "default_branch": "main",
   "push_permission_observed": true,
-  "node": "v22.16.0",
-  "npm": "10.9.2",
   "local_git_clone": "BLOCKED: runtime could not resolve github.com",
-  "npm_registry_access": "BLOCKED: outbound network/DNS unavailable",
+  "npm_registry_access": "BLOCKED: outbound DNS/network unavailable",
   "local_typecheck": "NOT RUN",
   "local_tests": "NOT RUN",
   "local_production_build": "NOT RUN",
   "browser_automation": "NOT AVAILABLE",
-  "visual_browser_inspection": "NOT AVAILABLE",
-  "vercel_preview_inspection": "BLOCKED: Vercel returned HTTP 403 for the connected project/team scope",
-  "pr_1_ci": "PASS: workflow run 38939325121",
-  "main_after_pr_1": "PASS: workflow run 38939453758",
-  "pr_2_ci": "PASS: workflow run 38939602877",
-  "main_after_pr_2": "PASS: workflow run 38939743480",
-  "deployment": "No explicit Vercel deploy, promote, rollback, or manual deployment action was performed by this agent."
+  "visual_browser_inspection": "BLOCKED: connected Vercel inspection returned access denied",
+  "github_ci_latest_main": "PASS: run 38940864901",
+  "vercel_latest_main_status": "SUCCESS: deployment completed for commit d237375a364f25b0e30dade08f9b02790396b966",
+  "test_result": "2 files passed; 5 tests passed in GitHub Actions",
+  "bundle": {
+    "initial_entry_minified_kb": 235.24,
+    "initial_entry_gzip_kb": 73.54,
+    "house_scene_minified_kb": 890.96,
+    "house_scene_gzip_kb": 240.04,
+    "warning": "lazy scene chunk remains above the 500 kB minified threshold"
+  },
+  "manual_deployment": "No explicit deploy, promote or rollback command was used by this agent."
 }
