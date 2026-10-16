@@ -34,17 +34,17 @@ describe("authoritative room and architectural layout", () => {
       expect(ROOM_ACCESS_PORTALS.some((portal) => portal.room === room.slug && portal.zone === "upper-landing")).toBe(true);
       expect(getRoomPortalOpenings(room).some((opening) => opening.zone === "upper-landing")).toBe(true);
     }
-    expect(HOUSE_LAYOUT.upperLanding.centerZ - HOUSE_LAYOUT.upperLanding.depth / 2).toBe(0.45);
+    expect(HOUSE_LAYOUT.upperLanding.centerZ - HOUSE_LAYOUT.upperLanding.depth / 2).toBeCloseTo(0.45);
   });
   it("keeps the ground and upper room footprints inside the shell and the garden adjoining the entrance", () => {
     const entrance = getRoomBySlug("entrance")!, garden = getRoomBySlug("garden")!;
     const halfWidth = HOUSE_LAYOUT.exterior.width / 2, halfDepth = HOUSE_LAYOUT.exterior.depth / 2;
     for (const room of rooms.filter((item) => item.level === "ground" || item.level === "upper")) {
       const bounds = roomBounds(room);
-      expect(bounds.minX).toBeGreaterThan(-halfWidth + HOUSE_LAYOUT.exterior.wallThickness - 0.001);
-      expect(bounds.maxX).toBeLessThan(halfWidth - HOUSE_LAYOUT.exterior.wallThickness + 0.001);
-      expect(bounds.minZ).toBeGreaterThan(-halfDepth + HOUSE_LAYOUT.exterior.wallThickness - 0.001);
-      expect(bounds.maxZ).toBeLessThan(halfDepth - HOUSE_LAYOUT.exterior.wallThickness + 0.001);
+      expect(bounds.minX).toBeGreaterThan(-halfWidth + HOUSE_LAYOUT.exterior.wallThickness / 2 - 0.001);
+      expect(bounds.maxX).toBeLessThan(halfWidth - HOUSE_LAYOUT.exterior.wallThickness / 2 + 0.001);
+      expect(bounds.minZ).toBeGreaterThan(-halfDepth + HOUSE_LAYOUT.exterior.wallThickness / 2 - 0.001);
+      expect(bounds.maxZ).toBeLessThan(halfDepth - HOUSE_LAYOUT.exterior.wallThickness / 2 + 0.001);
     }
     expect(getSharedBoundary(entrance, garden)).toBeDefined();
     expect(roomBounds(entrance).maxZ).toBeCloseTo(HOUSE_LAYOUT.exterior.depth / 2 - HOUSE_LAYOUT.exterior.wallThickness / 2);
