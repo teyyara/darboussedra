@@ -523,6 +523,37 @@ function RoofDeck({ onSelect }: { onSelect: () => void }) {
     ].map((wall, index) => <mesh key={index} position={wall.position} castShadow>
       <boxGeometry args={wall.size} /><meshStandardMaterial color="#e5d8c4" roughness={0.98} />
     </mesh>)}
+    {/* Usable terrace seating set away from the stair hatch, with planters at the parapet corners. */}
+    <group>
+      <mesh position={[-3.55, HOUSE_LAYOUT.roofY + 0.28, -1.35]} castShadow receiveShadow>
+        <boxGeometry args={[2.05, 0.18, 0.62]} />
+        <meshStandardMaterial color="#8b654a" roughness={0.9} />
+      </mesh>
+      <mesh position={[-3.55, HOUSE_LAYOUT.roofY + 0.68, -1.61]} castShadow receiveShadow>
+        <boxGeometry args={[2.05, 0.72, 0.13]} />
+        <meshStandardMaterial color="#986f50" roughness={0.92} />
+      </mesh>
+      {[-4.2, -3.55, -2.9].map((x, index) => <mesh key={x} position={[x, HOUSE_LAYOUT.roofY + 0.4, -1.29]} receiveShadow>
+        <boxGeometry args={[0.58, 0.08, 0.48]} />
+        <meshStandardMaterial color={index === 1 ? "#d1b594" : "#c7a785"} roughness={0.94} />
+      </mesh>)}
+      {[
+        [-4.45, -3.2], [4.45, -3.2], [4.45, 3.25],
+      ].map(([x, z]) => <group key={x + ":" + z} position={[x, HOUSE_LAYOUT.roofY, z]}>
+        <mesh position={[0, 0.24, 0]} castShadow receiveShadow>
+          <boxGeometry args={[0.72, 0.42, 0.72]} />
+          <meshStandardMaterial color="#ad8664" roughness={0.96} />
+        </mesh>
+        <mesh position={[0, 0.72, 0]} castShadow>
+          <sphereGeometry args={[0.43, 10, 8]} />
+          <meshStandardMaterial color="#829176" roughness={1} />
+        </mesh>
+        <mesh position={[0.06, 0.93, 0.04]} castShadow>
+          <sphereGeometry args={[0.29, 9, 7]} />
+          <meshStandardMaterial color="#9aa887" roughness={1} />
+        </mesh>
+      </group>)}
+    </group>
   </group>;
 }
 

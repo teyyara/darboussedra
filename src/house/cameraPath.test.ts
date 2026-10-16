@@ -41,6 +41,7 @@ describe("3D camera paths", () => {
     expect(family.position[0]).toBeGreaterThan(0.8);
     expect(family.target[0]).toBeLessThan(-0.8);
     expect(family.position[2]).toBeGreaterThan(family.target[2]);
+    expect(family.position[2] - family.target[2], "table is framed across the room, not from beside it").toBeGreaterThan(2.0);
   });
 
   it("frames indoor rooms diagonally across their usable floor rather than at the nearest wall", () => {
