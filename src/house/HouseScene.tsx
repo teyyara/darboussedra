@@ -134,6 +134,24 @@ function ExteriorShell({ location, onDoorActivate, reducedMotion }: { location: 
       <boxGeometry args={[HOUSE_LAYOUT.exterior.width, wallHeight, wallThickness]} />
       <meshStandardMaterial color="#dfcfb8" roughness={0.95} />
     </mesh>
+    <group>
+      <mesh position={[0, wallHeight + 0.6, frontZ / 2]} rotation={[0.25, 0, 0]} castShadow receiveShadow>
+        <boxGeometry args={[HOUSE_LAYOUT.exterior.width + 0.55, 0.18, frontZ + 0.2]} />
+        <meshStandardMaterial color="#a65c48" roughness={0.92} />
+      </mesh>
+      <mesh position={[0, wallHeight + 0.6, -frontZ / 2]} rotation={[-0.25, 0, 0]} castShadow receiveShadow>
+        <boxGeometry args={[HOUSE_LAYOUT.exterior.width + 0.55, 0.18, frontZ + 0.2]} />
+        <meshStandardMaterial color="#9a5142" roughness={0.92} />
+      </mesh>
+      <mesh position={[0, wallHeight + 1.19, 0]} castShadow>
+        <boxGeometry args={[HOUSE_LAYOUT.exterior.width + 0.45, 0.15, 0.2]} />
+        <meshStandardMaterial color="#75483a" roughness={0.91} />
+      </mesh>
+      <mesh position={[0, wallHeight + 0.02, frontZ + 0.08]} castShadow>
+        <boxGeometry args={[HOUSE_LAYOUT.exterior.width + 0.5, 0.14, 0.22]} />
+        <meshStandardMaterial color="#75483a" roughness={0.91} />
+      </mesh>
+    </group>
     {panels.map((panel, index) => <mesh key={index} position={panel.position} castShadow receiveShadow>
       <boxGeometry args={panel.size} />
       <meshStandardMaterial color="#eadcc8" roughness={0.94} />
@@ -383,7 +401,8 @@ export function HouseScene({ location, settledLocation, reducedMotion, onArrive,
 }) {
   const [transitioning, setTransitioning] = useState(false);
   const visualTransition = transitioning || settledLocation !== location;
-  return <Canvas camera={{ position: EXTERIOR_CAMERA.position, fov: 58, near: 0.1, far: 120 }}
+  const sceneFov = location === "exterior" || location === "map" ? 58 : 66;
+  return <Canvas camera={{ position: EXTERIOR_CAMERA.position, fov: sceneFov, near: 0.1, far: 120 }}
     dpr={reducedMotion ? 1 : ([1, 1.4] as [number, number])} frameloop="demand" shadows>
     <color attach="background" args={["#eee7da"]} /><fog attach="fog" args={["#eee7da", 22, 55]} />
     <ambientLight intensity={1.1} /><hemisphereLight args={["#fff2db", "#8c9479", 1.1]} />

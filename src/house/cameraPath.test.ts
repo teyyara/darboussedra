@@ -12,10 +12,12 @@ describe("3D camera paths", () => {
       expect(room.camera.position[1], room.slug + " eye height").toBeCloseTo(room.scenePosition[1] + 1.65);
       const verticalLook = Math.abs(room.camera.target[1] - room.camera.position[1]);
       if (room.slug === "rooftop") {
-        expect(verticalLook, "rooftop looks slightly down across the terrace").toBeGreaterThan(0.5);
-        expect(verticalLook).toBeLessThan(1.0);
+        expect(verticalLook, "rooftop looks down across the terrace instead of at the horizon").toBeGreaterThan(1.0);
+        expect(verticalLook).toBeLessThan(1.6);
       } else if (room.slug === "garden") {
-        expect(verticalLook, "garden view keeps the door and ground in frame").toBeLessThan(0.35);
+        expect(verticalLook, "garden view keeps the ground in frame").toBeLessThan(0.35);
+        expect(Math.abs(room.camera.position[0] - room.camera.target[0]), "garden view looks across the garden rather than down the front-door axis").toBeGreaterThan(1.5);
+        expect(room.camera.target[2]).toBeGreaterThan(frontZ);
       } else {
         expect(verticalLook, room.slug + " look angle").toBeLessThan(0.1);
       }
@@ -27,6 +29,13 @@ describe("3D camera paths", () => {
     expect(Math.abs(EXTERIOR_CAMERA.target[0])).toBeLessThan(1);
     expect(EXTERIOR_CAMERA.target[2]).toBeLessThan(frontZ);
     expect(EXTERIOR_CAMERA.target[1]).toBeLessThan(EXTERIOR_CAMERA.position[1]);
+  });
+
+  it("frames indoor rooms diagonally across their usable floor rather than at the nearest wall", () => {
+    for (const room of rooms.filter((item) => item.kind === "interior" || item.kind === "private" || item.kind === "spiritual")) {
+      expect(Math.abs(room.camera.position[0] - room.camera.target[0]), room.slug + " cross-room X view").toBeGreaterThan(0.3);
+      expect(Math.abs(room.camera.position[2] - room.camera.target[2]), room.slug + " cross-room Z view").toBeGreaterThan(0.3);
+    }
   });
 
   it("keeps every destination camera and focus point inside the room named by the route", () => {
