@@ -27,62 +27,72 @@ export const HOUSE_LAYOUT = {
   groundY: 0, upperY: 3, roofY: 5.55,
   floorThickness: FLOOR_THICKNESS, roomWallHeight: 2.41,
   upperLanding: { centerX: 0, centerZ: 1.25, width: 10.2, depth: 1.6, levelY: 3 },
-  upperBridge: { centerX: 0, centerZ: -0.025, width: 2.4, depth: 0.95, levelY: 3 },
+  upperBridge: { centerX: 0, centerZ: -1.935, width: 2.4, depth: 4.77, levelY: 3 },
   stairs: {
     width: 1, shaftWidth: 2.4, groundDoorwayWidth: 1.2,
-    groundFlight: { from: [0, 0.14, -4.32] as Vector3Tuple, to: [0, 3.14, -0.5] as Vector3Tuple, steps: 16 },
+    // The stair begins just beyond the family-table portal and climbs toward the rear landing.
+    groundFlight: { from: [0, 0.14, -0.5] as Vector3Tuple, to: [0, 3.14, -4.32] as Vector3Tuple, steps: 16 },
     roofFlight: { from: [0, 3.14, 2.05] as Vector3Tuple, to: [0, 5.55, -1.8] as Vector3Tuple, steps: 14 },
     roofOpening: { centerX: 0, centerZ: -1.8, width: 1.65, depth: 1.85 },
   },
 } as const;
 
-function roomCamera(position: Vector3Tuple, level: RoomLevel): Room["camera"] {
-  const [x, , z] = position;
-  if (level === "upper") return { position: [x + 0.12, 7.1, z + 0.9], target: [x, 4.15, z] };
-  if (level === "roof") return { position: [7.8, 9.2, 6.8], target: [0, HOUSE_LAYOUT.roofY + 0.1, 0] };
-  if (level === "outdoor") return { position: [x + 7.2, 6.2, z + 3.2], target: [x, 0.3, z] };
-  return { position: [x + 0.65, 6.15, z + 1.15], target: [x, 1.05, z] };
+type RoomFacing = "front" | "back" | "left" | "right";
+
+const facingDirection: Record<RoomFacing, readonly [number, number]> = {
+  front: [0, 1], back: [0, -1], left: [-1, 0], right: [1, 0],
+};
+
+/** Room destinations use standing eye height and look horizontally through a relevant doorway. */
+function roomCamera(position: Vector3Tuple, _level: RoomLevel, facing: RoomFacing): Room["camera"] {
+  const [x, y, z] = position;
+  const [dx, dz] = facingDirection[facing];
+  const eyeY = y + 1.65;
+  return {
+    position: [x - dx * 0.45, eyeY, z - dz * 0.45],
+    target: [x + dx * 1.55, eyeY - 0.06, z + dz * 1.55],
+  };
 }
 
 const roomDefinitions = [
   { id: "entrance", slug: "entrance", name: "Front Door & Entrance", kind: "entry", level: "ground",
-    scenePosition: [0, HOUSE_LAYOUT.groundY, 3.695], camera: { position: [0, 6.2, 3.8], target: [0, 1.15, 1.45] },
+    scenePosition: [0, HOUSE_LAYOUT.groundY, 3.695], camera: { position: [0, 1.65, 3.85], target: [0, 1.59, 2.35] },
     footprint: [2.1, 1.89], connectedTo: ["family-table", "garden"] },
   { id: "living-room", slug: "living-room", name: "Living Room", kind: "interior", level: "ground",
-    scenePosition: [-3.6, HOUSE_LAYOUT.groundY, 1.175], camera: roomCamera([-3.6, 0, 1.175], "ground"),
+    scenePosition: [-3.6, HOUSE_LAYOUT.groundY, 1.175], camera: roomCamera([-3.6, 0, 1.175], "ground", "right"),
     footprint: [3.6, 3.15], connectedTo: ["family-table", "library"] },
   { id: "family-table", slug: "family-table", name: "Family Table", kind: "interior", level: "ground",
-    scenePosition: [0, HOUSE_LAYOUT.groundY, 1.175], camera: roomCamera([0, 0, 1.175], "ground"),
+    scenePosition: [0, HOUSE_LAYOUT.groundY, 1.175], camera: roomCamera([0, 0, 1.175], "ground", "back"),
     footprint: [3.6, 3.15], connectedTo: ["entrance", "living-room", "kitchen"] },
   { id: "kitchen", slug: "kitchen", name: "Kitchen", kind: "interior", level: "ground",
-    scenePosition: [3.6, HOUSE_LAYOUT.groundY, 1.175], camera: roomCamera([3.6, 0, 1.175], "ground"),
+    scenePosition: [3.6, HOUSE_LAYOUT.groundY, 1.175], camera: roomCamera([3.6, 0, 1.175], "ground", "left"),
     footprint: [3.6, 3.15], connectedTo: ["family-table", "prayer-room"] },
   { id: "library", slug: "library", name: "Library", kind: "interior", level: "ground",
-    scenePosition: [-4.1, HOUSE_LAYOUT.groundY, -2.49], camera: roomCamera([-4.1, 0, -2.49], "ground"),
+    scenePosition: [-4.1, HOUSE_LAYOUT.groundY, -2.49], camera: roomCamera([-4.1, 0, -2.49], "ground", "front"),
     footprint: [2.6, 4.18], connectedTo: ["living-room", "pets-corner"] },
   { id: "pets-corner", slug: "pets-corner", name: "Pets' Corner", kind: "interior", level: "ground",
-    scenePosition: [-2.0, HOUSE_LAYOUT.groundY, -2.49], camera: roomCamera([-2.0, 0, -2.49], "ground"),
+    scenePosition: [-2.0, HOUSE_LAYOUT.groundY, -2.49], camera: roomCamera([-2.0, 0, -2.49], "ground", "left"),
     footprint: [1.6, 4.18], connectedTo: ["library"] },
   { id: "prayer-room", slug: "prayer-room", name: "Prayer Room / Musalla", kind: "spiritual", level: "ground",
-    scenePosition: [3.3, HOUSE_LAYOUT.groundY, -2.49], camera: roomCamera([3.3, 0, -2.49], "ground"),
+    scenePosition: [3.3, HOUSE_LAYOUT.groundY, -2.49], camera: roomCamera([3.3, 0, -2.49], "ground", "front"),
     footprint: [4.2, 4.18], connectedTo: ["kitchen"] },
   { id: "zakariae-room", slug: "zakariae-room", name: "Zakariae's Private Room", kind: "private", level: "upper",
-    scenePosition: [-4.25, HOUSE_LAYOUT.upperY, -1.75], camera: roomCamera([-4.25, HOUSE_LAYOUT.upperY, -1.75], "upper"),
+    scenePosition: [-4.25, HOUSE_LAYOUT.upperY, -1.75], camera: roomCamera([-4.25, HOUSE_LAYOUT.upperY, -1.75], "upper", "front"),
     footprint: [2.3, 4.4], connectedTo: [] },
   { id: "zineb-room", slug: "zineb-room", name: "Zineb's Private Room", kind: "private", level: "upper",
-    scenePosition: [-2.15, HOUSE_LAYOUT.upperY, -1.75], camera: roomCamera([-2.15, HOUSE_LAYOUT.upperY, -1.75], "upper"),
+    scenePosition: [-2.15, HOUSE_LAYOUT.upperY, -1.75], camera: roomCamera([-2.15, HOUSE_LAYOUT.upperY, -1.75], "upper", "front"),
     footprint: [1.9, 4.4], connectedTo: [] },
   { id: "meryem-room", slug: "meryem-room", name: "Meryem's Private Room", kind: "private", level: "upper",
-    scenePosition: [2.15, HOUSE_LAYOUT.upperY, -1.75], camera: roomCamera([2.15, HOUSE_LAYOUT.upperY, -1.75], "upper"),
+    scenePosition: [2.15, HOUSE_LAYOUT.upperY, -1.75], camera: roomCamera([2.15, HOUSE_LAYOUT.upperY, -1.75], "upper", "front"),
     footprint: [1.9, 4.4], connectedTo: [] },
   { id: "fatiha-room", slug: "fatiha-room", name: "Fatiha's Private Room", kind: "private", level: "upper",
-    scenePosition: [4.25, HOUSE_LAYOUT.upperY, -1.75], camera: roomCamera([4.25, HOUSE_LAYOUT.upperY, -1.75], "upper"),
+    scenePosition: [4.25, HOUSE_LAYOUT.upperY, -1.75], camera: roomCamera([4.25, HOUSE_LAYOUT.upperY, -1.75], "upper", "front"),
     footprint: [2.3, 4.4], connectedTo: [] },
   { id: "garden", slug: "garden", name: "Garden", kind: "outdoor", level: "outdoor",
-    scenePosition: [0, HOUSE_LAYOUT.groundY, 5.74], camera: roomCamera([0, 0, 5.74], "outdoor"),
+    scenePosition: [0, HOUSE_LAYOUT.groundY, 5.74], camera: roomCamera([0, 0, 5.74], "outdoor", "back"),
     footprint: [5.8, 2.2], connectedTo: ["entrance"] },
   { id: "rooftop", slug: "rooftop", name: "Rooftop Terrace", kind: "outdoor", level: "roof",
-    scenePosition: [0, HOUSE_LAYOUT.roofY, 0], camera: roomCamera([0, HOUSE_LAYOUT.roofY, 0], "roof"),
+    scenePosition: [0, HOUSE_LAYOUT.roofY, 0], camera: roomCamera([0, HOUSE_LAYOUT.roofY, 0], "roof", "back"),
     footprint: [10.6, 8.6], connectedTo: [] },
 ] as const satisfies readonly Room[];
 
@@ -102,8 +112,9 @@ export const ROOM_ACCESS_PORTALS: readonly { readonly room: string; readonly tar
   { room: "fatiha-room", targetSlug: "fatiha-room", zone: "upper-landing", side: "front", offset: 0, width: DEFAULT_DOOR_WIDTH },
 ];
 
-export const EXTERIOR_CAMERA = { position: [14, 10, 15] as Vector3Tuple, target: [0, 2.3, 0] as Vector3Tuple };
-export const MAP_CAMERA = { position: [0, 18, 16] as Vector3Tuple, target: [0, 1.4, 0] as Vector3Tuple };
+export const EXTERIOR_CAMERA = { position: [1.2, 1.85, 11.5] as Vector3Tuple, target: [0, 1.78, HOUSE_LAYOUT.exterior.depth / 2] as Vector3Tuple };
+// The map is an HTML floor plan; never switch the 3D scene into an overhead view for it.
+export const MAP_CAMERA = EXTERIOR_CAMERA;
 
 export function getRoomBySlug(slug: string): Room | undefined {
   return rooms.find((room) => room.slug === slug);
@@ -332,9 +343,11 @@ export function roomRegistryIssues(): string[] {
   }
   const ground = HOUSE_LAYOUT.stairs.groundFlight, roof = HOUSE_LAYOUT.stairs.roofFlight;
   const groundStepRunZ = (ground.to[2] - ground.from[2]) / ground.steps;
-  const firstGroundTreadMinZ = ground.from[2] + groundStepRunZ / 2 - (Math.abs(groundStepRunZ) + 0.035) / 2;
+  const lastStepIndex = ground.steps - 1;
+  const lastGroundTreadMinZ = ground.from[2] + groundStepRunZ * (lastStepIndex + 0.5) -
+    (Math.abs(groundStepRunZ) + 0.035) / 2;
   const rearInteriorFaceZ = -HOUSE_LAYOUT.exterior.depth / 2 + HOUSE_LAYOUT.exterior.wallThickness / 2;
-  if (firstGroundTreadMinZ < rearInteriorFaceZ + 0.05) issues.push("First ground stair tread intersects or approaches the rear shell wall.");
+  if (lastGroundTreadMinZ < rearInteriorFaceZ + 0.05) issues.push("Last ground stair tread intersects or approaches the rear shell wall.");
   const upperSurface = HOUSE_LAYOUT.upperY + HOUSE_LAYOUT.floorThickness;
   if (Math.abs(ground.from[1] - HOUSE_LAYOUT.floorThickness) > EPSILON) issues.push("Ground stair does not begin at the ground floor surface.");
   if (Math.abs(ground.to[1] - upperSurface) > EPSILON) issues.push("Ground stair does not meet the upper-floor landing.");
