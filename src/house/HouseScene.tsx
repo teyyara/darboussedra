@@ -80,6 +80,10 @@ function ExteriorShell({ location, onEnter, reducedMotion }: { location: HouseLo
   const { invalidate } = useThree();
   const opening = location !== "exterior";
   const doorWidth = HOUSE_LAYOUT.stairs.groundDoorwayWidth, doorHeight = 2.3;
+  const frontZ = HOUSE_LAYOUT.exterior.depth / 2;
+  const wallHeight = HOUSE_LAYOUT.exterior.wallHeight;
+  const halfWidth = HOUSE_LAYOUT.exterior.width / 2;
+  const wallThickness = HOUSE_LAYOUT.exterior.wallThickness;
   const frontWindowWidth = 1.3;
   const frontWindowInset = 2.55;
   const windowCenterX = halfWidth - frontWindowInset;
@@ -88,10 +92,6 @@ function ExteriorShell({ location, onEnter, reducedMotion }: { location: HouseLo
   const outerPanelWidth = halfWidth - windowOuterEdge;
   const sidePanelWidth = windowInnerEdge - doorWidth / 2;
   const sidePanelCenter = (windowInnerEdge + doorWidth / 2) / 2;
-  const frontZ = HOUSE_LAYOUT.exterior.depth / 2;
-  const wallHeight = HOUSE_LAYOUT.exterior.wallHeight;
-  const halfWidth = HOUSE_LAYOUT.exterior.width / 2;
-  const wallThickness = HOUSE_LAYOUT.exterior.wallThickness;
   const panels: { position: Vector3Tuple; size: Vector3Tuple }[] = [
     { position: [-(windowOuterEdge + halfWidth) / 2, wallHeight / 2, frontZ], size: [outerPanelWidth, wallHeight, wallThickness] },
     { position: [-windowCenterX, 0.775, frontZ], size: [frontWindowWidth, 1.55, wallThickness] },
