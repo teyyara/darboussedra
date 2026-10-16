@@ -11,12 +11,12 @@ describe("level-aware house rendering", () => {
     expect(visibility.showGarden).toBe(false);
   });
 
-  it("shows the upper storey and its actual circulation for an upstairs room", () => {
+  it("keeps the upper landing visible without exposing stair flights inside a private-room view", () => {
     const visibility = getHouseSceneVisibility("zineb-room", "zineb-room", false);
     expect(visibility.showGroundRooms).toBe(false);
     expect(visibility.showUpperRooms).toBe(true);
     expect(visibility.showUpperCirculation).toBe(true);
-    expect(visibility.showRoofStairs).toBe(true);
+    expect(visibility.showRoofStairs).toBe(false);
     expect(visibility.showGroundStairs).toBe(false);
     expect(visibility.showRoofDeck).toBe(false);
   });
