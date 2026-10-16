@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Vector3, type Group } from "three";
 import {
-  EXTERIOR_CAMERA, HOUSE_LAYOUT, MAP_CAMERA, getRoomBySlug, getRoomPortalOpenings, getRoomWallIntervals, rooms,
+  EXTERIOR_CAMERA, HOUSE_LAYOUT, MAP_CAMERA, getRoomBySlug, getRoomPortalOpenings, getRoomWallIntervals, roomOwnsPortalFrame, rooms,
   type HouseLocation, type Room, type RoomSlug, type RoomPortalOpening, type Vector3Tuple,
 } from "./rooms";
 
@@ -237,7 +237,7 @@ function RoomArea({ room, active, onSelect }: { room: Room; active?: Room; onSel
     {walls.map((wall) => <mesh key={wall.key} position={wall.position} castShadow receiveShadow>
       <boxGeometry args={wall.size} /><meshStandardMaterial color={wallColor} roughness={0.97} />
     </mesh>)}
-    {openings.map((opening, index) => <DoorwayFrame key={(opening.targetSlug ?? opening.zone ?? "portal") + "-" + opening.side + "-" + index}
+    {openings.filter((opening) => roomOwnsPortalFrame(room, opening)).map((opening, index) => <DoorwayFrame key={(opening.targetSlug ?? opening.zone ?? "portal") + "-" + opening.side + "-" + index}
       room={room} opening={opening} onSelect={onSelect} />)}
     <mesh position={[0, HOUSE_LAYOUT.floorThickness + HOUSE_LAYOUT.roomWallHeight - 0.025, -depth / 2]}>
       <boxGeometry args={[width, 0.05, 0.14]} />
