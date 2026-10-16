@@ -43,7 +43,7 @@ async function saveScreenshot(page, filename) {
   report.screenshots.push(filename);
 }
 
-async function arrivalStatus(page, slug, name, timeout = 28000) {
+async function arrivalStatus(page, slug, name, timeout = 45000) {
   await page.waitForFunction(
     () => {
       const label = document.querySelector(".room-welcome .eyebrow");
@@ -62,8 +62,14 @@ async function arrivalStatus(page, slug, name, timeout = 28000) {
 }
 
 async function openMap(page) {
+  await page.waitForFunction(() => {
+    const roomButton = document.querySelector(".room-welcome .primary");
+    const headerButton = Array.from(document.querySelectorAll(".header button"))
+      .find((button) => /house map/i.test(button.textContent || ""));
+    return Boolean((roomButton && !roomButton.disabled) || (headerButton && !headerButton.disabled));
+  }, null, { timeout: 5000 });
   const roomMapButton = page.locator(".room-welcome").getByRole("button", { name: /open the house map/i });
-  if (await roomMapButton.isVisible().catch(() => false)) {
+  if (await roomMapButton.isVisible().catch(() => false) && await roomMapButton.isEnabled().catch(() => false)) {
     await roomMapButton.click();
   } else {
     await page.locator(".header").getByRole("button", { name: /house map/i }).click();
@@ -102,7 +108,7 @@ report.webgl2ContextAvailable = await desktop.locator("canvas").first().evaluate
 await saveScreenshot(desktop, "01-exterior-desktop.png");
 
 await desktop.getByRole("button", { name: /enter the house/i }).click();
-await arrivalStatus(desktop, "entrance", "Front Door & Entrance", 16000);
+await arrivalStatus(desktop, "entrance", "Front Door & Entrance", 45000);
 await saveScreenshot(desktop, "02-entrance-eye-level.png");
 
 await openMap(desktop);
