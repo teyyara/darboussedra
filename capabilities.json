@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "observed_at": "2026-10-16",
+  "repository_read": true,
+  "repository_write_via_authenticated_github_connector": true,
+  "default_branch": "main",
+  "push_permission_observed": true,
+  "node": "v22.16.0",
+  "npm": "10.9.2",
+  "local_git_clone": "BLOCKED: runtime could not resolve github.com",
+  "npm_registry_access": "BLOCKED: outbound network/DNS unavailable",
+  "local_typecheck": "NOT RUN",
+  "local_tests": "NOT RUN",
+  "local_production_build": "NOT RUN",
+  "browser_automation": "NOT AVAILABLE",
+  "visual_browser_inspection": "NOT AVAILABLE",
+  "remote_ci_result": "pending observation after push",
+  "deployment": "not performed"
+}

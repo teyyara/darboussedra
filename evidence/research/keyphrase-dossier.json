@@ -1,0 +1,62 @@
+{
+  "active_keyphrase": "read DAR BOUSSEDRA Master Build Strategy — Initial 3D House and Website Foundation",
+  "normalized_interpretation": "Local-first, intentionally unfurnished 3D family house foundation.",
+  "research_completed_at": "2026-10-16",
+  "research_status": "COMPLETE_WITH_LIMITATIONS",
+  "rulebook_version": "AEOS v3",
+  "source_derived_facts": [
+    "The house is the primary information architecture.",
+    "Build the unfurnished house before future content systems.",
+    "Thirteen permanent spaces are required.",
+    "Yahya remembrance remains unplaced and future-only.",
+    "No auth, backend, media storage, paid assets/services, analytics or deployment for initial prototype.",
+    "Map, scene and routes share a registry; semantic HTML navigation and fallback are required."
+  ],
+  "sources": [
+    {
+      "url": "https://r3f.docs.pmnd.rs/getting-started/introduction",
+      "publisher": "React Three Fiber",
+      "claim": "v10 alpha; stable v9 line with React 19",
+      "confidence": "high"
+    },
+    {
+      "url": "https://threejs.org/docs/pages/WebGLRenderer.html",
+      "publisher": "Three.js",
+      "claim": "WebGLRenderer uses WebGL 2",
+      "confidence": "high"
+    },
+    {
+      "url": "https://threejs.org/docs/pages/WebGL.html",
+      "publisher": "Three.js",
+      "claim": "WebGL 2 feature detection",
+      "confidence": "high"
+    },
+    {
+      "url": "https://vite.dev/guide/build.html",
+      "publisher": "Vite",
+      "claim": "Production build documentation",
+      "confidence": "high"
+    },
+    {
+      "url": "https://react.dev/versions",
+      "publisher": "React",
+      "claim": "Official React version guidance",
+      "confidence": "high"
+    },
+    {
+      "url": "https://www.w3.org/WAI/WCAG22/Techniques/css/C39.html",
+      "publisher": "W3C WAI",
+      "claim": "Reduced-motion CSS technique",
+      "confidence": "high"
+    }
+  ],
+  "unknowns": [
+    "Approved floor plan",
+    "Actual CI and browser results",
+    "Real-device performance and assistive-technology behavior"
+  ],
+  "limitations": [
+    "No authoritative public project site or floor plan identified.",
+    "Local runtime cannot reach GitHub/npm by DNS."
+  ]
+}

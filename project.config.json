@@ -1,0 +1,39 @@
+{
+  "schema_version": "1.0",
+  "project": "Dar Boussedra",
+  "repository": "https://github.com/teyyara/darboussedra",
+  "keyphrase": "read DAR BOUSSEDRA Master Build Strategy — Initial 3D House and Website Foundation",
+  "normalized_interpretation": "Unfurnished local-first 3D family house before content features",
+  "activation_date": "2026-10-16",
+  "rulebook_version": "AEOS v3",
+  "project_type": "W1 — Interactive Marketing",
+  "risk_tier": "R1 client-side foundation; reassess as scope grows",
+  "primary_branch": "main",
+  "branch_policy": "Single branch main observed at initialization",
+  "deployment": {
+    "allowed": false,
+    "note": "No deployment performed"
+  },
+  "cost_constraints": {
+    "paid_apis": false,
+    "paid_assets": false,
+    "backend_required": false,
+    "analytics_or_tracking": false
+  },
+  "privacy": {
+    "family_content_collection": false,
+    "media_uploads": false,
+    "authentication": false
+  },
+  "product_contract": "PRODUCT_CONTRACT.md",
+  "room_registry": "src/house/rooms.ts",
+  "status_file": "AEOS_STATUS.md",
+  "research_dossier": "evidence/research/keyphrase-dossier.md",
+  "quality_gates": {
+    "typecheck": "required",
+    "room_registry_tests": "required",
+    "production_build": "required",
+    "browser_smoke": "required before Stage A certification",
+    "accessibility": "WCAG 2.2 AA working target"
+  }
+}
