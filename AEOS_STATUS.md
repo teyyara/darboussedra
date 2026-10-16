@@ -7,7 +7,7 @@
 **Repository:** https://github.com/teyyara/darboussedra  
 **Branch:** fix/loop-004-architecture-coherence  
 **Base main:** 501cc6ccf3e6926504dfcd051ac98147360cd48a  
-**Latest correction commit:** fd5dbe61f6bcbb2d06be3232c4390eff8dfe1e23  
+**Latest correction commit:** a19287f01d84b4c61fb14245e7f20b2efa0f3a90  
 **Last updated:** 2026-10-16
 
 ## Loop 003 outcome
@@ -44,7 +44,7 @@ Improve/test architectural proportions and circulation against a visual browser 
 - Derived room door gaps from physical adjacency; provided an explicit Family Table-to-stair-hall portal and private-room openings onto the shared upper landing.
 - Added source-level checks for registry consistency, usable connected boundaries, room/shell overlaps and stair/landing/roof continuity.
 - Added distinct spatial plan tabs for ground, upper, garden and roof, with a stairwell/landing overlay and the semantic room directory retained.
-- **Automated CI:** [run 38945553894](https://github.com/teyyara/darboussedra/actions/runs/38945553894) passed typecheck, all 12 unit tests across three files, and production build on code commit `fd5dbe61f6bcbb2d06be3232c4390eff8dfe1e23`. The Vercel Git checks report success for both connected projects, but this is not visual evidence.
+- **Automated CI:** [run 38946031721](https://github.com/teyyara/darboussedra/actions/runs/38946031721) passed typecheck, all 12 unit tests across three files, and production build on code commit `a19287f01d84b4c61fb14245e7f20b2efa0f3a90`. Both Vercel Git status checks report success for this branch revision, but neither constitutes rendered browser evidence.
 - **Browser screenshots/interactive QA: BLOCKED.** No real images captured; no functioning interactive browser driver was available and web inspection of the deployment was denied. Visual correctness is not certified.
 - Do not merge/deploy as part of Loop 004. The proportion changes (especially Pets’ Corner/Musalla), circulation arrangement and floor plan require family review before acceptance.
 
