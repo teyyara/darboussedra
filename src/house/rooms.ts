@@ -8,7 +8,7 @@ export interface Room {
   readonly mapPosition:{readonly x:number;readonly y:number;readonly width:number;readonly height:number};
   readonly footprint?:readonly [number,number]; readonly connectedTo:readonly string[]; readonly futureNote?:string;
 }
-export const rooms = [
+const roomDefinitions = [
  {id:"entrance",slug:"entrance",name:"Front Door & Entrance",kind:"entry",level:"ground",scenePosition:[0,.04,3.7],camera:{position:[0,3.2,8.7],target:[0,1.1,3.45]},mapPosition:{x:39,y:72,width:22,height:20},footprint:[2,2.4],connectedTo:["living-room","kitchen","family-table","garden"]},
  {id:"living-room",slug:"living-room",name:"Living Room",kind:"interior",level:"ground",scenePosition:[-3.25,.04,2.25],camera:{position:[-3.1,3,6.7],target:[-3.2,.9,2.1]},mapPosition:{x:2,y:43,width:35,height:45},footprint:[4.5,5.5],connectedTo:["entrance","family-table","library"]},
  {id:"kitchen",slug:"kitchen",name:"Kitchen",kind:"interior",level:"ground",scenePosition:[3.25,.04,2.25],camera:{position:[3.1,3,6.7],target:[3.2,.9,2.1]},mapPosition:{x:63,y:43,width:35,height:45},footprint:[4.5,5.5],connectedTo:["entrance","family-table"]},
@@ -23,7 +23,11 @@ export const rooms = [
  {id:"garden",slug:"garden",name:"Garden",kind:"outdoor",level:"outdoor",scenePosition:[0,.04,8.2],camera:{position:[10.5,5.2,13.4],target:[0,.6,8.2]},mapPosition:{x:0,y:0,width:100,height:100},connectedTo:["entrance"]},
  {id:"rooftop",slug:"rooftop",name:"Rooftop Terrace",kind:"outdoor",level:"roof",scenePosition:[0,5.72,0],camera:{position:[8,9,7],target:[0,5.9,0]},mapPosition:{x:0,y:0,width:100,height:100},connectedTo:["fatiha-room"]}
 ] as const satisfies readonly Room[];
-export type RoomSlug=(typeof rooms)[number]["slug"];
+
+// Keep the public collection widened to Room so optional metadata such as footprint
+// is available across every member of the heterogeneous room registry.
+export const rooms: readonly Room[] = roomDefinitions;
+export type RoomSlug=(typeof roomDefinitions)[number]["slug"];
 export type HouseLocation="exterior"|"map"|RoomSlug;
 export const REQUIRED_ROOM_SLUGS=["entrance","living-room","kitchen","family-table","library","garden","rooftop","pets-corner","prayer-room","zakariae-room","zineb-room","meryem-room","fatiha-room"] as const;
 export const EXTERIOR_CAMERA={position:[14,10,16] as Vector3Tuple,target:[0,2.1,0] as Vector3Tuple};
