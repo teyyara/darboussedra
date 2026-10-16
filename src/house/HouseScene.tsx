@@ -1,14 +1,30 @@
-import {useEffect,useMemo} from "react";
+import {useEffect,useMemo,useRef} from "react";
 import {Canvas,useFrame,useThree} from "@react-three/fiber";
 import {Vector3} from "three";
 import {EXTERIOR_CAMERA,MAP_CAMERA,getRoomBySlug,rooms,type HouseLocation,type RoomSlug,type Vector3Tuple} from "./rooms";
 
 function CameraRig({position,target,reducedMotion}:{position:Vector3Tuple;target:Vector3Tuple;reducedMotion:boolean}) {
- const {camera}=useThree();
+ const {camera,invalidate}=useThree();
  const desired=useMemo(()=>new Vector3(position[0],position[1],position[2]),[position]);
  const lookAt=useMemo(()=>new Vector3(target[0],target[1],target[2]),[target]);
- useEffect(()=>{if(reducedMotion){camera.position.copy(desired);camera.lookAt(lookAt);camera.updateProjectionMatrix();}},[camera,desired,lookAt,reducedMotion]);
- useFrame((_state,delta)=>{if(reducedMotion)return;camera.position.lerp(desired,1-Math.exp(-3*delta));camera.lookAt(lookAt);});
+ const currentLookAt=useRef(new Vector3(EXTERIOR_CAMERA.target[0],EXTERIOR_CAMERA.target[1],EXTERIOR_CAMERA.target[2]));
+ useEffect(()=>{
+  if(reducedMotion){
+   camera.position.copy(desired);
+   currentLookAt.current.copy(lookAt);
+   camera.lookAt(lookAt);
+   camera.updateProjectionMatrix();
+  }
+  invalidate();
+ },[camera,desired,lookAt,reducedMotion,invalidate]);
+ useFrame((_state,delta)=>{
+  if(reducedMotion)return;
+  const amount=1-Math.exp(-3*delta);
+  camera.position.lerp(desired,amount);
+  currentLookAt.current.lerp(lookAt,amount);
+  camera.lookAt(currentLookAt.current);
+  if(camera.position.distanceToSquared(desired)>.002||currentLookAt.current.distanceToSquared(lookAt)>.002)invalidate();
+ });
  return null;
 }
 function SceneGeometry({location,onEnter,onSelect}:{location:HouseLocation;onEnter:()=>void;onSelect:(slug:RoomSlug)=>void}) {
@@ -41,7 +57,7 @@ export function HouseScene({location,reducedMotion,onEnter,onSelect}:{location:H
  const pose=location==="map"?MAP_CAMERA:location==="exterior"?EXTERIOR_CAMERA:room?.camera??EXTERIOR_CAMERA;
  const position:Vector3Tuple=[pose.position[0],pose.position[1],pose.position[2]];
  const target:Vector3Tuple=[pose.target[0],pose.target[1],pose.target[2]];
- return <Canvas camera={{position:EXTERIOR_CAMERA.position,fov:36,near:.1,far:120}} dpr={reducedMotion?1:([1,1.4] as [number,number])} shadows>
+ return <Canvas camera={{position:EXTERIOR_CAMERA.position,fov:36,near:.1,far:120}} dpr={reducedMotion?1:([1,1.4] as [number,number])} frameloop="demand" shadows>
   <color attach="background" args={["#eee7da"]}/><ambientLight intensity={1.35}/><hemisphereLight args={["#fff2db","#8c9479",1.0]}/>
   <directionalLight position={[8,14,9]} intensity={2} castShadow shadow-mapSize-width={1024} shadow-mapSize-height={1024}/>
   <CameraRig position={position} target={target} reducedMotion={reducedMotion}/><SceneGeometry location={location} onEnter={onEnter} onSelect={onSelect}/>
