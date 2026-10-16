@@ -1,11 +1,12 @@
-import {useCallback,useEffect,useMemo,useRef,useState} from "react";
-import {HouseScene} from "./house/HouseScene";
+import {lazy,Suspense,useCallback,useEffect,useMemo,useRef,useState} from "react";
 import {type HouseLocation,type RoomSlug} from "./house/rooms";
 import {roomFromPath} from "./house/routes";
 import {HouseMap} from "./components/HouseMap";
 import {SceneErrorBoundary} from "./components/SceneErrorBoundary";
 import {StaticHouseIllustration} from "./components/SceneFallback";
 import {useReducedMotion} from "./hooks/useReducedMotion";
+
+const HouseScene=lazy(()=>import("./house/HouseScene").then((module)=>({default:module.HouseScene})));
 
 export default function App(){
   const [path,setPath]=useState(window.location.pathname);
@@ -29,7 +30,7 @@ export default function App(){
 
   return <main className="app-shell">
     <div className="scene-layer">
-      {webgl==="checking"?<p className="loading" role="status">Preparing the house…</p>:webgl==="no"?<StaticHouseIllustration/>:<SceneErrorBoundary><HouseScene location={current} reducedMotion={reducedMotion} onEnter={()=>select("entrance")} onSelect={select}/></SceneErrorBoundary>}
+      {webgl==="checking"?<p className="loading" role="status">Preparing the house…</p>:webgl==="no"?<StaticHouseIllustration/>:<SceneErrorBoundary><Suspense fallback={<StaticHouseIllustration/>}><HouseScene location={current} reducedMotion={reducedMotion} onEnter={()=>select("entrance")} onSelect={select}/></Suspense></SceneErrorBoundary>}
     </div>
     <div className="wash"/>
     <header className="header">
