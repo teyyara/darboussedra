@@ -3,7 +3,7 @@
 **Repository:** `teyyara/darboussedra`  
 **Base:** `main@501cc6ccf3e6926504dfcd051ac98147360cd48a`  
 **Correction branch:** `fix/loop-004-architecture-coherence`  
-**Review status:** [GitHub Actions run 38945553894 passed](https://github.com/teyyara/darboussedra/actions/runs/38945553894) on code commit `fd5dbe61f6bcbb2d06be3232c4390eff8dfe1e23`; draft PR #5 remains unmerged and no manual deployment was performed.
+**Review status:** [GitHub Actions run 38948187378 passed](https://github.com/teyyara/darboussedra/actions/runs/38948187378) on source-code commit `b30f49dfceb36ca8f348d77a6e221817289740ae`; draft PR #5 remains unmerged and no manual deployment was performed.
 
 ## Source audit before changes
 
@@ -28,12 +28,12 @@
 
 ## Automated CI evidence
 
-GitHub Actions run [38945553894](https://github.com/teyyara/darboussedra/actions/runs/38945553894) passed the production validation job: TypeScript typecheck, 12 unit tests across three test files, and Vite production build. Both Vercel Git status checks returned success for the branch revision. The connected Vercel inspector still does not provide an accessible rendered browser session, so those status checks do not replace visual inspection.
+GitHub Actions run [38948187378](https://github.com/teyyara/darboussedra/actions/runs/38948187378) passed the production validation job: TypeScript typecheck, 14 unit tests across three test files, and Vite production build. Both Vercel Git status checks returned success for the branch revision. The connected Vercel inspector still does not provide an accessible rendered browser session, so those status checks do not replace visual inspection.
 
 
 ## Production bundle check
 
-The CI production build measured the entry JS at **244.05 kB minified / 76.23 kB gzip** and the lazy 3D scene at **896.19 kB / 241.56 kB gzip**. The main entry remains much smaller than the original pre-lazy-load bundle, but Vite still warns that the on-demand HouseScene chunk exceeds 500 kB. No dependency or speculative manual chunk split was added during this architecture-focused loop; further work should measure renderer/module-level splitting and runtime effect before changing chunk boundaries.
+The last recorded bundle measurement (source-code commit `9b541fdc19dd03f951371c22a0e1528961732304`) measured the entry JS at **244.05 kB minified / 76.23 kB gzip** and the lazy 3D scene at **896.19 kB / 241.56 kB gzip**. The newer source-code commit passed CI, but no separate bundle-size report was captured for that run. The main entry remains much smaller than the original pre-lazy-load bundle, but Vite still warns that the on-demand HouseScene chunk exceeds 500 kB. No dependency or speculative manual chunk split was added during this architecture-focused loop; further work should measure renderer/module-level splitting and runtime effect before changing chunk boundaries.
 
 ## Visual evidence — blocked
 No genuine browser screenshots were captured. Connected browser/Vercel inspection previously returned access denied, and no interactive browser driver is available through the repository tool connection. There is **no verified before/after image evidence**, so visual correctness is not certified here.
@@ -41,3 +41,8 @@ No genuine browser screenshots were captured. Connected browser/Vercel inspectio
 Human review still needs screenshots/views of the exterior and door swing, entry transition, one ground room, one upstairs bedroom and landing, stair clearance, garden, rooftop/hatch, all four plan tabs, and mobile map behavior. Interactions still to manually verify: direct-refresh/back-forward, keyboard/focus/touch, reduced motion, WebGL fallback, browser console, and rendered collision/shadow behavior.
 
 The layout is a provisional blockout, not an approved surveyed family plan. Proportions—especially the reduced Pets’ Corner width, enlarged Musalla width, circulation position and stair pitch—remain explicit family-approval decisions before further architectural refinement.
+
+
+## Follow-up source-level consistency fixes
+
+The facade doorway now derives its width from the shared 1.2 m stair-hall doorway configuration, and the adjacent facade panel widths/positions derive from the shell width rather than assuming a fixed house width. Garden trees and bushes are positioned relative to the registered garden footprint so their geometry remains inside its width. Decorative back-wall trim now follows the single-owner wall intervals, preventing duplicate trim on shared partitions. These changes pass automated CI but remain visually unaccepted until screenshots and browser interaction checks are possible.
