@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Vector3, type Group } from "three";
 import {
@@ -215,16 +215,20 @@ function DoorwayFrame({ room, opening, onSelect }: { room: Room; opening: RoomPo
 
 function RoomArea({ room, active, onSelect }: { room: Room; active?: Room; onSelect: (slug: RoomSlug) => void }) {
   const [x, y, z] = room.scenePosition, [width, depth] = room.footprint;
+  const [hovered, setHovered] = useState(false);
   const openings = getRoomPortalOpenings(room);
   const walls = (["front", "back", "left", "right"] as const).flatMap((side) =>
     roomWallSegments(room, side, openings).map((segment, index) => ({ ...segment, key: side + "-" + index })));
   const selected = active?.slug === room.slug;
-  const floorColor = selected ? "#d9b9a4" : room.kind === "spiritual" ? "#d9d8c7" : room.kind === "private" ? "#d8c2a9" : "#e1d4c0";
+  const floorColor = selected ? "#d9b9a4" : hovered
+    ? room.kind === "spiritual" ? "#e8e5d2" : room.kind === "private" ? "#e7d0b8" : "#ead8c2"
+    : room.kind === "spiritual" ? "#d9d8c7" : room.kind === "private" ? "#d8c2a9" : "#e1d4c0";
   const wallColor = room.kind === "spiritual" ? "#e5e1cf" : room.kind === "private" ? "#e8d6c0" : "#eee4d4";
   return <group position={[x, y, z]}>
     <mesh position={[0, HOUSE_LAYOUT.floorThickness / 2, 0]} receiveShadow
       onClick={(event) => { event.stopPropagation(); onSelect(room.slug as RoomSlug); }}
-      onPointerOver={() => { document.body.style.cursor = "pointer"; }} onPointerOut={() => { document.body.style.cursor = ""; }}>
+      onPointerOver={() => { setHovered(true); document.body.style.cursor = "pointer"; }}
+      onPointerOut={() => { setHovered(false); document.body.style.cursor = ""; }}>
       <boxGeometry args={[width, HOUSE_LAYOUT.floorThickness, depth]} /><meshStandardMaterial color={floorColor} roughness={0.94} />
     </mesh>
     {walls.map((wall) => <mesh key={wall.key} position={wall.position} castShadow receiveShadow>

@@ -46,3 +46,8 @@ The layout is a provisional blockout, not an approved surveyed family plan. Prop
 ## Follow-up source-level consistency fixes
 
 The facade doorway now uses a dedicated 1.5 m entrance-door dimension, and the entrance-to-garden portal derives its width from that same setting; the separate 1.2 m stair-hall opening remains configured independently. Adjacent facade panel widths/positions derive from the shell width rather than assuming a fixed house width. Garden trees and bushes are positioned relative to the registered garden footprint, and decorative back-wall trim follows single-owner wall intervals. The entrance/facade width agreement has a regression test. These changes pass automated CI but remain visually unaccepted until screenshots and browser interaction checks are possible. The trim fix also reuses portal-aware wall runs, with a regression invariant that checks no wall or trim run crosses a declared doorway. The front-door interaction now acts as a proper navigation boundary: enter from the exterior, return outside from the entrance, and do not treat the distant facade door as an action from other rooms.
+
+
+## 3D interaction polish
+
+Room-floor hover now applies a restrained tint based on room category, while selected rooms retain their stronger active colour and ring. This makes clickable floor areas easier to discover without adding furniture or changing the empty-house scope. Browser rendering/contrast remains unverified because this session cannot access the protected preview.
