@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Vector3, type Group } from "three";
+import { Shape, Vector3, type Group } from "three";
 import { makeCameraPath, type CameraPose } from "./cameraPath";
 import { getHouseSceneVisibility } from "./sceneVisibility";
 import {
@@ -135,22 +135,34 @@ function ExteriorShell({ location, onDoorActivate, reducedMotion }: { location: 
       <meshStandardMaterial color="#dfcfb8" roughness={0.95} />
     </mesh>
     <group>
-      <mesh position={[0, wallHeight + 0.6, frontZ / 2]} rotation={[0.25, 0, 0]} castShadow receiveShadow>
-        <boxGeometry args={[HOUSE_LAYOUT.exterior.width + 0.55, 0.18, frontZ + 0.2]} />
+      <mesh position={[halfWidth / 2, wallHeight + 0.61, 0]} rotation={[0, 0, -0.21]} castShadow receiveShadow>
+        <boxGeometry args={[halfWidth + 0.25, 0.18, HOUSE_LAYOUT.exterior.depth + 0.55]} />
         <meshStandardMaterial color="#a65c48" roughness={0.92} />
       </mesh>
-      <mesh position={[0, wallHeight + 0.6, -frontZ / 2]} rotation={[-0.25, 0, 0]} castShadow receiveShadow>
-        <boxGeometry args={[HOUSE_LAYOUT.exterior.width + 0.55, 0.18, frontZ + 0.2]} />
+      <mesh position={[-halfWidth / 2, wallHeight + 0.61, 0]} rotation={[0, 0, 0.21]} castShadow receiveShadow>
+        <boxGeometry args={[halfWidth + 0.25, 0.18, HOUSE_LAYOUT.exterior.depth + 0.55]} />
         <meshStandardMaterial color="#9a5142" roughness={0.92} />
       </mesh>
-      <mesh position={[0, wallHeight + 1.19, 0]} castShadow>
-        <boxGeometry args={[HOUSE_LAYOUT.exterior.width + 0.45, 0.15, 0.2]} />
+      <mesh position={[0, wallHeight + 1.22, 0]} castShadow>
+        <boxGeometry args={[0.22, 0.16, HOUSE_LAYOUT.exterior.depth + 0.7]} />
         <meshStandardMaterial color="#75483a" roughness={0.91} />
       </mesh>
-      <mesh position={[0, wallHeight + 0.02, frontZ + 0.08]} castShadow>
-        <boxGeometry args={[HOUSE_LAYOUT.exterior.width + 0.5, 0.14, 0.22]} />
+      {[-1, 1].map((side) => <mesh key={side} position={[side * (halfWidth + 0.06), wallHeight + 0.04, 0]} castShadow>
+        <boxGeometry args={[0.18, 0.14, HOUSE_LAYOUT.exterior.depth + 0.6]} />
         <meshStandardMaterial color="#75483a" roughness={0.91} />
-      </mesh>
+      </mesh>)}
+      {[-frontZ, frontZ].map((z) => {
+        const gable = new Shape();
+        gable.moveTo(-halfWidth, 0);
+        gable.lineTo(halfWidth, 0);
+        gable.lineTo(0, 1.22);
+        gable.closePath();
+        return <mesh key={z} position={[0, wallHeight, z + Math.sign(z) * (wallThickness / 2 + 0.012)]}
+          rotation={z < 0 ? [0, Math.PI, 0] : [0, 0, 0]} castShadow receiveShadow>
+          <shapeGeometry args={[gable]} />
+          <meshStandardMaterial color="#eadcc8" roughness={0.95} side={2} />
+        </mesh>;
+      })}
     </group>
     {panels.map((panel, index) => <mesh key={index} position={panel.position} castShadow receiveShadow>
       <boxGeometry args={panel.size} />
