@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Vector3, type Group } from "three";
 import {
-  EXTERIOR_CAMERA, HOUSE_LAYOUT, MAP_CAMERA, getRoomBySlug, getRoomPortalOpenings, getRoomWallRuns, roomOwnsPortalFrame, rooms,
+  EXTERIOR_CAMERA, HOUSE_LAYOUT, MAP_CAMERA, getFrontDoorAction, getRoomBySlug, getRoomPortalOpenings, getRoomWallRuns, roomOwnsPortalFrame, rooms,
   type HouseLocation, type Room, type RoomSlug, type RoomPortalOpening, type Vector3Tuple,
 } from "./rooms";
 
@@ -75,9 +75,10 @@ function CameraRig({ location, reducedMotion }: { location: HouseLocation; reduc
   return null;
 }
 
-function ExteriorShell({ location, onEnter, reducedMotion }: { location: HouseLocation; onEnter: () => void; reducedMotion: boolean }) {
+function ExteriorShell({ location, onDoorActivate, reducedMotion }: { location: HouseLocation; onDoorActivate: (entering: boolean) => void; reducedMotion: boolean }) {
   const door = useRef<Group>(null);
   const { invalidate } = useThree();
+  const doorAction = getFrontDoorAction(location);
   const opening = location !== "exterior";
   const doorWidth = HOUSE_LAYOUT.entrance.doorWidth, doorHeight = 2.3;
   const frontZ = HOUSE_LAYOUT.exterior.depth / 2;
@@ -152,9 +153,9 @@ function ExteriorShell({ location, onEnter, reducedMotion }: { location: HouseLo
     </mesh>
     <group ref={door} position={[-doorWidth / 2, 0, frontZ + 0.015]}>
       <mesh position={[doorWidth / 2, doorHeight / 2, 0]} castShadow
-        onClick={(event) => { event.stopPropagation(); onEnter(); }}
-        onPointerOver={() => { document.body.style.cursor = "pointer"; }}
-        onPointerOut={() => { document.body.style.cursor = ""; }}>
+        onClick={doorAction ? (event) => { event.stopPropagation(); onDoorActivate(doorAction === "enter"); } : undefined}
+        onPointerOver={doorAction ? () => { document.body.style.cursor = "pointer"; } : undefined}
+        onPointerOut={doorAction ? () => { document.body.style.cursor = ""; } : undefined}>
         <boxGeometry args={[doorWidth, doorHeight, 0.1]} />
         <meshStandardMaterial color="#76513e" roughness={0.84} />
       </mesh>
@@ -320,8 +321,8 @@ function RoofDeck({ onSelect }: { onSelect: () => void }) {
   </group>;
 }
 
-function HouseArchitecture({ location, onEnterHouse, onSelectRoom, reducedMotion }: {
-  location: HouseLocation; onEnterHouse: () => void; onSelectRoom: (slug: RoomSlug) => void; reducedMotion: boolean;
+function HouseArchitecture({ location, onDoorActivate, onSelectRoom, reducedMotion }: {
+  location: HouseLocation; onDoorActivate: (entering: boolean) => void; onSelectRoom: (slug: RoomSlug) => void; reducedMotion: boolean;
 }) {
   const active = location === "exterior" || location === "map" ? undefined : getRoomBySlug(location);
   const showRoofDeck = location === "exterior" || location === "garden" || location === "rooftop";
@@ -329,7 +330,7 @@ function HouseArchitecture({ location, onEnterHouse, onSelectRoom, reducedMotion
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.205, 0]} receiveShadow>
       <planeGeometry args={[48, 48]} /><meshStandardMaterial color="#d6d5c0" roughness={1} />
     </mesh>
-    <ExteriorShell location={location} onEnter={onEnterHouse} reducedMotion={reducedMotion} />
+    <ExteriorShell location={location} onDoorActivate={onDoorActivate} reducedMotion={reducedMotion} />
     {rooms.filter((room) => room.level === "ground" || room.level === "upper").map((room) =>
       <RoomArea key={room.id} room={room} active={active} onSelect={onSelectRoom} />)}
     <GardenArea onSelect={() => onSelectRoom("garden")} />
@@ -347,8 +348,8 @@ function HouseArchitecture({ location, onEnterHouse, onSelectRoom, reducedMotion
   </>;
 }
 
-export function HouseScene({ location, reducedMotion, onEnter, onSelect }: {
-  location: HouseLocation; reducedMotion: boolean; onEnter: () => void; onSelect: (slug: RoomSlug) => void;
+export function HouseScene({ location, reducedMotion, onDoorActivate, onSelect }: {
+  location: HouseLocation; reducedMotion: boolean; onDoorActivate: (entering: boolean) => void; onSelect: (slug: RoomSlug) => void;
 }) {
   return <Canvas camera={{ position: EXTERIOR_CAMERA.position, fov: 36, near: 0.1, far: 120 }}
     dpr={reducedMotion ? 1 : ([1, 1.4] as [number, number])} frameloop="demand" shadows>
@@ -356,6 +357,6 @@ export function HouseScene({ location, reducedMotion, onEnter, onSelect }: {
     <ambientLight intensity={1.1} /><hemisphereLight args={["#fff2db", "#8c9479", 1.1]} />
     <directionalLight position={[8, 15, 9]} intensity={2.1} castShadow shadow-mapSize-width={1024} shadow-mapSize-height={1024} />
     <CameraRig location={location} reducedMotion={reducedMotion} />
-    <HouseArchitecture location={location} onEnterHouse={onEnter} onSelectRoom={onSelect} reducedMotion={reducedMotion} />
+    <HouseArchitecture location={location} onDoorActivate={onDoorActivate} onSelectRoom={onSelect} reducedMotion={reducedMotion} />
   </Canvas>;
 }

@@ -1,6 +1,6 @@
 import {describe, expect, it} from "vitest";
 import {
-  HOUSE_LAYOUT, REQUIRED_ROOM_SLUGS, ROOM_ACCESS_PORTALS, getRoomBySlug, getRoomPortalOpenings,
+  HOUSE_LAYOUT, REQUIRED_ROOM_SLUGS, ROOM_ACCESS_PORTALS, getFrontDoorAction, getRoomBySlug, getRoomPortalOpenings,
   getRoomWallIntervals, getRoomWallRuns, getSharedBoundary, roomBounds, roomOwnsPortalFrame, roomRegistryIssues, rooms,
 } from "./rooms";
 
@@ -88,6 +88,13 @@ describe("authoritative room and architectural layout", () => {
     expect(getRoomWallRuns(familyTable, "back").every((run) =>
       run.end <= -HOUSE_LAYOUT.stairs.groundDoorwayWidth / 2 + 0.025 ||
       run.start >= HOUSE_LAYOUT.stairs.groundDoorwayWidth / 2 - 0.025)).toBe(true);
+  });
+  it("lets the exterior door enter and the entrance door return outside, without acting as a shortcut from other rooms", () => {
+    expect(getFrontDoorAction("exterior")).toBe("enter");
+    expect(getFrontDoorAction("entrance")).toBe("exit");
+    expect(getFrontDoorAction("family-table")).toBeUndefined();
+    expect(getFrontDoorAction("rooftop")).toBeUndefined();
+    expect(getFrontDoorAction("map")).toBeUndefined();
   });
   it("keeps the first ground stair tread inside the rear wall's inner face", () => {
     const flight = HOUSE_LAYOUT.stairs.groundFlight;

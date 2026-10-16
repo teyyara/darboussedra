@@ -76,7 +76,9 @@ export default function App() {
         : webgl === "no"
           ? <StaticHouseIllustration />
           : <SceneErrorBoundary><Suspense fallback={<StaticHouseIllustration />}>
-            <HouseScene location={current} reducedMotion={reducedMotion} onEnter={() => select("entrance")} onSelect={select} />
+            <HouseScene location={current} reducedMotion={reducedMotion}
+              onDoorActivate={(entering) => entering ? select("entrance") : go("/")}
+              onSelect={select} />
           </Suspense></SceneErrorBoundary>}
     </div>
     <div className="wash" />

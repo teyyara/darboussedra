@@ -108,6 +108,13 @@ export const MAP_CAMERA = { position: [0, 18, 16] as Vector3Tuple, target: [0, 1
 export function getRoomBySlug(slug: string): Room | undefined {
   return rooms.find((room) => room.slug === slug);
 }
+
+/** The front door is a navigation boundary, not a dead-end interaction. */
+export function getFrontDoorAction(location: HouseLocation): "enter" | "exit" | undefined {
+  if (location === "exterior") return "enter";
+  if (location === "entrance") return "exit";
+  return undefined;
+}
 export function roomBounds(room: Room) {
   const [x, , z] = room.scenePosition;
   const [width, depth] = room.footprint;
