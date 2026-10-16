@@ -55,7 +55,7 @@ function CameraRig({ location, reducedMotion, onArrive, onTransitionChange }: {
     const waypoint = path.current[index.current];
     const nextPosition = waypoint?.position ?? desired.position;
     const nextTarget = waypoint?.target ?? desired.target;
-    const amount = 1 - Math.exp(-7.2 * delta);
+    const amount = 1 - Math.exp(-12 * delta);
     camera.position.lerp(nextPosition, amount);
     lookAt.current.lerp(nextTarget, amount);
     camera.lookAt(lookAt.current);
@@ -355,9 +355,9 @@ function RoomFurnishings({ room }: { room: Room }) {
         <cylinderGeometry args={[0.27, 0.28, 0.05, 24]} />
         <meshStandardMaterial color="#ddcbb2" roughness={0.98} />
       </mesh>
-      <PropBox position={[0.48, 0.72, -1.15]} size={[0.24, 1.15, 0.24]} color="#ac8965" />
-      <mesh position={[0.48, 1.35, -1.15]}>
-        <sphereGeometry args={[0.18, 12, 10]} />
+      <PropBox position={[0.48, 0.52, -1.15]} size={[0.22, 0.82, 0.22]} color="#ac8965" />
+      <mesh position={[0.48, 0.99, -1.15]}>
+        <sphereGeometry args={[0.14, 12, 10]} />
         <meshStandardMaterial color="#8e9b80" roughness={1} />
       </mesh>
       <mesh position={[0.36, 0.12, 0.75]}>

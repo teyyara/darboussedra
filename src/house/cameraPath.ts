@@ -61,7 +61,7 @@ function sampledStairWaypoints(flight: {
 }): CameraPose[] {
   const risePerStep = (flight.to[1] - flight.from[1]) / flight.steps;
   const runPerStep = (flight.to[2] - flight.from[2]) / flight.steps;
-  const indices = [...new Set([0, 4, 8, 12, flight.steps - 1].filter((index) => index >= 0 && index < flight.steps))]
+  const indices = [...new Set([0, Math.floor(flight.steps / 2), flight.steps - 1].filter((index) => index >= 0 && index < flight.steps))]
     .sort((a, b) => a - b);
   const direction: readonly [number, number] = runPerStep < 0 ? [0, -1] : [0, 1];
   return indices.map((index) => {
@@ -79,7 +79,7 @@ function groundStairWalkway(): CameraPose[] {
     ...sampledStairWaypoints(flight),
     poseFacing(top, [0, -1]),
     poseFacing(top, [0, 1]),
-    ...[-3.5, -2.6, -1.6, -0.6, 0.25, 1.05].map((z) => poseFacing([0, upperEye, z], [0, 1])),
+    ...[-3.2, -1.5, 0.25, 1.05].map((z) => poseFacing([0, upperEye, z], [0, 1])),
   ];
 }
 
@@ -94,7 +94,7 @@ function roofStairWalkway(): CameraPose[] {
     ...sampledStairWaypoints(flight),
     poseFacing([flight.to[0], roofEye, flight.to[2]], [0, -1]),
     poseFacing([flight.to[0], roofEye, flight.to[2]], [0, 1]),
-    ...[-0.9, 0.0, 0.6].map((z) => poseFacing([0, roofEye, z], [0, 1])),
+    ...[-0.25, 0.6].map((z) => poseFacing([0, roofEye, z], [0, 1])),
   ];
 }
 

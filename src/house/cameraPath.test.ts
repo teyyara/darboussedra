@@ -63,11 +63,13 @@ describe("3D camera paths", () => {
     const pets = poseFor("pets-corner");
     const prayer = poseFor("prayer-room");
     expect(living.target[2]).toBeLessThan(living.position[2]); // sofa sits toward the back of the living room
-    expect(kitchen.target[0]).toBeGreaterThan(kitchen.position[0]); // counter and hob are along the right side
+    expect(kitchen.target[0]).toBeLessThan(kitchen.position[0]); // frame the hob and fridge from the counter side
     expect(kitchen.target[2]).toBeLessThan(kitchen.position[2]);
     expect(library.target[0]).toBeLessThan(library.position[0]); // shelves run along the left wall
+    expect(library.position[2]).toBeGreaterThan(-1.0); // keep the viewpoint near the doorway to avoid a shelf close-up
     expect(pets.target[0]).toBeGreaterThan(pets.position[0]);
     expect(pets.target[2]).toBeLessThan(pets.position[2]); // cat bed and scratch post are toward the rear
+    expect(pets.target[0]).toBeGreaterThan(-2.2); // frame the bed and post together, not just the post
     expect(prayer.target[2]).toBeLessThan(prayer.position[2]); // prayer mat lies beyond the entry side
     for (const slug of ["zakariae-room", "zineb-room", "meryem-room", "fatiha-room"]) {
       const bedroom = poseFor(slug);
