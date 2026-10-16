@@ -37,37 +37,6 @@ export const HOUSE_LAYOUT = {
   },
 } as const;
 
-type RoomFacing = "front" | "back" | "left" | "right";
-
-const facingDirection: Record<RoomFacing, readonly [number, number]> = {
-  front: [0, 1], back: [0, -1], left: [-1, 0], right: [1, 0],
-};
-
-/**
- * Room cameras stand at eye height and aim into the registered room footprint.
- * A doorway's direction is only a facing hint: the focus point must remain inside
- * the named room, especially for narrow rooms such as Pets' Corner and bedrooms.
- */
-function roomCamera(position: Vector3Tuple, footprint: readonly [number, number], facing: RoomFacing): Room["camera"] {
-  const [x, y, z] = position;
-  const [dx, dz] = facingDirection[facing];
-  const halfSpan = (dx === 0 ? footprint[1] : footprint[0]) / 2;
-  const crossHalfSpan = (dx === 0 ? footprint[0] : footprint[1]) / 2;
-  const cameraOffset = Math.min(0.28, Math.max(0.08, halfSpan * 0.24));
-  const targetOffset = Math.min(0.72, Math.max(0.12, halfSpan - 0.14));
-  const crossOffset = Math.min(0.52, Math.max(0.08, crossHalfSpan - 0.14));
-  const eyeY = y + 1.65;
-  // Stand near one side, then look diagonally across the room instead of framing the doorway head-on.
-  return {
-    position: [x + dx * cameraOffset, eyeY, z + dz * cameraOffset],
-    target: [
-      x - dx * targetOffset + (dz !== 0 ? crossOffset : 0),
-      eyeY - 0.3,
-      z - dz * targetOffset + (dx !== 0 ? crossOffset : 0),
-    ],
-  };
-}
-
 const roomDefinitions = [
   { id: "entrance", slug: "entrance", name: "Front Door & Entrance", kind: "entry", level: "ground",
     scenePosition: [0, HOUSE_LAYOUT.groundY, 3.695], camera: { position: [0, 1.65, 4.2], target: [0, 1.35, 2.85] },
