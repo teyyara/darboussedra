@@ -1,40 +1,24 @@
 # AEOS Status — Dar Boussedra
 
 **State:** LOOP COMPLETE — WAITING_FOR_CONTINUE  
-**Active keyphrase:** read DAR BOUSSEDRA Master Build Strategy — Initial 3D House and Website Foundation  
-**Rulebook version:** AEOS v3 (repository operating summary at evidence/AEOS-RULEBOOK.md)  
-**Run ID:** 20261016-darboussedra-aeos-v3-loop001  
-**Loop:** 001 · **Candidate:** dar-boussedra-foundation-001  
-**Repository:** https://github.com/teyyara/darboussedra  
-**Branch:** main (the only branch present at initialization)  
-**Initial HEAD:** 76a0a4b158516b47c782b992308ac28204d5acdd  
+**Keyphrase:** read DAR BOUSSEDRA Master Build Strategy — Initial 3D House and Website Foundation  
+**Run ID:** 20261016-darboussedra-aeos-v3-loop001 · **Loop:** 001  
+**Repository:** https://github.com/teyyara/darboussedra · **Branch:** main  
 **Last updated:** 2026-10-16
 
-## Loop 001 outcome
-- React + TypeScript + Vite with a React Three Fiber v9 / React 19-compatible target.
-- Warm responsive arrival UI and an early procedural exterior/interior cutaway scene.
-- Typed metadata for all 13 permanent spaces and registry tests for uniqueness and connections.
-- Exterior, map and direct room paths, browser history/popstate handling, invalid-route recovery and location labels.
-- Semantic HTML room navigation, reduced-motion support, WebGL 2 detection and local 2D illustration fallback.
-- Product contract, architecture decisions, research dossier, requirements traceability, configuration/capabilities/state and project-brief summary.
-- GitHub Actions workflow for typecheck, tests and production build. No deployment workflow.
+## Loop 001 result
+- React/TypeScript/Vite foundation with a compatible React Three Fiber / React 19 target.
+- Warm responsive arrival page and early procedural exterior/cutaway house blockout.
+- Typed registry for all 13 required permanent spaces with direct slug, camera, level, map and connection metadata.
+- Room-map list with accessible HTML room controls, direct routes/history, invalid-route recovery, reduced-motion behavior and local 2D fallback.
+- Product contract, architecture decisions, research dossier, requirement traceability, project configuration, capabilities and persistent loop state.
+- Free GitHub Actions workflow for typecheck, tests and production build. No deployment workflow.
 
-## Validation evidence
-- Repository identity/read access: PASS — teyyara/darboussedra.
-- Write/push permission: PASS — repository metadata reported push/admin permission.
-- Initial repository inspection: PASS — only README.md, one initial commit and one unprotected main branch.
-- Code/config credential-like-pattern review: performed; no credentials intentionally included.
-- Local clone/install/typecheck/tests/build/browser inspection: NOT RUN; runtime could not resolve GitHub/npm and browser automation was unavailable.
-- Remote CI: pending observation after push; not assumed to pass.
-- Deployment: NOT PERFORMED.
+## Validation
+Repository identity and write permissions were verified. Local dependency installation, typecheck, tests, build and browser inspection were NOT RUN because the runtime could not resolve GitHub/npm and has no browser automation. CI is unverified until its run result is actually observed. Deployment was NOT PERFORMED.
 
-## Stage A gate
-**Not certified PASS yet.** Observe a successful clean-checkout CI run and verify app behavior in a real browser before claiming Stage A complete. A successful build alone does not prove visual quality, room transitions, keyboard/mobile behavior or fallback correctness.
+## Acceptance
+Stage A is NOT certified PASS. Room architecture remains an early blockout; circulation, staircase/roof/garden coherence, map/scene alignment, browser navigation, accessibility, responsive rendering and real-device performance still need verification. Implementation is not proof of a successful build or production readiness.
 
 ## Next work
-1. Inspect the actual GitHub Actions run and repair build/type/test failures if any.
-2. Refine rooms/openings and coherent stairs, rooftop and garden circulation.
-3. Align scene/map and validate URLs, history, keyboard, reduced motion, mobile and WebGL fallback in a real browser.
-4. Collect actual performance/accessibility evidence without guessing FPS or declaring production readiness.
-
-Loop 001 ends here. Do not start another loop without a new standalone CONTINUE command.
+Check the actual CI run, repair any failures, then refine distinct room openings and routes and test keyboard, mobile, reduced motion and forced-WebGL fallback in a real browser. Wait for a new standalone CONTINUE before another loop.
