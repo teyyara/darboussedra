@@ -28,7 +28,9 @@
 
 22. **Follow-up geometry consistency.** The main facade doorway and entrance-to-garden portal now both use a dedicated 1.5 m entrance-door setting; the 1.2 m stair-hall portal remains independent. A regression test asserts the facade-linked room opening width. Facade panels derive from shell dimensions, garden props remain within the registered garden width, and back-wall trim uses single-owner intervals. These source-level refinements pass CI but still require rendered visual review.
 
-23. **Portal-clear wall details.** Wall segments and their top trim share a tested wall-run helper that excludes all declared doorway intervals; in particular, the family-table stair-hall opening must never be covered by decorative trim.\n\n24. **Front-door navigation.** Clicking the front door enters the house from the exterior and returns outside from the entrance, while the front-door hit target is disabled for unrelated room views; the action mapping has a unit test.
+23. **Portal-clear wall details.** Wall segments and their top trim share a tested wall-run helper that excludes all declared doorway intervals; in particular, the family-table stair-hall opening must never be covered by decorative trim.
+
+24. **Front-door navigation.** Clicking the front door enters the house from the exterior and returns outside from the entrance, while the front-door hit target is disabled for unrelated room views; the action mapping has a unit test.
 
 
 25. **3D discoverability.** Room floors give a soft, room-type-aware hover tint before click selection, complementing the active-room ring. This is an input affordance, not new room content; actual colour/contrast still requires visual review.
