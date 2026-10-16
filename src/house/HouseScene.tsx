@@ -291,7 +291,10 @@ function GardenArea({ onSelect }: { onSelect: () => void }) {
 }
 
 function RoofDeck({ onSelect }: { onSelect: () => void }) {
-  const width = 10.6, depth = 8.6, halfWidth = width / 2, halfDepth = depth / 2;
+  const rooftop = getRoomBySlug("rooftop");
+  if (!rooftop) return null;
+  const [width, depth] = rooftop.footprint;
+  const halfWidth = width / 2, halfDepth = depth / 2;
   const opening = HOUSE_LAYOUT.stairs.roofOpening;
   const openLeft = opening.centerX - opening.width / 2, openRight = opening.centerX + opening.width / 2;
   const openBack = opening.centerZ - opening.depth / 2, openFront = opening.centerZ + opening.depth / 2;
