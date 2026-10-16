@@ -667,6 +667,12 @@ function HouseArchitecture({ location, visualLocation, transitioning, exteriorSh
 }) {
   const active = visualLocation === "exterior" || visualLocation === "map" ? undefined : getRoomBySlug(visualLocation);
   const visibility = getHouseSceneVisibility(location, visualLocation, transitioning, exteriorShellOverride);
+  const bridgeSideWidth = Math.max(0.1, (HOUSE_LAYOUT.upperBridge.width - HOUSE_LAYOUT.stairs.openingWidth) / 2);
+  const bridgeSideOffset = HOUSE_LAYOUT.stairs.openingWidth / 2 + bridgeSideWidth / 2;
+  const bridgeRailX = HOUSE_LAYOUT.upperBridge.centerX + HOUSE_LAYOUT.stairs.openingWidth / 2;
+  const bridgePostCount = Math.ceil(HOUSE_LAYOUT.upperBridge.depth / 0.75) + 1;
+  const bridgeY = HOUSE_LAYOUT.upperBridge.levelY;
+  const upperStairLandingZ = HOUSE_LAYOUT.stairs.groundFlight.to[2] - 0.18;
   return <>
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.205, 0]} receiveShadow>
       <planeGeometry args={[48, 48]} /><meshStandardMaterial color="#d6d5c0" roughness={1} />
@@ -682,10 +688,36 @@ function HouseArchitecture({ location, visualLocation, transitioning, exteriorSh
         <boxGeometry args={[HOUSE_LAYOUT.upperLanding.width, HOUSE_LAYOUT.floorThickness, HOUSE_LAYOUT.upperLanding.depth]} />
         <meshStandardMaterial color="#cbb99f" roughness={0.96} />
       </mesh>
-      <mesh position={[HOUSE_LAYOUT.upperBridge.centerX, HOUSE_LAYOUT.upperBridge.levelY + HOUSE_LAYOUT.floorThickness / 2, HOUSE_LAYOUT.upperBridge.centerZ]} receiveShadow>
-        <boxGeometry args={[HOUSE_LAYOUT.upperBridge.width, HOUSE_LAYOUT.floorThickness, HOUSE_LAYOUT.upperBridge.depth]} />
+      {/* Leave a real stairwell void above the lower flight; the old single slab
+          forced the first-person camera through its underside at the upper floor. */}
+      {[-1, 1].map((side) => <mesh key={"bridge-side-" + side}
+        position={[HOUSE_LAYOUT.upperBridge.centerX + side * bridgeSideOffset, bridgeY + HOUSE_LAYOUT.floorThickness / 2, HOUSE_LAYOUT.upperBridge.centerZ]} receiveShadow>
+        <boxGeometry args={[bridgeSideWidth, HOUSE_LAYOUT.floorThickness, HOUSE_LAYOUT.upperBridge.depth]} />
+        <meshStandardMaterial color="#cbb99f" roughness={0.96} />
+      </mesh>)}
+      {/* A short head landing and edge rails make the floor opening read as a stairwell,
+          while leaving a usable walking strip alongside it. */}
+      <mesh position={[HOUSE_LAYOUT.upperBridge.centerX, bridgeY + HOUSE_LAYOUT.floorThickness / 2, upperStairLandingZ]} receiveShadow>
+        <boxGeometry args={[HOUSE_LAYOUT.upperBridge.width, HOUSE_LAYOUT.floorThickness, 0.36]} />
         <meshStandardMaterial color="#cbb99f" roughness={0.96} />
       </mesh>
+      {[-1, 1].map((side) => {
+        const railX = HOUSE_LAYOUT.upperBridge.centerX + side * bridgeRailX;
+        return <group key={"bridge-guard-" + side}>
+          <mesh position={[railX, bridgeY + 0.82, HOUSE_LAYOUT.upperBridge.centerZ]}>
+            <boxGeometry args={[0.065, 0.075, HOUSE_LAYOUT.upperBridge.depth]} />
+            <meshStandardMaterial color="#9a704e" roughness={0.82} />
+          </mesh>
+          {Array.from({ length: bridgePostCount }, (_, index) => {
+            const z = HOUSE_LAYOUT.upperBridge.centerZ - HOUSE_LAYOUT.upperBridge.depth / 2 +
+              index * HOUSE_LAYOUT.upperBridge.depth / (bridgePostCount - 1);
+            return <mesh key={index} position={[railX, bridgeY + 0.42, z]}>
+              <boxGeometry args={[0.06, 0.84, 0.06]} />
+              <meshStandardMaterial color="#a47a56" roughness={0.84} />
+            </mesh>;
+          })}
+        </group>;
+      })}
     </>}
     {visibility.showGroundStairs && <StairFlight flight={HOUSE_LAYOUT.stairs.groundFlight} width={HOUSE_LAYOUT.stairs.width} />}
     {visibility.showRoofStairs && <StairFlight flight={HOUSE_LAYOUT.stairs.roofFlight} width={HOUSE_LAYOUT.stairs.width} onSelectRoof={() => onSelectRoom("rooftop")} />}
