@@ -182,7 +182,7 @@ export function HouseScene({location,reducedMotion,onEnter,onSelect}:{location:H
  const target:Vector3Tuple=[pose.target[0],pose.target[1],pose.target[2]];
  return <Canvas camera={{position:EXTERIOR_CAMERA.position,fov:36,near:0.1,far:120}} dpr={reducedMotion?1:([1,1.4] as [number,number])} frameloop="demand" shadows>
   <color attach="background" args={["#eee7da"]}/><fog attach="fog" args={["#eee7da",22,55]}/>
-  <ambientLight intensity={1.1}/><hemisphereLight args={["#fff2db","#8c9479",1.1}/>
+  <ambientLight intensity={1.1}/><hemisphereLight args={["#fff2db","#8c9479",1.1]}/>
   <directionalLight position={[8,15,9]} intensity={2.1} castShadow shadow-mapSize-width={1024} shadow-mapSize-height={1024}/>
   <CameraRig position={position} target={target} reducedMotion={reducedMotion}/>
   <HouseArchitecture location={location} onEnterHouse={onEnter} onSelectRoom={onSelect}/>
