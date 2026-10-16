@@ -39,6 +39,12 @@ async function waitForExperience(page) {
 
 async function saveScreenshot(page, filename) {
   const filepath = outputDir + "/" + filename;
+  if (/stair|landing-turn/i.test(filename)) {
+    report.walkingHudHiddenDuringStairCaptures = await page.locator(".room-welcome.is-walking").evaluate((element) => {
+      const style = getComputedStyle(element);
+      return style.visibility === "hidden" && Number(style.opacity) === 0;
+    }).catch(() => false);
+  }
   await page.screenshot({ path: filepath, animations: "disabled" });
   report.screenshots.push(filename);
 }
@@ -191,6 +197,7 @@ if (
   report.roomArrivals.some((arrival) => !arrival.arrived) ||
   !report.navigationGuideDetected ||
   !report.mobileNavigationGuideVisible ||
+  !report.walkingHudHiddenDuringStairCaptures ||
   report.mobileHasHorizontalDocumentOverflow ||
   report.roomDirectoryButtonCount !== 13 ||
   report.mobileRoomDirectoryButtonCount !== 13
