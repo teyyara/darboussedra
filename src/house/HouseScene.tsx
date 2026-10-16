@@ -79,23 +79,31 @@ function ExteriorShell({ location, onEnter, reducedMotion }: { location: HouseLo
   const door = useRef<Group>(null);
   const { invalidate } = useThree();
   const opening = location !== "exterior";
-  const doorWidth = 1.5, doorHeight = 2.3;
+  const doorWidth = HOUSE_LAYOUT.stairs.groundDoorwayWidth, doorHeight = 2.3;
+  const frontWindowWidth = 1.3;
+  const frontWindowInset = 2.55;
+  const windowCenterX = halfWidth - frontWindowInset;
+  const windowOuterEdge = windowCenterX + frontWindowWidth / 2;
+  const windowInnerEdge = windowCenterX - frontWindowWidth / 2;
+  const outerPanelWidth = halfWidth - windowOuterEdge;
+  const sidePanelWidth = windowInnerEdge - doorWidth / 2;
+  const sidePanelCenter = (windowInnerEdge + doorWidth / 2) / 2;
   const frontZ = HOUSE_LAYOUT.exterior.depth / 2;
   const wallHeight = HOUSE_LAYOUT.exterior.wallHeight;
   const halfWidth = HOUSE_LAYOUT.exterior.width / 2;
   const wallThickness = HOUSE_LAYOUT.exterior.wallThickness;
   const panels: { position: Vector3Tuple; size: Vector3Tuple }[] = [
-    { position: [-4.65, wallHeight / 2, frontZ], size: [1.9, wallHeight, wallThickness] },
-    { position: [-3.05, 0.775, frontZ], size: [1.3, 1.55, wallThickness] },
-    { position: [-3.05, 3.1, frontZ], size: [1.3, 0.8, wallThickness] },
-    { position: [-3.05, (4.65 + wallHeight) / 2, frontZ], size: [1.3, wallHeight - 4.65, wallThickness] },
-    { position: [-1.575, wallHeight / 2, frontZ], size: [1.65, wallHeight, wallThickness] },
+    { position: [-(windowOuterEdge + halfWidth) / 2, wallHeight / 2, frontZ], size: [outerPanelWidth, wallHeight, wallThickness] },
+    { position: [-windowCenterX, 0.775, frontZ], size: [frontWindowWidth, 1.55, wallThickness] },
+    { position: [-windowCenterX, 3.1, frontZ], size: [frontWindowWidth, 0.8, wallThickness] },
+    { position: [-windowCenterX, (4.65 + wallHeight) / 2, frontZ], size: [frontWindowWidth, wallHeight - 4.65, wallThickness] },
+    { position: [-sidePanelCenter, wallHeight / 2, frontZ], size: [sidePanelWidth, wallHeight, wallThickness] },
     { position: [0, (doorHeight + wallHeight) / 2, frontZ], size: [doorWidth, wallHeight - doorHeight, wallThickness] },
-    { position: [1.575, wallHeight / 2, frontZ], size: [1.65, wallHeight, wallThickness] },
-    { position: [3.05, 0.775, frontZ], size: [1.3, 1.55, wallThickness] },
-    { position: [3.05, 3.1, frontZ], size: [1.3, 0.8, wallThickness] },
-    { position: [3.05, (4.65 + wallHeight) / 2, frontZ], size: [1.3, wallHeight - 4.65, wallThickness] },
-    { position: [4.65, wallHeight / 2, frontZ], size: [1.9, wallHeight, wallThickness] },
+    { position: [sidePanelCenter, wallHeight / 2, frontZ], size: [sidePanelWidth, wallHeight, wallThickness] },
+    { position: [windowCenterX, 0.775, frontZ], size: [frontWindowWidth, 1.55, wallThickness] },
+    { position: [windowCenterX, 3.1, frontZ], size: [frontWindowWidth, 0.8, wallThickness] },
+    { position: [windowCenterX, (4.65 + wallHeight) / 2, frontZ], size: [frontWindowWidth, wallHeight - 4.65, wallThickness] },
+    { position: [(windowOuterEdge + halfWidth) / 2, wallHeight / 2, frontZ], size: [outerPanelWidth, wallHeight, wallThickness] },
   ];
   useEffect(() => { invalidate(); }, [opening, invalidate]);
   useFrame((_state, delta) => {
@@ -128,14 +136,14 @@ function ExteriorShell({ location, onEnter, reducedMotion }: { location: HouseLo
       <boxGeometry args={panel.size} />
       <meshStandardMaterial color="#eadcc8" roughness={0.94} />
     </mesh>)}
-    {[-3.05, 3.05].flatMap((x) => [2.1, 4.075].map((y, index) =>
+    {[-windowCenterX, windowCenterX].flatMap((x) => [2.1, 4.075].map((y, index) =>
       <group key={x + "-" + index} position={[x, y, frontZ + 0.03]}>
         <mesh>
-          <boxGeometry args={[1.12, 1.0, 0.06]} />
+          <boxGeometry args={[frontWindowWidth - 0.18, 1.0, 0.06]} />
           <meshStandardMaterial color="#e5b973" emissive="#b88745" emissiveIntensity={0.13} roughness={0.32} metalness={0.08} />
         </mesh>
         <mesh><boxGeometry args={[0.055, 1.04, 0.08]} /><meshStandardMaterial color="#947052" roughness={0.7} /></mesh>
-        <mesh><boxGeometry args={[1.16, 0.055, 0.08]} /><meshStandardMaterial color="#947052" roughness={0.7} /></mesh>
+        <mesh><boxGeometry args={[frontWindowWidth - 0.14, 0.055, 0.08]} /><meshStandardMaterial color="#947052" roughness={0.7} /></mesh>
       </group>
     ))}
     <mesh position={[0, wallHeight - 0.06, frontZ + 0.015]} receiveShadow>
@@ -239,10 +247,11 @@ function RoomArea({ room, active, onSelect }: { room: Room; active?: Room; onSel
     </mesh>)}
     {openings.filter((opening) => roomOwnsPortalFrame(room, opening)).map((opening, index) => <DoorwayFrame key={(opening.targetSlug ?? opening.zone ?? "portal") + "-" + opening.side + "-" + index}
       room={room} opening={opening} onSelect={onSelect} />)}
-    <mesh position={[0, HOUSE_LAYOUT.floorThickness + HOUSE_LAYOUT.roomWallHeight - 0.025, -depth / 2]}>
-      <boxGeometry args={[width, 0.05, 0.14]} />
+    {getRoomWallIntervals(room, "back").map((interval, index) => <mesh key={"back-trim-" + index}
+      position={[(interval.start + interval.end) / 2, HOUSE_LAYOUT.floorThickness + HOUSE_LAYOUT.roomWallHeight - 0.025, -depth / 2]}>
+      <boxGeometry args={[interval.end - interval.start, 0.05, 0.14]} />
       <meshStandardMaterial color={room.kind === "private" ? "#a96d50" : "#b18a56"} roughness={0.82} />
-    </mesh>
+    </mesh>)}
     {selected && <mesh position={[0, HOUSE_LAYOUT.floorThickness + 0.015, 0]} rotation={[-Math.PI / 2, 0, 0]}>
       <ringGeometry args={[0.26, 0.32, 32]} /><meshStandardMaterial color="#94543d" roughness={0.5} />
     </mesh>}
@@ -284,12 +293,12 @@ function GardenArea({ onSelect }: { onSelect: () => void }) {
     <mesh position={[x, 0.005, z - 0.1]} receiveShadow>
       <boxGeometry args={[1.55, 0.045, 2.1]} /><meshStandardMaterial color="#c8b89e" roughness={1} />
     </mesh>
-    {[-2.25, 2.25].map((treeX) => <group key={treeX} position={[treeX, 0, z + 0.2]}>
+    {[-width * 0.28, width * 0.28].map((treeX) => <group key={treeX} position={[treeX, 0, z + 0.2]}>
       <mesh position={[0, 0.62, 0]} castShadow><cylinderGeometry args={[0.11, 0.16, 1.24, 7]} /><meshStandardMaterial color="#76563e" roughness={0.95} /></mesh>
       <mesh position={[0, 1.5, 0]} castShadow><coneGeometry args={[0.82, 1.55, 7]} /><meshStandardMaterial color="#829071" roughness={1} /></mesh>
       <mesh position={[0.12, 2.03, 0.08]} castShadow><coneGeometry args={[0.55, 1.1, 7]} /><meshStandardMaterial color="#a0a780" roughness={1} /></mesh>
     </group>)}
-    {[-3.65, -2.9, 2.9, 3.65].map((bushX) => <mesh key={bushX} position={[bushX, 0.22, z - 0.2]} castShadow>
+    {[-width * 0.4, -width * 0.31, width * 0.31, width * 0.4].map((bushX) => <mesh key={bushX} position={[bushX, 0.22, z - 0.2]} castShadow>
       <sphereGeometry args={[0.42, 10, 8]} /><meshStandardMaterial color="#899477" roughness={1} />
     </mesh>)}
   </group>;
