@@ -25,11 +25,12 @@ function poseFor(location: HouseLocation): CameraPose {
   return getRoomBySlug(location)?.camera ?? EXTERIOR_CAMERA;
 }
 
-function CameraRig({ location, reducedMotion, onArrive, onTransitionChange }: {
+function CameraRig({ location, reducedMotion, onArrive, onTransitionChange, onExteriorShellVisibilityChange }: {
   location: HouseLocation;
   reducedMotion: boolean;
   onArrive: (location: HouseLocation) => void;
   onTransitionChange: (transitioning: boolean) => void;
+  onExteriorShellVisibilityChange: (visible: boolean | undefined) => void;
 }) {
   const { camera, invalidate } = useThree();
   const pose = useMemo(() => poseFor(location), [location]);
@@ -41,11 +42,22 @@ function CameraRig({ location, reducedMotion, onArrive, onTransitionChange }: {
   const path = useRef<AnimatedPose[]>([]);
   const index = useRef(0);
   const completedLocation = useRef<HouseLocation | undefined>(undefined);
+  const doorTransition = useRef<"entering" | "exiting" | null>(null);
+  const doorThresholdCrossed = useRef(false);
 
   useEffect(() => {
     const from = lastLocation.current;
     lastLocation.current = location;
     completedLocation.current = undefined;
+    const sourceIsOutside = from === "exterior" || getRoomBySlug(from)?.level === "outdoor";
+    const destinationIsOutside = location === "exterior" || location === "garden" || location === "map";
+    doorTransition.current = !reducedMotion && sourceIsOutside && !destinationIsOutside
+      ? "entering"
+      : !reducedMotion && !sourceIsOutside && destinationIsOutside ? "exiting" : null;
+    doorThresholdCrossed.current = false;
+    onExteriorShellVisibilityChange(doorTransition.current === "entering"
+      ? true
+      : doorTransition.current === "exiting" ? false : undefined);
     if (reducedMotion || from === location) {
       camera.position.copy(desired.position);
       camera.quaternion.copy(desired.rotation);
@@ -65,7 +77,7 @@ function CameraRig({ location, reducedMotion, onArrive, onTransitionChange }: {
       onTransitionChange(true);
     }
     invalidate();
-  }, [camera, desired, invalidate, location, onArrive, onTransitionChange, pose, reducedMotion]);
+  }, [camera, desired, invalidate, location, onArrive, onTransitionChange, onExteriorShellVisibilityChange, pose, reducedMotion]);
 
   useFrame((_state, delta) => {
     const waypoint = path.current[index.current];
@@ -81,8 +93,24 @@ function CameraRig({ location, reducedMotion, onArrive, onTransitionChange }: {
     }
     // Quaternion blending avoids lookAt-target crossings that can flip the lens on landings.
     camera.quaternion.slerp(nextRotation, 1 - Math.exp(-TURN_RESPONSE * frameDelta));
-    if (waypoint && camera.position.distanceToSquared(nextPosition) < 0.0016 &&
-      camera.quaternion.angleTo(nextRotation) < 0.035) index.current += 1;
+
+    const frontZ = HOUSE_LAYOUT.exterior.depth / 2;
+    if (!doorThresholdCrossed.current && doorTransition.current === "entering" &&
+      camera.position.z < frontZ - 0.05 &&
+      Math.abs(camera.position.x) < HOUSE_LAYOUT.entrance.doorWidth / 2 + 0.25 &&
+      camera.position.y < HOUSE_LAYOUT.entrance.doorHeight) {
+      doorThresholdCrossed.current = true;
+      onExteriorShellVisibilityChange(false);
+    } else if (!doorThresholdCrossed.current && doorTransition.current === "exiting" &&
+      camera.position.z > frontZ + 2.0 && Math.abs(camera.position.x) < 1.0 &&
+      camera.position.y < 2.3) {
+      doorThresholdCrossed.current = true;
+      onExteriorShellVisibilityChange(true);
+    }
+
+    // Position progress controls the route. Orientation keeps blending in the background,
+    // so turns don't make the walker stop dead at every stair tread.
+    if (waypoint && camera.position.distanceToSquared(nextPosition) < 0.0016) index.current += 1;
 
     const stillMoving = index.current < path.current.length ||
       camera.position.distanceToSquared(desired.position) > 0.0016 ||
@@ -90,6 +118,8 @@ function CameraRig({ location, reducedMotion, onArrive, onTransitionChange }: {
     if (stillMoving) invalidate();
     else if (completedLocation.current !== location) {
       completedLocation.current = location;
+      doorTransition.current = null;
+      onExteriorShellVisibilityChange(undefined);
       onTransitionChange(false);
       onArrive(location);
     }
@@ -616,16 +646,17 @@ function RoofDeck({ onSelect }: { onSelect: () => void }) {
   </group>;
 }
 
-function HouseArchitecture({ location, visualLocation, transitioning, onDoorActivate, onSelectRoom, reducedMotion }: {
+function HouseArchitecture({ location, visualLocation, transitioning, exteriorShellOverride, onDoorActivate, onSelectRoom, reducedMotion }: {
   location: HouseLocation;
   visualLocation: HouseLocation;
   transitioning: boolean;
+  exteriorShellOverride: boolean | undefined;
   onDoorActivate: (entering: boolean) => void;
   onSelectRoom: (slug: RoomSlug) => void;
   reducedMotion: boolean;
 }) {
   const active = visualLocation === "exterior" || visualLocation === "map" ? undefined : getRoomBySlug(visualLocation);
-  const visibility = getHouseSceneVisibility(location, visualLocation, transitioning);
+  const visibility = getHouseSceneVisibility(location, visualLocation, transitioning, exteriorShellOverride);
   return <>
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.205, 0]} receiveShadow>
       <planeGeometry args={[48, 48]} /><meshStandardMaterial color="#d6d5c0" roughness={1} />
@@ -662,6 +693,10 @@ export function HouseScene({ location, settledLocation, reducedMotion, onArrive,
   onSelect: (slug: RoomSlug) => void;
 }) {
   const [transitioning, setTransitioning] = useState(false);
+  const [exteriorShellOverride, setExteriorShellOverride] = useState<boolean | undefined>(undefined);
+  const handleExteriorShellVisibilityChange = useCallback((visible: boolean | undefined) => {
+    setExteriorShellOverride(visible);
+  }, []);
   const handleTransitionChange = useCallback((moving: boolean) => {
     setTransitioning(moving);
     onNavigationChange(moving);
@@ -673,8 +708,9 @@ export function HouseScene({ location, settledLocation, reducedMotion, onArrive,
     <color attach="background" args={["#eee7da"]} /><fog attach="fog" args={["#eee7da", 22, 55]} />
     <ambientLight intensity={1.1} /><hemisphereLight args={["#fff2db", "#8c9479", 1.1]} />
     <directionalLight position={[8, 15, 9]} intensity={2.1} castShadow shadow-mapSize-width={1024} shadow-mapSize-height={1024} />
-    <CameraRig location={location} reducedMotion={reducedMotion} onArrive={onArrive} onTransitionChange={handleTransitionChange} />
+    <CameraRig location={location} reducedMotion={reducedMotion} onArrive={onArrive}
+      onTransitionChange={handleTransitionChange} onExteriorShellVisibilityChange={handleExteriorShellVisibilityChange} />
     <HouseArchitecture location={location} visualLocation={settledLocation} transitioning={visualTransition}
-      onDoorActivate={onDoorActivate} onSelectRoom={onSelect} reducedMotion={reducedMotion} />
+      exteriorShellOverride={exteriorShellOverride} onDoorActivate={onDoorActivate} onSelectRoom={onSelect} reducedMotion={reducedMotion} />
   </Canvas>;
 }

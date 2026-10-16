@@ -12,6 +12,7 @@ export default function App() {
   const [path, setPath] = useState(window.location.pathname);
   const [webgl, setWebgl] = useState<"checking" | "yes" | "no">("checking");
   const [settledLocation, setSettledLocation] = useState<HouseLocation>("exterior");
+  const [walking, setWalking] = useState(false);
   const pathRef = useRef(path);
   const walkingRef = useRef(false);
   const previous = useRef("/");
@@ -63,6 +64,7 @@ export default function App() {
   }, [go]);
   const handleTransitionChange = useCallback((moving: boolean) => {
     walkingRef.current = moving;
+    setWalking(moving);
   }, []);
 
   useEffect(() => {
@@ -99,7 +101,7 @@ export default function App() {
       <a href="/" onClick={(event) => { event.preventDefault(); go("/"); }} aria-label="Dar Boussedra home">
         <strong>Dar Boussedra</strong><small>دار بوسدرة</small>
       </a>
-      <button type="button" onClick={openMap}>House map ↗</button>
+      <button type="button" disabled={walking} onClick={openMap}>House map ↗</button>
     </header>
     {path === "/" && settledLocation === "exterior" && <section className="welcome" aria-labelledby="welcome-title">
       <p className="eyebrow">OUR FAMILY HOME</p>
@@ -114,7 +116,7 @@ export default function App() {
       <p>{settledLocation === room.slug
         ? "Click a terracotta floor marker or doorway to keep exploring the connected house."
         : "Following the connected rooms and stairs at a slower walking pace."}</p>
-      <button className="primary" type="button" onClick={openMap}>Open the house map ↗</button>
+      <button className="primary" type="button" disabled={walking} onClick={openMap}>Open the house map ↗</button>
       <button className="plain" type="button" disabled={settledLocation !== room.slug} onClick={() => go("/")}>Return outside →</button>
     </section>}
     {map && <HouseMap active={activeRoom?.slug} onSelect={select} onClose={closeMap} />}
@@ -126,10 +128,12 @@ export default function App() {
     {!map && <aside className="navigation-guide" aria-label="3D navigation instructions">
       <span className="navigation-guide-icon" aria-hidden="true">{current === "exterior" ? "↘" : "⌖"}</span>
       <span className="navigation-guide-copy">
-        <strong>{current === "exterior" && settledLocation !== "exterior" ? "Following the route outside" : room ? "Walk to another room" : "Start at the front door"}</strong>
-        <small>{room
-          ? "Click a terracotta floor marker or doorway to walk. Open House map for any destination."
-          : "Click the gold marker above the front door to enter, or use House map."}</small>
+        <strong>{walking ? (room ? "Walking to " + room.name : "Following the route outside") : current === "exterior" && settledLocation !== "exterior" ? "Following the route outside" : room ? "Walk to another room" : "Start at the front door"}</strong>
+        <small>{walking
+          ? "Let the camera finish the doorway and stair route. Navigation becomes available on arrival."
+          : room
+            ? "Click a terracotta floor marker or doorway to walk. Open House map for any destination."
+            : "Click the gold marker above the front door to enter, or use House map."}</small>
       </span>
     </aside>}
     {invalid && <section className="welcome" aria-labelledby="missing-title">

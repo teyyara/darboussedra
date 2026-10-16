@@ -33,30 +33,38 @@ export function getHouseSceneVisibility(
   location: HouseLocation,
   settledLocation: HouseLocation,
   transitioning: boolean,
+  exteriorShellOverride?: boolean,
 ): HouseSceneVisibility {
   const destinationLevel = levelFor(location);
   const sourceLevel = levelFor(settledLocation);
   const movingBetweenStoreys = transitioning && sourceLevel !== destinationLevel &&
     ["ground", "upper", "roof"].includes(sourceLevel) &&
     ["ground", "upper", "roof"].includes(destinationLevel);
+  const sourceIsOutside = sourceLevel === "exterior" || sourceLevel === "outdoor";
+  const destinationIsOutside = destinationLevel === "exterior" || destinationLevel === "outdoor";
+  const crossingHouseBoundary = transitioning &&
+    ((sourceIsOutside && !destinationIsOutside) || (!sourceIsOutside && destinationIsOutside));
 
-  const showExteriorShell = location === "exterior" ||
+  const calculatedExteriorShell = location === "exterior" ||
     (location === "garden" && !transitioning) ||
     (transitioning && settledLocation === "exterior");
+  const showExteriorShell = exteriorShellOverride ?? calculatedExteriorShell;
 
   const showGroundRooms = destinationLevel === "ground" ||
-    (transitioning && sourceLevel === "ground");
+    (transitioning && sourceLevel === "ground") || crossingHouseBoundary;
   const showUpperRooms = destinationLevel === "upper" ||
-    (transitioning && (sourceLevel === "upper" || sourceLevel === "roof" || destinationLevel === "roof"));
+    (transitioning && (sourceLevel === "upper" || sourceLevel === "roof" || destinationLevel === "roof")) ||
+    (crossingHouseBoundary && (sourceLevel === "upper" || sourceLevel === "roof" || destinationLevel === "upper" || destinationLevel === "roof"));
   const showUpperCirculation = destinationLevel === "upper" || destinationLevel === "roof" ||
-    (transitioning && (sourceLevel === "upper" || sourceLevel === "roof"));
-  const showGroundStairs = movingBetweenStoreys &&
-    (sourceLevel === "ground" || destinationLevel === "ground");
+    (transitioning && (sourceLevel === "upper" || sourceLevel === "roof")) ||
+    (crossingHouseBoundary && (sourceLevel === "upper" || sourceLevel === "roof" || destinationLevel === "upper" || destinationLevel === "roof"));
+  const showGroundStairs = (movingBetweenStoreys && (sourceLevel === "ground" || destinationLevel === "ground")) ||
+    (crossingHouseBoundary && (sourceLevel === "upper" || sourceLevel === "roof" || destinationLevel === "upper" || destinationLevel === "roof"));
   const showRoofStairs = (!transitioning && destinationLevel === "roof") ||
     (transitioning && (sourceLevel === "roof" || destinationLevel === "roof"));
 
   const showGarden = (!transitioning && (location === "exterior" || location === "garden")) ||
-    (transitioning && location === "garden");
+    (transitioning && (location === "garden" || (location === "exterior" && !sourceIsOutside)));
   const showRoofDeck = !transitioning &&
     (location === "exterior" || location === "garden" || location === "rooftop");
 

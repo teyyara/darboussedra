@@ -66,6 +66,33 @@ describe("level-aware house rendering", () => {
     expect(climbing.showGroundStairs).toBe(true);
   });
 
+  it("keeps the shell at the front door until the camera crosses the threshold", () => {
+    const approaching = getHouseSceneVisibility("entrance", "exterior", true, true);
+    const inside = getHouseSceneVisibility("entrance", "exterior", true, false);
+    expect(approaching.showExteriorShell).toBe(true);
+    expect(inside.showExteriorShell).toBe(false);
+    expect(inside.showGroundRooms).toBe(true);
+  });
+
+  it("renders the stairs and storeys while a route leaves an upper floor for outdoors", () => {
+    const leaving = getHouseSceneVisibility("exterior", "zineb-room", true, false);
+    expect(leaving.showExteriorShell).toBe(false);
+    expect(leaving.showGroundRooms).toBe(true);
+    expect(leaving.showUpperRooms).toBe(true);
+    expect(leaving.showUpperCirculation).toBe(true);
+    expect(leaving.showGroundStairs).toBe(true);
+    expect(leaving.showRoofStairs).toBe(false);
+  });
+
+  it("keeps appropriate stair flights available for outside-to-roof travel", () => {
+    const enteringRoof = getHouseSceneVisibility("rooftop", "exterior", true, true);
+    expect(enteringRoof.showExteriorShell).toBe(true);
+    expect(enteringRoof.showGroundRooms).toBe(true);
+    expect(enteringRoof.showUpperRooms).toBe(true);
+    expect(enteringRoof.showGroundStairs).toBe(true);
+    expect(enteringRoof.showRoofStairs).toBe(true);
+  });
+
   it("shows the garden and terrace deck outside, but removes them on the way indoors", () => {
     const outside = getHouseSceneVisibility("exterior", "exterior", false);
     expect(outside.showGarden).toBe(true);
