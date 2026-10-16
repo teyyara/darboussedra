@@ -22,6 +22,10 @@ function levelFor(location: HouseLocation): HouseSceneLevel {
   return "ground";
 }
 
+function usesUpperStorey(level: HouseSceneLevel): boolean {
+  return level === "upper" || level === "roof";
+}
+
 /**
  * Each settled destination gets its own coherent view: the exterior is not
  * overdrawn with room interiors, garden cameras do not sit inside house walls,
@@ -53,13 +57,13 @@ export function getHouseSceneVisibility(
   const showGroundRooms = destinationLevel === "ground" ||
     (transitioning && sourceLevel === "ground") || crossingHouseBoundary;
   const showUpperRooms = destinationLevel === "upper" ||
-    (transitioning && (sourceLevel === "upper" || sourceLevel === "roof" || destinationLevel === "roof")) ||
-    (crossingHouseBoundary && (sourceLevel === "upper" || sourceLevel === "roof" || destinationLevel === "upper" || destinationLevel === "roof"));
-  const showUpperCirculation = destinationLevel === "upper" || destinationLevel === "roof" ||
-    (transitioning && (sourceLevel === "upper" || sourceLevel === "roof")) ||
-    (crossingHouseBoundary && (sourceLevel === "upper" || sourceLevel === "roof" || destinationLevel === "upper" || destinationLevel === "roof"));
+    (transitioning && (usesUpperStorey(sourceLevel) || destinationLevel === "roof")) ||
+    (crossingHouseBoundary && (usesUpperStorey(sourceLevel) || usesUpperStorey(destinationLevel)));
+  const showUpperCirculation = usesUpperStorey(destinationLevel) ||
+    (transitioning && usesUpperStorey(sourceLevel)) ||
+    (crossingHouseBoundary && (usesUpperStorey(sourceLevel) || usesUpperStorey(destinationLevel)));
   const showGroundStairs = (movingBetweenStoreys && (sourceLevel === "ground" || destinationLevel === "ground")) ||
-    (crossingHouseBoundary && (sourceLevel === "upper" || sourceLevel === "roof" || destinationLevel === "upper" || destinationLevel === "roof"));
+    (crossingHouseBoundary && (usesUpperStorey(sourceLevel) || usesUpperStorey(destinationLevel)));
   const showRoofStairs = (!transitioning && destinationLevel === "roof") ||
     (transitioning && (sourceLevel === "roof" || destinationLevel === "roof"));
 
