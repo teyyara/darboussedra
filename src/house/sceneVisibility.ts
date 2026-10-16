@@ -20,7 +20,9 @@ export function getCameraZoneForPosition(position: { readonly x: number; readonl
   // Otherwise the interior can vanish behind the camera before the garden is drawn.
   if (position.z > exteriorFront + HOUSE_LAYOUT.exterior.wallThickness / 2 + 0.1) return "outside";
   const floorY = position.y - 1.65;
-  if (floorY >= HOUSE_LAYOUT.roofY - 0.25) return "roof";
+  // Reveal the terrace while the camera is still on the final stair treads, before
+  // its viewpoint reaches rooftop eye height; the slab remains safely below the lens.
+  if (floorY >= HOUSE_LAYOUT.roofY - 0.5) return "roof";
   if (floorY >= HOUSE_LAYOUT.upperY - 0.25) return "upper";
   return "ground";
 }

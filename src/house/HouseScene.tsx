@@ -18,7 +18,7 @@ function poseRotation(pose: CameraPose): Quaternion {
 }
 
 const WALK_SPEED = 1.35;
-const TURN_RESPONSE = 4.2;
+const TURN_RESPONSE = 7.2;
 
 function poseFor(location: HouseLocation): CameraPose {
   if (location === "exterior" || location === "map") return EXTERIOR_CAMERA;
@@ -690,6 +690,12 @@ function HouseArchitecture({ location, visualLocation, transitioning, exteriorSh
       <planeGeometry args={[48, 48]} /><meshStandardMaterial color="#d6d5c0" roughness={1} />
     </mesh>
     {visibility.showExteriorShell && <ExteriorShell location={location} onDoorActivate={onDoorActivate} reducedMotion={reducedMotion} />}
+    {!visibility.showExteriorShell && cameraZone !== "outside" && cameraZone !== "roof" && (
+      <mesh position={[0, HOUSE_LAYOUT.exterior.wallHeight / 2, -HOUSE_LAYOUT.exterior.depth / 2]} castShadow receiveShadow>
+        <boxGeometry args={[HOUSE_LAYOUT.exterior.width, HOUSE_LAYOUT.exterior.wallHeight, HOUSE_LAYOUT.exterior.wallThickness]} />
+        <meshStandardMaterial color="#dfcfb8" roughness={0.95} />
+      </mesh>
+    )}
     {rooms.filter((room) =>
       (room.level === "ground" && visibility.showGroundRooms) ||
       (room.level === "upper" && visibility.showUpperRooms)).map((room) =>

@@ -79,10 +79,9 @@ function groundStairWalkway(): CameraPose[] {
   return [
     ...sampledStairWaypoints(flight),
     poseFacing(top, [0, -1]),
-    // Step forward onto the head landing before turning into the side walkway.
-    // Never route behind the stair's rear edge: that places the camera outside the
-    // room geometry, where the view becomes an empty horizon.
-    poseFacing([0.34, upperEye, flight.to[2] + 0.20], [1, 0]),
+    // Step onto the head landing, then turn toward the interior before moving laterally.
+    // Keeping the view aimed down the hallway avoids staring into the side void.
+    poseFacing([0, upperEye, flight.to[2] + 0.20], [0, 1]),
     poseFacing([sideLaneX, upperEye, flight.to[2] + 0.20], [0, 1]),
     ...[-3.7, -2.8, -1.8, -0.8, 0.2].map((z) => poseFacing([sideLaneX, upperEye, z], [0, 1])),
     // Rejoin the full-width upper landing beyond the end of the open stair shaft.
