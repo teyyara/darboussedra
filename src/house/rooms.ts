@@ -23,6 +23,7 @@ const FLOOR_THICKNESS = 0.14;
 
 export const HOUSE_LAYOUT = {
   exterior: { width: 11.2, depth: 9.5, wallThickness: 0.22, wallHeight: 5.55 },
+  entrance: { doorWidth: 1.5 },
   groundY: 0, upperY: 3, roofY: 5.55,
   floorThickness: FLOOR_THICKNESS, roomWallHeight: 2.41,
   upperLanding: { centerX: 0, centerZ: 1.25, width: 10.2, depth: 1.6, levelY: 3 },
@@ -188,9 +189,12 @@ export function getSharedBoundary(room: Room, neighbor: Room): SharedDoorway | u
   const a = roomBounds(room), b = roomBounds(neighbor);
   const overlapX = Math.min(a.maxX, b.maxX) - Math.max(a.minX, b.minX);
   const overlapZ = Math.min(a.maxZ, b.maxZ) - Math.max(a.minZ, b.minZ);
+  const entranceBoundary = (room.slug === "entrance" && neighbor.slug === "garden") ||
+    (room.slug === "garden" && neighbor.slug === "entrance");
   const stairBoundary = (room.slug === "family-table" && neighbor.slug === "pets-corner") ||
     (room.slug === "pets-corner" && neighbor.slug === "family-table");
-  const requestedWidth = stairBoundary ? HOUSE_LAYOUT.stairs.groundDoorwayWidth : DEFAULT_DOOR_WIDTH;
+  const requestedWidth = entranceBoundary ? HOUSE_LAYOUT.entrance.doorWidth :
+    stairBoundary ? HOUSE_LAYOUT.stairs.groundDoorwayWidth : DEFAULT_DOOR_WIDTH;
   const build = (side: WallSide, neighborSide: WallSide, offset: number, overlap: number, worldX: number, worldZ: number) => {
     const width = Math.min(requestedWidth, overlap - 0.18);
     if (width < MIN_DOOR_WIDTH) return undefined;

@@ -79,7 +79,7 @@ function ExteriorShell({ location, onEnter, reducedMotion }: { location: HouseLo
   const door = useRef<Group>(null);
   const { invalidate } = useThree();
   const opening = location !== "exterior";
-  const doorWidth = HOUSE_LAYOUT.stairs.groundDoorwayWidth, doorHeight = 2.3;
+  const doorWidth = HOUSE_LAYOUT.entrance.doorWidth, doorHeight = 2.3;
   const frontZ = HOUSE_LAYOUT.exterior.depth / 2;
   const wallHeight = HOUSE_LAYOUT.exterior.wallHeight;
   const halfWidth = HOUSE_LAYOUT.exterior.width / 2;

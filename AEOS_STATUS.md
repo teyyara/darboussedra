@@ -42,6 +42,7 @@ Improve/test architectural proportions and circulation against a visual browser 
 - **Branch:** fix/loop-004-architecture-coherence
 - Centralized shell/floor/circulation geometry, moved rear rooms clear of the central stairwell and preserved the 13 public slugs.
 - Derived room door gaps from physical adjacency; provided an explicit Family Table-to-stair-hall portal and private-room openings onto the shared upper landing.
+- Split the exterior entrance-door width from the stair-hall width and added a regression invariant that keeps the entrance facade opening and entrance-to-garden portal aligned.
 - Added single-owner wall/portal geometry so shared partitions and doorway frames are emitted once; the exterior shell owns the entrance facade rather than an overlapping room-wall strip.
 - Moved the first ground stair tread clear of the rear exterior wall and added a regression invariant for tread clearance.
 - Added source-level checks for registry consistency, usable connected boundaries, room/shell overlaps and stair/landing/roof continuity.

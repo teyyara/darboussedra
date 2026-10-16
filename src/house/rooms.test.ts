@@ -46,7 +46,11 @@ describe("authoritative room and architectural layout", () => {
       expect(bounds.minZ).toBeGreaterThan(-halfDepth + HOUSE_LAYOUT.exterior.wallThickness / 2 - 0.001);
       expect(bounds.maxZ).toBeLessThan(halfDepth - HOUSE_LAYOUT.exterior.wallThickness / 2 + 0.001);
     }
-    expect(getSharedBoundary(entrance, garden)).toBeDefined();
+    const entranceDoor = getSharedBoundary(entrance, garden);
+    expect(entranceDoor).toBeDefined();
+    expect(entranceDoor?.width).toBe(HOUSE_LAYOUT.entrance.doorWidth);
+    expect(getRoomPortalOpenings(entrance).find((opening) => opening.targetSlug === "garden")?.width)
+      .toBe(HOUSE_LAYOUT.entrance.doorWidth);
     expect(roomBounds(entrance).maxZ).toBeCloseTo(HOUSE_LAYOUT.exterior.depth / 2 - HOUSE_LAYOUT.exterior.wallThickness / 2);
     expect(getRoomPortalOpenings(getRoomBySlug("family-table")!).some((opening) => opening.zone === "stair-hall" && opening.width >= HOUSE_LAYOUT.stairs.width + 0.14)).toBe(true);
   });
