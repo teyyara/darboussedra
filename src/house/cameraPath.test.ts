@@ -192,4 +192,20 @@ describe("3D camera paths", () => {
     }
   });
 
+  it("uses the guarded side walkway to leave the lower stair opening", () => {
+    const path = makeCameraPath("family-table", "rooftop", poseFor("rooftop"));
+    const bridgeStart = HOUSE_LAYOUT.upperBridge.centerZ - HOUSE_LAYOUT.upperBridge.depth / 2;
+    const bridgeEnd = HOUSE_LAYOUT.upperBridge.centerZ + HOUSE_LAYOUT.upperBridge.depth / 2;
+    const sideLane = path.filter((pose) =>
+      Math.abs(pose.position[1] - (HOUSE_LAYOUT.upperY + 1.65)) < 0.02 &&
+      pose.position[2] > bridgeStart + 0.1 &&
+      pose.position[2] < bridgeEnd - 0.1 &&
+      Math.abs(pose.position[0] - HOUSE_LAYOUT.upperBridge.centerX) >
+        HOUSE_LAYOUT.stairs.openingWidth / 2 + 0.04);
+    expect(sideLane.length).toBeGreaterThanOrEqual(4);
+    expect(sideLane.every((pose) =>
+      Math.abs(pose.position[0] - HOUSE_LAYOUT.upperBridge.centerX) <
+        HOUSE_LAYOUT.upperBridge.width / 2)).toBe(true);
+  });
+
 });
