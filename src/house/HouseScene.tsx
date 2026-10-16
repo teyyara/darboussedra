@@ -686,7 +686,7 @@ function HouseArchitecture({ location, visualLocation, transitioning, exteriorSh
   const bridgeRailX = HOUSE_LAYOUT.upperBridge.centerX + HOUSE_LAYOUT.stairs.openingWidth / 2;
   const bridgePostCount = Math.ceil(HOUSE_LAYOUT.upperBridge.depth / 0.75) + 1;
   const bridgeY = HOUSE_LAYOUT.upperBridge.levelY;
-  const upperStairLandingZ = HOUSE_LAYOUT.stairs.groundFlight.to[2] - 0.18;
+  const upperStairLandingZ = HOUSE_LAYOUT.stairs.groundFlight.to[2] + 0.18;
   return <>
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.205, 0]} receiveShadow>
       <planeGeometry args={[48, 48]} /><meshStandardMaterial color="#d6d5c0" roughness={1} />

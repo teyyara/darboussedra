@@ -192,6 +192,19 @@ describe("3D camera paths", () => {
     }
   });
 
+  it("keeps the landing turn and head landing inside the rear stair boundary", () => {
+    const flight = HOUSE_LAYOUT.stairs.groundFlight;
+    const climb = makeCameraPath("family-table", "rooftop", poseFor("rooftop"));
+    const descent = makeCameraPath("rooftop", "prayer-room", poseFor("prayer-room"));
+    expect(Math.min(...climb.map((pose) => pose.position[2])).toBeGreaterThanOrEqual(flight.to[2] - 0.005);
+    expect(Math.min(...descent.map((pose) => pose.position[2])).toBeGreaterThanOrEqual(flight.to[2] - 0.005);
+    const landing = climb.filter((pose) =>
+      Math.abs(pose.position[1] - (HOUSE_LAYOUT.upperY + 1.65)) < 0.02 &&
+      pose.position[2] > flight.to[2] - 0.01 && pose.position[2] < flight.to[2] + 0.35);
+    expect(landing.length).toBeGreaterThanOrEqual(2);
+    expect(landing.some((pose) => pose.position[0] > 0.6)).toBe(true);
+  });
+
   it("uses the guarded side walkway to leave the lower stair opening", () => {
     const path = makeCameraPath("family-table", "rooftop", poseFor("rooftop"));
     const bridgeStart = HOUSE_LAYOUT.upperBridge.centerZ - HOUSE_LAYOUT.upperBridge.depth / 2;
