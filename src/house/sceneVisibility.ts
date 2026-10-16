@@ -1,4 +1,4 @@
-import { getRoomBySlug, type HouseLocation } from "./rooms";
+import { HOUSE_LAYOUT, getRoomBySlug, type HouseLocation } from "./rooms";
 
 export type HouseSceneLevel = "exterior" | "ground" | "upper" | "outdoor" | "roof";
 export type CameraZone = "outside" | "ground" | "upper" | "roof";
@@ -12,6 +12,17 @@ export interface HouseSceneVisibility {
   readonly showRoofStairs: boolean;
   readonly showGarden: boolean;
   readonly showRoofDeck: boolean;
+}
+
+export function getCameraZoneForPosition(position: { readonly x: number; readonly y: number; readonly z: number }): CameraZone {
+  const exteriorFront = HOUSE_LAYOUT.exterior.depth / 2;
+  // Switch outside as soon as the camera clears the façade, not a full metre later.
+  // Otherwise the interior can vanish behind the camera before the garden is drawn.
+  if (position.z > exteriorFront + HOUSE_LAYOUT.exterior.wallThickness / 2 + 0.1) return "outside";
+  const floorY = position.y - 1.65;
+  if (floorY >= HOUSE_LAYOUT.roofY - 0.25) return "roof";
+  if (floorY >= HOUSE_LAYOUT.upperY - 0.25) return "upper";
+  return "ground";
 }
 
 function levelFor(location: HouseLocation): HouseSceneLevel {

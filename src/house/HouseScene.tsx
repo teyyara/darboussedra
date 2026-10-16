@@ -2,22 +2,13 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { DoubleSide, PerspectiveCamera, Quaternion, Vector3, type Group } from "three";
 import { makeCameraPath, type CameraPose } from "./cameraPath";
-import { getHouseSceneVisibility, type CameraZone } from "./sceneVisibility";
+import { getCameraZoneForPosition, getHouseSceneVisibility, type CameraZone } from "./sceneVisibility";
 import {
   EXTERIOR_CAMERA, HOUSE_LAYOUT, getFrontDoorAction, getRoomBySlug, getRoomPortalOpenings, getRoomWallRuns, roomOwnsPortalFrame, rooms,
   type HouseLocation, type Room, type RoomSlug, type RoomPortalOpening, type Vector3Tuple,
 } from "./rooms";
 
 interface AnimatedPose { position: Vector3; rotation: Quaternion; }
-
-function cameraZoneFor(position: Vector3): CameraZone {
-  const frontZ = HOUSE_LAYOUT.exterior.depth / 2;
-  if (position.z > frontZ + 0.95) return "outside";
-  const floorY = position.y - 1.65;
-  if (floorY >= HOUSE_LAYOUT.roofY - 0.25) return "roof";
-  if (floorY >= HOUSE_LAYOUT.upperY - 0.25) return "upper";
-  return "ground";
-}
 
 function poseRotation(pose: CameraPose): Quaternion {
   const helper = new PerspectiveCamera();
@@ -74,7 +65,7 @@ function CameraRig({ location, reducedMotion, onArrive, onTransitionChange, onEx
       camera.quaternion.copy(desired.rotation);
       camera.updateProjectionMatrix();
       camera.updateMatrixWorld();
-      cameraZone.current = cameraZoneFor(desired.position);
+      cameraZone.current = getCameraZoneForPosition(desired.position);
       onCameraZoneChange(cameraZone.current);
       path.current = [];
       index.current = 0;
@@ -120,7 +111,7 @@ function CameraRig({ location, reducedMotion, onArrive, onTransitionChange, onEx
     camera.quaternion.slerp(nextRotation, 1 - Math.exp(-TURN_RESPONSE * frameDelta));
 
     const frontZ = HOUSE_LAYOUT.exterior.depth / 2;
-    const nextCameraZone = cameraZoneFor(camera.position);
+    const nextCameraZone = getCameraZoneForPosition(camera.position);
     if (nextCameraZone !== cameraZone.current) {
       cameraZone.current = nextCameraZone;
       onCameraZoneChange(nextCameraZone);
@@ -131,6 +122,13 @@ function CameraRig({ location, reducedMotion, onArrive, onTransitionChange, onEx
       camera.position.y < HOUSE_LAYOUT.entrance.doorHeight) {
       doorThresholdCrossed.current = true;
       onExteriorShellVisibilityChange(false);
+    } else if (!doorThresholdCrossed.current && doorTransition.current === "exiting" &&
+      camera.position.z > frontZ + HOUSE_LAYOUT.exterior.wallThickness / 2 + 0.1 &&
+      Math.abs(camera.position.x) < HOUSE_LAYOUT.entrance.doorWidth / 2 + 0.25 &&
+      camera.position.y < HOUSE_LAYOUT.entrance.doorHeight) {
+      // Restore the façade only after the camera has cleared the exterior wall.
+      doorThresholdCrossed.current = true;
+      onExteriorShellVisibilityChange(true);
     }
 
     // Position progress controls the route; orientation blends in the background.

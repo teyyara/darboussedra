@@ -1,7 +1,17 @@
 import {describe, expect, it} from "vitest";
-import {getHouseSceneVisibility} from "./sceneVisibility";
+import {getCameraZoneForPosition, getHouseSceneVisibility} from "./sceneVisibility";
+import {HOUSE_LAYOUT} from "./rooms";
 
 describe("level-aware house rendering", () => {
+  it("switches to the outdoor scene just after the camera clears the facade", () => {
+    const frontZ = HOUSE_LAYOUT.exterior.depth / 2;
+    const outsideFace = frontZ + HOUSE_LAYOUT.exterior.wallThickness / 2;
+    expect(getCameraZoneForPosition({x: 0, y: 1.65, z: outsideFace + 0.02})).toBe("outside");
+    expect(getCameraZoneForPosition({x: 0, y: 1.65, z: frontZ - 0.2})).toBe("ground");
+    expect(getCameraZoneForPosition({x: 0, y: HOUSE_LAYOUT.upperY + 1.65, z: 0})).toBe("upper");
+    expect(getCameraZoneForPosition({x: 0, y: HOUSE_LAYOUT.roofY + 1.65, z: 0})).toBe("roof");
+  });
+
   it("shows only the ground storey for a settled ground-floor room", () => {
     const visibility = getHouseSceneVisibility("family-table", "family-table", false);
     expect(visibility.showGroundRooms).toBe(true);
