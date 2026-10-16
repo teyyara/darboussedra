@@ -74,3 +74,34 @@ The source-code updates below passed automated validation in [run 38953581339](h
 - Added regression coverage for ground/upper/roof visibility and for room-focused camera bounds.
 - Latest automated validation: [run 38959873489](https://github.com/teyyara/darboussedra/actions/runs/38959873489), 30 tests across five files, TypeScript and production build passed. Build still reports the lazy HouseScene chunk above 500 kB (900.06 kB minified / 243.03 kB gzip).
 - **Visual limitation:** the rendered preview still cannot be inspected from this session because Vercel denies access to team scope `tyyr1`. The code changes address concrete source-level causes, but no screenshot/visual pass is claimed.
+
+
+## Latest Loop 004 checkpoint — 2026-10-16 (browser-reviewed)
+
+**State:** LOOP 004 — architecture/visual coherence corrections checkpointed; waiting for the next explicit `CONTINUE`.
+**Latest source commit:** `63d1d82a36943dd22ec30e826abc24df0ab6b651`
+**Validated CI:** [run 38965201076](https://github.com/teyyara/darboussedra/actions/runs/38965201076) — PASS.
+**Review artifact:** The run contains a `darboussedra-visual-review` artifact with nine Chromium screenshots and `browser-review.json`.
+**PR:** [#5 — Loop 004: Reconcile shell, room connections, stairs and spatial map](https://github.com/teyyara/darboussedra/pull/5); remains draft and unmerged.
+
+### Loop 004 changes now in the source branch
+- Added a recognizable pitched, gabled roof to the exterior view while keeping the navigable rooftop terrace as a separate visibility state.
+- Made the exterior, settled indoor rooms, garden, upper level and rooftop use distinct scene-visibility rules. The opaque exterior shell is no longer drawn across indoor views; the rooftop slab is hidden during transitions to the roof.
+- Retargeted room cameras diagonally across their registered footprints, with modest downward framing to reveal floor and wall relationships. The entrance and Family Table now show the passage between connected spaces instead of aiming straight at the nearest wall.
+- Enlarged/reframed the garden view to read as an outdoor area, rather than a close-up view directly into the front door.
+- Added ceilings to enclosed room shells and framed rear windows cut into rooms along the back of the house (including the private rooms, library, pet corner and musalla).
+- Moved the rooftop camera off the centreline and toward an oblique view of the stair hatch and terrace.
+- Added a Playwright-based CI review that opens the built local preview, follows actual map/room click paths, records destination arrivals, and uploads desktop/mobile screenshots. This is CI-only; it does not deploy anything.
+
+### Latest validation evidence
+- TypeScript: PASS.
+- Unit tests: **33 passed across 5 test files**.
+- Production build: PASS.
+- Chromium visual walkthrough: PASS; WebGL canvas and WebGL2 context detected; no browser runtime errors; all tested destinations (Entrance, Family Table, Zineb's room, Garden and Rooftop) settled to the expected room label.
+- Map directory: all **13 room destinations** were present/selectable.
+- Mobile viewport: 390 px wide; document width also 390 px; no horizontal overflow; all 13 room destinations remain available.
+- Screenshot artifact was visually inspected. The exterior now reads more clearly as a small house; the private-room window, garden approach and rooftop hatch are visible in their intended contexts. Interior views still use intentionally empty, procedural geometry and some remain doorway-led/simple; this is a foundation pass, not a claim of photorealistic architecture or final family acceptance.
+- The project build has previously reported a large lazy `HouseScene` chunk (>500 kB). That performance follow-up remains open and should be measured rather than addressed with paid services/assets.
+
+### Next loop candidates
+Refine entrance/Family Table composition further, add window/context treatment only where it improves spatial understanding, and improve the terrace/environment silhouettes without filling the house with furniture or future feature content. Continue to keep the room registry as the source of truth. Do not deploy, promote to `main`, or merge PR #5 as part of this work.
