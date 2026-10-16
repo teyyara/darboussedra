@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Vector3, type Group } from "three";
 import {
-  EXTERIOR_CAMERA, HOUSE_LAYOUT, MAP_CAMERA, getRoomBySlug, getRoomPortalOpenings, getRoomWallIntervals, roomOwnsPortalFrame, rooms,
+  EXTERIOR_CAMERA, HOUSE_LAYOUT, MAP_CAMERA, getRoomBySlug, getRoomPortalOpenings, getRoomWallRuns, roomOwnsPortalFrame, rooms,
   type HouseLocation, type Room, type RoomSlug, type RoomPortalOpening, type Vector3Tuple,
 } from "./rooms";
 
@@ -174,24 +174,8 @@ function ExteriorShell({ location, onEnter, reducedMotion }: { location: HouseLo
 
 function roomWallSegments(room: Room, side: RoomPortalOpening["side"], openings: readonly RoomPortalOpening[]) {
   const [width, depth] = room.footprint;
-  const ownedIntervals = getRoomWallIntervals(room, side);
-  const sorted = openings.filter((opening) => opening.side === side).slice().sort((a, b) => a.offset - b.offset);
-  const segments: { start: number; end: number }[] = [];
-  // Split each owned wall run around portals. Shared partitions are rendered by
-  // one room only, including closed bedroom-to-bedroom partitions.
-  for (const interval of ownedIntervals) {
-    let cursor = interval.start;
-    for (const opening of sorted) {
-      const start = Math.max(interval.start, opening.offset - opening.width / 2);
-      const end = Math.min(interval.end, opening.offset + opening.width / 2);
-      if (end <= cursor + 0.025) continue;
-      if (start > cursor + 0.025) segments.push({ start: cursor, end: start });
-      cursor = Math.max(cursor, end);
-    }
-    if (cursor < interval.end - 0.025) segments.push({ start: cursor, end: interval.end });
-  }
-  return segments.filter((segment) => segment.end - segment.start > 0.025).map((segment) => {
-    const along = (segment.start + segment.end) / 2, segmentLength = segment.end - segment.start;
+  return getRoomWallRuns(room, side, openings).map((run) => {
+    const along = (run.start + run.end) / 2, segmentLength = run.end - run.start;
     if (side === "front" || side === "back") return {
       position: [along, HOUSE_LAYOUT.floorThickness + HOUSE_LAYOUT.roomWallHeight / 2, side === "front" ? depth / 2 : -depth / 2] as Vector3Tuple,
       size: [segmentLength, HOUSE_LAYOUT.roomWallHeight, 0.12] as Vector3Tuple,
@@ -247,7 +231,7 @@ function RoomArea({ room, active, onSelect }: { room: Room; active?: Room; onSel
     </mesh>)}
     {openings.filter((opening) => roomOwnsPortalFrame(room, opening)).map((opening, index) => <DoorwayFrame key={(opening.targetSlug ?? opening.zone ?? "portal") + "-" + opening.side + "-" + index}
       room={room} opening={opening} onSelect={onSelect} />)}
-    {getRoomWallIntervals(room, "back").map((interval, index) => <mesh key={"back-trim-" + index}
+    {getRoomWallRuns(room, "back", openings).map((interval, index) => <mesh key={"back-trim-" + index}
       position={[(interval.start + interval.end) / 2, HOUSE_LAYOUT.floorThickness + HOUSE_LAYOUT.roomWallHeight - 0.025, -depth / 2]}>
       <boxGeometry args={[interval.end - interval.start, 0.05, 0.14]} />
       <meshStandardMaterial color={room.kind === "private" ? "#a96d50" : "#b18a56"} roughness={0.82} />

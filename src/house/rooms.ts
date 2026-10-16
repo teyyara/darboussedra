@@ -239,6 +239,32 @@ export function getRoomPortalOpenings(room: Room): RoomPortalOpening[] {
   return openings;
 }
 
+/**
+ * Return owned, non-doorway wall runs in local side coordinates. Walls, trim,
+ * and other details can consume these same runs so no decorative piece bridges a portal.
+ */
+export function getRoomWallRuns(
+  room: Room,
+  side: WallSide,
+  openings: readonly RoomPortalOpening[] = getRoomPortalOpenings(room),
+): RoomWallInterval[] {
+  const ownedIntervals = getRoomWallIntervals(room, side);
+  const sorted = openings.filter((opening) => opening.side === side).slice().sort((a, b) => a.offset - b.offset);
+  const runs: RoomWallInterval[] = [];
+  for (const interval of ownedIntervals) {
+    let cursor = interval.start;
+    for (const opening of sorted) {
+      const start = Math.max(interval.start, opening.offset - opening.width / 2);
+      const end = Math.min(interval.end, opening.offset + opening.width / 2);
+      if (end <= cursor + EPSILON) continue;
+      if (start > cursor + EPSILON) runs.push({ start: cursor, end: start });
+      cursor = Math.max(cursor, end);
+    }
+    if (cursor < interval.end - EPSILON) runs.push({ start: cursor, end: interval.end });
+  }
+  return runs.filter((run) => run.end - run.start > EPSILON);
+}
+
 /** Source-level invariants that tests can run whenever the floor plan changes. */
 export function roomRegistryIssues(): string[] {
   const issues: string[] = [];

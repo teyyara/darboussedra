@@ -1,7 +1,7 @@
 import {describe, expect, it} from "vitest";
 import {
   HOUSE_LAYOUT, REQUIRED_ROOM_SLUGS, ROOM_ACCESS_PORTALS, getRoomBySlug, getRoomPortalOpenings,
-  getRoomWallIntervals, getSharedBoundary, roomBounds, roomOwnsPortalFrame, roomRegistryIssues, rooms,
+  getRoomWallIntervals, getRoomWallRuns, getRoomPortalOpenings, getSharedBoundary, roomBounds, roomOwnsPortalFrame, roomRegistryIssues, rooms,
 } from "./rooms";
 
 describe("authoritative room and architectural layout", () => {
@@ -68,6 +68,26 @@ describe("authoritative room and architectural layout", () => {
     const familyDoor = getRoomPortalOpenings(family).find((opening) => opening.targetSlug === living.slug)!;
     expect(roomOwnsPortalFrame(living, livingDoor)).toBe(true);
     expect(roomOwnsPortalFrame(family, familyDoor)).toBe(false);
+  });
+  it("keeps wall segments and decorative trim clear of every declared doorway", () => {
+    for (const room of rooms) {
+      const openings = getRoomPortalOpenings(room);
+      for (const side of ["front", "back", "left", "right"] as const) {
+        const runs = getRoomWallRuns(room, side, openings);
+        for (const opening of openings.filter((item) => item.side === side)) {
+          const openingStart = opening.offset - opening.width / 2;
+          const openingEnd = opening.offset + opening.width / 2;
+          for (const run of runs) {
+            const overlap = Math.min(run.end, openingEnd) - Math.max(run.start, openingStart);
+            expect(overlap, room.slug + " " + side + " wall trim must not span a doorway").toBeLessThanOrEqual(0.025);
+          }
+        }
+      }
+    }
+    const familyTable = getRoomBySlug("family-table")!;
+    expect(getRoomWallRuns(familyTable, "back").every((run) =>
+      run.end <= -HOUSE_LAYOUT.stairs.groundDoorwayWidth / 2 + 0.025 ||
+      run.start >= HOUSE_LAYOUT.stairs.groundDoorwayWidth / 2 - 0.025)).toBe(true);
   });
   it("keeps the first ground stair tread inside the rear wall's inner face", () => {
     const flight = HOUSE_LAYOUT.stairs.groundFlight;
