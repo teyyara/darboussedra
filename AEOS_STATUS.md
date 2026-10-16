@@ -5,8 +5,9 @@
 **Run ID:** 20261016-darboussedra-loop004-architecture-coherence  
 **Loop:** 004 · **Candidate:** dar-boussedra-architecture-coherence-004  
 **Repository:** https://github.com/teyyara/darboussedra  
-**Branch:** main  
-**Validated code commit:** d237375a364f25b0e30dade08f9b02790396b966  
+**Branch:** fix/loop-004-architecture-coherence  
+**Base main:** 501cc6ccf3e6926504dfcd051ac98147360cd48a  
+**Latest correction commit:** fd5dbe61f6bcbb2d06be3232c4390eff8dfe1e23  
 **Last updated:** 2026-10-16
 
 ## Loop 003 outcome
@@ -26,7 +27,7 @@
 - Bundle comparison: before lazy loading, main JS entry was 1,123.97 kB minified / 313.07 kB gzip. After lazy loading, the entry is 235.24 kB / 73.54 kB gzip; the on-demand 3D scene chunk is 890.96 kB / 240.04 kB gzip. Vite still reports a chunk-size warning for the lazy scene, although it is no longer part of the initial entry bundle.
 - Local install/build and visual-browser inspection were not performed in this runtime. The connected Vercel/browser inspection route returned access denied, so visual correctness, keyboard/mobile behavior, real-device performance and accessibility conformance are not claimed as verified.
 
-## Acceptance state
+## Loop 003 acceptance state (historical)
 The current main code passes automated typecheck, unit tests and production build, and the Vercel Git integration reports its deployment completed. The empty-house milestone is still not fully certified: room proportions, circulation, floor-map alignment and actual browser behavior need hands-on visual verification. The house layout remains an initial revisable proposal, not an approved family floor plan.
 
 ## Next high-value work
@@ -35,7 +36,7 @@ Improve/test architectural proportions and circulation against a visual browser 
 
 
 ## Loop 004 — architecture coherence review
-- **State:** correction branch prepared; automated validation and human visual review are pending. This work is not merged or deployed by the agent.
+- **State:** automated validation passed on the latest code revision; human visual acceptance remains blocked. PR #5 is still draft-only; this work is not merged or manually deployed.
 - **Run ID:** 20261016-darboussedra-loop004-architecture-coherence
 - **Base main:** 501cc6ccf3e6926504dfcd051ac98147360cd48a
 - **Branch:** fix/loop-004-architecture-coherence
@@ -43,7 +44,8 @@ Improve/test architectural proportions and circulation against a visual browser 
 - Derived room door gaps from physical adjacency; provided an explicit Family Table-to-stair-hall portal and private-room openings onto the shared upper landing.
 - Added source-level checks for registry consistency, usable connected boundaries, room/shell overlaps and stair/landing/roof continuity.
 - Added distinct spatial plan tabs for ground, upper, garden and roof, with a stairwell/landing overlay and the semantic room directory retained.
-- **Browser screenshots/interactive QA: BLOCKED.** No real images captured; the environment provides no functioning browser driver and connected browser/Vercel inspection was denied earlier. Visual correctness is not certified.
+- **Automated CI:** [run 38945553894](https://github.com/teyyara/darboussedra/actions/runs/38945553894) passed typecheck, all 12 unit tests across three files, and production build on code commit `fd5dbe61f6bcbb2d06be3232c4390eff8dfe1e23`. The Vercel Git checks report success for both connected projects, but this is not visual evidence.
+- **Browser screenshots/interactive QA: BLOCKED.** No real images captured; no functioning interactive browser driver was available and web inspection of the deployment was denied. Visual correctness is not certified.
 - Do not merge/deploy as part of Loop 004. The proportion changes (especially Pets’ Corner/Musalla), circulation arrangement and floor plan require family review before acceptance.
 
-Loop 004 is not complete until CI is green and the review limitations and family decisions are explicitly recorded.
+CI is green, but Loop 004 is still incomplete until a real browser review is completed and the family confirms the proposed proportions, room arrangement and circulation.

@@ -3,7 +3,7 @@
 **Repository:** `teyyara/darboussedra`  
 **Base:** `main@501cc6ccf3e6926504dfcd051ac98147360cd48a`  
 **Correction branch:** `fix/loop-004-architecture-coherence`  
-**Review status:** corrective source changes prepared for automated validation; not merged or deployed by the agent.
+**Review status:** [GitHub Actions run 38945553894 passed](https://github.com/teyyara/darboussedra/actions/runs/38945553894) on code commit `fd5dbe61f6bcbb2d06be3232c4390eff8dfe1e23`; draft PR #5 remains unmerged and no manual deployment was performed.
 
 ## Source audit before changes
 
@@ -25,6 +25,10 @@
 - Ground-floor rooms do not overlap the reserved stair shaft.
 - Stair flights meet configured floor surfaces, landing edges and the rooftop opening.
 - The entrance meets the shell’s inner facade face and the garden adjoins the entrance.
+
+## Automated CI evidence
+
+GitHub Actions run [38945553894](https://github.com/teyyara/darboussedra/actions/runs/38945553894) passed the production validation job: TypeScript typecheck, 12 unit tests across three test files, and Vite production build. Both Vercel Git status checks returned success for the branch revision. The connected Vercel inspector still does not provide an accessible rendered browser session, so those status checks do not replace visual inspection.
 
 ## Visual evidence — blocked
 No genuine browser screenshots were captured. Connected browser/Vercel inspection previously returned access denied, and no interactive browser driver is available through the repository tool connection. There is **no verified before/after image evidence**, so visual correctness is not certified here.
