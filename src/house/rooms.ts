@@ -29,7 +29,7 @@ export const HOUSE_LAYOUT = {
   upperBridge: { centerX: 0, centerZ: -0.025, width: 2.4, depth: 0.95, levelY: 3 },
   stairs: {
     width: 1, shaftWidth: 2.4, groundDoorwayWidth: 1.2,
-    groundFlight: { from: [0, 0.14, -4.48] as Vector3Tuple, to: [0, 3.14, -0.5] as Vector3Tuple, steps: 16 },
+    groundFlight: { from: [0, 0.14, -4.32] as Vector3Tuple, to: [0, 3.14, -0.5] as Vector3Tuple, steps: 16 },
     roofFlight: { from: [0, 3.14, 2.05] as Vector3Tuple, to: [0, 5.55, -1.8] as Vector3Tuple, steps: 14 },
     roofOpening: { centerX: 0, centerZ: -1.8, width: 1.65, depth: 1.85 },
   },
@@ -225,6 +225,10 @@ export function roomRegistryIssues(): string[] {
     if (overlapsStairWell) issues.push("Ground room footprint blocks the stairwell: " + room.slug);
   }
   const ground = HOUSE_LAYOUT.stairs.groundFlight, roof = HOUSE_LAYOUT.stairs.roofFlight;
+  const groundStepRunZ = (ground.to[2] - ground.from[2]) / ground.steps;
+  const firstGroundTreadMinZ = ground.from[2] + groundStepRunZ / 2 - (Math.abs(groundStepRunZ) + 0.035) / 2;
+  const rearInteriorFaceZ = -HOUSE_LAYOUT.exterior.depth / 2 + HOUSE_LAYOUT.exterior.wallThickness / 2;
+  if (firstGroundTreadMinZ < rearInteriorFaceZ + 0.05) issues.push("First ground stair tread intersects or approaches the rear shell wall.");
   const upperSurface = HOUSE_LAYOUT.upperY + HOUSE_LAYOUT.floorThickness;
   if (Math.abs(ground.from[1] - HOUSE_LAYOUT.floorThickness) > EPSILON) issues.push("Ground stair does not begin at the ground floor surface.");
   if (Math.abs(ground.to[1] - upperSurface) > EPSILON) issues.push("Ground stair does not meet the upper-floor landing.");
