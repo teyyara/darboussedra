@@ -332,7 +332,7 @@ function RoomFurnishings({ room }: { room: Room }) {
       <PropBox position={[0, 0.16, -0.22]} size={[Math.min(1.35, width - 0.3), 0.22, 1.98]} color="#8c6d50" />
       <PropBox position={[0, 0.34, -0.22]} size={[Math.min(1.28, width - 0.36), 0.18, 1.9]} color="#f0e4d3" />
       <PropBox position={[0, 0.49, -0.99]} size={[Math.min(1.25, width - 0.38), 0.13, 0.34]} color="#e5d7c4" />
-      <PropBox position={[0, 0.57, -1.24]} size={[Math.min(1.4, width - 0.18), 0.82, 0.09]} color="#946d50" />
+      <PropBox position={[0, 0.49, -1.28]} size={[Math.min(1.05, width - 0.42), 0.48, 0.075]} color="#946d50" />
       <PropBox position={[width / 2 - 0.26, 0.31, 0.9]} size={[0.38, 0.34, 0.42]} color="#a98460" />
       <PropBox position={[width / 2 - 0.26, 0.5, 0.9]} size={[0.4, 0.05, 0.44]} color="#806148" />
     </group>}
@@ -544,12 +544,12 @@ function RoofDeck({ onSelect }: { onSelect: () => void }) {
           <boxGeometry args={[0.72, 0.42, 0.72]} />
           <meshStandardMaterial color="#ad8664" roughness={0.96} />
         </mesh>
-        <mesh position={[0, 0.72, 0]} castShadow>
-          <sphereGeometry args={[0.43, 10, 8]} />
+        <mesh position={[0, 0.52, 0]} castShadow>
+          <sphereGeometry args={[0.28, 10, 8]} />
           <meshStandardMaterial color="#829176" roughness={1} />
         </mesh>
-        <mesh position={[0.06, 0.93, 0.04]} castShadow>
-          <sphereGeometry args={[0.29, 9, 7]} />
+        <mesh position={[0.04, 0.66, 0.03]} castShadow>
+          <sphereGeometry args={[0.19, 9, 7]} />
           <meshStandardMaterial color="#9aa887" roughness={1} />
         </mesh>
       </group>)}
