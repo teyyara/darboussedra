@@ -76,9 +76,8 @@ function CameraRig({ location, reducedMotion, onArrive, onTransitionChange }: {
 function ExteriorShell({ location, onDoorActivate, reducedMotion }: { location: HouseLocation; onDoorActivate: (entering: boolean) => void; reducedMotion: boolean }) {
   const door = useRef<Group>(null);
   const [doorHovered, setDoorHovered] = useState(false);
-  const { invalidate } = useThree();
+  const { invalidate, camera } = useThree();
   const doorAction = getFrontDoorAction(location);
-  const opening = location !== "exterior";
   const doorWidth = HOUSE_LAYOUT.entrance.doorWidth, doorHeight = HOUSE_LAYOUT.entrance.doorHeight;
   const frontZ = HOUSE_LAYOUT.exterior.depth / 2;
   const wallHeight = HOUSE_LAYOUT.exterior.wallHeight;
@@ -105,10 +104,12 @@ function ExteriorShell({ location, onDoorActivate, reducedMotion }: { location: 
     { position: [windowCenterX, (4.65 + wallHeight) / 2, frontZ], size: [frontWindowWidth, wallHeight - 4.65, wallThickness] },
     { position: [(windowOuterEdge + halfWidth) / 2, wallHeight / 2, frontZ], size: [outerPanelWidth, wallHeight, wallThickness] },
   ];
-  useEffect(() => { invalidate(); }, [opening, invalidate]);
+  useEffect(() => { invalidate(); }, [location, invalidate]);
   useFrame((_state, delta) => {
     if (!door.current) return;
-    const target = opening ? Math.PI / 2 : 0;
+    const nearDoorway = Math.abs(camera.position.x) < doorWidth / 2 + 0.35 &&
+      Math.abs(camera.position.z - frontZ) < 1.25 && camera.position.y < doorHeight;
+    const target = nearDoorway ? Math.PI / 2 : 0;
     if (reducedMotion) door.current.rotation.y = target;
     else {
       door.current.rotation.y += (target - door.current.rotation.y) * (1 - Math.exp(-6 * delta));
