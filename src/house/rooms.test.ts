@@ -96,12 +96,13 @@ describe("authoritative room and architectural layout", () => {
     expect(getFrontDoorAction("rooftop")).toBeUndefined();
     expect(getFrontDoorAction("map")).toBeUndefined();
   });
-  it("keeps the first ground stair tread inside the rear wall's inner face", () => {
+  it("keeps the final ground stair tread clear of the rear wall", () => {
     const flight = HOUSE_LAYOUT.stairs.groundFlight;
     const stepRunZ = (flight.to[2] - flight.from[2]) / flight.steps;
-    const firstTreadMinZ = flight.from[2] + stepRunZ / 2 - (Math.abs(stepRunZ) + 0.035) / 2;
+    const finalStep = flight.steps - 1;
+    const lastTreadMinZ = flight.from[2] + stepRunZ * (finalStep + 0.5) - (Math.abs(stepRunZ) + 0.035) / 2;
     const rearInteriorFaceZ = -HOUSE_LAYOUT.exterior.depth / 2 + HOUSE_LAYOUT.exterior.wallThickness / 2;
-    expect(firstTreadMinZ).toBeGreaterThanOrEqual(rearInteriorFaceZ + 0.05);
+    expect(lastTreadMinZ).toBeGreaterThanOrEqual(rearInteriorFaceZ + 0.05);
   });
   it("keeps the ground stair shaft clear of every ground-floor room", () => {
     const flight = HOUSE_LAYOUT.stairs.groundFlight;
