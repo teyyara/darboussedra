@@ -1,53 +1,82 @@
 import {describe, expect, it} from "vitest";
-import {HOUSE_LAYOUT, EXTERIOR_CAMERA} from "./rooms";
+import {EXTERIOR_CAMERA, HOUSE_LAYOUT, getRoomBySlug, rooms} from "./rooms";
 import {makeCameraPath} from "./cameraPath";
 
 const frontZ = HOUSE_LAYOUT.exterior.depth / 2;
 const doorHeight = HOUSE_LAYOUT.entrance.doorHeight;
+const poseFor = (slug: string) => getRoomBySlug(slug)!.camera;
 
 describe("3D camera paths", () => {
-  it("enters through the front opening before rising above the wall", () => {
-    const path = makeCameraPath("exterior", "entrance", EXTERIOR_CAMERA);
-    expect(path).toHaveLength(5);
-
-    const outsideDoor = path[1];
-    const insideDoor = path[2];
-    expect(outsideDoor.position[0]).toBe(0);
-    expect(outsideDoor.position[2]).toBeGreaterThan(frontZ);
-    expect(insideDoor.position[0]).toBe(0);
-    expect(insideDoor.position[2]).toBeLessThan(frontZ);
-    expect(outsideDoor.position[1]).toBeLessThan(doorHeight);
-    expect(insideDoor.position[1]).toBeLessThan(doorHeight);
-
-    const raisedInside = path[3];
-    expect(raisedInside.position[2]).toBeLessThan(frontZ);
-    expect(raisedInside.position[1]).toBeGreaterThan(HOUSE_LAYOUT.exterior.wallHeight);
+  it("uses standing eye-height, forward-facing views for every destination", () => {
+    for (const room of rooms) {
+      expect(room.camera.position[1], room.slug + " eye height").toBeCloseTo(room.scenePosition[1] + 1.65);
+      expect(Math.abs(room.camera.target[1] - room.camera.position[1]), room.slug + " look angle").toBeLessThan(0.1);
+    }
+    expect(EXTERIOR_CAMERA.position[1]).toBeLessThan(doorHeight);
+    expect(Math.abs(EXTERIOR_CAMERA.target[1] - EXTERIOR_CAMERA.position[1])).toBeLessThan(0.1);
   });
 
-  it("exits through the same doorway in reverse at a passable eye height", () => {
+  it("walks through the real front opening before entering the entrance", () => {
+    const path = makeCameraPath("exterior", "entrance", poseFor("entrance"));
+    expect(path.length).toBeGreaterThanOrEqual(4);
+    const outsideThreshold = path.find((pose) => pose.position[2] > frontZ && Math.abs(pose.position[0]) < 0.1);
+    const insideThreshold = path.find((pose) => pose.position[2] < frontZ && pose.position[2] > frontZ - 1.2 && Math.abs(pose.position[0]) < 0.1);
+    expect(outsideThreshold).toBeDefined();
+    expect(insideThreshold).toBeDefined();
+    expect(outsideThreshold!.position[1]).toBeLessThan(doorHeight);
+    expect(insideThreshold!.position[1]).toBeLessThan(doorHeight);
+    expect(path.every((pose) => pose.position[1] < HOUSE_LAYOUT.exterior.wallHeight)).toBe(true);
+  });
+
+  it("leaves the house by reversing through the same doorway at eye height", () => {
     const path = makeCameraPath("entrance", "exterior", EXTERIOR_CAMERA);
-    const insideDoor = path[1];
-    const outsideDoor = path[2];
-
-    expect(insideDoor.position[2]).toBeLessThan(frontZ);
-    expect(outsideDoor.position[2]).toBeGreaterThan(frontZ);
-    expect(insideDoor.position[0]).toBe(0);
-    expect(outsideDoor.position[0]).toBe(0);
-    expect(insideDoor.position[1]).toBeLessThan(doorHeight);
-    expect(outsideDoor.position[1]).toBeLessThan(doorHeight);
+    const outsideThreshold = path.find((pose) => pose.position[2] > frontZ && Math.abs(pose.position[0]) < 0.1);
+    const insideThreshold = path.find((pose) => pose.position[2] < frontZ && pose.position[2] > frontZ - 1.2 && Math.abs(pose.position[0]) < 0.1);
+    expect(insideThreshold).toBeDefined();
+    expect(outsideThreshold).toBeDefined();
+    expect(path.every((pose) => pose.position[1] < HOUSE_LAYOUT.exterior.wallHeight)).toBe(true);
   });
 
-  it("brings garden-to-room transitions back to the front opening", () => {
-    const path = makeCameraPath("garden", "family-table", EXTERIOR_CAMERA);
-    expect(path[1].position[2]).toBeGreaterThan(frontZ);
-    expect(path[2].position[2]).toBeLessThan(frontZ);
-    expect(path[1].position[1]).toBeLessThan(doorHeight);
-    expect(path[2].position[1]).toBeLessThan(doorHeight);
+  it("moves between same-floor rooms through their connecting doors without rising overhead", () => {
+    const path = makeCameraPath("living-room", "kitchen", poseFor("kitchen"));
+    expect(path.length).toBeGreaterThan(4);
+    expect(path.every((pose) => Math.abs(pose.position[1] - 1.65) < 0.01)).toBe(true);
+    expect(path.some((pose) => pose.position[0] < -1.8)).toBe(true);
+    expect(path.some((pose) => pose.position[0] > 1.8)).toBe(true);
+    expect(path.every((pose) => pose.position[1] < HOUSE_LAYOUT.exterior.wallHeight)).toBe(true);
   });
 
-  it("keeps rooftop transitions above the roof before using the stair opening", () => {
-    const path = makeCameraPath("family-table", "rooftop", EXTERIOR_CAMERA);
-    expect(path[0].position[1]).toBeGreaterThan(HOUSE_LAYOUT.roofY);
-    expect(path[1].position[1]).toBeGreaterThan(HOUSE_LAYOUT.roofY);
+  it("travels from the family level to an upper room along the stair flight and bridge", () => {
+    const path = makeCameraPath("entrance", "zineb-room", poseFor("zineb-room"));
+    const lowStair = path.some((pose) => pose.position[2] > -1 && pose.position[1] > 1.7 && pose.position[1] < 2.5);
+    const upperStair = path.some((pose) => pose.position[2] < -3.7 && pose.position[1] > HOUSE_LAYOUT.upperY + 1.4);
+    expect(lowStair).toBe(true);
+    expect(upperStair).toBe(true);
+    expect(path.some((pose) => pose.position[2] > -3.7 && pose.position[2] < 0.45 && pose.position[1] > 4.5)).toBe(true);
+    expect(Math.max(...path.map((pose) => pose.position[1]))).toBeLessThan(5.2);
+  });
+
+  it("climbs to the rooftop through the roof stair and hatch instead of an overhead camera jump", () => {
+    const path = makeCameraPath("family-table", "rooftop", poseFor("rooftop"));
+    expect(path.some((pose) => pose.position[1] > HOUSE_LAYOUT.upperY + 1.5 && pose.position[1] < HOUSE_LAYOUT.roofY + 0.5)).toBe(true);
+    expect(path.some((pose) => pose.position[2] < HOUSE_LAYOUT.stairs.roofOpening.centerZ + 0.2 && pose.position[2] > HOUSE_LAYOUT.stairs.roofOpening.centerZ - 0.2 && pose.position[1] > HOUSE_LAYOUT.roofY)).toBe(true);
+    expect(Math.max(...path.map((pose) => pose.position[1]))).toBeLessThanOrEqual(HOUSE_LAYOUT.roofY + 1.7);
+  });
+
+  it("descends from the roof and reaches ground rooms by the stair and doorway route", () => {
+    const path = makeCameraPath("rooftop", "prayer-room", poseFor("prayer-room"));
+    expect(path.some((pose) => pose.position[1] > HOUSE_LAYOUT.roofY + 1.2)).toBe(true);
+    expect(path.some((pose) => pose.position[1] > HOUSE_LAYOUT.upperY + 1.0 && pose.position[1] < HOUSE_LAYOUT.roofY)).toBe(true);
+    expect(path.some((pose) => pose.position[1] < 2.0 && pose.position[2] > -0.5)).toBe(true);
+    expect(path.at(-1)).toEqual(poseFor("prayer-room"));
+    expect(Math.max(...path.map((pose) => pose.position[1]))).toBeLessThanOrEqual(HOUSE_LAYOUT.roofY + 1.7);
+  });
+
+  it("leaves the garden through the front threshold before entering the house", () => {
+    const path = makeCameraPath("garden", "living-room", poseFor("living-room"));
+    expect(path.some((pose) => pose.position[2] > frontZ)).toBe(true);
+    expect(path.some((pose) => pose.position[2] < frontZ)).toBe(true);
+    expect(path.some((pose) => pose.position[2] < 2.75)).toBe(true);
+    expect(path.every((pose) => pose.position[1] < 2.1)).toBe(true);
   });
 });
