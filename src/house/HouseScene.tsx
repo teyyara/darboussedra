@@ -1,9 +1,9 @@
 import {useEffect,useMemo} from "react";
 import {Canvas,useFrame,useThree} from "@react-three/fiber";
 import {Vector3} from "three";
-import {EXTERIOR_CAMERA,mapCamera,getRoomBySlug,rooms,type HouseLocation,type RoomSlug,type Vec3} from "./rooms";
+import {EXTERIOR_CAMERA,MAP_CAMERA,getRoomBySlug,rooms,type HouseLocation,type RoomSlug,type Vector3Tuple} from "./rooms";
 
-function CameraRig({position,target,reducedMotion}:{position:Vec3;target:Vec3;reducedMotion:boolean}) {
+function CameraRig({position,target,reducedMotion}:{position:Vector3Tuple;target:Vector3Tuple;reducedMotion:boolean}) {
  const {camera}=useThree();
  const desired=useMemo(()=>new Vector3(position[0],position[1],position[2]),[position]);
  const lookAt=useMemo(()=>new Vector3(target[0],target[1],target[2]),[target]);
@@ -38,9 +38,9 @@ function SceneGeometry({location,onEnter,onSelect}:{location:HouseLocation;onEnt
 }
 export function HouseScene({location,reducedMotion,onEnter,onSelect}:{location:HouseLocation;reducedMotion:boolean;onEnter:()=>void;onSelect:(slug:RoomSlug)=>void}) {
  const room=location==="map"||location==="exterior"?undefined:getRoomBySlug(location);
- const pose=location==="map"?mapCamera:location==="exterior"?EXTERIOR_CAMERA:room?.camera??EXTERIOR_CAMERA;
- const position:Vec3=[pose.position[0],pose.position[1],pose.position[2]];
- const target:Vec3=[pose.target[0],pose.target[1],pose.target[2]];
+ const pose=location==="map"?MAP_CAMERA:location==="exterior"?EXTERIOR_CAMERA:room?.camera??EXTERIOR_CAMERA;
+ const position:Vector3Tuple=[pose.position[0],pose.position[1],pose.position[2]];
+ const target:Vector3Tuple=[pose.target[0],pose.target[1],pose.target[2]];
  return <Canvas camera={{position:EXTERIOR_CAMERA.position,fov:36,near:.1,far:120}} dpr={reducedMotion?1:([1,1.4] as [number,number])} shadows>
   <color attach="background" args={["#eee7da"]}/><ambientLight intensity={1.35}/><hemisphereLight args={["#fff2db","#8c9479",1.0]}/>
   <directionalLight position={[8,14,9]} intensity={2} castShadow shadow-mapSize-width={1024} shadow-mapSize-height={1024}/>
