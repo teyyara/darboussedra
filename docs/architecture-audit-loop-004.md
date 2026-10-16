@@ -60,3 +60,14 @@ Room-floor hover now applies a restrained tint based on room category, while sel
 - **Automated validation:** [GitHub Actions run 38953581339](https://github.com/teyyara/darboussedra/actions/runs/38953581339) passed TypeScript, test and production-build steps for source revision `810785472787924c98ee2a49deedbf13ee1c1927`. Confirm test count from the run output; older run counts above are historical.
 - **Visual validation is still blocked.** Vercel preview access returns 403 for team scope `tyyr1`; no genuine browser screenshots have been captured, so the actual visual result is not certified.
 - Branch `fix/loop-004-architecture-coherence` remains unmerged; no manual deployment/promotion was performed.
+
+
+## Destination framing and level-aware view correction
+
+- Room camera targets are constrained to the footprint of the destination they name. The old fixed focus point extended outside narrow rooms and could look through a doorway into an adjacent room. A regression test checks every room's camera position and focus point against its own bounds; the Entrance view was moved fully inside its own footprint too.
+- Added level-aware scene visibility: on a settled ground-floor destination, upper room volumes are hidden; on an upper-floor destination, ground-room volumes are hidden. Both are revealed only while the travel path crosses storeys. The rooftop slab is no longer rendered throughout every indoor transition.
+- Regression tests cover ground/upper/roof visibility states and camera focus containment.
+- **Latest source CI:** [run 38959873489](https://github.com/teyyara/darboussedra/actions/runs/38959873489) passed TypeScript, **30 tests across five test files**, and production build for source commit `96d5f291f6d940ac1a6046be5b85e2442fb985ae`.
+- The production build still reports the deferred HouseScene chunk above 500 kB (900.06 kB minified / 243.03 kB gzip); this is not hidden by increasing Vite's warning limit.
+- **Rendered visual QA remains blocked:** the protected Vercel preview cannot be fetched from this session because team scope `tyyr1` is not authorized. No screenshots or visual pass are claimed.
+- Draft PR #5 remains unmerged and no manual Vercel deployment/promotion was performed.

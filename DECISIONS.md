@@ -43,3 +43,7 @@
 30. **Visual acceptance evidence stays separate.** Passing CI validates types, tests and bundling only. No screenshots or visual pass may be claimed until the actual authorized preview is reviewed.
 
 31. **Camera/viewport follow-up validation.** Commit `810785472787924c98ee2a49deedbf13ee1c1927` passed TypeScript, 20 tests across four files, and production build in [run 38953581339](https://github.com/teyyara/darboussedra/actions/runs/38953581339). The later documentation-sync commit also passed in [run 38953849607](https://github.com/teyyara/darboussedra/actions/runs/38953849607). CI success still does not certify the visual appearance.
+
+32. **A destination camera must stay inside its named room.** Room camera/focus points are constrained by the authoritative footprint. A doorway-facing hint must not send the final view into an adjacent destination.
+33. **Level-aware cutaway.** Settled ground views hide upstairs rooms and the roof slab; settled upper views hide ground rooms; both storeys are revealed only while crossing between floors. This keeps the camera and visible geometry aligned.
+34. **Latest camera/visibility validation.** Source commit `96d5f291f6d940ac1a6046be5b85e2442fb985ae` passed TypeScript, 30 tests across five files and production build in [run 38959873489](https://github.com/teyyara/darboussedra/actions/runs/38959873489). Real rendered visual acceptance remains blocked by preview access, so source tests must not be described as screenshot QA.

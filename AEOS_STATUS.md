@@ -55,12 +55,22 @@ Improve/test architectural proportions and circulation against a visual browser 
 
 The source-code updates below passed automated validation in [run 38953581339](https://github.com/teyyara/darboussedra/actions/runs/38953581339), including TypeScript, tests, and production build. Loop 004 remains visually unaccepted until real browser review is completed and the family confirms the proposed proportions, room arrangement and circulation.
 
-- **Latest validated source-code revision:** `810785472787924c98ee2a49deedbf13ee1c1927`, with passing CI in run 38953581339. The Loop 004 branch remains unmerged from `main`.
+- **Latest validated source-code revision:** `96d5f291f6d940ac1a6046be5b85e2442fb985ae`, with passing CI in [run 38959873489](https://github.com/teyyara/darboussedra/actions/runs/38959873489). The Loop 004 branch remains unmerged from `main`.
 
 ## Follow-up: movement, feedback and small viewports
 - Extracted the camera route into `src/house/cameraPath.ts`. Entry and exit pass across the front facade at a height below the registered 2.3 m door before the camera rises inside; the garden and rooftop transitions have explicit paths. Four regression tests cover entry, exit, garden transitions and rooftop clearance.
 - `HOUSE_LAYOUT.entrance` now owns both entrance door width and height so the facade and camera route use one source of truth.
 - Added restrained hover colour changes to the actionable front door, rooftop stair treads, garden surface and rooftop deck to make click targets easier to discover without adding furniture.
 - Removed the fixed 560 px minimum that could extend the app below short viewports. A max-height media rule compacts the welcome layout and confines the map panel in short landscape windows.
-- **Automated CI:** [run 38953581339](https://github.com/teyyara/darboussedra/actions/runs/38953581339) passed TypeScript, 20 tests across four test files, and the production build. The docs-sync commit was also validated by [run 38953849607](https://github.com/teyyara/darboussedra/actions/runs/38953849607), with the same 20 tests passing. Rendered visual acceptance remains blocked.
+- **Earlier automated CI:** [run 38953581339](https://github.com/teyyara/darboussedra/actions/runs/38953581339) passed TypeScript, 20 tests across four test files, and production build for the camera-path/viewport follow-up.
+- **Latest source CI:** [run 38959873489](https://github.com/teyyara/darboussedra/actions/runs/38959873489) passed TypeScript, **30 tests across five test files**, and production build on `96d5f291f6d940ac1a6046be5b85e2442fb985ae`. Rendered visual acceptance remains blocked.
 - Vercel project access remains denied to this session by team scope `tyyr1`. No genuine screenshots have been captured; do not claim visual acceptance based on CI/status checks.
+
+
+## Follow-up: destination framing and level-aware rendering
+- Rebuilt room camera presets so their focus points remain inside the room footprint named by the route. The previous 1.55 m aim beyond the room centre sent views for some narrow rooms through a wall/portal into a neighbour; this is now prevented by regression tests for every registered room's camera and focus point.
+- The entrance camera now looks within the entrance footprint rather than beyond it into the Family Table.
+- Added a pure level-visibility contract: settled ground-floor views no longer render upper rooms; settled upper-floor views no longer render the ground floor; both levels are revealed during level-changing travel. The rooftop deck is removed from interior room transitions and kept for exterior/garden/rooftop destinations.
+- Added regression coverage for ground/upper/roof visibility and for room-focused camera bounds.
+- Latest automated validation: [run 38959873489](https://github.com/teyyara/darboussedra/actions/runs/38959873489), 30 tests across five files, TypeScript and production build passed. Build still reports the lazy HouseScene chunk above 500 kB (900.06 kB minified / 243.03 kB gzip).
+- **Visual limitation:** the rendered preview still cannot be inspected from this session because Vercel denies access to team scope `tyyr1`. The code changes address concrete source-level causes, but no screenshot/visual pass is claimed.
