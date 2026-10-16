@@ -58,6 +58,7 @@ function CameraRig({ location, reducedMotion }: { location: HouseLocation; reduc
 
 function ExteriorShell({ location, onDoorActivate, reducedMotion }: { location: HouseLocation; onDoorActivate: (entering: boolean) => void; reducedMotion: boolean }) {
   const door = useRef<Group>(null);
+  const [doorHovered, setDoorHovered] = useState(false);
   const { invalidate } = useThree();
   const doorAction = getFrontDoorAction(location);
   const opening = location !== "exterior";
@@ -135,10 +136,10 @@ function ExteriorShell({ location, onDoorActivate, reducedMotion }: { location: 
     <group ref={door} position={[-doorWidth / 2, 0, frontZ + 0.015]}>
       <mesh position={[doorWidth / 2, doorHeight / 2, 0]} castShadow
         onClick={doorAction ? (event) => { event.stopPropagation(); onDoorActivate(doorAction === "enter"); } : undefined}
-        onPointerOver={doorAction ? () => { document.body.style.cursor = "pointer"; } : undefined}
-        onPointerOut={doorAction ? () => { document.body.style.cursor = ""; } : undefined}>
+        onPointerOver={doorAction ? () => { setDoorHovered(true); document.body.style.cursor = "pointer"; } : undefined}
+        onPointerOut={doorAction ? () => { setDoorHovered(false); document.body.style.cursor = ""; } : undefined}>
         <boxGeometry args={[doorWidth, doorHeight, 0.1]} />
-        <meshStandardMaterial color="#76513e" roughness={0.84} />
+        <meshStandardMaterial color={doorAction && doorHovered ? "#91664c" : "#76513e"} roughness={0.84} />
       </mesh>
       <mesh position={[doorWidth - 0.18, doorHeight * 0.48, 0.07]}>
         <sphereGeometry args={[0.065, 12, 12]} />
@@ -231,6 +232,7 @@ function RoomArea({ room, active, onSelect }: { room: Room; active?: Room; onSel
 function StairFlight({ flight, width, onSelectRoof }: {
   flight: { readonly from: Vector3Tuple; readonly to: Vector3Tuple; readonly steps: number }; width: number; onSelectRoof?: () => void;
 }) {
+  const [hoveredStep, setHoveredStep] = useState<number | null>(null);
   const runY = flight.to[1] - flight.from[1], runZ = flight.to[2] - flight.from[2];
   const stepY = runY / flight.steps, stepZ = runZ / flight.steps;
   const railLength = Math.hypot(runY, runZ), railRotation = -Math.atan2(runY, runZ);
@@ -239,9 +241,10 @@ function StairFlight({ flight, width, onSelectRoof }: {
     {Array.from({ length: flight.steps }, (_, index) => <mesh key={index}
       position={[flight.from[0], flight.from[1] + stepY * (index + 1) - 0.08, flight.from[2] + stepZ * (index + 0.5)]}
       castShadow receiveShadow onClick={onSelectRoof ? (event) => { event.stopPropagation(); onSelectRoof(); } : undefined}
-      onPointerOver={onSelectRoof ? () => { document.body.style.cursor = "pointer"; } : undefined}
-      onPointerOut={onSelectRoof ? () => { document.body.style.cursor = ""; } : undefined}>
-      <boxGeometry args={[width, 0.16, Math.abs(stepZ) + 0.035]} /><meshStandardMaterial color="#b18e6c" roughness={0.94} />
+      onPointerOver={onSelectRoof ? () => { setHoveredStep(index); document.body.style.cursor = "pointer"; } : undefined}
+      onPointerOut={onSelectRoof ? () => { setHoveredStep(null); document.body.style.cursor = ""; } : undefined}>
+      <boxGeometry args={[width, 0.16, Math.abs(stepZ) + 0.035]} />
+      <meshStandardMaterial color={onSelectRoof && hoveredStep === index ? "#c7a17d" : "#b18e6c"} roughness={0.94} />
     </mesh>)}
     {[-1, 1].map((side) => <mesh key={side}
       position={[flight.from[0] + side * (width / 2 + 0.07), midpoint[1], midpoint[2]]}
@@ -252,13 +255,15 @@ function StairFlight({ flight, width, onSelectRoof }: {
 }
 
 function GardenArea({ onSelect }: { onSelect: () => void }) {
+  const [hovered, setHovered] = useState(false);
   const garden = getRoomBySlug("garden");
   if (!garden) return null;
   const [x, , z] = garden.scenePosition, [width, depth] = garden.footprint;
   return <group>
     <mesh position={[x, -0.04, z]} receiveShadow onClick={(event) => { event.stopPropagation(); onSelect(); }}
-      onPointerOver={() => { document.body.style.cursor = "pointer"; }} onPointerOut={() => { document.body.style.cursor = ""; }}>
-      <boxGeometry args={[width, 0.08, depth]} /><meshStandardMaterial color="#9ba27e" roughness={1} />
+      onPointerOver={() => { setHovered(true); document.body.style.cursor = "pointer"; }}
+      onPointerOut={() => { setHovered(false); document.body.style.cursor = ""; }}>
+      <boxGeometry args={[width, 0.08, depth]} /><meshStandardMaterial color={hovered ? "#b0b98f" : "#9ba27e"} roughness={1} />
     </mesh>
     <mesh position={[x, 0.005, z - 0.1]} receiveShadow>
       <boxGeometry args={[1.55, 0.045, 2.1]} /><meshStandardMaterial color="#c8b89e" roughness={1} />
@@ -275,6 +280,7 @@ function GardenArea({ onSelect }: { onSelect: () => void }) {
 }
 
 function RoofDeck({ onSelect }: { onSelect: () => void }) {
+  const [hovered, setHovered] = useState(false);
   const rooftop = getRoomBySlug("rooftop");
   if (!rooftop) return null;
   const [width, depth] = rooftop.footprint;
@@ -292,8 +298,10 @@ function RoofDeck({ onSelect }: { onSelect: () => void }) {
   return <group>
     {panels.filter((panel) => panel.w > 0.02 && panel.d > 0.02).map((panel, index) => <mesh key={index}
       position={[panel.x, y, panel.z]} receiveShadow onClick={(event) => { event.stopPropagation(); onSelect(); }}
-      onPointerOver={() => { document.body.style.cursor = "pointer"; }} onPointerOut={() => { document.body.style.cursor = ""; }}>
-      <boxGeometry args={[panel.w, 0.18, panel.d]} /><meshStandardMaterial color="#c6b79f" roughness={0.96} />
+      onPointerOver={() => { setHovered(true); document.body.style.cursor = "pointer"; }}
+      onPointerOut={() => { setHovered(false); document.body.style.cursor = ""; }}>
+      <boxGeometry args={[panel.w, 0.18, panel.d]} />
+      <meshStandardMaterial color={hovered ? "#ded0b7" : "#c6b79f"} roughness={0.96} />
     </mesh>)}
     {[
       { position: [0, parapetY, -halfDepth] as Vector3Tuple, size: [width, parapetHeight, 0.14] as Vector3Tuple },
