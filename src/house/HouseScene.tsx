@@ -120,9 +120,7 @@ function CameraRig({ location, reducedMotion, onArrive, onTransitionChange, onEx
       onExteriorShellVisibilityChange(true);
     }
 
-    // Position progress controls the route. Orientation keeps blending in the background,
-    // so turns don't make the walker stop dead at every stair tread.
-    if (waypoint && camera.position.distanceToSquared(nextPosition) < 0.0016) index.current += 1;
+    // Position progress controls the route; orientation blends in the background.
 
     const stillMoving = index.current < path.current.length ||
       camera.position.distanceToSquared(desired.position) > 0.0016 ||
