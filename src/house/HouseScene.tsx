@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Shape, Vector3, type Group } from "three";
+import { Vector3, type Group } from "three";
 import { makeCameraPath, type CameraPose } from "./cameraPath";
 import { getHouseSceneVisibility } from "./sceneVisibility";
 import {
@@ -135,34 +135,24 @@ function ExteriorShell({ location, onDoorActivate, reducedMotion }: { location: 
       <meshStandardMaterial color="#dfcfb8" roughness={0.95} />
     </mesh>
     <group>
-      <mesh position={[halfWidth / 2, wallHeight + 0.61, 0]} rotation={[0, 0, -0.21]} castShadow receiveShadow>
-        <boxGeometry args={[halfWidth + 0.25, 0.18, HOUSE_LAYOUT.exterior.depth + 0.55]} />
-        <meshStandardMaterial color="#a65c48" roughness={0.92} />
+      {/* The house has an accessible flat roof. Match the terrace's deck and parapet so the outside and walkable roof are the same architecture. */}
+      <mesh position={[0, HOUSE_LAYOUT.roofY - 0.09, 0]} castShadow receiveShadow>
+        <boxGeometry args={[HOUSE_LAYOUT.exterior.width + 0.24, 0.18, HOUSE_LAYOUT.exterior.depth + 0.24]} />
+        <meshStandardMaterial color="#c9b99e" roughness={0.97} />
       </mesh>
-      <mesh position={[-halfWidth / 2, wallHeight + 0.61, 0]} rotation={[0, 0, 0.21]} castShadow receiveShadow>
-        <boxGeometry args={[halfWidth + 0.25, 0.18, HOUSE_LAYOUT.exterior.depth + 0.55]} />
-        <meshStandardMaterial color="#9a5142" roughness={0.92} />
-      </mesh>
-      <mesh position={[0, wallHeight + 1.22, 0]} castShadow>
-        <boxGeometry args={[0.22, 0.16, HOUSE_LAYOUT.exterior.depth + 0.7]} />
-        <meshStandardMaterial color="#75483a" roughness={0.91} />
-      </mesh>
-      {[-1, 1].map((side) => <mesh key={side} position={[side * (halfWidth + 0.06), wallHeight + 0.04, 0]} castShadow>
-        <boxGeometry args={[0.18, 0.14, HOUSE_LAYOUT.exterior.depth + 0.6]} />
-        <meshStandardMaterial color="#75483a" roughness={0.91} />
+      {[
+        { position: [0, HOUSE_LAYOUT.roofY + 0.19, -4.3] as Vector3Tuple, size: [10.6, 0.38, 0.14] as Vector3Tuple },
+        { position: [0, HOUSE_LAYOUT.roofY + 0.19, 4.3] as Vector3Tuple, size: [10.6, 0.38, 0.14] as Vector3Tuple },
+        { position: [-5.3, HOUSE_LAYOUT.roofY + 0.19, 0] as Vector3Tuple, size: [0.14, 0.38, 8.6] as Vector3Tuple },
+        { position: [5.3, HOUSE_LAYOUT.roofY + 0.19, 0] as Vector3Tuple, size: [0.14, 0.38, 8.6] as Vector3Tuple },
+      ].map((wall, index) => <mesh key={index} position={wall.position} castShadow receiveShadow>
+        <boxGeometry args={wall.size} />
+        <meshStandardMaterial color="#e0d2bc" roughness={0.97} />
       </mesh>)}
-      {[-frontZ, frontZ].map((z) => {
-        const gable = new Shape();
-        gable.moveTo(-halfWidth, 0);
-        gable.lineTo(halfWidth, 0);
-        gable.lineTo(0, 1.22);
-        gable.closePath();
-        return <mesh key={z} position={[0, wallHeight, z + Math.sign(z) * (wallThickness / 2 + 0.012)]}
-          rotation={z < 0 ? [0, Math.PI, 0] : [0, 0, 0]} castShadow receiveShadow>
-          <shapeGeometry args={[gable]} />
-          <meshStandardMaterial color="#eadcc8" roughness={0.95} side={2} />
-        </mesh>;
-      })}
+      <mesh position={[0, HOUSE_LAYOUT.roofY + 0.04, HOUSE_LAYOUT.exterior.depth / 2 + 0.1]} receiveShadow>
+        <boxGeometry args={[HOUSE_LAYOUT.exterior.width + 0.3, 0.12, 0.18]} />
+        <meshStandardMaterial color="#a77f5d" roughness={0.93} />
+      </mesh>
     </group>
     {panels.map((panel, index) => <mesh key={index} position={panel.position} castShadow receiveShadow>
       <boxGeometry args={panel.size} />

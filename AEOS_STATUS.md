@@ -85,9 +85,9 @@ The source-code updates below passed automated validation in [run 38953581339](h
 **PR:** [#5 — Loop 004: Reconcile shell, room connections, stairs and spatial map](https://github.com/teyyara/darboussedra/pull/5); remains draft and unmerged.
 
 ### Loop 004 changes now in the source branch
-- Added a recognizable pitched, gabled roof to the exterior view while keeping the navigable rooftop terrace as a separate visibility state.
+- Replaced the pitched exterior roof with a flat roof slab and parapet that align with the walkable rooftop terrace and stair hatch; the visible shell and the navigable roof now describe the same architecture.
 - Made the exterior, settled indoor rooms, garden, upper level and rooftop use distinct scene-visibility rules. The opaque exterior shell is no longer drawn across indoor views; the rooftop slab is hidden during transitions to the roof.
-- Retargeted room cameras diagonally across their registered footprints, with modest downward framing to reveal floor and wall relationships. The entrance and Family Table now show the passage between connected spaces instead of aiming straight at the nearest wall.
+- Retargeted room cameras diagonally across their registered footprints, with modest downward framing to reveal floor and wall relationships. The entrance looks straight down the entry passage; Family Table frames across the shared room rather than into the nearest wall.
 - Enlarged/reframed the garden view to read as an outdoor area, rather than a close-up view directly into the front door.
 - Added ceilings to enclosed room shells and framed rear windows cut into rooms along the back of the house (including the private rooms, library, pet corner and musalla).
 - Moved the rooftop camera off the centreline and toward an oblique view of the stair hatch and terrace.
@@ -95,7 +95,7 @@ The source-code updates below passed automated validation in [run 38953581339](h
 
 ### Latest validation evidence
 - TypeScript: PASS.
-- Unit tests: **33 passed across 5 test files**.
+- Unit tests: **34 expected after the flat-roof/terrace alignment invariant is added; verify in the current CI run**.
 - Production build: PASS.
 - Chromium visual walkthrough: PASS; WebGL canvas and WebGL2 context detected; no browser runtime errors; all tested destinations (Entrance, Family Table, Zineb's room, Garden and Rooftop) settled to the expected room label.
 - Map directory: all **13 room destinations** were present/selectable.

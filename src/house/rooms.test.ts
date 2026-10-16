@@ -11,6 +11,13 @@ describe("authoritative room and architectural layout", () => {
     expect(new Set(rooms.map((room) => room.id)).size).toBe(13);
     for (const slug of REQUIRED_ROOM_SLUGS) expect(rooms.filter((room) => room.slug === slug)).toHaveLength(1);
   });
+  it("aligns the walkable rooftop with the flat exterior roof and keeps terrace edges inside the shell", () => {
+    const rooftop = getRoomBySlug("rooftop")!;
+    expect(HOUSE_LAYOUT.exterior.wallHeight).toBe(HOUSE_LAYOUT.roofY);
+    expect(rooftop.scenePosition[1]).toBe(HOUSE_LAYOUT.roofY);
+    expect(rooftop.footprint[0]).toBeLessThan(HOUSE_LAYOUT.exterior.width);
+    expect(rooftop.footprint[1]).toBeLessThan(HOUSE_LAYOUT.exterior.depth);
+  });
   it("has no registry, footprint, enclosure, overlap, or declared-connection errors", () => {
     expect(roomRegistryIssues()).toEqual([]);
   });
