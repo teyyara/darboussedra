@@ -7,7 +7,7 @@
 **Repository:** https://github.com/teyyara/darboussedra  
 **Branch:** fix/loop-004-architecture-coherence  
 **Base main:** 501cc6ccf3e6926504dfcd051ac98147360cd48a  
-**Latest source-code correction commit:** b30f49dfceb36ca8f348d77a6e221817289740ae  
+**Latest source-code correction commit:** adcc4cff71e3d1487681294c7b9560ee7d484126  
 **Last updated:** 2026-10-16
 
 ## Loop 003 outcome
@@ -47,12 +47,12 @@ Improve/test architectural proportions and circulation against a visual browser 
 - Moved the first ground stair tread clear of the rear exterior wall and added a regression invariant for tread clearance.
 - Added source-level checks for registry consistency, usable connected boundaries, room/shell overlaps and stair/landing/roof continuity.
 - Added distinct spatial plan tabs for ground, upper, garden and roof, with a stairwell/landing overlay and the semantic room directory retained.
-- **Automated CI:** [run 38948187378](https://github.com/teyyara/darboussedra/actions/runs/38948187378) passed typecheck, all 14 unit tests across three files, and production build on source-code commit `b30f49dfceb36ca8f348d77a6e221817289740ae`. Both Vercel Git status checks report success for this revision, but neither constitutes rendered browser evidence.
+- **Automated CI:** [run 38951780470](https://github.com/teyyara/darboussedra/actions/runs/38951780470) passed TypeScript typecheck, 16 tests across three files, and production build on source-code commit `adcc4cff71e3d1487681294c7b9560ee7d484126`. Both Vercel Git status checks report success for this revision, but neither constitutes rendered browser evidence.
 - **Last recorded bundle-size measurement:** on source-code commit `9b541fdc19dd03f951371c22a0e1528961732304`, the `index` bundle was 244.05 kB minified / 76.23 kB gzip and lazy `HouseScene` was 896.19 kB / 241.56 kB gzip. Vite warned that the deferred chunk exceeds 500 kB. CI passed for the newer source commit, but no separate bundle-size measurement was recorded for that run. The existing lazy boundary is preserved; further splitting remains a measured optimization follow-up, not an architecture acceptance substitute.
 
-- **Browser screenshots/interactive QA: BLOCKED.** No real images captured; no functioning interactive browser driver was available and web inspection of the deployment was denied. Visual correctness is not certified.
+- **Browser screenshots/interactive QA: BLOCKED.** No real images captured. The Vercel GitHub PR status identifies the branch preview as [darboussedra-git-fix-loop-004-architecture-coherence-tyyr1.vercel.app](https://darboussedra-git-fix-loop-004-architecture-coherence-tyyr1.vercel.app), but Vercel preview fetch/access-bypass calls returned 403 because this session is not authorized for team scope `tyyr1`; direct web fetching also reports the host inaccessible. Visual correctness is not certified.
 - Do not merge/deploy as part of Loop 004. The proportion changes (especially Pets’ Corner/Musalla), circulation arrangement and floor plan require family review before acceptance.
 
 The latest source-code CI run is green, but Loop 004 remains incomplete until real browser review is completed and the family confirms the proposed proportions, room arrangement and circulation.
 
-- **Source/docs revision boundary:** source-code commit `b30f49dfceb36ca8f348d77a6e221817289740ae` has passing CI; docs-only audit synchronization is in commit `d5c20812b74adfb292a1f713dd3a0cb314cf357e`. Neither is merged to `main`.
+- **Latest branch head:** source and audit updates are both committed at `adcc4cff71e3d1487681294c7b9560ee7d484126`; CI is green for that revision. It remains unmerged from `main`.
