@@ -12,8 +12,13 @@ describe("3D camera paths", () => {
       expect(room.camera.position[1], room.slug + " eye height").toBeCloseTo(room.scenePosition[1] + 1.65);
       expect(Math.abs(room.camera.target[1] - room.camera.position[1]), room.slug + " look angle").toBeLessThan(0.1);
     }
-    expect(EXTERIOR_CAMERA.position[1]).toBeLessThan(doorHeight);
-    expect(Math.abs(EXTERIOR_CAMERA.target[1] - EXTERIOR_CAMERA.position[1])).toBeLessThan(0.1);
+    expect(EXTERIOR_CAMERA.position[1]).toBeGreaterThan(doorHeight);
+    expect(EXTERIOR_CAMERA.position[1]).toBeLessThan(HOUSE_LAYOUT.exterior.wallHeight);
+    expect(EXTERIOR_CAMERA.position[0]).toBeGreaterThan(HOUSE_LAYOUT.exterior.width / 2);
+    expect(EXTERIOR_CAMERA.position[2]).toBeGreaterThan(frontZ);
+    expect(Math.abs(EXTERIOR_CAMERA.target[0])).toBeLessThan(1);
+    expect(EXTERIOR_CAMERA.target[2]).toBeLessThan(frontZ);
+    expect(EXTERIOR_CAMERA.target[1]).toBeLessThan(EXTERIOR_CAMERA.position[1]);
   });
 
   it("keeps every destination camera and focus point inside the room named by the route", () => {

@@ -70,7 +70,7 @@ export default function App() {
     return () => window.removeEventListener("keydown", key);
   }, [map, closeMap]);
 
-  return <main className="app-shell">
+  return <main className="app-shell" data-view={room && !map ? "room" : "home"}>
     <div className="scene-layer">
       {webgl === "checking"
         ? <p className="loading" role="status">Preparing the house…</p>

@@ -42,6 +42,30 @@ describe("level-aware house rendering", () => {
     expect(visibility.showRoofDeck).toBe(true);
   });
 
+  it("keeps exterior and garden views outside the room shells", () => {
+    const exterior = getHouseSceneVisibility("exterior", "exterior", false);
+    expect(exterior.showExteriorShell).toBe(true);
+    expect(exterior.showGroundRooms).toBe(false);
+    expect(exterior.showUpperRooms).toBe(false);
+    expect(exterior.showGroundStairs).toBe(false);
+    expect(exterior.showRoofStairs).toBe(false);
+
+    const garden = getHouseSceneVisibility("garden", "garden", false);
+    expect(garden.showExteriorShell).toBe(true);
+    expect(garden.showGarden).toBe(true);
+    expect(garden.showGroundRooms).toBe(false);
+    expect(garden.showUpperRooms).toBe(false);
+    expect(garden.showRoofDeck).toBe(true);
+  });
+
+  it("hides the roof slab while the camera is climbing to the rooftop", () => {
+    const climbing = getHouseSceneVisibility("rooftop", "family-table", true);
+    expect(climbing.showRoofDeck).toBe(false);
+    expect(climbing.showRoofStairs).toBe(true);
+    expect(climbing.showUpperRooms).toBe(true);
+    expect(climbing.showGroundStairs).toBe(true);
+  });
+
   it("shows the garden and terrace deck outside, but removes them on the way indoors", () => {
     const outside = getHouseSceneVisibility("exterior", "exterior", false);
     expect(outside.showGarden).toBe(true);
@@ -50,8 +74,11 @@ describe("level-aware house rendering", () => {
     const entering = getHouseSceneVisibility("entrance", "exterior", true);
     expect(entering.showGarden).toBe(false);
     expect(entering.showRoofDeck).toBe(false);
+    expect(entering.showExteriorShell).toBe(true);
 
     const garden = getHouseSceneVisibility("garden", "exterior", true);
     expect(garden.showGarden).toBe(true);
+    expect(garden.showGroundRooms).toBe(false);
+    expect(garden.showExteriorShell).toBe(true);
   });
 });

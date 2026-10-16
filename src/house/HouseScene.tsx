@@ -55,7 +55,7 @@ function CameraRig({ location, reducedMotion, onArrive, onTransitionChange }: {
     const waypoint = path.current[index.current];
     const nextPosition = waypoint?.position ?? desired.position;
     const nextTarget = waypoint?.target ?? desired.target;
-    const amount = 1 - Math.exp(-3.8 * delta);
+    const amount = 1 - Math.exp(-7.2 * delta);
     camera.position.lerp(nextPosition, amount);
     lookAt.current.lerp(nextTarget, amount);
     camera.lookAt(lookAt.current);
@@ -287,12 +287,12 @@ function GardenArea({ onSelect }: { onSelect: () => void }) {
     <mesh position={[x, 0.005, z - 0.1]} receiveShadow>
       <boxGeometry args={[1.55, 0.045, 2.1]} /><meshStandardMaterial color="#c8b89e" roughness={1} />
     </mesh>
-    {[-width * 0.28, width * 0.28].map((treeX) => <group key={treeX} position={[treeX, 0, z + 0.2]}>
+    {[-width * 0.28, width * 0.28].map((treeX) => <group key={treeX} position={[treeX, 0, z - 1.25]}>
       <mesh position={[0, 0.62, 0]} castShadow><cylinderGeometry args={[0.11, 0.16, 1.24, 7]} /><meshStandardMaterial color="#76563e" roughness={0.95} /></mesh>
       <mesh position={[0, 1.5, 0]} castShadow><coneGeometry args={[0.82, 1.55, 7]} /><meshStandardMaterial color="#829071" roughness={1} /></mesh>
       <mesh position={[0.12, 2.03, 0.08]} castShadow><coneGeometry args={[0.55, 1.1, 7]} /><meshStandardMaterial color="#a0a780" roughness={1} /></mesh>
     </group>)}
-    {[-width * 0.4, -width * 0.31, width * 0.31, width * 0.4].map((bushX) => <mesh key={bushX} position={[bushX, 0.22, z - 0.2]} castShadow>
+    {[-width * 0.4, -width * 0.31, width * 0.31, width * 0.4].map((bushX) => <mesh key={bushX} position={[bushX, 0.22, z - 1.0]} castShadow>
       <sphereGeometry args={[0.42, 10, 8]} /><meshStandardMaterial color="#899477" roughness={1} />
     </mesh>)}
   </group>;
@@ -347,7 +347,7 @@ function HouseArchitecture({ location, visualLocation, transitioning, onDoorActi
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.205, 0]} receiveShadow>
       <planeGeometry args={[48, 48]} /><meshStandardMaterial color="#d6d5c0" roughness={1} />
     </mesh>
-    <ExteriorShell location={location} onDoorActivate={onDoorActivate} reducedMotion={reducedMotion} />
+    {visibility.showExteriorShell && <ExteriorShell location={location} onDoorActivate={onDoorActivate} reducedMotion={reducedMotion} />}
     {rooms.filter((room) =>
       (room.level === "ground" && visibility.showGroundRooms) ||
       (room.level === "upper" && visibility.showUpperRooms)).map((room) =>
