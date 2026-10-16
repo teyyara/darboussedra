@@ -82,7 +82,7 @@ function ExteriorShell({ location, onEnter, reducedMotion }: { location: HouseLo
   const wallHeight = HOUSE_LAYOUT.exterior.wallHeight;
   const halfWidth = HOUSE_LAYOUT.exterior.width / 2;
   const wallThickness = HOUSE_LAYOUT.exterior.wallThickness;
-  const panels = [
+  const panels: { position: Vector3Tuple; size: Vector3Tuple }[] = [
     { position: [-4.65, wallHeight / 2, frontZ], size: [1.9, wallHeight, wallThickness] },
     { position: [-3.05, 0.775, frontZ], size: [1.3, 1.55, wallThickness] },
     { position: [-3.05, 3.1, frontZ], size: [1.3, 0.8, wallThickness] },
@@ -122,8 +122,8 @@ function ExteriorShell({ location, onEnter, reducedMotion }: { location: HouseLo
       <boxGeometry args={[HOUSE_LAYOUT.exterior.width, wallHeight, wallThickness]} />
       <meshStandardMaterial color="#dfcfb8" roughness={0.95} />
     </mesh>
-    {panels.map((panel, index) => <mesh key={index} position={panel.position as Vector3Tuple} castShadow receiveShadow>
-      <boxGeometry args={panel.size as Vector3Tuple} />
+    {panels.map((panel, index) => <mesh key={index} position={panel.position} castShadow receiveShadow>
+      <boxGeometry args={panel.size} />
       <meshStandardMaterial color="#eadcc8" roughness={0.94} />
     </mesh>)}
     {[-3.05, 3.05].flatMap((x) => [2.1, 4.075].map((y, index) =>
