@@ -108,4 +108,45 @@ describe("level-aware house rendering", () => {
     expect(garden.showGroundRooms).toBe(false);
     expect(garden.showExteriorShell).toBe(true);
   });
+  it("shows only the current storey while ascending and preserves required stair flights", () => {
+    const lowerFlight = getHouseSceneVisibility("rooftop", "family-table", true, false, "ground");
+    expect(lowerFlight.showGroundRooms).toBe(true);
+    expect(lowerFlight.showUpperRooms).toBe(false);
+    expect(lowerFlight.showUpperCirculation).toBe(true);
+    expect(lowerFlight.showGroundStairs).toBe(true);
+    expect(lowerFlight.showRoofStairs).toBe(false);
+    expect(lowerFlight.showRoofDeck).toBe(false);
+
+    const upperLanding = getHouseSceneVisibility("rooftop", "family-table", true, false, "upper");
+    expect(upperLanding.showGroundRooms).toBe(false);
+    expect(upperLanding.showUpperRooms).toBe(true);
+    expect(upperLanding.showGroundStairs).toBe(true);
+    expect(upperLanding.showRoofStairs).toBe(true);
+
+    const roof = getHouseSceneVisibility("rooftop", "family-table", true, false, "roof");
+    expect(roof.showGroundRooms).toBe(false);
+    expect(roof.showUpperRooms).toBe(false);
+    expect(roof.showRoofStairs).toBe(true);
+    expect(roof.showRoofDeck).toBe(true);
+  });
+
+  it("stops drawing the interior as an upstairs route exits into the garden", () => {
+    const upper = getHouseSceneVisibility("garden", "zineb-room", true, false, "upper");
+    expect(upper.showUpperRooms).toBe(true);
+    expect(upper.showGroundRooms).toBe(false);
+    expect(upper.showGroundStairs).toBe(true);
+
+    const lower = getHouseSceneVisibility("garden", "zineb-room", true, false, "ground");
+    expect(lower.showGroundRooms).toBe(true);
+    expect(lower.showUpperRooms).toBe(false);
+    expect(lower.showGroundStairs).toBe(true);
+
+    const outside = getHouseSceneVisibility("garden", "zineb-room", true, false, "outside");
+    expect(outside.showExteriorShell).toBe(false);
+    expect(outside.showGroundRooms).toBe(false);
+    expect(outside.showUpperRooms).toBe(false);
+    expect(outside.showGroundStairs).toBe(false);
+    expect(outside.showGarden).toBe(true);
+  });
+
 });

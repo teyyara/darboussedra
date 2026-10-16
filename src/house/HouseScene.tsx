@@ -2,13 +2,22 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { DoubleSide, PerspectiveCamera, Quaternion, Vector3, type Group } from "three";
 import { makeCameraPath, type CameraPose } from "./cameraPath";
-import { getHouseSceneVisibility } from "./sceneVisibility";
+import { getHouseSceneVisibility, type CameraZone } from "./sceneVisibility";
 import {
   EXTERIOR_CAMERA, HOUSE_LAYOUT, getFrontDoorAction, getRoomBySlug, getRoomPortalOpenings, getRoomWallRuns, roomOwnsPortalFrame, rooms,
   type HouseLocation, type Room, type RoomSlug, type RoomPortalOpening, type Vector3Tuple,
 } from "./rooms";
 
 interface AnimatedPose { position: Vector3; rotation: Quaternion; }
+
+function cameraZoneFor(position: Vector3): CameraZone {
+  const frontZ = HOUSE_LAYOUT.exterior.depth / 2;
+  if (position.z > frontZ + 0.95) return "outside";
+  const floorY = position.y - 1.65;
+  if (floorY >= HOUSE_LAYOUT.roofY - 0.25) return "roof";
+  if (floorY >= HOUSE_LAYOUT.upperY - 0.25) return "upper";
+  return "ground";
+}
 
 function poseRotation(pose: CameraPose): Quaternion {
   const helper = new PerspectiveCamera();
@@ -25,12 +34,13 @@ function poseFor(location: HouseLocation): CameraPose {
   return getRoomBySlug(location)?.camera ?? EXTERIOR_CAMERA;
 }
 
-function CameraRig({ location, reducedMotion, onArrive, onTransitionChange, onExteriorShellVisibilityChange }: {
+function CameraRig({ location, reducedMotion, onArrive, onTransitionChange, onExteriorShellVisibilityChange, onCameraZoneChange }: {
   location: HouseLocation;
   reducedMotion: boolean;
   onArrive: (location: HouseLocation) => void;
   onTransitionChange: (transitioning: boolean) => void;
   onExteriorShellVisibilityChange: (visible: boolean | undefined) => void;
+  onCameraZoneChange: (zone: CameraZone) => void;
 }) {
   const { camera, invalidate } = useThree();
   const pose = useMemo(() => poseFor(location), [location]);
@@ -44,6 +54,7 @@ function CameraRig({ location, reducedMotion, onArrive, onTransitionChange, onEx
   const completedLocation = useRef<HouseLocation | undefined>(undefined);
   const doorTransition = useRef<"entering" | "exiting" | null>(null);
   const doorThresholdCrossed = useRef(false);
+  const cameraZone = useRef<CameraZone>("outside");
 
   useEffect(() => {
     const from = lastLocation.current;
@@ -63,6 +74,8 @@ function CameraRig({ location, reducedMotion, onArrive, onTransitionChange, onEx
       camera.quaternion.copy(desired.rotation);
       camera.updateProjectionMatrix();
       camera.updateMatrixWorld();
+      cameraZone.current = cameraZoneFor(desired.position);
+      onCameraZoneChange(cameraZone.current);
       path.current = [];
       index.current = 0;
       completedLocation.current = location;
@@ -77,7 +90,7 @@ function CameraRig({ location, reducedMotion, onArrive, onTransitionChange, onEx
       onTransitionChange(true);
     }
     invalidate();
-  }, [camera, desired, invalidate, location, onArrive, onTransitionChange, onExteriorShellVisibilityChange, pose, reducedMotion]);
+  }, [camera, desired, invalidate, location, onArrive, onTransitionChange, onExteriorShellVisibilityChange, onCameraZoneChange, pose, reducedMotion]);
 
   useFrame((_state, delta) => {
     const frameDelta = Math.min(delta, 0.2);
@@ -107,17 +120,17 @@ function CameraRig({ location, reducedMotion, onArrive, onTransitionChange, onEx
     camera.quaternion.slerp(nextRotation, 1 - Math.exp(-TURN_RESPONSE * frameDelta));
 
     const frontZ = HOUSE_LAYOUT.exterior.depth / 2;
+    const nextCameraZone = cameraZoneFor(camera.position);
+    if (nextCameraZone !== cameraZone.current) {
+      cameraZone.current = nextCameraZone;
+      onCameraZoneChange(nextCameraZone);
+    }
     if (!doorThresholdCrossed.current && doorTransition.current === "entering" &&
       camera.position.z < frontZ - 0.05 &&
       Math.abs(camera.position.x) < HOUSE_LAYOUT.entrance.doorWidth / 2 + 0.25 &&
       camera.position.y < HOUSE_LAYOUT.entrance.doorHeight) {
       doorThresholdCrossed.current = true;
       onExteriorShellVisibilityChange(false);
-    } else if (!doorThresholdCrossed.current && doorTransition.current === "exiting" &&
-      camera.position.z > frontZ + 2.0 && Math.abs(camera.position.x) < 1.0 &&
-      camera.position.y < 2.3) {
-      doorThresholdCrossed.current = true;
-      onExteriorShellVisibilityChange(true);
     }
 
     // Position progress controls the route; orientation blends in the background.
@@ -656,17 +669,18 @@ function RoofDeck({ onSelect }: { onSelect: () => void }) {
   </group>;
 }
 
-function HouseArchitecture({ location, visualLocation, transitioning, exteriorShellOverride, onDoorActivate, onSelectRoom, reducedMotion }: {
+function HouseArchitecture({ location, visualLocation, transitioning, exteriorShellOverride, cameraZone, onDoorActivate, onSelectRoom, reducedMotion }: {
   location: HouseLocation;
   visualLocation: HouseLocation;
   transitioning: boolean;
   exteriorShellOverride: boolean | undefined;
+  cameraZone: CameraZone;
   onDoorActivate: (entering: boolean) => void;
   onSelectRoom: (slug: RoomSlug) => void;
   reducedMotion: boolean;
 }) {
   const active = visualLocation === "exterior" || visualLocation === "map" ? undefined : getRoomBySlug(visualLocation);
-  const visibility = getHouseSceneVisibility(location, visualLocation, transitioning, exteriorShellOverride);
+  const visibility = getHouseSceneVisibility(location, visualLocation, transitioning, exteriorShellOverride, cameraZone);
   const bridgeSideWidth = Math.max(0.1, (HOUSE_LAYOUT.upperBridge.width - HOUSE_LAYOUT.stairs.openingWidth) / 2);
   const bridgeSideOffset = HOUSE_LAYOUT.stairs.openingWidth / 2 + bridgeSideWidth / 2;
   const bridgeRailX = HOUSE_LAYOUT.upperBridge.centerX + HOUSE_LAYOUT.stairs.openingWidth / 2;
@@ -735,6 +749,7 @@ export function HouseScene({ location, settledLocation, reducedMotion, onArrive,
   onSelect: (slug: RoomSlug) => void;
 }) {
   const [transitioning, setTransitioning] = useState(false);
+  const [cameraZone, setCameraZone] = useState<CameraZone>("outside");
   const [exteriorShellOverride, setExteriorShellOverride] = useState<boolean | undefined>(undefined);
   const handleExteriorShellVisibilityChange = useCallback((visible: boolean | undefined) => {
     setExteriorShellOverride(visible);
@@ -743,6 +758,9 @@ export function HouseScene({ location, settledLocation, reducedMotion, onArrive,
     setTransitioning(moving);
     onNavigationChange(moving);
   }, [onNavigationChange]);
+  const handleCameraZoneChange = useCallback((zone: CameraZone) => {
+    setCameraZone(zone);
+  }, []);
   const visualTransition = transitioning || settledLocation !== location;
   const sceneFov = location === "exterior" || location === "map" ? 58 : 66;
   return <Canvas camera={{ position: EXTERIOR_CAMERA.position, fov: sceneFov, near: 0.1, far: 120 }}
@@ -751,8 +769,10 @@ export function HouseScene({ location, settledLocation, reducedMotion, onArrive,
     <ambientLight intensity={1.1} /><hemisphereLight args={["#fff2db", "#8c9479", 1.1]} />
     <directionalLight position={[8, 15, 9]} intensity={2.1} castShadow shadow-mapSize-width={1024} shadow-mapSize-height={1024} />
     <CameraRig location={location} reducedMotion={reducedMotion} onArrive={onArrive}
-      onTransitionChange={handleTransitionChange} onExteriorShellVisibilityChange={handleExteriorShellVisibilityChange} />
+      onTransitionChange={handleTransitionChange} onExteriorShellVisibilityChange={handleExteriorShellVisibilityChange}
+      onCameraZoneChange={handleCameraZoneChange} />
     <HouseArchitecture location={location} visualLocation={settledLocation} transitioning={visualTransition}
-      exteriorShellOverride={exteriorShellOverride} onDoorActivate={onDoorActivate} onSelectRoom={onSelect} reducedMotion={reducedMotion} />
+      exteriorShellOverride={exteriorShellOverride} cameraZone={cameraZone}
+      onDoorActivate={onDoorActivate} onSelectRoom={onSelect} reducedMotion={reducedMotion} />
   </Canvas>;
 }

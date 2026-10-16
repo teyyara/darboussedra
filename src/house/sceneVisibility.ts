@@ -1,6 +1,7 @@
 import { getRoomBySlug, type HouseLocation } from "./rooms";
 
 export type HouseSceneLevel = "exterior" | "ground" | "upper" | "outdoor" | "roof";
+export type CameraZone = "outside" | "ground" | "upper" | "roof";
 
 export interface HouseSceneVisibility {
   readonly showExteriorShell: boolean;
@@ -38,6 +39,7 @@ export function getHouseSceneVisibility(
   settledLocation: HouseLocation,
   transitioning: boolean,
   exteriorShellOverride?: boolean,
+  cameraZone?: CameraZone,
 ): HouseSceneVisibility {
   const destinationLevel = levelFor(location);
   const sourceLevel = levelFor(settledLocation);
@@ -53,6 +55,29 @@ export function getHouseSceneVisibility(
     (location === "garden" && !transitioning) ||
     (transitioning && settledLocation === "exterior");
   const showExteriorShell = exteriorShellOverride ?? calculatedExteriorShell;
+
+  // While walking, reveal only the storey under the camera and the stair/landing
+  // geometry needed for this route. This avoids drawing distant storeys through
+  // the walls and hides the house interior as soon as the camera exits outdoors.
+  if (transitioning && cameraZone) {
+    const inside = cameraZone !== "outside";
+    const routeUsesLowerStairs = movingBetweenStoreys || crossingHouseBoundary;
+    const routeUsesRoofStairs = sourceLevel === "roof" || destinationLevel === "roof" ||
+      settledLocation === "rooftop" || location === "rooftop";
+    const showGarden = cameraZone === "outside" &&
+      (location === "garden" || location === "exterior" || settledLocation === "garden" || settledLocation === "exterior");
+    return {
+      showExteriorShell,
+      showGroundRooms: cameraZone === "ground",
+      showUpperRooms: cameraZone === "upper",
+      showUpperCirculation: inside &&
+        (cameraZone === "upper" || (cameraZone === "ground" && routeUsesLowerStairs)),
+      showGroundStairs: inside && (cameraZone === "ground" || cameraZone === "upper") && routeUsesLowerStairs,
+      showRoofStairs: inside && routeUsesRoofStairs && (cameraZone === "upper" || cameraZone === "roof"),
+      showGarden,
+      showRoofDeck: cameraZone === "roof",
+    };
+  }
 
   const showGroundRooms = destinationLevel === "ground" ||
     (transitioning && sourceLevel === "ground") || crossingHouseBoundary;
