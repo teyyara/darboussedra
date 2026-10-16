@@ -158,4 +158,12 @@ describe("level-aware house rendering", () => {
     expect(entering.showRoofStairs).toBe(false);
   });
 
+  it("does not reveal the lower staircase when walking only between the upper floor and roof", () => {
+    const upperToRoof = getHouseSceneVisibility("rooftop", "zineb-room", true, false, "upper");
+    expect(upperToRoof.showUpperRooms).toBe(true);
+    expect(upperToRoof.showUpperCirculation).toBe(true);
+    expect(upperToRoof.showRoofStairs).toBe(true);
+    expect(upperToRoof.showGroundStairs).toBe(false);
+  });
+
 });
