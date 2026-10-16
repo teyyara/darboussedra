@@ -107,7 +107,9 @@ report.webgl2ContextAvailable = await desktop.locator("canvas").first().evaluate
 }).catch(() => false);
 await saveScreenshot(desktop, "01-exterior-desktop.png");
 
-await desktop.getByRole("button", { name: /enter the house/i }).click();
+// Click the gold in-scene doorway marker to verify that visual navigation is genuinely interactive.
+await desktop.locator("canvas").click({ position: { x: 665, y: 449 } });
+await desktop.waitForFunction(() => window.location.pathname === "/room/entrance", null, { timeout: 8000 });
 await arrivalStatus(desktop, "entrance", "Front Door & Entrance", 45000);
 await saveScreenshot(desktop, "02-entrance-eye-level.png");
 
@@ -142,20 +144,21 @@ await saveScreenshot(desktop, "09-prayer-room-eye-level.png");
 
 await openMap(desktop);
 await selectDirectoryRoom(desktop, "Zineb's Private Room", "zineb-room", [
-  { afterMs: 6500, filename: "13-stair-ascent-midflight.png" },
-  { afterMs: 9800, filename: "14-upper-landing-turn.png" },
+  { afterMs: 10500, filename: "13-stair-ascent-midflight.png" },
+  { afterMs: 14000, filename: "14-upper-landing-turn.png" },
 ]);
 await saveScreenshot(desktop, "10-upper-floor-eye-level.png");
 
 await openMap(desktop);
 await selectDirectoryRoom(desktop, "Garden", "garden", [
-  { afterMs: 5600, filename: "15-stair-descent-midflight.png" },
+  { afterMs: 12000, filename: "15-stair-descent-midflight.png" },
 ]);
 await saveScreenshot(desktop, "11-garden-eye-level.png");
 
 await openMap(desktop);
 await selectDirectoryRoom(desktop, "Rooftop Terrace", "rooftop", [
-  { afterMs: 10800, filename: "16-roof-stair-ascent.png" },
+  { afterMs: 17500, filename: "16-ground-stair-ascent.png" },
+  { afterMs: 23500, filename: "16-roof-stair-ascent.png" },
 ]);
 await saveScreenshot(desktop, "12-rooftop-eye-level.png");
 
