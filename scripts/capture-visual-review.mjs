@@ -43,7 +43,7 @@ async function saveScreenshot(page, filename) {
   report.screenshots.push(filename);
 }
 
-async function arrivalStatus(page, slug, name, timeout = 45000) {
+async function arrivalStatus(page, slug, name, timeout = 60000) {
   await page.waitForFunction(
     () => {
       const label = document.querySelector(".room-welcome .eyebrow");
