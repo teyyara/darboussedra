@@ -3,15 +3,14 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Vector3, type Group } from "three";
 import { makeCameraPath, type CameraPose } from "./cameraPath";
 import {
-  EXTERIOR_CAMERA, HOUSE_LAYOUT, MAP_CAMERA, getFrontDoorAction, getRoomBySlug, getRoomPortalOpenings, getRoomWallRuns, roomOwnsPortalFrame, rooms,
+  EXTERIOR_CAMERA, HOUSE_LAYOUT, getFrontDoorAction, getRoomBySlug, getRoomPortalOpenings, getRoomWallRuns, roomOwnsPortalFrame, rooms,
   type HouseLocation, type Room, type RoomSlug, type RoomPortalOpening, type Vector3Tuple,
 } from "./rooms";
 
 interface AnimatedPose { position: Vector3; target: Vector3; }
 
 function poseFor(location: HouseLocation): CameraPose {
-  if (location === "exterior") return EXTERIOR_CAMERA;
-  if (location === "map") return MAP_CAMERA;
+  if (location === "exterior" || location === "map") return EXTERIOR_CAMERA;
   return getRoomBySlug(location)?.camera ?? EXTERIOR_CAMERA;
 }
 function CameraRig({ location, reducedMotion }: { location: HouseLocation; reducedMotion: boolean }) {
@@ -44,7 +43,7 @@ function CameraRig({ location, reducedMotion }: { location: HouseLocation; reduc
     const waypoint = path.current[index.current];
     const nextPosition = waypoint?.position ?? desired.position;
     const nextTarget = waypoint?.target ?? desired.target;
-    const amount = 1 - Math.exp(-2.6 * delta);
+    const amount = 1 - Math.exp(-3.8 * delta);
     camera.position.lerp(nextPosition, amount);
     lookAt.current.lerp(nextTarget, amount);
     camera.lookAt(lookAt.current);
@@ -344,7 +343,7 @@ function HouseArchitecture({ location, onDoorActivate, onSelectRoom, reducedMoti
 export function HouseScene({ location, reducedMotion, onDoorActivate, onSelect }: {
   location: HouseLocation; reducedMotion: boolean; onDoorActivate: (entering: boolean) => void; onSelect: (slug: RoomSlug) => void;
 }) {
-  return <Canvas camera={{ position: EXTERIOR_CAMERA.position, fov: 36, near: 0.1, far: 120 }}
+  return <Canvas camera={{ position: EXTERIOR_CAMERA.position, fov: 58, near: 0.1, far: 120 }}
     dpr={reducedMotion ? 1 : ([1, 1.4] as [number, number])} frameloop="demand" shadows>
     <color attach="background" args={["#eee7da"]} /><fog attach="fog" args={["#eee7da", 22, 55]} />
     <ambientLight intensity={1.1} /><hemisphereLight args={["#fff2db", "#8c9479", 1.1]} />
