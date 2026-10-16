@@ -214,7 +214,7 @@ describe("3D camera paths", () => {
       pose.position[2] > HOUSE_LAYOUT.stairs.roofFlight.from[2] - 0.35 &&
       pose.position[2] <= landingFrontEdge + 0.005);
     expect(approach.length).toBeGreaterThanOrEqual(5);
-    expect(Math.max(...approach.map((pose) => pose.position[2])).toBeLessThanOrEqual(landingFrontEdge + 0.005);
+    expect(Math.max(...approach.map((pose) => pose.position[2]))).toBeLessThanOrEqual(landingFrontEdge + 0.005);
   });
 
   it("exits the roof hatch onto solid deck before turning across the terrace", () => {
