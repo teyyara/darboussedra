@@ -21,3 +21,7 @@
 17. **No merge without visual acceptance.** The Loop 004 branch/PR remains unmerged; no manual Vercel deployment is permitted in this loop. A green preview status is not substitute evidence for browser screenshots and interaction review.
 
 18. **Loop 004 bundle measurement.** Production build measured the entry bundle at 242.65 kB minified / 75.72 kB gzip and lazy HouseScene at 896.14 kB / 241.52 kB gzip; Vite retains its >500 kB chunk warning. Keep the existing lazy boundary and defer additional chunk splitting until renderer/runtime measurements identify the best split.
+
+19. **Loop 004 partition and stair clearance.** Shared wall intervals and portal frames are rendered by one owner; the exterior shell owns the entrance facade. The first stair tread is kept clear of the rear wall by geometry math and a regression test.
+20. **Latest Loop 004 CI.** GitHub Actions run [38947296587](https://github.com/teyyara/darboussedra/actions/runs/38947296587) passed typecheck, 14 tests across three files and production build for code commit `9b541fdc19dd03f951371c22a0e1528961732304`. Vercel Git statuses are green, but visual browser verification remains blocked.
+21. **Updated build sizes.** The latest build entry is 244.05 kB minified / 76.23 kB gzip; lazy HouseScene is 896.19 kB / 241.56 kB gzip. The >500 kB warning is retained for future measured optimization.

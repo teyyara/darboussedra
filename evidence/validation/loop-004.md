@@ -10,8 +10,8 @@
 | Concern | Source evidence | Correction in this branch |
 |---|---|---|
 | Exterior/room disconnect | Exterior shell was one solid box with the front door layered in front; interior rooms were rendered separately | Front facade is assembled from wall pieces around a real opening; its hinged door opens when entering, while rooms, shell, garden, stairs and roof use one world space |
-| Blocked/misleading adjacency | `connectedTo` was not used when constructing wall geometry, so side walls could block listed connections | Every declared edge must meet along a usable same-level boundary and generates a matching opening on both adjoining room walls |
-| Stair conflict | Old stair run occupied the previous Pets’ Corner footprint and crossed its lateral openings | Rear rooms are placed around a reserved central stair hall; a doorway from the Family Table opens into the hall; a registry invariant rejects ground-room overlap with the shaft |
+| Blocked/misleading adjacency | `connectedTo` was not used when constructing wall geometry, so side walls could block listed connections | Every declared edge must meet along a usable same-level boundary and generates a matching opening; shared walls and frames have one geometry owner to avoid duplicate coincident meshes |
+| Stair conflict | Old stair run occupied the previous Pets’ Corner footprint and crossed its lateral openings; initial revised tread extended into the rear shell | Rear rooms are placed around a reserved central stair hall; the Family Table opens into the hall; the first tread clears the inner rear wall and is guarded by an invariant |
 | Level continuity | Stair endpoints/steps did not reconcile with configured floor heights; rooftop deck had no corresponding opening | Shell, ground/upper floor heights, landing/bridge, flight endpoints and roof opening now share `HOUSE_LAYOUT` |
 | Entrance threshold | Entrance footprint ended before the shell’s inner front face and porch pieces had overlapping placement | Entrance footprint meets the inner wall face; threshold pieces are placed sequentially and garden/path/trees derive their placement from the registered garden |
 | Map was a list only | `HouseMap` only grouped HTML buttons with unrelated map coordinates | Ground/upper/garden/rooftop HTML plan views derive every room tile from `scenePosition` and `footprint`, show the stair void/landing, and retain the complete accessible directory |
@@ -33,7 +33,7 @@ GitHub Actions run [38945553894](https://github.com/teyyara/darboussedra/actions
 
 ## Production bundle check
 
-The CI production build measured the entry JS at **242.65 kB minified / 75.72 kB gzip** and the lazy 3D scene at **896.14 kB / 241.52 kB gzip**. The main entry remains much smaller than the original pre-lazy-load bundle, but Vite still warns that the on-demand HouseScene chunk exceeds 500 kB. No dependency or speculative manual chunk split was added during this architecture-focused loop; further work should measure renderer/module-level splitting and runtime effect before changing chunk boundaries.
+The CI production build measured the entry JS at **244.05 kB minified / 76.23 kB gzip** and the lazy 3D scene at **896.19 kB / 241.56 kB gzip**. The main entry remains much smaller than the original pre-lazy-load bundle, but Vite still warns that the on-demand HouseScene chunk exceeds 500 kB. No dependency or speculative manual chunk split was added during this architecture-focused loop; further work should measure renderer/module-level splitting and runtime effect before changing chunk boundaries.
 
 ## Visual evidence — blocked
 No genuine browser screenshots were captured. Connected browser/Vercel inspection previously returned access denied, and no interactive browser driver is available through the repository tool connection. There is **no verified before/after image evidence**, so visual correctness is not certified here.

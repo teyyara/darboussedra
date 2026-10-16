@@ -7,7 +7,7 @@
 **Repository:** https://github.com/teyyara/darboussedra  
 **Branch:** fix/loop-004-architecture-coherence  
 **Base main:** 501cc6ccf3e6926504dfcd051ac98147360cd48a  
-**Latest correction commit:** a19287f01d84b4c61fb14245e7f20b2efa0f3a90  
+**Latest correction commit:** 9b541fdc19dd03f951371c22a0e1528961732304  
 **Last updated:** 2026-10-16
 
 ## Loop 003 outcome
@@ -42,11 +42,13 @@ Improve/test architectural proportions and circulation against a visual browser 
 - **Branch:** fix/loop-004-architecture-coherence
 - Centralized shell/floor/circulation geometry, moved rear rooms clear of the central stairwell and preserved the 13 public slugs.
 - Derived room door gaps from physical adjacency; provided an explicit Family Table-to-stair-hall portal and private-room openings onto the shared upper landing.
+- Added single-owner wall/portal geometry so shared partitions and doorway frames are emitted once; the exterior shell owns the entrance facade rather than an overlapping room-wall strip.
+- Moved the first ground stair tread clear of the rear exterior wall and added a regression invariant for tread clearance.
 - Added source-level checks for registry consistency, usable connected boundaries, room/shell overlaps and stair/landing/roof continuity.
 - Added distinct spatial plan tabs for ground, upper, garden and roof, with a stairwell/landing overlay and the semantic room directory retained.
-- **Automated CI:** [run 38946031721](https://github.com/teyyara/darboussedra/actions/runs/38946031721) passed typecheck, all 12 unit tests across three files, and production build on code commit `a19287f01d84b4c61fb14245e7f20b2efa0f3a90`. Both Vercel Git status checks report success for this branch revision, but neither constitutes rendered browser evidence.
+- **Automated CI:** [run 38947296587](https://github.com/teyyara/darboussedra/actions/runs/38947296587) passed typecheck, all 14 unit tests across three files, and production build on code commit `9b541fdc19dd03f951371c22a0e1528961732304`. Both Vercel Git status checks report success for this branch revision, but neither constitutes rendered browser evidence.
 - 
-- **Loop 004 bundle review:** production output on code commit `a19287f01d84b4c61fb14245e7f20b2efa0f3a90` was `index` 242.65 kB minified / 75.72 kB gzip and lazy `HouseScene` 896.14 kB / 241.52 kB gzip. Vite still warns that the deferred chunk exceeds 500 kB. The spatial map slightly increases the small entry chunk; the existing lazy boundary is preserved. No extra vendor splitting was made without renderer/runtime profiling, so the deferred chunk remains an optimization follow-up, not an acceptance blocker for geometry correctness.
+- **Loop 004 bundle review:** latest production output on code commit `9b541fdc19dd03f951371c22a0e1528961732304` was `index` 244.05 kB minified / 76.23 kB gzip and lazy `HouseScene` 896.19 kB / 241.56 kB gzip. Vite still warns that the deferred chunk exceeds 500 kB. The spatial map and geometry helpers slightly increase the entry chunk; the existing lazy boundary is preserved. No extra vendor splitting was made without renderer/runtime profiling, so the deferred chunk remains an optimization follow-up, not an acceptance blocker for geometry correctness.
 
 - **Browser screenshots/interactive QA: BLOCKED.** No real images captured; no functioning interactive browser driver was available and web inspection of the deployment was denied. Visual correctness is not certified.
 - Do not merge/deploy as part of Loop 004. The proportion changes (especially Pets’ Corner/Musalla), circulation arrangement and floor plan require family review before acceptance.
