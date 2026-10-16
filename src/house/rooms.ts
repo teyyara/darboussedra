@@ -70,13 +70,13 @@ function roomCamera(position: Vector3Tuple, footprint: readonly [number, number]
 
 const roomDefinitions = [
   { id: "entrance", slug: "entrance", name: "Front Door & Entrance", kind: "entry", level: "ground",
-    scenePosition: [0, HOUSE_LAYOUT.groundY, 3.695], camera: { position: [0, 1.65, 3.85], target: [-0.45, 1.35, 2.8] },
+    scenePosition: [0, HOUSE_LAYOUT.groundY, 3.695], camera: { position: [0, 1.65, 4.2], target: [0, 1.35, 2.85] },
     footprint: [2.1, 1.89], connectedTo: ["family-table", "garden"] },
   { id: "living-room", slug: "living-room", name: "Living Room", kind: "interior", level: "ground",
     scenePosition: [-3.6, HOUSE_LAYOUT.groundY, 1.175], camera: roomCamera([-3.6, 0, 1.175], [3.6, 3.15], "right"),
     footprint: [3.6, 3.15], connectedTo: ["family-table", "library"] },
   { id: "family-table", slug: "family-table", name: "Family Table", kind: "interior", level: "ground",
-    scenePosition: [0, HOUSE_LAYOUT.groundY, 1.175], camera: { position: [0.45, 1.65, 0.35], target: [-0.1, 1.35, 2.55] },
+    scenePosition: [0, HOUSE_LAYOUT.groundY, 1.175], camera: { position: [1.15, 1.65, 1.15], target: [-1.2, 1.35, 0.55] },
     footprint: [3.6, 3.15], connectedTo: ["entrance", "living-room", "kitchen"] },
   { id: "kitchen", slug: "kitchen", name: "Kitchen", kind: "interior", level: "ground",
     scenePosition: [3.6, HOUSE_LAYOUT.groundY, 1.175], camera: roomCamera([3.6, 0, 1.175], [3.6, 3.15], "left"),

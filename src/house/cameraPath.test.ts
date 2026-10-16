@@ -33,6 +33,16 @@ describe("3D camera paths", () => {
     expect(EXTERIOR_CAMERA.target[1]).toBeLessThan(EXTERIOR_CAMERA.position[1]);
   });
 
+  it("keeps the entrance view aligned with the passage and family-table view across the shared room", () => {
+    const entrance = poseFor("entrance");
+    expect(Math.abs(entrance.position[0] - entrance.target[0])).toBeLessThan(0.05);
+    expect(entrance.position[2]).toBeGreaterThan(entrance.target[2]);
+    const family = poseFor("family-table");
+    expect(family.position[0]).toBeGreaterThan(0.8);
+    expect(family.target[0]).toBeLessThan(-0.8);
+    expect(family.position[2]).toBeGreaterThan(family.target[2]);
+  });
+
   it("frames indoor rooms diagonally across their usable floor rather than at the nearest wall", () => {
     for (const room of rooms.filter((item) => item.kind === "interior" || item.kind === "private" || item.kind === "spiritual")) {
       expect(Math.abs(room.camera.position[0] - room.camera.target[0]), room.slug + " cross-room X view").toBeGreaterThan(0.3);
