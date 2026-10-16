@@ -11,6 +11,7 @@ const HouseScene = lazy(() => import("./house/HouseScene").then((module) => ({de
 export default function App() {
   const [path, setPath] = useState(window.location.pathname);
   const [webgl, setWebgl] = useState<"checking" | "yes" | "no">("checking");
+  const [settledLocation, setSettledLocation] = useState<HouseLocation>("exterior");
   const pathRef = useRef(path);
   const previous = useRef("/");
   const reducedMotion = useReducedMotion();
@@ -76,7 +77,8 @@ export default function App() {
         : webgl === "no"
           ? <StaticHouseIllustration />
           : <SceneErrorBoundary><Suspense fallback={<StaticHouseIllustration />}>
-            <HouseScene location={current} reducedMotion={reducedMotion}
+            <HouseScene location={current} settledLocation={settledLocation} reducedMotion={reducedMotion}
+              onArrive={setSettledLocation}
               onDoorActivate={(entering) => entering ? select("entrance") : go("/")}
               onSelect={select} />
           </Suspense></SceneErrorBoundary>}
@@ -88,7 +90,7 @@ export default function App() {
       </a>
       <button type="button" onClick={openMap}>House map ↗</button>
     </header>
-    {path === "/" && <section className="welcome" aria-labelledby="welcome-title">
+    {path === "/" && settledLocation === "exterior" && <section className="welcome" aria-labelledby="welcome-title">
       <p className="eyebrow">OUR FAMILY HOME</p>
       <h1 id="welcome-title">A place to<br /><em>come home to.</em></h1>
       <p>Even when we are far apart, we still have a home we can return to. This one is ours to shape, together.</p>
@@ -96,13 +98,20 @@ export default function App() {
       <button className="plain" type="button" onClick={openMap}>Explore all rooms →</button>
     </section>}
     {room && <section className="welcome room-welcome" aria-labelledby="room-title">
-      <p className="eyebrow">YOU ARE HERE</p>
+      <p className="eyebrow">{settledLocation === room.slug ? "YOU ARE HERE" : "WALKING TO"}</p>
       <h1 id="room-title">{room.name}</h1>
-      <p>A quiet, intentionally empty space. The architecture comes first; what belongs here can be decided over time.</p>
+      <p>{settledLocation === room.slug
+        ? "A quiet, intentionally empty space. The architecture comes first; what belongs here can be decided over time."
+        : "Following the house's connected rooms and stairs to this destination."}</p>
       <button className="primary" type="button" onClick={openMap}>Open the house map ↗</button>
       <button className="plain" type="button" onClick={() => go("/")}>Return outside →</button>
     </section>}
     {map && <HouseMap active={activeRoom?.slug} onSelect={select} onClose={closeMap} />}
+    {path === "/" && settledLocation !== "exterior" && <section className="welcome room-welcome" aria-label="Returning outside">
+      <p className="eyebrow">WALKING OUTSIDE</p>
+      <h1>Heading back out</h1>
+      <p>Following the same rooms and doorway in reverse.</p>
+    </section>}
     {invalid && <section className="welcome" aria-labelledby="missing-title">
       <p className="eyebrow">WRONG TURN</p>
       <h1 id="missing-title">Let's find<br /><em>our way home.</em></h1>
