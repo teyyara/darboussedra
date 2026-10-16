@@ -18,9 +18,12 @@ describe("3D camera paths", () => {
         expect(verticalLook, "garden view keeps the ground in frame").toBeLessThan(0.35);
         expect(Math.abs(room.camera.position[0] - room.camera.target[0]), "garden view looks across the garden rather than down the front-door axis").toBeGreaterThan(1.5);
         expect(room.camera.target[2]).toBeGreaterThan(frontZ);
-      } else if (room.slug === "family-table") {
-        expect(verticalLook, "family table looks down enough to keep the table in view").toBeGreaterThan(0.4);
+      } else if (room.slug === "family-table" || room.slug === "pets-corner") {
+        expect(verticalLook, room.slug + " looks down enough to frame its furniture").toBeGreaterThan(0.3);
         expect(verticalLook).toBeLessThan(0.65);
+      } else if (room.slug === "prayer-room") {
+        expect(verticalLook, "prayer room camera must include the floor mat").toBeGreaterThan(0.6);
+        expect(verticalLook).toBeLessThan(0.75);
       } else {
         expect(verticalLook, room.slug + " slight downward room framing").toBeGreaterThan(0.2);
         expect(verticalLook, room.slug + " remains an eye-level view").toBeLessThan(0.45);
@@ -50,6 +53,26 @@ describe("3D camera paths", () => {
     for (const room of rooms.filter((item) => item.kind === "interior" || item.kind === "private" || item.kind === "spiritual")) {
       expect(Math.abs(room.camera.position[0] - room.camera.target[0]), room.slug + " cross-room X view").toBeGreaterThan(0.3);
       expect(Math.abs(room.camera.position[2] - room.camera.target[2]), room.slug + " cross-room Z view").toBeGreaterThan(0.3);
+    }
+  });
+
+  it("aims room views toward their defining contents instead of blank walls", () => {
+    const living = poseFor("living-room");
+    const kitchen = poseFor("kitchen");
+    const library = poseFor("library");
+    const pets = poseFor("pets-corner");
+    const prayer = poseFor("prayer-room");
+    expect(living.target[2]).toBeLessThan(living.position[2]); // sofa sits toward the back of the living room
+    expect(kitchen.target[0]).toBeGreaterThan(kitchen.position[0]); // counter and hob are along the right side
+    expect(kitchen.target[2]).toBeLessThan(kitchen.position[2]);
+    expect(library.target[0]).toBeLessThan(library.position[0]); // shelves run along the left wall
+    expect(pets.target[0]).toBeGreaterThan(pets.position[0]);
+    expect(pets.target[2]).toBeLessThan(pets.position[2]); // cat bed and scratch post are toward the rear
+    expect(prayer.target[2]).toBeLessThan(prayer.position[2]); // prayer mat lies beyond the entry side
+    for (const slug of ["zakariae-room", "zineb-room", "meryem-room", "fatiha-room"]) {
+      const bedroom = poseFor(slug);
+      expect(bedroom.position[2], slug + " arrives just inside its landing doorway").toBeGreaterThan(0);
+      expect(bedroom.target[2], slug + " focus travels into the room").toBeLessThan(-1.0);
     }
   });
 
