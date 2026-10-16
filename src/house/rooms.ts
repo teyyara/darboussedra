@@ -1,48 +1,242 @@
 export type RoomKind = "entry" | "interior" | "outdoor" | "private" | "spiritual";
 export type RoomLevel = "ground" | "upper" | "outdoor" | "roof";
-export type Vector3Tuple = readonly [number,number,number];
+export type WallSide = "front" | "back" | "left" | "right";
+export type Vector3Tuple = readonly [number, number, number];
+
 export interface Room {
-  readonly id:string; readonly slug:string; readonly name:string; readonly kind:RoomKind; readonly level:RoomLevel;
-  readonly scenePosition:Vector3Tuple;
-  readonly camera:{readonly position:Vector3Tuple;readonly target:Vector3Tuple};
-  readonly mapPosition:{readonly x:number;readonly y:number;readonly width:number;readonly height:number};
-  readonly footprint?:readonly [number,number]; readonly connectedTo:readonly string[]; readonly futureNote?:string;
+  readonly id: string; readonly slug: string; readonly name: string; readonly kind: RoomKind; readonly level: RoomLevel;
+  /** World-space center of the room's floor tile. */
+  readonly scenePosition: Vector3Tuple;
+  readonly camera: { readonly position: Vector3Tuple; readonly target: Vector3Tuple };
+  /** Width along X and depth along Z; present for all 13 destinations. */
+  readonly footprint: readonly [number, number];
+  /** Physical same-level connections; every edge must have a matching boundary and doorway. */
+  readonly connectedTo: readonly string[];
 }
+export interface SharedDoorway { readonly side: WallSide; readonly neighborSide: WallSide; readonly offset: number; readonly width: number; readonly worldX: number; readonly worldZ: number; }
+export interface RoomPortalOpening { readonly side: WallSide; readonly offset: number; readonly width: number; readonly targetSlug?: string; readonly zone?: string; readonly worldX: number; readonly worldZ: number; }
+
+const EPSILON = 0.025;
+const MIN_DOOR_WIDTH = 0.8;
+const DEFAULT_DOOR_WIDTH = 0.92;
+const FLOOR_THICKNESS = 0.14;
+
+export const HOUSE_LAYOUT = {
+  exterior: { width: 11.2, depth: 9.5, wallThickness: 0.22, wallHeight: 5.55 },
+  groundY: 0, upperY: 3, roofY: 5.55,
+  floorThickness: FLOOR_THICKNESS, roomWallHeight: 2.41,
+  upperLanding: { centerX: 0, centerZ: 1.25, width: 10.2, depth: 1.6, levelY: 3 },
+  upperBridge: { centerX: 0, centerZ: -0.025, width: 2.4, depth: 0.95, levelY: 3 },
+  stairs: {
+    width: 1, shaftWidth: 2.4, groundDoorwayWidth: 1.2,
+    groundFlight: { from: [0, 0.14, -4.48] as Vector3Tuple, to: [0, 3.14, -0.5] as Vector3Tuple, steps: 16 },
+    roofFlight: { from: [0, 3.14, 2.05] as Vector3Tuple, to: [0, 5.55, -1.8] as Vector3Tuple, steps: 14 },
+    roofOpening: { centerX: 0, centerZ: -1.8, width: 1.65, depth: 1.85 },
+  },
+} as const;
+
+function roomCamera(position: Vector3Tuple, level: RoomLevel): Room["camera"] {
+  const [x, , z] = position;
+  if (level === "upper") return { position: [x + 0.12, 7.1, z + 0.9], target: [x, 4.15, z] };
+  if (level === "roof") return { position: [7.8, 9.2, 6.8], target: [0, HOUSE_LAYOUT.roofY + 0.1, 0] };
+  if (level === "outdoor") return { position: [x + 7.2, 6.2, z + 3.2], target: [x, 0.3, z] };
+  return { position: [x + 0.65, 6.15, z + 1.15], target: [x, 1.05, z] };
+}
+
 const roomDefinitions = [
- {id:"entrance",slug:"entrance",name:"Front Door & Entrance",kind:"entry",level:"ground",scenePosition:[0,.04,3.7],camera:{position:[0,3.2,8.7],target:[0,1.1,3.45]},mapPosition:{x:39,y:72,width:22,height:20},footprint:[2,2.4],connectedTo:["living-room","kitchen","family-table","garden"]},
- {id:"living-room",slug:"living-room",name:"Living Room",kind:"interior",level:"ground",scenePosition:[-3.25,.04,2.25],camera:{position:[-3.1,3,6.7],target:[-3.2,.9,2.1]},mapPosition:{x:2,y:43,width:35,height:45},footprint:[4.5,5.5],connectedTo:["entrance","family-table","library"]},
- {id:"kitchen",slug:"kitchen",name:"Kitchen",kind:"interior",level:"ground",scenePosition:[3.25,.04,2.25],camera:{position:[3.1,3,6.7],target:[3.2,.9,2.1]},mapPosition:{x:63,y:43,width:35,height:45},footprint:[4.5,5.5],connectedTo:["entrance","family-table"]},
- {id:"family-table",slug:"family-table",name:"Family Table",kind:"interior",level:"ground",scenePosition:[0,.04,.95],camera:{position:[0,3.1,5.8],target:[0,.9,.9]},mapPosition:{x:39,y:43,width:22,height:25},footprint:[2,2.6],connectedTo:["entrance","living-room","kitchen","library","pets-corner"]},
- {id:"library",slug:"library",name:"Library",kind:"interior",level:"ground",scenePosition:[-3.25,.04,-2.75],camera:{position:[-7,3.2,-.2],target:[-3.2,.9,-2.7]},mapPosition:{x:2,y:2,width:35,height:35},footprint:[4.5,4.5],connectedTo:["living-room","family-table"]},
- {id:"pets-corner",slug:"pets-corner",name:"Pets' Corner",kind:"interior",level:"ground",scenePosition:[1.75,.04,-1.85],camera:{position:[5.3,3.1,1.2],target:[1.75,.9,-1.8]},mapPosition:{x:40,y:17,width:25,height:23},footprint:[3.5,2.6],connectedTo:["family-table","prayer-room"]},
- {id:"prayer-room",slug:"prayer-room",name:"Prayer Room / Musalla",kind:"spiritual",level:"ground",scenePosition:[4.5,.04,-3.95],camera:{position:[7.3,3.1,-1],target:[4.45,.9,-3.9]},mapPosition:{x:70,y:3,width:28,height:32},footprint:[2,2.1],connectedTo:["pets-corner"],futureNote:"A calm, respectful space without sacred content in this milestone."},
- {id:"zakariae-room",slug:"zakariae-room",name:"Zakariae's Private Room",kind:"private",level:"upper",scenePosition:[-4.1,3.1,-2.2],camera:{position:[-4.1,6.5,2.5],target:[-4.1,4.1,-2.2]},mapPosition:{x:2,y:27,width:21,height:48},footprint:[2.5,4.7],connectedTo:["zineb-room"]},
- {id:"zineb-room",slug:"zineb-room",name:"Zineb's Private Room",kind:"private",level:"upper",scenePosition:[-1.4,3.1,-2.2],camera:{position:[-1.4,6.5,2.5],target:[-1.4,4.1,-2.2]},mapPosition:{x:26,y:27,width:21,height:48},footprint:[2.5,4.7],connectedTo:["zakariae-room","meryem-room"]},
- {id:"meryem-room",slug:"meryem-room",name:"Meryem's Private Room",kind:"private",level:"upper",scenePosition:[1.4,3.1,-2.2],camera:{position:[1.4,6.5,2.5],target:[1.4,4.1,-2.2]},mapPosition:{x:51,y:27,width:21,height:48},footprint:[2.5,4.7],connectedTo:["zineb-room","fatiha-room"]},
- {id:"fatiha-room",slug:"fatiha-room",name:"Fatiha's Private Room",kind:"private",level:"upper",scenePosition:[4.1,3.1,-2.2],camera:{position:[4.1,6.5,2.5],target:[4.1,4.1,-2.2]},mapPosition:{x:76,y:27,width:21,height:48},footprint:[2.5,4.7],connectedTo:["meryem-room","rooftop"]},
- {id:"garden",slug:"garden",name:"Garden",kind:"outdoor",level:"outdoor",scenePosition:[0,.04,8.2],camera:{position:[10.5,5.2,13.4],target:[0,.6,8.2]},mapPosition:{x:0,y:0,width:100,height:100},connectedTo:["entrance"]},
- {id:"rooftop",slug:"rooftop",name:"Rooftop Terrace",kind:"outdoor",level:"roof",scenePosition:[0,5.72,0],camera:{position:[8,9,7],target:[0,5.9,0]},mapPosition:{x:0,y:0,width:100,height:100},connectedTo:["fatiha-room"]}
+  { id: "entrance", slug: "entrance", name: "Front Door & Entrance", kind: "entry", level: "ground",
+    scenePosition: [0, HOUSE_LAYOUT.groundY, 3.695], camera: { position: [0, 6.2, 3.8], target: [0, 1.15, 1.45] },
+    footprint: [2.1, 1.89], connectedTo: ["family-table", "garden"] },
+  { id: "living-room", slug: "living-room", name: "Living Room", kind: "interior", level: "ground",
+    scenePosition: [-3.3, HOUSE_LAYOUT.groundY, 1.175], camera: roomCamera([-3.3, 0, 1.175], "ground"),
+    footprint: [3.3, 3.15], connectedTo: ["family-table", "library"] },
+  { id: "family-table", slug: "family-table", name: "Family Table", kind: "interior", level: "ground",
+    scenePosition: [0, HOUSE_LAYOUT.groundY, 1.175], camera: roomCamera([0, 0, 1.175], "ground"),
+    footprint: [3.3, 3.15], connectedTo: ["entrance", "living-room", "kitchen"] },
+  { id: "kitchen", slug: "kitchen", name: "Kitchen", kind: "interior", level: "ground",
+    scenePosition: [3.3, HOUSE_LAYOUT.groundY, 1.175], camera: roomCamera([3.3, 0, 1.175], "ground"),
+    footprint: [3.3, 3.15], connectedTo: ["family-table", "prayer-room"] },
+  { id: "library", slug: "library", name: "Library", kind: "interior", level: "ground",
+    scenePosition: [-4.05, HOUSE_LAYOUT.groundY, -2.49], camera: roomCamera([-4.05, 0, -2.49], "ground"),
+    footprint: [2.3, 4.18], connectedTo: ["living-room", "pets-corner"] },
+  { id: "pets-corner", slug: "pets-corner", name: "Pets' Corner", kind: "interior", level: "ground",
+    scenePosition: [-2.05, HOUSE_LAYOUT.groundY, -2.49], camera: roomCamera([-2.05, 0, -2.49], "ground"),
+    footprint: [1.7, 4.18], connectedTo: ["library"] },
+  { id: "prayer-room", slug: "prayer-room", name: "Prayer Room / Musalla", kind: "spiritual", level: "ground",
+    scenePosition: [3.2, HOUSE_LAYOUT.groundY, -2.49], camera: roomCamera([3.2, 0, -2.49], "ground"),
+    footprint: [4.0, 4.18], connectedTo: ["kitchen"] },
+  { id: "zakariae-room", slug: "zakariae-room", name: "Zakariae's Private Room", kind: "private", level: "upper",
+    scenePosition: [-4.05, HOUSE_LAYOUT.upperY, -1.75], camera: roomCamera([-4.05, HOUSE_LAYOUT.upperY, -1.75], "upper"),
+    footprint: [1.9, 4.4], connectedTo: [] },
+  { id: "zineb-room", slug: "zineb-room", name: "Zineb's Private Room", kind: "private", level: "upper",
+    scenePosition: [-2.15, HOUSE_LAYOUT.upperY, -1.75], camera: roomCamera([-2.15, HOUSE_LAYOUT.upperY, -1.75], "upper"),
+    footprint: [1.9, 4.4], connectedTo: [] },
+  { id: "meryem-room", slug: "meryem-room", name: "Meryem's Private Room", kind: "private", level: "upper",
+    scenePosition: [2.15, HOUSE_LAYOUT.upperY, -1.75], camera: roomCamera([2.15, HOUSE_LAYOUT.upperY, -1.75], "upper"),
+    footprint: [1.9, 4.4], connectedTo: [] },
+  { id: "fatiha-room", slug: "fatiha-room", name: "Fatiha's Private Room", kind: "private", level: "upper",
+    scenePosition: [4.05, HOUSE_LAYOUT.upperY, -1.75], camera: roomCamera([4.05, HOUSE_LAYOUT.upperY, -1.75], "upper"),
+    footprint: [1.9, 4.4], connectedTo: [] },
+  { id: "garden", slug: "garden", name: "Garden", kind: "outdoor", level: "outdoor",
+    scenePosition: [0, HOUSE_LAYOUT.groundY, 5.74], camera: roomCamera([0, 0, 5.74], "outdoor"),
+    footprint: [5.8, 2.2], connectedTo: ["entrance"] },
+  { id: "rooftop", slug: "rooftop", name: "Rooftop Terrace", kind: "outdoor", level: "roof",
+    scenePosition: [0, HOUSE_LAYOUT.roofY, 0], camera: roomCamera([0, HOUSE_LAYOUT.roofY, 0], "roof"),
+    footprint: [10.6, 8.6], connectedTo: [] },
 ] as const satisfies readonly Room[];
 
-// Keep the public collection widened to Room so optional metadata such as footprint
-// is available across every member of the heterogeneous room registry.
 export const rooms: readonly Room[] = roomDefinitions;
-export type RoomSlug=(typeof roomDefinitions)[number]["slug"];
-export type HouseLocation="exterior"|"map"|RoomSlug;
-export const REQUIRED_ROOM_SLUGS=["entrance","living-room","kitchen","family-table","library","garden","rooftop","pets-corner","prayer-room","zakariae-room","zineb-room","meryem-room","fatiha-room"] as const;
-export const EXTERIOR_CAMERA={position:[14,10,16] as Vector3Tuple,target:[0,2.1,0] as Vector3Tuple};
-export const MAP_CAMERA={position:[0,17,16] as Vector3Tuple,target:[0,1.4,0] as Vector3Tuple};
-export function getRoomBySlug(slug:string):Room|undefined{return rooms.find((room)=>room.slug===slug);}
-export function roomRegistryIssues():string[]{
- const issues:string[]=[];const ids=rooms.map((room)=>room.id);const slugs=rooms.map((room)=>room.slug);
- if(new Set(ids).size!==ids.length)issues.push("Room IDs must be unique.");
- if(new Set(slugs).size!==slugs.length)issues.push("Room slugs must be unique.");
- for(const slug of REQUIRED_ROOM_SLUGS)if(!slugs.includes(slug))issues.push("Missing required room: "+slug);
- for(const room of rooms){
-  if([...room.camera.position,...room.camera.target].some((value)=>!Number.isFinite(value)))issues.push("Invalid camera pose: "+room.slug);
-  if(![room.mapPosition.x,room.mapPosition.y,room.mapPosition.width,room.mapPosition.height].every(Number.isFinite)||room.mapPosition.x<0||room.mapPosition.y<0||room.mapPosition.width<=0||room.mapPosition.height<=0)issues.push("Invalid map position: "+room.slug);
-  if(room.footprint&&(room.footprint[0]<=0||room.footprint[1]<=0))issues.push("Invalid footprint: "+room.slug);
-  for(const neighbor of room.connectedTo)if(!slugs.includes(neighbor))issues.push("Unknown connection "+neighbor+" from "+room.slug);
- }
- return issues;
+export type RoomSlug = (typeof roomDefinitions)[number]["slug"];
+export type HouseLocation = "exterior" | "map" | RoomSlug;
+export const REQUIRED_ROOM_SLUGS = [
+  "entrance", "living-room", "kitchen", "family-table", "library", "garden", "rooftop",
+  "pets-corner", "prayer-room", "zakariae-room", "zineb-room", "meryem-room", "fatiha-room",
+] as const;
+
+export const ROOM_ACCESS_PORTALS = [
+  { room: "family-table", zone: "stair-hall", side: "back", offset: 0, width: HOUSE_LAYOUT.stairs.groundDoorwayWidth },
+  { room: "zakariae-room", targetSlug: "zakariae-room", zone: "upper-landing", side: "front", offset: 0, width: DEFAULT_DOOR_WIDTH },
+  { room: "zineb-room", targetSlug: "zineb-room", zone: "upper-landing", side: "front", offset: 0, width: DEFAULT_DOOR_WIDTH },
+  { room: "meryem-room", targetSlug: "meryem-room", zone: "upper-landing", side: "front", offset: 0, width: DEFAULT_DOOR_WIDTH },
+  { room: "fatiha-room", targetSlug: "fatiha-room", zone: "upper-landing", side: "front", offset: 0, width: DEFAULT_DOOR_WIDTH },
+] as const satisfies readonly { readonly room: string; readonly targetSlug?: string; readonly zone: string; readonly side: WallSide; readonly offset: number; readonly width: number }[];
+
+export const EXTERIOR_CAMERA = { position: [14, 10, 15] as Vector3Tuple, target: [0, 2.3, 0] as Vector3Tuple };
+export const MAP_CAMERA = { position: [0, 18, 16] as Vector3Tuple, target: [0, 1.4, 0] as Vector3Tuple };
+
+export function getRoomBySlug(slug: string): Room | undefined {
+  return rooms.find((room) => room.slug === slug);
+}
+export function roomBounds(room: Room) {
+  const [x, , z] = room.scenePosition;
+  const [width, depth] = room.footprint;
+  return { minX: x - width / 2, maxX: x + width / 2, minZ: z - depth / 2, maxZ: z + depth / 2 };
+}
+
+/** Return geometry for a declared door only if the two rooms share a sufficiently wide physical boundary. */
+export function getSharedBoundary(room: Room, neighbor: Room): SharedDoorway | undefined {
+  if (Math.abs(room.scenePosition[1] - neighbor.scenePosition[1]) > EPSILON * 4) return undefined;
+  const a = roomBounds(room), b = roomBounds(neighbor);
+  const overlapX = Math.min(a.maxX, b.maxX) - Math.max(a.minX, b.minX);
+  const overlapZ = Math.min(a.maxZ, b.maxZ) - Math.max(a.minZ, b.minZ);
+  const stairBoundary = (room.slug === "family-table" && neighbor.slug === "pets-corner") ||
+    (room.slug === "pets-corner" && neighbor.slug === "family-table");
+  const requestedWidth = stairBoundary ? HOUSE_LAYOUT.stairs.groundDoorwayWidth : DEFAULT_DOOR_WIDTH;
+  const build = (side: WallSide, neighborSide: WallSide, offset: number, overlap: number, worldX: number, worldZ: number) => {
+    const width = Math.min(requestedWidth, overlap - 0.18);
+    if (width < MIN_DOOR_WIDTH) return undefined;
+    return { side, neighborSide, offset, width, worldX, worldZ };
+  };
+  if (Math.abs(a.maxZ - b.minZ) <= EPSILON && overlapX >= MIN_DOOR_WIDTH) {
+    const worldX = (Math.max(a.minX, b.minX) + Math.min(a.maxX, b.maxX)) / 2;
+    return build("front", "back", worldX - room.scenePosition[0], overlapX, worldX, a.maxZ);
+  }
+  if (Math.abs(a.minZ - b.maxZ) <= EPSILON && overlapX >= MIN_DOOR_WIDTH) {
+    const worldX = (Math.max(a.minX, b.minX) + Math.min(a.maxX, b.maxX)) / 2;
+    return build("back", "front", worldX - room.scenePosition[0], overlapX, worldX, a.minZ);
+  }
+  if (Math.abs(a.maxX - b.minX) <= EPSILON && overlapZ >= MIN_DOOR_WIDTH) {
+    const worldZ = (Math.max(a.minZ, b.minZ) + Math.min(a.maxZ, b.maxZ)) / 2;
+    return build("right", "left", worldZ - room.scenePosition[2], overlapZ, a.maxX, worldZ);
+  }
+  if (Math.abs(a.minX - b.maxX) <= EPSILON && overlapZ >= MIN_DOOR_WIDTH) {
+    const worldZ = (Math.max(a.minZ, b.minZ) + Math.min(a.maxZ, b.maxZ)) / 2;
+    return build("left", "right", worldZ - room.scenePosition[2], overlapZ, a.minX, worldZ);
+  }
+  return undefined;
+}
+
+/** Wall gaps and their clickable targets come from the same room registry/connection graph. */
+export function getRoomPortalOpenings(room: Room): RoomPortalOpening[] {
+  const openings: RoomPortalOpening[] = [];
+  for (const slug of room.connectedTo) {
+    const neighbor = getRoomBySlug(slug);
+    if (!neighbor) continue;
+    const boundary = getSharedBoundary(room, neighbor);
+    if (boundary) openings.push({ ...boundary, targetSlug: neighbor.slug });
+  }
+  for (const portal of ROOM_ACCESS_PORTALS) {
+    if (portal.room !== room.slug) continue;
+    const [x, , z] = room.scenePosition;
+    const [width, depth] = room.footprint;
+    const worldX = portal.side === "left" ? x - width / 2 : portal.side === "right" ? x + width / 2 : x + portal.offset;
+    const worldZ = portal.side === "back" ? z - depth / 2 : portal.side === "front" ? z + depth / 2 : z + portal.offset;
+    openings.push({ ...portal, worldX, worldZ });
+  }
+  return openings;
+}
+
+/** Source-level invariants that tests can run whenever the floor plan changes. */
+export function roomRegistryIssues(): string[] {
+  const issues: string[] = [];
+  const ids = rooms.map((room) => room.id), slugs = rooms.map((room) => room.slug);
+  if (new Set(ids).size !== ids.length) issues.push("Room IDs must be unique.");
+  if (new Set(slugs).size !== slugs.length) issues.push("Room slugs must be unique.");
+  if (rooms.length !== REQUIRED_ROOM_SLUGS.length) issues.push("The permanent room registry must contain exactly 13 destinations.");
+  for (const slug of REQUIRED_ROOM_SLUGS) {
+    if (slugs.filter((candidate) => candidate === slug).length !== 1) issues.push("Required room must exist exactly once: " + slug);
+  }
+  const innerHalfWidth = HOUSE_LAYOUT.exterior.width / 2 - HOUSE_LAYOUT.exterior.wallThickness / 2;
+  const innerHalfDepth = HOUSE_LAYOUT.exterior.depth / 2 - HOUSE_LAYOUT.exterior.wallThickness / 2;
+  for (const room of rooms) {
+    const values = [...room.scenePosition, ...room.camera.position, ...room.camera.target, ...room.footprint];
+    if (values.some((value) => !Number.isFinite(value))) issues.push("Non-finite geometry or camera pose: " + room.slug);
+    if (room.footprint.some((value) => value <= 0)) issues.push("Footprint must be positive: " + room.slug);
+    for (const neighborSlug of room.connectedTo) {
+      const neighbor = getRoomBySlug(neighborSlug);
+      if (!neighbor) { issues.push("Unknown connection " + neighborSlug + " from " + room.slug); continue; }
+      if (!neighbor.connectedTo.includes(room.slug)) issues.push("Connection must be reciprocal: " + room.slug + " ↔ " + neighborSlug);
+      if (!getSharedBoundary(room, neighbor)) issues.push("Declared connection has no usable shared doorway: " + room.slug + " ↔ " + neighborSlug);
+    }
+    if (room.level === "ground" || room.level === "upper") {
+      const bounds = roomBounds(room);
+      if (bounds.minX < -innerHalfWidth || bounds.maxX > innerHalfWidth || bounds.minZ < -innerHalfDepth || bounds.maxZ > innerHalfDepth) {
+        issues.push("Room extends beyond the usable house shell: " + room.slug);
+      }
+    }
+  }
+  for (let i = 0; i < rooms.length; i += 1) {
+    for (let j = i + 1; j < rooms.length; j += 1) {
+      const first = rooms[i], second = rooms[j];
+      if (Math.abs(first.scenePosition[1] - second.scenePosition[1]) > EPSILON) continue;
+      const a = roomBounds(first), b = roomBounds(second);
+      const overlapX = Math.min(a.maxX, b.maxX) - Math.max(a.minX, b.minX);
+      const overlapZ = Math.min(a.maxZ, b.maxZ) - Math.max(a.minZ, b.minZ);
+      if (overlapX > EPSILON && overlapZ > EPSILON) issues.push("Room footprints overlap: " + first.slug + " / " + second.slug);
+    }
+  }
+  for (const room of rooms.filter((candidate) => candidate.level === "upper")) {
+    if (!ROOM_ACCESS_PORTALS.some((portal) => portal.room === room.slug && portal.zone === "upper-landing")) {
+      issues.push("Upper-floor room lacks a doorway to the landing: " + room.slug);
+    }
+    const bounds = roomBounds(room), halfShaft = HOUSE_LAYOUT.stairs.shaftWidth / 2;
+    if (bounds.maxX > -halfShaft && bounds.minX < halfShaft) issues.push("Upper room overlaps the stairwell opening: " + room.slug);
+  }
+  const stairPortal = ROOM_ACCESS_PORTALS.find((portal) => portal.room === "family-table" && portal.zone === "stair-hall");
+  if (!stairPortal || stairPortal.width < HOUSE_LAYOUT.stairs.width + 0.14) issues.push("Ground stair clearance exceeds the doorway into the stair hall.");
+  const groundFlight = HOUSE_LAYOUT.stairs.groundFlight;
+  const stairHalfWidth = HOUSE_LAYOUT.stairs.shaftWidth / 2;
+  const stairMinZ = Math.min(groundFlight.from[2], groundFlight.to[2]);
+  const stairMaxZ = Math.max(groundFlight.from[2], groundFlight.to[2]);
+  for (const room of rooms.filter((candidate) => candidate.level === "ground")) {
+    const bounds = roomBounds(room);
+    const overlapsStairWell = bounds.maxX > -stairHalfWidth + EPSILON && bounds.minX < stairHalfWidth - EPSILON &&
+      bounds.maxZ > stairMinZ + EPSILON && bounds.minZ < stairMaxZ - EPSILON;
+    if (overlapsStairWell) issues.push("Ground room footprint blocks the stairwell: " + room.slug);
+  }
+  const ground = HOUSE_LAYOUT.stairs.groundFlight, roof = HOUSE_LAYOUT.stairs.roofFlight;
+  const upperSurface = HOUSE_LAYOUT.upperY + HOUSE_LAYOUT.floorThickness;
+  if (Math.abs(ground.from[1] - HOUSE_LAYOUT.floorThickness) > EPSILON) issues.push("Ground stair does not begin at the ground floor surface.");
+  if (Math.abs(ground.to[1] - upperSurface) > EPSILON) issues.push("Ground stair does not meet the upper-floor landing.");
+  if (Math.abs(roof.from[1] - upperSurface) > EPSILON) issues.push("Roof stair does not begin at the upper landing surface.");
+  if (Math.abs(roof.to[1] - HOUSE_LAYOUT.roofY) > EPSILON) issues.push("Roof stair does not meet the rooftop surface.");
+  if (ground.steps < 2 || roof.steps < 2 || HOUSE_LAYOUT.stairs.width + 0.2 > HOUSE_LAYOUT.stairs.shaftWidth) issues.push("Stair flights do not fit the configured circulation shaft.");
+  const opening = HOUSE_LAYOUT.stairs.roofOpening;
+  if (opening.width < HOUSE_LAYOUT.stairs.width + 0.2 || Math.abs(roof.to[0] - opening.centerX) > opening.width / 2 ||
+      Math.abs(roof.to[2] - opening.centerZ) > opening.depth / 2) issues.push("Rooftop stair exit does not fit inside the roof opening.");
+  if (Math.abs(ground.to[2] - (HOUSE_LAYOUT.upperBridge.centerZ - HOUSE_LAYOUT.upperBridge.depth / 2)) > EPSILON ||
+      Math.abs(roof.from[2] - (HOUSE_LAYOUT.upperLanding.centerZ + HOUSE_LAYOUT.upperLanding.depth / 2)) > EPSILON) {
+    issues.push("Stair flights are disconnected from their landings.");
+  }
+  return issues;
 }

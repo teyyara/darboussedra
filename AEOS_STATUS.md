@@ -1,9 +1,9 @@
 # AEOS Status — Dar Boussedra
 
-**State:** LOOP COMPLETE — WAITING_FOR_CONTINUE  
-**Active keyphrase:** read DAR BOUSSEDRA Master Build Strategy — Initial 3D House and Website Foundation  
-**Run ID:** 20261016-darboussedra-aeos-v3-loop003  
-**Loop:** 003 · **Candidate:** dar-boussedra-cutaway-performance-003  
+**State:** LOOP 004 CORRECTION BRANCH — AWAITING VALIDATION AND REVIEW  
+**Active keyphrase:** DAR BOUSSEDRA — LOOP 004: ARCHITECTURE COHERENCE REVIEW AND CORRECTION  
+**Run ID:** 20261016-darboussedra-loop004-architecture-coherence  
+**Loop:** 004 · **Candidate:** dar-boussedra-architecture-coherence-004  
 **Repository:** https://github.com/teyyara/darboussedra  
 **Branch:** main  
 **Validated code commit:** d237375a364f25b0e30dade08f9b02790396b966  
@@ -32,4 +32,18 @@ The current main code passes automated typecheck, unit tests and production buil
 ## Next high-value work
 Improve/test architectural proportions and circulation against a visual browser view when available. Then test every room route, map selection/return, responsive behavior, reduced motion, WebGL fallback, keyboard accessibility and runtime performance. The large 3D chunk may warrant further module-level splitting if measurement shows a practical improvement.
 
-This loop is complete. Wait for a new standalone CONTINUE command before beginning another implementation loop.
+
+
+## Loop 004 — architecture coherence review
+- **State:** correction branch prepared; automated validation and human visual review are pending. This work is not merged or deployed by the agent.
+- **Run ID:** 20261016-darboussedra-loop004-architecture-coherence
+- **Base main:** 501cc6ccf3e6926504dfcd051ac98147360cd48a
+- **Branch:** fix/loop-004-architecture-coherence
+- Centralized shell/floor/circulation geometry, moved rear rooms clear of the central stairwell and preserved the 13 public slugs.
+- Derived room door gaps from physical adjacency; provided an explicit Family Table-to-stair-hall portal and private-room openings onto the shared upper landing.
+- Added source-level checks for registry consistency, usable connected boundaries, room/shell overlaps and stair/landing/roof continuity.
+- Added distinct spatial plan tabs for ground, upper, garden and roof, with a stairwell/landing overlay and the semantic room directory retained.
+- **Browser screenshots/interactive QA: BLOCKED.** No real images captured; the environment provides no functioning browser driver and connected browser/Vercel inspection was denied earlier. Visual correctness is not certified.
+- Do not merge/deploy as part of Loop 004. The proportion changes (especially Pets’ Corner/Musalla), circulation arrangement and floor plan require family review before acceptance.
+
+Loop 004 is not complete until CI is green and the review limitations and family decisions are explicitly recorded.
