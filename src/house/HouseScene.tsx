@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Vector3, type Group } from "three";
 import {
-  EXTERIOR_CAMERA, HOUSE_LAYOUT, MAP_CAMERA, getRoomBySlug, getRoomPortalOpenings, rooms,
+  EXTERIOR_CAMERA, HOUSE_LAYOUT, MAP_CAMERA, getRoomBySlug, getRoomPortalOpenings, getRoomWallIntervals, rooms,
   type HouseLocation, type Room, type RoomSlug, type RoomPortalOpening, type Vector3Tuple,
 } from "./rooms";
 
@@ -166,17 +166,22 @@ function ExteriorShell({ location, onEnter, reducedMotion }: { location: HouseLo
 
 function roomWallSegments(room: Room, side: RoomPortalOpening["side"], openings: readonly RoomPortalOpening[]) {
   const [width, depth] = room.footprint;
-  const length = side === "front" || side === "back" ? width : depth;
+  const ownedIntervals = getRoomWallIntervals(room, side);
   const sorted = openings.filter((opening) => opening.side === side).slice().sort((a, b) => a.offset - b.offset);
   const segments: { start: number; end: number }[] = [];
-  let cursor = -length / 2;
-  for (const opening of sorted) {
-    const start = Math.max(-length / 2, opening.offset - opening.width / 2);
-    const end = Math.min(length / 2, opening.offset + opening.width / 2);
-    if (start > cursor + 0.025) segments.push({ start: cursor, end: start });
-    cursor = Math.max(cursor, end);
+  // Split each owned wall run around portals. Shared partitions are rendered by
+  // one room only, including closed bedroom-to-bedroom partitions.
+  for (const interval of ownedIntervals) {
+    let cursor = interval.start;
+    for (const opening of sorted) {
+      const start = Math.max(interval.start, opening.offset - opening.width / 2);
+      const end = Math.min(interval.end, opening.offset + opening.width / 2);
+      if (end <= cursor + 0.025) continue;
+      if (start > cursor + 0.025) segments.push({ start: cursor, end: start });
+      cursor = Math.max(cursor, end);
+    }
+    if (cursor < interval.end - 0.025) segments.push({ start: cursor, end: interval.end });
   }
-  if (cursor < length / 2 - 0.025) segments.push({ start: cursor, end: length / 2 });
   return segments.filter((segment) => segment.end - segment.start > 0.025).map((segment) => {
     const along = (segment.start + segment.end) / 2, segmentLength = segment.end - segment.start;
     if (side === "front" || side === "back") return {
