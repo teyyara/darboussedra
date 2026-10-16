@@ -49,8 +49,7 @@ export function getHouseSceneVisibility(
   const showUpperRooms = destinationLevel === "upper" ||
     (transitioning && (sourceLevel === "upper" || sourceLevel === "roof" || destinationLevel === "roof"));
   const showUpperCirculation = destinationLevel === "upper" || destinationLevel === "roof" ||
-    (transitioning && (sourceLevel === "upper" || sourceLevel === "roof" ||
-      destinationLevel === "upper" || destinationLevel === "roof"));
+    (transitioning && (sourceLevel === "upper" || sourceLevel === "roof"));
   const showGroundStairs = movingBetweenStoreys &&
     (sourceLevel === "ground" || destinationLevel === "ground");
   const showRoofStairs = (!transitioning && destinationLevel === "roof") ||
