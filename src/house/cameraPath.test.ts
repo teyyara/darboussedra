@@ -21,7 +21,7 @@ describe("3D camera paths", () => {
       } else {
         expect(verticalLook, room.slug + " slight downward room framing").toBeGreaterThan(0.2);
         expect(verticalLook, room.slug + " remains an eye-level view").toBeLessThan(0.45);
-        expect(verticalLook, room.slug + " look angle").toBeLessThan(0.1);
+
       }
     }
     expect(EXTERIOR_CAMERA.position[1]).toBeGreaterThan(doorHeight);
