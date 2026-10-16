@@ -41,3 +41,5 @@
 28. **3D target discoverability.** The clickable front door, roof-bound stair treads, garden surface and rooftop deck provide a subtle hover material cue. This does not replace keyboard-accessible room directory/map controls or the need to inspect contrast in the real renderer.
 29. **Short viewport containment.** The app shell minimum height cannot exceed the small viewport; short-height layouts compact the welcome controls and keep the map panel inside the available vertical space.
 30. **Visual acceptance evidence stays separate.** Passing CI validates types, tests and bundling only. No screenshots or visual pass may be claimed until the actual authorized preview is reviewed.
+
+31. **Camera/viewport follow-up validation.** Commit `810785472787924c98ee2a49deedbf13ee1c1927` passed TypeScript, 20 tests across four files, and production build in [run 38953581339](https://github.com/teyyara/darboussedra/actions/runs/38953581339). The later documentation-sync commit also passed in [run 38953849607](https://github.com/teyyara/darboussedra/actions/runs/38953849607). CI success still does not certify the visual appearance.
