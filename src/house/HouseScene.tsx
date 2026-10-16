@@ -270,6 +270,116 @@ function DoorwayFrame({ room, opening, onSelect }: { room: Room; opening: RoomPo
   </group>;
 }
 
+
+function PropBox({ position, size, color, roughness = 0.9 }: {
+  position: Vector3Tuple; size: Vector3Tuple; color: string; roughness?: number;
+}) {
+  return <mesh position={position} castShadow receiveShadow>
+    <boxGeometry args={size} />
+    <meshStandardMaterial color={color} roughness={roughness} />
+  </mesh>;
+}
+
+function DiningChair({ position, rotation = 0 }: { position: Vector3Tuple; rotation?: number }) {
+  return <group position={position} rotation={[0, rotation, 0]}>
+    <PropBox position={[0, 0.3, 0]} size={[0.46, 0.1, 0.44]} color="#aa8260" />
+    <PropBox position={[0, 0.59, -0.18]} size={[0.46, 0.52, 0.075]} color="#8d6347" />
+    {[-1, 1].flatMap((x) => [-1, 1].map((z) =>
+      <PropBox key={x + ":" + z} position={[x * 0.17, 0.15, z * 0.15]} size={[0.055, 0.3, 0.055]} color="#75513b" />))}
+  </group>;
+}
+
+/** Quiet, scale-consistent props make each destination read as its intended room. */
+function RoomFurnishings({ room }: { room: Room }) {
+  const [width, depth] = room.footprint;
+  return <group position={[0, HOUSE_LAYOUT.floorThickness, 0]}>
+    {room.slug === "family-table" && <group>
+      <PropBox position={[0, 0.025, 0]} size={[2.65, 0.035, 2.35]} color="#c7a88b" />
+      <PropBox position={[-0.08, 0.66, -0.08]} size={[1.45, 0.1, 0.82]} color="#936643" />
+      {[-1, 1].flatMap((x) => [-1, 1].map((z) =>
+        <PropBox key={x + ":" + z} position={[-0.08 + x * 0.56, 0.33, -0.08 + z * 0.29]} size={[0.075, 0.62, 0.075]} color="#75513b" />))}
+      <PropBox position={[-0.08, 0.73, -0.08]} size={[0.28, 0.035, 0.24]} color="#d9c5a6" />
+      <PropBox position={[-1.0, 0, -0.04]} size={[0.46, 0.03, 0.44]} color="#af8968" />
+      <DiningChair position={[-1.08, 0, -0.02]} rotation={Math.PI / 2} />
+      <DiningChair position={[1.05, 0, -0.02]} rotation={-Math.PI / 2} />
+      <DiningChair position={[0, 0, 0.78]} rotation={Math.PI} />
+      <DiningChair position={[0, 0, -0.85]} />
+    </group>}
+
+    {room.slug === "living-room" && <group>
+      <PropBox position={[0, 0.025, 0.05]} size={[2.7, 0.035, 2.4]} color="#cbb89e" />
+      <PropBox position={[0, 0.3, -0.84]} size={[2.22, 0.34, 0.74]} color="#97715b" />
+      <PropBox position={[0, 0.69, -1.15]} size={[2.22, 0.62, 0.16]} color="#886149" />
+      {[-1, 1].map((side) => <PropBox key={side} position={[side * 1.04, 0.55, -0.84]} size={[0.18, 0.56, 0.74]} color="#886149" />)}
+      {[-0.62, 0, 0.62].map((x, index) => <PropBox key={x} position={[x, 0.51, -0.55]} size={[0.52, 0.12, 0.45]} color={index === 1 ? "#d4b89b" : "#c49e7e"} />)}
+      {[-0.62, 0.62].map((x) => <PropBox key={x} position={[x, 0.78, -1.045]} size={[0.38, 0.28, 0.08]} color="#d9c4a9" />)}
+      <PropBox position={[0.15, 0.29, 0.48]} size={[0.95, 0.38, 0.58]} color="#a78260" />
+      <PropBox position={[0.15, 0.5, 0.48]} size={[0.98, 0.06, 0.6]} color="#855b40" />
+    </group>}
+
+    {room.slug === "kitchen" && <group>
+      <PropBox position={[0, 0.02, 0]} size={[2.6, 0.025, 2.2]} color="#d4c4aa" />
+      <PropBox position={[width / 2 - 0.48, 0.36, -0.05]} size={[0.72, 0.7, 2.15]} color="#ad967a" />
+      <PropBox position={[width / 2 - 0.48, 0.74, -0.05]} size={[0.82, 0.09, 2.2]} color="#eee2cd" />
+      {[-0.72, 0, 0.72].map((z) => <PropBox key={z} position={[width / 2 - 0.09, 0.36, z - 0.05]} size={[0.025, 0.49, 0.035]} color="#80624a" />)}
+      <PropBox position={[width / 2 - 0.48, 0.81, -0.55]} size={[0.42, 0.025, 0.45]} color="#50524e" roughness={0.45} />
+      <PropBox position={[-width / 2 + 0.38, 0.88, -0.78]} size={[0.58, 1.7, 0.58]} color="#d9d5c9" />
+      <PropBox position={[-width / 2 + 0.38, 1.75, -0.78]} size={[0.61, 0.07, 0.61]} color="#aaa99f" />
+    </group>}
+
+    {room.kind === "private" && <group>
+      <PropBox position={[0, 0.02, 0]} size={[Math.min(1.65, width - 0.15), 0.025, 2.4]} color="#d5c2a8" />
+      <PropBox position={[0, 0.16, -0.22]} size={[Math.min(1.35, width - 0.3), 0.22, 1.98]} color="#8c6d50" />
+      <PropBox position={[0, 0.34, -0.22]} size={[Math.min(1.28, width - 0.36), 0.18, 1.9]} color="#f0e4d3" />
+      <PropBox position={[0, 0.49, -0.99]} size={[Math.min(1.25, width - 0.38), 0.13, 0.34]} color="#e5d7c4" />
+      <PropBox position={[0, 0.57, -1.24]} size={[Math.min(1.4, width - 0.18), 0.82, 0.09]} color="#946d50" />
+      <PropBox position={[width / 2 - 0.26, 0.31, 0.9]} size={[0.38, 0.34, 0.42]} color="#a98460" />
+      <PropBox position={[width / 2 - 0.26, 0.5, 0.9]} size={[0.4, 0.05, 0.44]} color="#806148" />
+    </group>}
+
+    {room.slug === "library" && <group>
+      <PropBox position={[0.025 - width / 2 + 0.23, 0.91, -0.15]} size={[0.34, 1.65, 2.25]} color="#7c553b" />
+      {[0.25, 0.67, 1.09, 1.48].map((y) =>
+        <PropBox key={y} position={[0.04 - width / 2 + 0.23, y, -0.15]} size={[0.4, 0.055, 2.26]} color="#b28a5f" />)}
+      {Array.from({ length: 16 }, (_, i) => <PropBox key={i}
+        position={[0.02 - width / 2 + 0.23, 0.43 + (i % 4) * 0.42, -1.0 + Math.floor(i / 4) * 0.56]}
+        size={[0.24, 0.3 + (i % 3) * 0.025, 0.13]} color={["#a55e48", "#c8a46d", "#6f8272", "#dcc9a8"][i % 4]} />)}
+    </group>}
+
+    {room.slug === "pets-corner" && <group>
+      <mesh position={[-0.15, 0.16, -0.82]} castShadow receiveShadow>
+        <cylinderGeometry args={[0.34, 0.34, 0.12, 24]} />
+        <meshStandardMaterial color="#b89b82" roughness={0.96} />
+      </mesh>
+      <mesh position={[-0.15, 0.23, -0.82]}>
+        <cylinderGeometry args={[0.27, 0.28, 0.05, 24]} />
+        <meshStandardMaterial color="#ddcbb2" roughness={0.98} />
+      </mesh>
+      <PropBox position={[0.48, 0.72, -1.15]} size={[0.24, 1.15, 0.24]} color="#ac8965" />
+      <mesh position={[0.48, 1.35, -1.15]}>
+        <sphereGeometry args={[0.18, 12, 10]} />
+        <meshStandardMaterial color="#8e9b80" roughness={1} />
+      </mesh>
+      <mesh position={[0.36, 0.12, 0.75]}>
+        <cylinderGeometry args={[0.12, 0.12, 0.16, 16]} />
+        <meshStandardMaterial color="#c49f71" roughness={0.85} />
+      </mesh>
+    </group>}
+
+    {room.kind === "spiritual" && <group>
+      <PropBox position={[0, 0.025, 0]} size={[2.6, 0.03, 2.7]} color="#d4c5a9" />
+      <PropBox position={[0.45, 0.05, -0.65]} size={[1.05, 0.045, 1.75]} color="#527064" />
+      <PropBox position={[0.45, 0.078, -0.65]} size={[0.91, 0.012, 1.61]} color="#b19a72" />
+      <PropBox position={[0.45, 0.086, -0.65]} size={[0.76, 0.012, 1.46]} color="#788b72" />
+    </group>}
+
+    {room.slug === "entrance" && <group>
+      <PropBox position={[-width / 2 + 0.22, 0.38, -0.35]} size={[0.32, 0.62, 0.85]} color="#9b7352" />
+      <PropBox position={[-width / 2 + 0.22, 0.72, -0.35]} size={[0.36, 0.055, 0.89]} color="#c0a17a" />
+    </group>}
+  </group>;
+}
+
 function RoomArea({ room, active, onSelect }: { room: Room; active?: Room; onSelect: (slug: RoomSlug) => void }) {
   const [x, y, z] = room.scenePosition, [width, depth] = room.footprint;
   const [hovered, setHovered] = useState(false);
@@ -299,6 +409,7 @@ function RoomArea({ room, active, onSelect }: { room: Room; active?: Room; onSel
     {walls.map((wall) => <mesh key={wall.key} position={wall.position} castShadow receiveShadow>
       <boxGeometry args={wall.size} /><meshStandardMaterial color={wallColor} roughness={0.97} />
     </mesh>)}
+    <RoomFurnishings room={room} />
     {rearWindow && <group position={[0, 0, -depth / 2 + 0.035]}>
       <mesh position={[0, rearWindowCenterY, 0]}>
         <boxGeometry args={[rearWindowWidth - 0.1, rearWindowHeight - 0.1, 0.045]} />
