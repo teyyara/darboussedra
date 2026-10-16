@@ -32,7 +32,7 @@ export const HOUSE_LAYOUT = {
     width: 1, shaftWidth: 2.4, openingWidth: 1.3, groundDoorwayWidth: 1.2,
     // The stair begins just beyond the family-table portal and climbs toward the rear landing.
     groundFlight: { from: [0, 0.14, -0.5] as Vector3Tuple, to: [0, 3.14, -4.32] as Vector3Tuple, steps: 16 },
-    roofFlight: { from: [0, 3.14, 2.05] as Vector3Tuple, to: [0, 5.55, -1.8] as Vector3Tuple, steps: 14 },
+    roofFlight: { from: [0, 3.14, 2.05] as Vector3Tuple, to: [0, 5.55, -2.68] as Vector3Tuple, steps: 14 },
     roofOpening: { centerX: 0, centerZ: -1.8, width: 1.65, depth: 1.85 },
   },
 } as const;

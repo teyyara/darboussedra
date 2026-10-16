@@ -200,9 +200,35 @@ describe("3D camera paths", () => {
     expect(Math.min(...descent.map((pose) => pose.position[2]))).toBeGreaterThanOrEqual(flight.to[2] - 0.005);
     const landing = climb.filter((pose) =>
       Math.abs(pose.position[1] - (HOUSE_LAYOUT.upperY + 1.65)) < 0.02 &&
-      pose.position[2] > flight.to[2] - 0.01 && pose.position[2] < flight.to[2] + 0.35);
+      pose.position[2] > flight.to[2] - 0.01 && pose.position[2] < flight.to[2] + 0.55);
     expect(landing.length).toBeGreaterThanOrEqual(2);
     expect(landing.some((pose) => pose.position[0] > 0.6)).toBe(true);
+  });
+
+  it("turns into the roof stair without leaving the upper landing footprint", () => {
+    const path = makeCameraPath("family-table", "rooftop", poseFor("rooftop"));
+    const upperEye = HOUSE_LAYOUT.upperY + 1.65;
+    const landingFrontEdge = HOUSE_LAYOUT.upperLanding.centerZ + HOUSE_LAYOUT.upperLanding.depth / 2;
+    const approach = path.filter((pose) =>
+      Math.abs(pose.position[1] - upperEye) < 0.02 &&
+      pose.position[2] > HOUSE_LAYOUT.stairs.roofFlight.from[2] - 0.35 &&
+      pose.position[2] <= landingFrontEdge + 0.005);
+    expect(approach.length).toBeGreaterThanOrEqual(5);
+    expect(Math.max(...approach.map((pose) => pose.position[2])).toBeLessThanOrEqual(landingFrontEdge + 0.005);
+  });
+
+  it("exits the roof hatch onto solid deck before turning across the terrace", () => {
+    const path = makeCameraPath("family-table", "rooftop", poseFor("rooftop"));
+    const roofEye = HOUSE_LAYOUT.roofY + 1.65;
+    const opening = HOUSE_LAYOUT.stairs.roofOpening;
+    const backEdge = opening.centerZ - opening.depth / 2;
+    const roofWaypoints = path.filter((pose) => Math.abs(pose.position[1] - roofEye) < 0.02);
+    expect(roofWaypoints.some((pose) => pose.position[2] < backEdge - 0.1)).toBe(true);
+    const hatchCrossers = roofWaypoints.filter((pose) =>
+      pose.position[2] > backEdge + 0.02 &&
+      pose.position[2] < opening.centerZ + opening.depth / 2 - 0.02 &&
+      Math.abs(pose.position[0]) < opening.width / 2 - 0.02);
+    expect(hatchCrossers.length).toBeLessThanOrEqual(1);
   });
 
   it("uses the guarded side walkway to leave the lower stair opening", () => {

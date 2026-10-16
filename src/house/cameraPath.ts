@@ -79,11 +79,13 @@ function groundStairWalkway(): CameraPose[] {
   return [
     ...sampledStairWaypoints(flight),
     poseFacing(top, [0, -1]),
-    // Step onto the head landing, then turn toward the interior before moving laterally.
-    // Keeping the view aimed down the hallway avoids staring into the side void.
-    poseFacing([0, upperEye, flight.to[2] + 0.20], [0, 1]),
-    poseFacing([sideLaneX, upperEye, flight.to[2] + 0.20], [0, 1]),
-    ...[-3.7, -2.8, -1.8, -0.8, 0.2].map((z) => poseFacing([sideLaneX, upperEye, z], [0, 1])),
+    // Follow an in-place U-turn as a short walking arc: move onto the head landing,
+    // round the stair opening, then face forward along the guarded side lane.
+    poseFacing([0.2, upperEye, flight.to[2] + 0.06], [0.6, -0.8]),
+    poseFacing([0.43, upperEye, flight.to[2] + 0.18], [1, 0]),
+    poseFacing([sideLaneX, upperEye, flight.to[2] + 0.46], [0.65, 0.76]),
+    poseFacing([sideLaneX, upperEye, flight.to[2] + 0.62], [0, 1]),
+    ...[-2.8, -1.8, -0.8, 0.2].map((z) => poseFacing([sideLaneX, upperEye, z], [0, 1])),
     // Rejoin the full-width upper landing beyond the end of the open stair shaft.
     poseFacing([sideLaneX * 0.7, upperEye, 0.72], [0.2, 1]),
     poseFacing([0, upperEye, 1.05], [0, 1]),
@@ -94,19 +96,25 @@ function roofStairWalkway(): CameraPose[] {
   const flight = HOUSE_LAYOUT.stairs.roofFlight;
   const upperEye = HOUSE_LAYOUT.upperY + HEAD_HEIGHT;
   const roofEye = HOUSE_LAYOUT.roofY + HEAD_HEIGHT;
+  const openingBackEdge = HOUSE_LAYOUT.stairs.roofOpening.centerZ - HOUSE_LAYOUT.stairs.roofOpening.depth / 2;
   return [
     poseFacing([0, upperEye, HOUSE_LAYOUT.upperLanding.centerZ + 0.38], [0, 1]),
     poseFacing([flight.from[0], upperEye, flight.from[2]], [0, 1]),
-    // Align to the stair direction with a small physical turn on the landing.
-    poseFacing([0.32, upperEye, flight.from[2] + 0.05], [1, 0]),
-    poseFacing([0.42, upperEye, flight.from[2] - 0.15], [0.3, -1]),
-    poseFacing([0.2, upperEye, flight.from[2] - 0.23], [-0.2, -1]),
+    // Turn around on the upper landing without stepping beyond its front edge.
+    poseFacing([0.25, upperEye, flight.from[2] - 0.05], [0.6, 0.8]),
+    poseFacing([0.42, upperEye, flight.from[2] - 0.09], [1, 0]),
+    poseFacing([0.28, upperEye, flight.from[2] - 0.11], [0.6, -0.8]),
+    poseFacing([0.1, upperEye, flight.from[2] - 0.10], [0, -1]),
     ...sampledStairWaypoints(flight),
     poseFacing([flight.to[0], roofEye, flight.to[2]], [0, -1]),
-    poseFacing([0.35, roofEye, flight.to[2] + 0.35], [1, 0]),
-    poseFacing([0.42, roofEye, flight.to[2] + 0.7], [0.3, 1]),
-    poseFacing([0.22, roofEye, -0.62], [-0.3, 1]),
-    poseFacing([0, roofEye, 0.15], [0, 1]),
+    // The flight finishes at the rear lip of the hatch. Keep walking rearward
+    // until both feet are on solid terrace deck before turning across the roof.
+    poseFacing([0, roofEye, openingBackEdge - 0.18], [0, -1]),
+    poseFacing([0.55, roofEye, openingBackEdge - 0.30], [1, 0]),
+    poseFacing([1.0, roofEye, openingBackEdge - 0.08], [0.7, 0.7]),
+    poseFacing([1.25, roofEye, -2.1], [0, 1]),
+    poseFacing([1.25, roofEye, -1.1], [0, 1]),
+    poseFacing([1.9, roofEye, -0.1], [0.7, 0.7]),
     poseFacing([0, roofEye, 0.6], [0, 1]),
   ];
 }
