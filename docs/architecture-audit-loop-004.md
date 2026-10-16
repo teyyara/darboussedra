@@ -30,6 +30,11 @@
 
 GitHub Actions run [38945553894](https://github.com/teyyara/darboussedra/actions/runs/38945553894) passed the production validation job: TypeScript typecheck, 12 unit tests across three test files, and Vite production build. Both Vercel Git status checks returned success for the branch revision. The connected Vercel inspector still does not provide an accessible rendered browser session, so those status checks do not replace visual inspection.
 
+
+## Production bundle check
+
+The CI production build measured the entry JS at **242.65 kB minified / 75.72 kB gzip** and the lazy 3D scene at **896.14 kB / 241.52 kB gzip**. The main entry remains much smaller than the original pre-lazy-load bundle, but Vite still warns that the on-demand HouseScene chunk exceeds 500 kB. No dependency or speculative manual chunk split was added during this architecture-focused loop; further work should measure renderer/module-level splitting and runtime effect before changing chunk boundaries.
+
 ## Visual evidence — blocked
 No genuine browser screenshots were captured. Connected browser/Vercel inspection previously returned access denied, and no interactive browser driver is available through the repository tool connection. There is **no verified before/after image evidence**, so visual correctness is not certified here.
 

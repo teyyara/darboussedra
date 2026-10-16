@@ -19,3 +19,5 @@
 
 16. **Loop 004 CI outcome.** GitHub Actions run [38946031721](https://github.com/teyyara/darboussedra/actions/runs/38946031721) passed TypeScript typecheck, 12 unit tests across three files, and the production build for code commit `a19287f01d84b4c61fb14245e7f20b2efa0f3a90`. This does not certify the rendered architecture.
 17. **No merge without visual acceptance.** The Loop 004 branch/PR remains unmerged; no manual Vercel deployment is permitted in this loop. A green preview status is not substitute evidence for browser screenshots and interaction review.
+
+18. **Loop 004 bundle measurement.** Production build measured the entry bundle at 242.65 kB minified / 75.72 kB gzip and lazy HouseScene at 896.14 kB / 241.52 kB gzip; Vite retains its >500 kB chunk warning. Keep the existing lazy boundary and defer additional chunk splitting until renderer/runtime measurements identify the best split.

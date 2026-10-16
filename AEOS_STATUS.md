@@ -45,6 +45,9 @@ Improve/test architectural proportions and circulation against a visual browser 
 - Added source-level checks for registry consistency, usable connected boundaries, room/shell overlaps and stair/landing/roof continuity.
 - Added distinct spatial plan tabs for ground, upper, garden and roof, with a stairwell/landing overlay and the semantic room directory retained.
 - **Automated CI:** [run 38946031721](https://github.com/teyyara/darboussedra/actions/runs/38946031721) passed typecheck, all 12 unit tests across three files, and production build on code commit `a19287f01d84b4c61fb14245e7f20b2efa0f3a90`. Both Vercel Git status checks report success for this branch revision, but neither constitutes rendered browser evidence.
+- 
+- **Loop 004 bundle review:** production output on code commit `a19287f01d84b4c61fb14245e7f20b2efa0f3a90` was `index` 242.65 kB minified / 75.72 kB gzip and lazy `HouseScene` 896.14 kB / 241.52 kB gzip. Vite still warns that the deferred chunk exceeds 500 kB. The spatial map slightly increases the small entry chunk; the existing lazy boundary is preserved. No extra vendor splitting was made without renderer/runtime profiling, so the deferred chunk remains an optimization follow-up, not an acceptance blocker for geometry correctness.
+
 - **Browser screenshots/interactive QA: BLOCKED.** No real images captured; no functioning interactive browser driver was available and web inspection of the deployment was denied. Visual correctness is not certified.
 - Do not merge/deploy as part of Loop 004. The proportion changes (especially Pets’ Corner/Musalla), circulation arrangement and floor plan require family review before acceptance.
 
