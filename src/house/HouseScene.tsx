@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Vector3, type Group } from "three";
 import { makeCameraPath, type CameraPose } from "./cameraPath";
+import { getHouseSceneVisibility } from "./sceneVisibility";
 import {
   EXTERIOR_CAMERA, HOUSE_LAYOUT, getFrontDoorAction, getRoomBySlug, getRoomPortalOpenings, getRoomWallRuns, roomOwnsPortalFrame, rooms,
   type HouseLocation, type Room, type RoomSlug, type RoomPortalOpening, type Vector3Tuple,
@@ -341,26 +342,30 @@ function HouseArchitecture({ location, visualLocation, transitioning, onDoorActi
   reducedMotion: boolean;
 }) {
   const active = visualLocation === "exterior" || visualLocation === "map" ? undefined : getRoomBySlug(visualLocation);
-  const showRoofDeck = transitioning || visualLocation === "exterior" || visualLocation === "garden" || visualLocation === "rooftop";
+  const visibility = getHouseSceneVisibility(location, visualLocation, transitioning);
   return <>
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.205, 0]} receiveShadow>
       <planeGeometry args={[48, 48]} /><meshStandardMaterial color="#d6d5c0" roughness={1} />
     </mesh>
     <ExteriorShell location={location} onDoorActivate={onDoorActivate} reducedMotion={reducedMotion} />
-    {rooms.filter((room) => room.level === "ground" || room.level === "upper").map((room) =>
+    {rooms.filter((room) =>
+      (room.level === "ground" && visibility.showGroundRooms) ||
+      (room.level === "upper" && visibility.showUpperRooms)).map((room) =>
       <RoomArea key={room.id} room={room} active={active} onSelect={onSelectRoom} />)}
-    <GardenArea onSelect={() => onSelectRoom("garden")} />
-    <mesh position={[HOUSE_LAYOUT.upperLanding.centerX, HOUSE_LAYOUT.upperLanding.levelY + HOUSE_LAYOUT.floorThickness / 2, HOUSE_LAYOUT.upperLanding.centerZ]} receiveShadow>
-      <boxGeometry args={[HOUSE_LAYOUT.upperLanding.width, HOUSE_LAYOUT.floorThickness, HOUSE_LAYOUT.upperLanding.depth]} />
-      <meshStandardMaterial color="#cbb99f" roughness={0.96} />
-    </mesh>
-    <mesh position={[HOUSE_LAYOUT.upperBridge.centerX, HOUSE_LAYOUT.upperBridge.levelY + HOUSE_LAYOUT.floorThickness / 2, HOUSE_LAYOUT.upperBridge.centerZ]} receiveShadow>
-      <boxGeometry args={[HOUSE_LAYOUT.upperBridge.width, HOUSE_LAYOUT.floorThickness, HOUSE_LAYOUT.upperBridge.depth]} />
-      <meshStandardMaterial color="#cbb99f" roughness={0.96} />
-    </mesh>
-    <StairFlight flight={HOUSE_LAYOUT.stairs.groundFlight} width={HOUSE_LAYOUT.stairs.width} />
-    <StairFlight flight={HOUSE_LAYOUT.stairs.roofFlight} width={HOUSE_LAYOUT.stairs.width} onSelectRoof={() => onSelectRoom("rooftop")} />
-    {showRoofDeck && <RoofDeck onSelect={() => onSelectRoom("rooftop")} />}
+    {visibility.showGarden && <GardenArea onSelect={() => onSelectRoom("garden")} />}
+    {visibility.showUpperCirculation && <>
+      <mesh position={[HOUSE_LAYOUT.upperLanding.centerX, HOUSE_LAYOUT.upperLanding.levelY + HOUSE_LAYOUT.floorThickness / 2, HOUSE_LAYOUT.upperLanding.centerZ]} receiveShadow>
+        <boxGeometry args={[HOUSE_LAYOUT.upperLanding.width, HOUSE_LAYOUT.floorThickness, HOUSE_LAYOUT.upperLanding.depth]} />
+        <meshStandardMaterial color="#cbb99f" roughness={0.96} />
+      </mesh>
+      <mesh position={[HOUSE_LAYOUT.upperBridge.centerX, HOUSE_LAYOUT.upperBridge.levelY + HOUSE_LAYOUT.floorThickness / 2, HOUSE_LAYOUT.upperBridge.centerZ]} receiveShadow>
+        <boxGeometry args={[HOUSE_LAYOUT.upperBridge.width, HOUSE_LAYOUT.floorThickness, HOUSE_LAYOUT.upperBridge.depth]} />
+        <meshStandardMaterial color="#cbb99f" roughness={0.96} />
+      </mesh>
+    </>}
+    {visibility.showGroundStairs && <StairFlight flight={HOUSE_LAYOUT.stairs.groundFlight} width={HOUSE_LAYOUT.stairs.width} />}
+    {visibility.showRoofStairs && <StairFlight flight={HOUSE_LAYOUT.stairs.roofFlight} width={HOUSE_LAYOUT.stairs.width} onSelectRoof={() => onSelectRoom("rooftop")} />}
+    {visibility.showRoofDeck && <RoofDeck onSelect={() => onSelectRoom("rooftop")} />}
   </>;
 }
 

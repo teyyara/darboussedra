@@ -1,5 +1,5 @@
 import {describe, expect, it} from "vitest";
-import {EXTERIOR_CAMERA, HOUSE_LAYOUT, getRoomBySlug, rooms} from "./rooms";
+import {EXTERIOR_CAMERA, HOUSE_LAYOUT, getRoomBySlug, roomBounds, rooms} from "./rooms";
 import {makeCameraPath} from "./cameraPath";
 
 const frontZ = HOUSE_LAYOUT.exterior.depth / 2;
@@ -14,6 +14,18 @@ describe("3D camera paths", () => {
     }
     expect(EXTERIOR_CAMERA.position[1]).toBeLessThan(doorHeight);
     expect(Math.abs(EXTERIOR_CAMERA.target[1] - EXTERIOR_CAMERA.position[1])).toBeLessThan(0.1);
+  });
+
+  it("keeps every destination camera and focus point inside the room named by the route", () => {
+    for (const room of rooms) {
+      const bounds = roomBounds(room);
+      for (const [label, point] of [["camera", room.camera.position], ["focus", room.camera.target]] as const) {
+        expect(point[0], room.slug + " " + label + " X").toBeGreaterThan(bounds.minX + 0.01);
+        expect(point[0], room.slug + " " + label + " X").toBeLessThan(bounds.maxX - 0.01);
+        expect(point[2], room.slug + " " + label + " Z").toBeGreaterThan(bounds.minZ + 0.01);
+        expect(point[2], room.slug + " " + label + " Z").toBeLessThan(bounds.maxZ - 0.01);
+      }
+    }
   });
 
   it("walks through the real front opening before entering the entrance", () => {
