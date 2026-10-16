@@ -13,17 +13,24 @@ function poseFor(location: HouseLocation): CameraPose {
   if (location === "exterior" || location === "map") return EXTERIOR_CAMERA;
   return getRoomBySlug(location)?.camera ?? EXTERIOR_CAMERA;
 }
-function CameraRig({ location, reducedMotion }: { location: HouseLocation; reducedMotion: boolean }) {
+function CameraRig({ location, reducedMotion, onArrive, onTransitionChange }: {
+  location: HouseLocation;
+  reducedMotion: boolean;
+  onArrive: (location: HouseLocation) => void;
+  onTransitionChange: (transitioning: boolean) => void;
+}) {
   const { camera, invalidate } = useThree();
   const pose = useMemo(() => poseFor(location), [location]);
   const desired = useMemo(() => ({ position: new Vector3(...pose.position), target: new Vector3(...pose.target) }), [pose]);
   const lastLocation = useRef<HouseLocation>("exterior");
   const path = useRef<AnimatedPose[]>([]);
   const index = useRef(0);
+  const completedLocation = useRef<HouseLocation | undefined>(undefined);
   const lookAt = useRef(new Vector3(...EXTERIOR_CAMERA.target));
   useEffect(() => {
     const from = lastLocation.current;
     lastLocation.current = location;
+    completedLocation.current = undefined;
     if (reducedMotion) {
       camera.position.copy(desired.position);
       lookAt.current.copy(desired.target);
@@ -31,14 +38,18 @@ function CameraRig({ location, reducedMotion }: { location: HouseLocation; reduc
       camera.updateProjectionMatrix();
       path.current = [];
       index.current = 0;
+      completedLocation.current = location;
+      onTransitionChange(false);
+      onArrive(location);
     } else {
       path.current = makeCameraPath(from, location, pose).map((item) => ({
         position: new Vector3(...item.position), target: new Vector3(...item.target),
       }));
       index.current = 0;
+      onTransitionChange(true);
     }
     invalidate();
-  }, [camera, desired, invalidate, location, pose, reducedMotion]);
+  }, [camera, desired, invalidate, location, onArrive, onTransitionChange, pose, reducedMotion]);
   useFrame((_state, delta) => {
     const waypoint = path.current[index.current];
     const nextPosition = waypoint?.position ?? desired.position;
@@ -49,8 +60,15 @@ function CameraRig({ location, reducedMotion }: { location: HouseLocation; reduc
     camera.lookAt(lookAt.current);
     if (waypoint && camera.position.distanceToSquared(nextPosition) < 0.012 &&
       lookAt.current.distanceToSquared(nextTarget) < 0.02) index.current += 1;
-    if (index.current < path.current.length || camera.position.distanceToSquared(desired.position) > 0.002 ||
-      lookAt.current.distanceToSquared(desired.target) > 0.002) invalidate();
+    const stillMoving = index.current < path.current.length ||
+      camera.position.distanceToSquared(desired.position) > 0.002 ||
+      lookAt.current.distanceToSquared(desired.target) > 0.002;
+    if (stillMoving) invalidate();
+    else if (completedLocation.current !== location) {
+      completedLocation.current = location;
+      onTransitionChange(false);
+      onArrive(location);
+    }
   });
   return null;
 }
@@ -313,11 +331,16 @@ function RoofDeck({ onSelect }: { onSelect: () => void }) {
   </group>;
 }
 
-function HouseArchitecture({ location, onDoorActivate, onSelectRoom, reducedMotion }: {
-  location: HouseLocation; onDoorActivate: (entering: boolean) => void; onSelectRoom: (slug: RoomSlug) => void; reducedMotion: boolean;
+function HouseArchitecture({ location, visualLocation, transitioning, onDoorActivate, onSelectRoom, reducedMotion }: {
+  location: HouseLocation;
+  visualLocation: HouseLocation;
+  transitioning: boolean;
+  onDoorActivate: (entering: boolean) => void;
+  onSelectRoom: (slug: RoomSlug) => void;
+  reducedMotion: boolean;
 }) {
-  const active = location === "exterior" || location === "map" ? undefined : getRoomBySlug(location);
-  const showRoofDeck = location === "exterior" || location === "garden" || location === "rooftop";
+  const active = visualLocation === "exterior" || visualLocation === "map" ? undefined : getRoomBySlug(visualLocation);
+  const showRoofDeck = transitioning || visualLocation === "exterior" || visualLocation === "garden" || visualLocation === "rooftop";
   return <>
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.205, 0]} receiveShadow>
       <planeGeometry args={[48, 48]} /><meshStandardMaterial color="#d6d5c0" roughness={1} />
@@ -340,15 +363,23 @@ function HouseArchitecture({ location, onDoorActivate, onSelectRoom, reducedMoti
   </>;
 }
 
-export function HouseScene({ location, reducedMotion, onDoorActivate, onSelect }: {
-  location: HouseLocation; reducedMotion: boolean; onDoorActivate: (entering: boolean) => void; onSelect: (slug: RoomSlug) => void;
+export function HouseScene({ location, settledLocation, reducedMotion, onArrive, onDoorActivate, onSelect }: {
+  location: HouseLocation;
+  settledLocation: HouseLocation;
+  reducedMotion: boolean;
+  onArrive: (location: HouseLocation) => void;
+  onDoorActivate: (entering: boolean) => void;
+  onSelect: (slug: RoomSlug) => void;
 }) {
+  const [transitioning, setTransitioning] = useState(false);
+  const visualTransition = transitioning || settledLocation !== location;
   return <Canvas camera={{ position: EXTERIOR_CAMERA.position, fov: 58, near: 0.1, far: 120 }}
     dpr={reducedMotion ? 1 : ([1, 1.4] as [number, number])} frameloop="demand" shadows>
     <color attach="background" args={["#eee7da"]} /><fog attach="fog" args={["#eee7da", 22, 55]} />
     <ambientLight intensity={1.1} /><hemisphereLight args={["#fff2db", "#8c9479", 1.1]} />
     <directionalLight position={[8, 15, 9]} intensity={2.1} castShadow shadow-mapSize-width={1024} shadow-mapSize-height={1024} />
-    <CameraRig location={location} reducedMotion={reducedMotion} />
-    <HouseArchitecture location={location} onDoorActivate={onDoorActivate} onSelectRoom={onSelect} reducedMotion={reducedMotion} />
+    <CameraRig location={location} reducedMotion={reducedMotion} onArrive={onArrive} onTransitionChange={setTransitioning} />
+    <HouseArchitecture location={location} visualLocation={settledLocation} transitioning={visualTransition}
+      onDoorActivate={onDoorActivate} onSelectRoom={onSelect} reducedMotion={reducedMotion} />
   </Canvas>;
 }
