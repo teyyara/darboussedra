@@ -120,6 +120,15 @@ export interface RoomWallInterval { readonly start: number; readonly end: number
  * Coordinates are local to the room along the selected side. The exterior entrance
  * facade is supplied by the exterior shell, whose actual door is already cut out.
  */
+/** Select one owner for portal frames/click targets shared by two adjacent rooms. */
+export function roomOwnsPortalFrame(room: Room, opening: RoomPortalOpening): boolean {
+  if (!opening.targetSlug || opening.targetSlug === room.slug) return true;
+  if (room.slug === "entrance" && opening.side === "front") return true;
+  const ownerIndex = rooms.findIndex((item) => item.slug === room.slug);
+  const targetIndex = rooms.findIndex((item) => item.slug === opening.targetSlug);
+  return targetIndex >= 0 && ownerIndex < targetIndex;
+}
+
 export function getRoomWallIntervals(room: Room, side: WallSide): RoomWallInterval[] {
   if (room.slug === "entrance" && side === "front") return [];
   const [width, depth] = room.footprint;
