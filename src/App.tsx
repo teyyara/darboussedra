@@ -110,7 +110,7 @@ export default function App() {
       <button className="primary" type="button" onClick={() => select("entrance")}>Enter the house ↗</button>
       <button className="plain" type="button" onClick={openMap}>Explore all rooms →</button>
     </section>}
-    {room && <section className="welcome room-welcome" aria-labelledby="room-title">
+    {room && <section className={"welcome room-welcome" + (walking ? " is-walking" : "")} aria-labelledby="room-title">
       <p className="eyebrow">{settledLocation === room.slug ? "YOU ARE HERE" : "WALKING TO"}</p>
       <h1 id="room-title">{room.name}</h1>
       <p>{settledLocation === room.slug
@@ -120,7 +120,7 @@ export default function App() {
       <button className="plain" type="button" disabled={settledLocation !== room.slug} onClick={() => go("/")}>Return outside →</button>
     </section>}
     {map && <HouseMap active={activeRoom?.slug} onSelect={select} onClose={closeMap} />}
-    {path === "/" && settledLocation !== "exterior" && <section className="welcome room-welcome" aria-label="Returning outside">
+    {path === "/" && settledLocation !== "exterior" && <section className={"welcome room-welcome" + (walking ? " is-walking" : "")} aria-label="Returning outside">
       <p className="eyebrow">WALKING OUTSIDE</p>
       <h1>Heading back out</h1>
       <p>Following the same rooms and doorway in reverse.</p>
