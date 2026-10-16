@@ -55,4 +55,4 @@ Improve/test architectural proportions and circulation against a visual browser 
 
 The latest source-code CI run is green, but Loop 004 remains incomplete until real browser review is completed and the family confirms the proposed proportions, room arrangement and circulation.
 
-- **Latest branch head:** source and audit updates are both committed at `adcc4cff71e3d1487681294c7b9560ee7d484126`; CI is green for that revision. It remains unmerged from `main`.
+- **Latest validated source-code revision:** `adcc4cff71e3d1487681294c7b9560ee7d484126`, with passing CI in run 38951780470. Subsequent commits only synchronized audit/status wording and formatting. The Loop 004 branch remains unmerged from `main`.
