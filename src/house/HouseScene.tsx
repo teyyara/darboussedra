@@ -9,6 +9,7 @@ import { getRoomCeilingBottomLocal } from "./roomDetails";
 import { getRoomWallDecor } from "./wallDecor";
 import { SKY_CLOUD_GROUPS, SKY_SUN_POSITION } from "./skyLayout";
 import { getKitchenFixtureLayout } from "./kitchenLayout";
+import { getLibraryBookProps } from "./libraryShelving";
 import { GARDEN_SHRUBS, GARDEN_TREES } from "./gardenPlants";
 import { RealisticMaterialPass } from "./realisticMaterials";
 import { getCameraZoneForPosition, getHouseSceneVisibility, type CameraZone } from "./sceneVisibility";
@@ -626,9 +627,12 @@ function RoomFurnishings({ room }: { room: Room }) {
       <PropBox position={[0.025 - width / 2 + 0.23, 0.91, -0.15]} size={[0.34, 1.65, 2.25]} color="#7c553b" />
       {[0.25, 0.67, 1.09, 1.48].map((y) =>
         <PropBox key={y} position={[0.04 - width / 2 + 0.23, y, -0.15]} size={[0.4, 0.055, 2.26]} color="#b28a5f" />)}
-      {Array.from({ length: 16 }, (_, i) => <PropBox key={i}
-        position={[0.02 - width / 2 + 0.23, 0.43 + (i % 4) * 0.42, -1.0 + Math.floor(i / 4) * 0.56]}
-        size={[0.24, 0.3 + (i % 3) * 0.025, 0.13]} color={["#a55e48", "#c8a46d", "#6f8272", "#dcc9a8"][i % 4]} />)}
+      {getLibraryBookProps(width).map((book) => <group key={book.key}>
+        <PropBox position={book.position} size={book.size} color={book.color} roughness={0.84} />
+        {/* Fine gold labels catch the light on the room-facing spine, helping each volume read as a book. */}
+        <PropBox position={[book.position[0] + book.size[0] / 2 + 0.005, book.position[1] - 0.045, book.position[2]]}
+          size={[0.008, 0.02, book.size[2] * 0.62]} color="#d7b97b" roughness={0.52} metalness={0.24} />
+      </group>)}
     </group>}
 
     {room.slug === "pets-corner" && <group>
