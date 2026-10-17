@@ -1,6 +1,6 @@
 # AEOS Status — Dar Boussedra
 
-**State:** LOOP 011 FIRST LANDING-TURN GAZE — CI QUEUED, VISUAL REVIEW PENDING  
+**State:** LOOP 011 FIRST LANDING-TURN GAZE — SOURCE CHECKS PASS, BROWSER CAPTURE PENDING  
 **Active keyphrase:** DAR BOUSSEDRA — LOOP 011: KEEP STAIRWELL IN VIEW AT THE FIRST LATERAL TURN  
 **Run ID:** 20261017-darboussedra-aeos-v3-loop011  
 **Loop:** 011 · **Candidate:** dar-boussedra-first-turn-gaze-011  

@@ -8,7 +8,7 @@
   "loop": 11,
   "candidate": "dar-boussedra-first-turn-gaze-011",
   "state": "WAITING_FOR_CONTINUE",
-  "status": "FIRST_LANDING_TURN_GAZE_FIX_COMMITTED_CI_QUEUED_PR5_DRAFT_NO_MERGE",
+  "status": "FIRST_LANDING_TURN_GAZE_SOURCE_CHECKS_PASS_BROWSER_CAPTURE_IN_PROGRESS_PR5_DRAFT_NO_MERGE",
   "latest_known_good_commit": "d237375a364f25b0e30dade08f9b02790396b966",
   "latest_source_checkpoint_commit": "fb5bbb57bf24032fc0dc687087c0631827952703",
   "pull_request": "https://github.com/teyyara/darboussedra/pull/5",
@@ -32,8 +32,16 @@
     "loop11": {
       "commit": "fb5bbb57bf24032fc0dc687087c0631827952703",
       "ci_run": 39053389810,
-      "code_checks": "QUEUED",
-      "browser_capture": "PENDING"
+      "code_checks": {
+        "result": "PASS",
+        "workflow_run": 39053389810,
+        "steps": [
+          "npm run typecheck",
+          "npm test",
+          "npm run build"
+        ]
+      },
+      "browser_capture": "IN_PROGRESS_AT_CAPTURE_STEP_NO_ARTIFACT_AS_OF_LAST_CHECK"
     },
     "kitchen_render": {
       "result": "PASS",
