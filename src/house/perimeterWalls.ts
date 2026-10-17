@@ -52,7 +52,7 @@ export function getExteriorFacadePanels(): FacadePanelGeometry[] {
 
 /**
  * Closed indoor perimeter at the full exterior dimensions. These walls are separate
- * from room partitions: side walls complete the landing corridor and front panels
+ * from room partitions: overlapping side walls seal partition seams and front panels
  * keep the entry facade intact without blocking the doorway or windows.
  */
 export function getInteriorPerimeterWallPanels(): PerimeterWallPanel[] {
@@ -70,7 +70,7 @@ export function getInteriorPerimeterWallPanels(): PerimeterWallPanel[] {
     {
       key: "right-side",
       position: [halfWidth, wallHeight / 2, 0],
-      size: [wallThickness, wallHeight, depth],
+      size: [wallThickness + 0.18, wallHeight, depth],
     },
     {
       key: "rear",
