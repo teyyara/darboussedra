@@ -11,6 +11,7 @@ const report = {
   browser: "Chromium (Playwright)",
   screenshots: [],
   roomArrivals: [],
+  frameStates: [],
   runtimeErrors: [],
   notes: [],
 };
@@ -45,6 +46,17 @@ async function saveScreenshot(page, filename) {
       return style.visibility === "hidden" && Number(style.opacity) === 0;
     }).catch(() => false);
   }
+  const frameState = await page.locator("canvas").first().evaluate((canvas) => {
+    const data = canvas.dataset;
+    return {
+      cameraPosition: data.cameraPosition ? data.cameraPosition.split(",").map(Number) : null,
+      cameraDirection: data.cameraDirection ? data.cameraDirection.split(",").map(Number) : null,
+      cameraZone: data.cameraZone || null,
+      destination: data.destination || null,
+      routeProgress: data.routeProgress || null,
+    };
+  }).catch(() => null);
+  report.frameStates.push({ filename, ...frameState });
   await page.screenshot({ path: filepath, animations: "disabled" });
   report.screenshots.push(filename);
 }

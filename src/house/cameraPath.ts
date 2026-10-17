@@ -96,7 +96,8 @@ function roofStairWalkway(): CameraPose[] {
   const flight = HOUSE_LAYOUT.stairs.roofFlight;
   const upperEye = HOUSE_LAYOUT.upperY + HEAD_HEIGHT;
   const roofEye = HOUSE_LAYOUT.roofY + HEAD_HEIGHT;
-  const openingBackEdge = HOUSE_LAYOUT.stairs.roofOpening.centerZ - HOUSE_LAYOUT.stairs.roofOpening.depth / 2;
+  const opening = HOUSE_LAYOUT.stairs.roofOpening;
+  const openingRightEdge = opening.centerX + opening.width / 2;
   return [
     poseFacing([0, upperEye, HOUSE_LAYOUT.upperLanding.centerZ + 0.38], [0, 1]),
     poseFacing([flight.from[0], upperEye, flight.from[2]], [0, 1]),
@@ -107,14 +108,14 @@ function roofStairWalkway(): CameraPose[] {
     poseFacing([0.1, upperEye, flight.from[2] - 0.10], [0, -1]),
     ...sampledStairWaypoints(flight),
     poseFacing([flight.to[0], roofEye, flight.to[2]], [0, -1]),
-    // The flight finishes at the rear lip of the hatch. Keep walking rearward
-    // until both feet are on solid terrace deck before turning across the roof.
-    poseFacing([0, roofEye, openingBackEdge - 0.18], [0, -1]),
-    poseFacing([0.55, roofEye, openingBackEdge - 0.30], [1, 0]),
-    poseFacing([1.0, roofEye, openingBackEdge - 0.08], [0.7, 0.7]),
-    poseFacing([1.25, roofEye, -2.1], [0, 1]),
-    poseFacing([1.25, roofEye, -1.1], [0, 1]),
-    poseFacing([1.9, roofEye, -0.1], [0.7, 0.7]),
+    // Step sideways past the hatch edge onto solid deck, then turn into the
+    // open terrace. Moving toward the rear parapet first made the camera stare
+    // at a blank wall while its feet were still clearing the opening.
+    poseFacing([openingRightEdge + 0.16, roofEye, flight.to[2] + 0.05], [1, 0]),
+    poseFacing([1.45, roofEye, flight.to[2] + 0.48], [0.7, 0.7]),
+    poseFacing([1.65, roofEye, -1.55], [0, 1]),
+    poseFacing([1.85, roofEye, -0.55], [0.3, 1]),
+    poseFacing([1.9, roofEye, 0.1], [0.7, 0.7]),
     poseFacing([0, roofEye, 0.6], [0, 1]),
   ];
 }

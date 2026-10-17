@@ -49,6 +49,7 @@ function CameraRig({ location, reducedMotion, onArrive, onTransitionChange, onEx
   const doorTransition = useRef<"entering" | "exiting" | null>(null);
   const doorThresholdCrossed = useRef(false);
   const cameraZone = useRef<CameraZone>("outside");
+  const cameraDirection = useRef(new Vector3());
 
   useEffect(() => {
     const from = lastLocation.current;
@@ -88,7 +89,7 @@ function CameraRig({ location, reducedMotion, onArrive, onTransitionChange, onEx
     invalidate();
   }, [camera, desired, invalidate, location, onArrive, onTransitionChange, onExteriorShellVisibilityChange, onCameraZoneChange, pose, reducedMotion]);
 
-  useFrame((_state, delta) => {
+  useFrame((state, delta) => {
     const frameDelta = Math.min(delta, 0.2);
     const distanceToTarget = camera.position.distanceTo(desired.position);
     let remainingPathDistance = 0;
@@ -149,7 +150,16 @@ function CameraRig({ location, reducedMotion, onArrive, onTransitionChange, onEx
       onExteriorShellVisibilityChange(true);
     }
 
-    // Position progress controls the route; orientation blends in the background.
+    // Store diagnostics on the canvas so the browser review can record the exact
+    // camera position and visibility zone without adding anything to the visible UI.
+    const canvas = state.gl.domElement;
+    canvas.dataset.cameraPosition = [camera.position.x, camera.position.y, camera.position.z]
+      .map((value) => value.toFixed(3)).join(",");
+    canvas.dataset.cameraDirection = camera.getWorldDirection(cameraDirection.current)
+      .toArray().map((value) => value.toFixed(3)).join(",");
+    canvas.dataset.cameraZone = cameraZone.current;
+    canvas.dataset.destination = location;
+    canvas.dataset.routeProgress = `${Math.min(index.current, path.current.length)}/${path.current.length}`;
 
     const stillMoving = index.current < path.current.length ||
       camera.position.distanceToSquared(desired.position) > 0.0016 ||

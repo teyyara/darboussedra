@@ -227,15 +227,18 @@ describe("3D camera paths", () => {
     expect(Math.max(...approach.map((pose) => pose.position[2]))).toBeLessThanOrEqual(landingFrontEdge + 0.005);
   });
 
-  it("exits the roof hatch onto solid deck before turning across the terrace", () => {
+  it("steps sideways from the roof hatch onto solid deck before crossing the terrace", () => {
     const path = makeCameraPath("family-table", "rooftop", poseFor("rooftop"));
     const roofEye = HOUSE_LAYOUT.roofY + 1.65;
     const opening = HOUSE_LAYOUT.stairs.roofOpening;
-    const backEdge = opening.centerZ - opening.depth / 2;
+    const rightEdge = opening.centerX + opening.width / 2;
     const roofWaypoints = path.filter((pose) => Math.abs(pose.position[1] - roofEye) < 0.02);
-    expect(roofWaypoints.some((pose) => pose.position[2] < backEdge - 0.1)).toBe(true);
+    expect(roofWaypoints.some((pose) =>
+      pose.position[0] > rightEdge + 0.08 &&
+      pose.position[2] > opening.centerZ - opening.depth / 2 &&
+      pose.position[2] < opening.centerZ + opening.depth / 2)).toBe(true);
     const hatchCrossers = roofWaypoints.filter((pose) =>
-      pose.position[2] > backEdge + 0.02 &&
+      pose.position[2] > opening.centerZ - opening.depth / 2 + 0.02 &&
       pose.position[2] < opening.centerZ + opening.depth / 2 - 0.02 &&
       Math.abs(pose.position[0]) < opening.width / 2 - 0.02);
     expect(hatchCrossers.length).toBeLessThanOrEqual(1);
