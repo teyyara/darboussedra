@@ -283,6 +283,23 @@ describe("3D camera paths", () => {
         HOUSE_LAYOUT.upperBridge.width / 2)).toBe(true);
   });
 
+  it("turns onto the upper landing before looking along the bedroom wall", () => {
+    const path = makeCameraPath("family-table", "rooftop", poseFor("rooftop"));
+    const upperEye = HOUSE_LAYOUT.upperY + 1.65;
+    const flightEndZ = HOUSE_LAYOUT.stairs.groundFlight.to[2];
+    const sideLaneX = HOUSE_LAYOUT.upperBridge.centerX + HOUSE_LAYOUT.stairs.openingWidth / 2 + 0.12;
+    const laneEntry = path.find((pose) =>
+      Math.abs(pose.position[1] - upperEye) < 0.02 &&
+      Math.abs(pose.position[0] - sideLaneX) < 0.02 &&
+      Math.abs(pose.position[2] - (flightEndZ + 0.2)) < 0.03);
+
+    expect(laneEntry, "the route reaches the side lane after clearing the stair edge").toBeDefined();
+    expect(laneEntry!.position[2], "the turn remains behind the rear bedroom-wall line").toBeLessThan(-3.95);
+    expect(Math.abs(laneEntry!.target[0] - laneEntry!.position[0]),
+      "the camera faces down the landing, not into the side wall").toBeLessThan(0.02);
+    expect(laneEntry!.target[2] - laneEntry!.position[2]).toBeGreaterThan(1.0);
+  });
+
   it("keeps intermediate camera headings aligned with travel through outdoor and multi-storey turns", () => {
     for (const [from, to] of [
       ["zineb-room", "garden"],

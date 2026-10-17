@@ -79,12 +79,12 @@ function groundStairWalkway(): CameraPose[] {
   return [
     ...sampledStairWaypoints(flight),
     poseFacing(top, [0, -1]),
-    // Follow an in-place U-turn as a short walking arc: move onto the head landing,
-    // round the stair opening, then face forward along the guarded side lane.
-    poseFacing([0.2, upperEye, flight.to[2] + 0.06], [0.6, -0.8]),
-    poseFacing([0.43, upperEye, flight.to[2] + 0.18], [1, 0]),
-    poseFacing([sideLaneX, upperEye, flight.to[2] + 0.46], [0.65, 0.76]),
-    poseFacing([sideLaneX, upperEye, flight.to[2] + 0.62], [0, 1]),
+    // Finish the turn laterally while still behind the rear bedroom-wall line,
+    // then move forward along the guarded landing. The former diagonal U-turn
+    // aimed the camera straight into the bedroom's side wall for several frames.
+    poseFacing([sideLaneX, upperEye, flight.to[2]], [1, 0]),
+    poseFacing([sideLaneX, upperEye, flight.to[2] + 0.2], [0, 1]),
+    poseFacing([sideLaneX, upperEye, flight.to[2] + 0.6], [0, 1]),
     ...[-2.8, -1.8, -0.8, 0.2].map((z) => poseFacing([sideLaneX, upperEye, z], [0, 1])),
     // Rejoin the full-width upper landing beyond the end of the open stair shaft.
     poseFacing([sideLaneX * 0.7, upperEye, 0.72], [0.2, 1]),
