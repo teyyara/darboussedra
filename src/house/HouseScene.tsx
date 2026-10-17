@@ -8,6 +8,7 @@ import { getInteriorRoofCeilingPanels } from "./interiorCeiling";
 import { getRoomCeilingBottomLocal } from "./roomDetails";
 import { getRoomWallDecor } from "./wallDecor";
 import { SKY_CLOUD_GROUPS, SKY_SUN_POSITION } from "./skyLayout";
+import { getKitchenFixtureLayout } from "./kitchenLayout";
 import { RealisticMaterialPass } from "./realisticMaterials";
 import { getCameraZoneForPosition, getHouseSceneVisibility, type CameraZone } from "./sceneVisibility";
 import {
@@ -521,6 +522,7 @@ function DiningChair({ position, rotation = 0 }: { position: Vector3Tuple; rotat
 /** Quiet, scale-consistent props make each destination read as its intended room. */
 function RoomFurnishings({ room }: { room: Room }) {
   const width = room.footprint[0];
+  const kitchenLayout = getKitchenFixtureLayout(width);
   return <group position={[0, HOUSE_LAYOUT.floorThickness, 0]}>
     {room.slug === "family-table" && <group>
       <PropBox position={[0, 0.025, 0]} size={[2.65, 0.035, 2.35]} color="#c7a88b" />
@@ -548,11 +550,58 @@ function RoomFurnishings({ room }: { room: Room }) {
 
     {room.slug === "kitchen" && <group>
       <PropBox position={[0, 0.02, 0]} size={[2.6, 0.025, 2.2]} color="#d4c4aa" />
-      <PropBox position={[width / 2 - 0.48, 0.36, -0.05]} size={[0.72, 0.7, 2.15]} color="#ad967a" />
-      <PropBox position={[width / 2 - 0.48, 0.74, -0.05]} size={[0.82, 0.09, 2.2]} color="#eee2cd" />
-      {[-0.72, 0, 0.72].map((z) => <PropBox key={z} position={[width / 2 - 0.09, 0.36, z - 0.05]} size={[0.025, 0.49, 0.035]} color="#80624a" />)}
-      <PropBox position={[width / 2 - 0.48, 0.81, -0.55]} size={[0.42, 0.025, 0.45]} color="#50524e" roughness={0.45} />
-      {/* Tuck the appliance into the rear-left corner so it doesn't block the entry sightline. */}
+      <PropBox position={[kitchenLayout.counterCenterX, 0.36, -0.05]} size={[0.72, 0.7, 2.15]} color="#ad967a" />
+      <PropBox position={[kitchenLayout.counterCenterX, 0.74, -0.05]} size={[0.82, 0.09, 2.2]} color="#eee2cd" />
+
+      {/* Cabinet doors and slim handles make the counter read as fitted cabinetry, not a floating block. */}
+      {kitchenLayout.cabinetDoorZs.map((z) => <group key={"cabinet-door-" + z}>
+        <PropBox position={[kitchenLayout.cabinetFrontX, 0.36, z]} size={[0.025, 0.5, 0.62]} color="#967e65" />
+        <PropBox position={[kitchenLayout.cabinetHandleX, 0.36, z]} size={[0.035, 0.14, 0.025]} color="#68513e" roughness={0.48} metalness={0.22} />
+      </group>)}
+
+      {/* Flush cooktop with four distinct burner rings and small front controls. */}
+      <PropBox position={kitchenLayout.cooktop.center} size={kitchenLayout.cooktop.size}
+        color="#353633" roughness={0.3} metalness={0.28} />
+      {kitchenLayout.cooktop.burners.map((burner, index) => <group key={"burner-" + index} position={burner}>
+        <mesh rotation={[-Math.PI / 2, 0, 0]}>
+          <torusGeometry args={[0.052, 0.006, 8, 22]} />
+          <meshStandardMaterial color="#252623" metalness={0.52} roughness={0.38} />
+        </mesh>
+        <mesh position={[0, 0.001, 0]}>
+          <cylinderGeometry args={[0.031, 0.034, 0.008, 18]} />
+          <meshStandardMaterial color="#555650" metalness={0.38} roughness={0.44} />
+        </mesh>
+      </group>)}
+      {kitchenLayout.cooktop.controls.map((control, index) => <mesh key={"cooktop-control-" + index} position={control}>
+        <sphereGeometry args={[0.024, 12, 10]} />
+        <meshStandardMaterial color="#bdb8ac" metalness={0.42} roughness={0.34} />
+      </mesh>)}
+
+      {/* Stainless rim, darker basin and a compact mixer tap establish a functional sink area. */}
+      <PropBox position={kitchenLayout.sink.center} size={kitchenLayout.sink.size}
+        color="#a7aaa4" roughness={0.38} metalness={0.42} />
+      <PropBox position={kitchenLayout.sink.basinCenter} size={kitchenLayout.sink.basinSize}
+        color="#59635f" roughness={0.43} metalness={0.24} />
+      {kitchenLayout.sink.rim.map((strip, index) => <PropBox key={"sink-rim-" + index}
+        position={strip.center} size={strip.size} color="#c2c5be" roughness={0.34} metalness={0.48} />)}
+      <mesh position={kitchenLayout.sink.faucetBase}>
+        <cylinderGeometry args={[0.045, 0.05, 0.018, 18]} />
+        <meshStandardMaterial color="#9da39d" metalness={0.62} roughness={0.28} />
+      </mesh>
+      <mesh position={kitchenLayout.sink.faucetStem}>
+        <cylinderGeometry args={[0.016, 0.02, 0.15, 14]} />
+        <meshStandardMaterial color="#9da39d" metalness={0.66} roughness={0.25} />
+      </mesh>
+      <mesh position={kitchenLayout.sink.faucetSpout} rotation={[Math.PI / 2, 0, 0]}>
+        <cylinderGeometry args={[0.014, 0.014, 0.14, 14]} />
+        <meshStandardMaterial color="#aeb3ad" metalness={0.68} roughness={0.24} />
+      </mesh>
+      <mesh position={kitchenLayout.sink.faucetOutlet}>
+        <cylinderGeometry args={[0.012, 0.012, 0.075, 12]} />
+        <meshStandardMaterial color="#aeb3ad" metalness={0.68} roughness={0.24} />
+      </mesh>
+
+      {/* Tuck the refrigerator into the rear-left corner, clear of the entry sightline. */}
       <group position={[-width / 2 + 0.35, 0, -1.13]}>
         <PropBox position={[0, 0.82, 0]} size={[0.52, 1.6, 0.49]} color="#aaa9a1" roughness={0.58} />
         <PropBox position={[0, 0.82, 0.252]} size={[0.47, 1.32, 0.018]} color="#d1d0c8" roughness={0.46} />
@@ -561,6 +610,8 @@ function RoomFurnishings({ room }: { room: Room }) {
         <PropBox position={[0, 1.64, 0]} size={[0.55, 0.045, 0.52]} color="#989a92" roughness={0.62} />
       </group>
     </group>}
+
+    {room.kind === "private" && <group>
 
     {room.kind === "private" && <group>
       <PropBox position={[0, 0.02, 0]} size={[Math.min(1.65, width - 0.15), 0.025, 2.4]} color="#d5c2a8" />
