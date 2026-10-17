@@ -129,6 +129,15 @@ describe("authoritative room and architectural layout", () => {
     expect(Math.abs(kitchen.camera.target[0] - counterCenter[0])).toBeLessThan(0.5);
     expect(kitchen.camera.target[2]).toBeGreaterThan(kitchen.scenePosition[2] - 0.25);
     expect(kitchen.camera.target[2]).toBeLessThan(kitchen.camera.position[2]);
+
+    const cameraLocalX = kitchen.camera.position[0] - kitchen.scenePosition[0];
+    const cameraLocalZ = kitchen.camera.position[2] - kitchen.scenePosition[2];
+    const counterMinX = kitchen.footprint[0] / 2 - 0.48 - 0.82 / 2;
+    const counterMaxZ = -0.05 + 2.2 / 2;
+    expect(Math.abs(cameraLocalX)).toBeLessThan(kitchen.footprint[0] / 2);
+    expect(Math.abs(cameraLocalZ)).toBeLessThan(kitchen.footprint[1] / 2);
+    expect(cameraLocalX).toBeLessThan(counterMinX);
+    expect(cameraLocalZ).toBeGreaterThan(counterMaxZ);
   });
 
   it("keeps the ground stair shaft clear of every ground-floor room", () => {
