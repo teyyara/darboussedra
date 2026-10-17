@@ -1,16 +1,16 @@
 {
   "schema_version": "1.0",
-  "run_id": "20261017-darboussedra-aeos-v3-loop049",
-  "keyphrase": "DAR BOUSSEDRA — LOOP 049: verify descent on the lower stair flight",
+  "run_id": "20261017-darboussedra-aeos-v3-loop050",
+  "keyphrase": "DAR BOUSSEDRA — LOOP 050: keep the garden path and both olives in view",
   "rulebook_version": "AEOS v3",
   "repository": "teyyara/darboussedra",
   "branch": "fix/loop-004-architecture-coherence",
-  "loop": 49,
-  "candidate": "dar-boussedra-stair-descent-phase-049",
-  "state": "VALIDATING",
-  "status": "LOOP049_SOURCE_CHECKS_PASS_BROWSER_CAPTURE_RUNNING_VISUAL_ACCEPTANCE_PENDING_PR5_DRAFT_NO_MERGE",
+  "loop": 50,
+  "candidate": "dar-boussedra-garden-composition-050",
+  "state": "WAITING_FOR_VALIDATION",
+  "status": "LOOP050_COMMITTED_VALIDATION_QUEUED_VISUAL_ACCEPTANCE_PENDING_PR5_DRAFT_NO_MERGE",
   "latest_known_good_commit": "d237375a364f25b0e30dade08f9b02790396b966",
-  "latest_source_checkpoint_commit": "bf40c6e12f4e16692b69122fccbfc416afd07a39",
+  "latest_source_checkpoint_commit": "de1ffa3709f971114a591389062a24884200068d",
   "pull_request": "https://github.com/teyyara/darboussedra/pull/5",
   "validation": {
     "loop013_browser_review": {
@@ -44,7 +44,7 @@
     },
     "current_browser_review": {
       "result": "PENDING",
-      "workflow_run": 39072491627,
+      "workflow_run": 39072824788,
       "artifact": "NOT_YET_PUBLISHED"
     },
     "merge": "NOT_PERFORMED",
@@ -354,9 +354,9 @@
       "workflow_run": 39072431412,
       "artifact_id": 12115603048,
       "findings": [
-        "Centralized phase windows in an importable rule module and added tests.",
-        "Broadened hatch clearance and made descent conditional on successful roof arrival.",
-        "Capture was cancelled by a later commit after source checks had passed."
+        "Camera phase rules are shared/tested",
+        "Hatch rule no longer relies on restrictive X threshold",
+        "Rooftop arrival state guards the next map click"
       ]
     },
     "loop049_source_checks": {
@@ -379,8 +379,30 @@
         "Hatch clearance rule is tested and no longer depends on a restrictive X threshold.",
         "If rooftop arrival fails, record the failure and skip map interaction while walking."
       ]
+    },
+    "loop049_movement_probe": {
+      "result": "SOURCE_CHECKS_PASS_BROWSER_CAPTURE_STILL_RUNNING",
+      "commit": "bf40c6e12f4e16692b69122fccbfc416afd07a39",
+      "workflow_run": 39072491627,
+      "steps": [
+        "TypeScript passed",
+        "Tests passed",
+        "Production build passed",
+        "Chromium installation passed",
+        "Browser capture active, artifact not published"
+      ]
+    },
+    "loop050_source_change": {
+      "result": "COMMITTED_VALIDATION_QUEUED",
+      "commit": "de1ffa3709f971114a591389062a24884200068d",
+      "workflow_run": 39072824788,
+      "change": "Lower the garden look target to y=0.9 and move olive trees inward to x=±1.95 so both trees flank a visible path. Added camera pitch and central walking-clearance tests."
+    },
+    "loop050_source_checks": {
+      "result": "QUEUED",
+      "workflow_run": 39072824788
     }
   },
-  "next_high_value_work": "Inspect run 39072491627 for the updated garden/rooftop cameras and movement report. Validate an actual roof-hatch exit, a lower-stair descent capture with negative camera direction Y, no runtime errors, all 13 desktop/mobile destinations and no mobile overflow.",
-  "current_browser_review_run": 39072491627
+  "next_high_value_work": "Confirm Loop 050 checks and inspect fresh garden/roof images. The garden view should show visible pavers, both olives flanking the path, and central clearance. Then confirm Loop 049 movement report captures hatch exit and lower stair descent with a negative camera-direction Y.",
+  "current_browser_review_run": 39072824788
 }

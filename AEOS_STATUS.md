@@ -1,13 +1,13 @@
 # AEOS Status — Dar Boussedra
 
-**State:** LOOP 049 MOVEMENT-PROBE PHASE FIX — SOURCE CHECKS PASSED, BROWSER REVIEW RUNNING  
-**Active keyphrase:** DAR BOUSSEDRA — LOOP 049: VERIFY DESCENT ON THE LOWER STAIR FLIGHT  
-**Run ID:** 20261017-darboussedra-aeos-v3-loop049  
-**Loop:** 049 · **Candidate:** dar-boussedra-stair-descent-phase-049  
+**State:** LOOP 050 GARDEN VIEW COMPOSITION — COMMITTED, LATEST VALIDATION QUEUED  
+**Active keyphrase:** DAR BOUSSEDRA — LOOP 050: KEEP THE GARDEN PATH AND BOTH OLIVES IN VIEW  
+**Run ID:** 20261017-darboussedra-aeos-v3-loop050  
+**Loop:** 050 · **Candidate:** dar-boussedra-garden-composition-050  
 **Repository:** https://github.com/teyyara/darboussedra  
 **Branch:** fix/loop-004-architecture-coherence  
 **Base main:** 501cc6ccf3e6926504dfcd051ac98147360cd48a  
-**Latest source-code checkpoint commit:** bf40c6e12f4e16692b69122fccbfc416afd07a39  
+**Latest source-code checkpoint commit:** de1ffa3709f971114a591389062a24884200068d  
 **Last updated:** 2026-10-17
 
 ## Loop 003 outcome
@@ -524,3 +524,16 @@ Inspect the fresh screenshots from run 39072071748 once the artifact appears. Co
 
 ### Next action
 Inspect run 39072491627's fresh artifact and report. Verify that the garden camera frames the stone path and olive trees, the rooftop camera frames the tea nook without losing hatch context, and the movement report has all of hatch exit plus a real lower-stair descent frame with downward camera pitch. PR #5 remains draft-only; main and manual deployment remain untouched.
+
+
+## Loop 050 — Keep the garden path and both olives in view
+
+- Source commit [`de1ffa3`](https://github.com/teyyara/darboussedra/commit/de1ffa3709f971114a591389062a24884200068d) lowers the garden camera target from 1.4m to 0.9m, giving a still eye-level ground view enough downward pitch to show the pavers rather than cropping them at the bottom.
+- Moves the two olive-style tree centres inward from x = ±2.72m to ±1.95m. Regression tests preserve more than 0.7m of clearance between crown extent and the central walking line while keeping planting inside the garden footprint.
+- This change is grounded in actual frames from [run 39072071748](https://github.com/teyyara/darboussedra/actions/runs/39072071748), artifact [12115513027](https://github.com/teyyara/darboussedra/actions/runs/39072071748): the prior garden view cropped the close pavers and exposed only one olive tree, while the other was beyond the field of view.
+- Run [39072824788](https://github.com/teyyara/darboussedra/actions/runs/39072824788) is queued behind the prior visual capture; Loop 050 source checks are not yet claimed.
+
+### Current validation state
+- Loop 049 run [39072491627](https://github.com/teyyara/darboussedra/actions/runs/39072491627) passed typecheck, tests, production build and Chromium installation; its capture step is still in progress at last check.
+- Loop 048 source checks passed. The last complete movement report confirms the hatch-exit screenshot was captured, but the descent screenshot was at route waypoint 33/56 in the upper landing with cameraDirectionY -0.033. Loop 049 extends the lower-stair phase wait to 90s to avoid accepting that false frame.
+- Visual acceptance of Loop 047's garden/roof camera poses and Loop 050's inward tree placement remains pending new screenshots. Don't merge or deploy manually; PR #5 stays open/draft and main is unchanged.
