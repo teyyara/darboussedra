@@ -296,7 +296,7 @@ describe("3D camera paths", () => {
     expect(laneEntry, "the route reaches the side lane after clearing the stair edge").toBeDefined();
     expect(laneEntry!.position[2], "the turn remains behind the rear bedroom-wall line").toBeLessThan(-3.95);
     expect(laneEntry!.target[2] - laneEntry!.position[2]).toBeGreaterThan(1.0);
-    expect(laneEntry!.target[0]).toBeGreaterThan(laneEntry!.position[0] - 0.02);
+    expect(laneEntry!.target[0], "the authored view looks inward toward the central landing").toBeLessThan(laneEntry!.position[0] - 0.25);
   });
 
   it("aims inward from the upper landing while keeping the camera on the protected side lane", () => {
