@@ -1,16 +1,16 @@
 {
   "schema_version": "1.0",
-  "run_id": "20261017-darboussedra-aeos-v3-loop023",
-  "keyphrase": "DAR BOUSSEDRA — LOOP 023: camera-aware room wall accents",
+  "run_id": "20261017-darboussedra-aeos-v3-loop031",
+  "keyphrase": "DAR BOUSSEDRA — LOOP 031: garden planting bounds and PR validation",
   "rulebook_version": "AEOS v3",
   "repository": "teyyara/darboussedra",
   "branch": "fix/loop-004-architecture-coherence",
-  "loop": 23,
-  "candidate": "dar-boussedra-camera-aware-wall-accents-023",
+  "loop": 31,
+  "candidate": "dar-boussedra-garden-planting-031",
   "state": "VALIDATING",
-  "status": "LOOP023_CAMERA_AWARE_WALL_DECOR_COMMITTED_VALIDATION_RUNNING_VISUAL_ACCEPTANCE_PENDING_PR5_DRAFT_NO_MERGE",
+  "status": "LOOP031_SOURCE_CHECKS_PASS_BROWSER_CAPTURE_RUNNING_VISUAL_ACCEPTANCE_PENDING_PR5_DRAFT_NO_MERGE",
   "latest_known_good_commit": "d237375a364f25b0e30dade08f9b02790396b966",
-  "latest_source_checkpoint_commit": "43d23f6cf0aa79ce7f71e315aeea0f6224f19a17",
+  "latest_source_checkpoint_commit": "8b8c44db1ec20e29155275d81c0a4b322ebc50c4",
   "pull_request": "https://github.com/teyyara/darboussedra/pull/5",
   "validation": {
     "loop013_browser_review": {
@@ -44,7 +44,7 @@
     },
     "current_browser_review": {
       "result": "PENDING",
-      "workflow_run": 39062350399,
+      "workflow_run": 39063164627,
       "artifact": "NOT_YET_PUBLISHED"
     },
     "merge": "NOT_PERFORMED",
@@ -191,8 +191,54 @@
     "loop023_source_checks": {
       "result": "RUNNING",
       "workflow_run": 39062350399
+    },
+    "loop024_artwork_followup": {
+      "result": "SOURCE_CHECKS_PASS_PARTIAL_BROWSER_CAPTURE",
+      "commit": "3cebb5c82709da44965557d01dfc879a5cef2483",
+      "workflow_run": 39062513825,
+      "artifact_id": 12111769521,
+      "findings": [
+        "TypeScript/tests/build passed",
+        "Browser script stopped after a map-readiness timeout",
+        "Living-room artwork remains too near the edge and needs camera-framing refinement"
+      ]
+    },
+    "loop025_028_kitchen": {
+      "result": "SOURCE_CHECKS_PASS_BROWSER_CAPTURE_PENDING",
+      "commit": "ced4cd68d37e23b834b9a0245e38f2a42b43bdcb",
+      "workflow_run": 39062964881,
+      "steps": [
+        "Kitchen typecheck passed",
+        "Kitchen tests passed",
+        "Production build passed",
+        "Browser capture was still running at last check"
+      ],
+      "change": "Fitted cooktop with four burners/controls, inset sink and mixer tap, cabinet fronts/handles, and optional metallic finish support for rounded props."
+    },
+    "loop029_garden": {
+      "result": "SOURCE_CHECKS_FAILED_GARDEN_BOUNDS_TEST_CORRECTED",
+      "commit": "dc1c0ae0406799cba72cd6a83a6907b04590dbfa",
+      "workflow_run": 39063089164,
+      "change": "Replace conical trees with irregular olive-like crowns and in-bounds shrubs. A generic tree-depth bound was too conservative; corrected in Loop031 while detailed crown/shrub containment remains tested."
+    },
+    "loop030_workflow_concurrency": {
+      "result": "COMMITTED",
+      "commit": "f973a5d31294df8ccb7459a0f31c11be1262738c",
+      "change": "Add pull-request concurrency group and cancel superseded visual-validation workflows."
+    },
+    "loop031_source_checks": {
+      "result": "PASS_CAPTURE_RUNNING",
+      "commit": "8b8c44db1ec20e29155275d81c0a4b322ebc50c4",
+      "workflow_run": 39063164627,
+      "steps": [
+        "TypeScript passed",
+        "Unit tests passed",
+        "Production build passed",
+        "Chromium setup passed",
+        "Browser screenshot capture running, artifact not yet published"
+      ]
     }
   },
-  "next_high_value_work": "Confirm run 39062350399 source checks. Review fresh screenshots for sun/cloud framing, entrance sconces, artwork placement in kitchen/living room, stair hatch and mobile view. Do not claim visual acceptance until the latest rendered frames are inspected.",
-  "current_browser_review_run": 39062350399
+  "next_high_value_work": "Inspect the fresh artifact from run 39063164627 when available, then correct living-room wall-art composition if still cropped and visually inspect the fitted kitchen and olive planting. Keep PR #5 draft-only; no merge or manual deployment.",
+  "current_browser_review_run": 39063164627
 }

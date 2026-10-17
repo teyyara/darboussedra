@@ -1,13 +1,13 @@
 # AEOS Status — Dar Boussedra
 
-**State:** LOOP 023 CAMERA-AWARE WALL ART — COMMITTED, VALIDATION RUNNING, VISUAL REVIEW PENDING  
-**Active keyphrase:** DAR BOUSSEDRA — LOOP 023: CAMERA-AWARE ROOM WALL ACCENTS  
-**Run ID:** 20261017-darboussedra-aeos-v3-loop023  
-**Loop:** 023 · **Candidate:** dar-boussedra-camera-aware-wall-accents-023  
+**State:** LOOP 031 GARDEN PLANTING AND VALIDATION CONCURRENCY — SOURCE CHECKS PASSED, BROWSER REVIEW RUNNING  
+**Active keyphrase:** DAR BOUSSEDRA — LOOP 031: GARDEN PLANTING BOUNDS AND PR VALIDATION  
+**Run ID:** 20261017-darboussedra-aeos-v3-loop031  
+**Loop:** 031 · **Candidate:** dar-boussedra-garden-planting-031  
 **Repository:** https://github.com/teyyara/darboussedra  
 **Branch:** fix/loop-004-architecture-coherence  
 **Base main:** 501cc6ccf3e6926504dfcd051ac98147360cd48a  
-**Latest source-code checkpoint commit:** 43d23f6cf0aa79ce7f71e315aeea0f6224f19a17  
+**Latest source-code checkpoint commit:** 8b8c44db1ec20e29155275d81c0a4b322ebc50c4  
 **Last updated:** 2026-10-17
 
 ## Loop 003 outcome
@@ -385,3 +385,39 @@ Confirm run 39061538620's checks and inspect its uploaded visual artifact when c
 
 ### Next action
 Confirm run 39062350399. Retrieve fresh visual-review screenshots and re-check the sun/cloud framing, entrance sconces, kitchen and living-room artwork, upper landing/hatch and mobile view. PR #5 remains draft; main and manual deployment are untouched.
+
+
+## Loop 024 — Avoid the living-room doorway sightline
+
+- Commit [3cebb5c](https://github.com/teyyara/darboussedra/commit/3cebb5c82709da44965557d01dfc879a5cef2483) reserves the living-room back wall from artwork because the library opening causes a crop/through-corridor composition.
+- Source typecheck/tests/build passed. Browser run [39062513825](https://github.com/teyyara/darboussedra/actions/runs/39062513825) stopped during room-to-map navigation and uploaded partial artifact [12111769521](https://github.com/teyyara/darboussedra/actions/runs/39062513825). The picture on the left wall was still cropped, so composition remains a follow-up rather than an accepted visual result.
+
+## Loops 025–028 — Fitted kitchen surfaces
+
+- Commit [eb7977e](https://github.com/teyyara/darboussedra/commit/eb7977e4754153b2653ece5ff712c70d33adb9d1) adds fitted counter details: four cooktop burners, controls, a sink basin and rim, a mixer tap and front cabinet doors. Geometry checks verify the cooktop/sink stay within the worktop.
+- Commits [d20cf0a](https://github.com/teyyara/darboussedra/commit/d20cf0ae272bd5525b213957bf299fabbeefde6a) and [ced4cd6](https://github.com/teyyara/darboussedra/commit/ced4cd68d37e23b834b9a0245e38f2a42b43bdcb) repair a duplicate JSX opening and let the rounded-prop renderer accept optional metalness for the stainless fixtures/hardware.
+- Run [39062964881](https://github.com/teyyara/darboussedra/actions/runs/39062964881) passed TypeScript, tests and production build after these repairs; browser capture was still active and had not published an artifact at last check.
+
+## Loop 029 — Mediterranean garden planting
+
+- Commit [dc1c0ae](https://github.com/teyyara/darboussedra/commit/dc1c0ae0406799cba72cd6a83a6907b04590dbfa) replaces the conical placeholder evergreens with irregular olive-style canopies, visible branches and lower shrubs. Plant coordinates are centralized in gardenPlants.ts.
+- The first garden bounds test failed because the generic trunk-depth assertion was more conservative than the actual crown geometry. Loop 031 corrects that check to use the crown extents and still asserts each canopy/shrub lies within the garden footprint.
+
+## Loop 030 — Prevent parallel visual jobs from piling up
+
+- Commit [f973a5d](https://github.com/teyyara/darboussedra/commit/f973a5d31294df8ccb7459a0f31c11be1262738c) adds a workflow concurrency group per pull request and cancels superseded validation runs. A follow-up push cancelled run [39063129512](https://github.com/teyyara/darboussedra/actions/runs/39063129512), demonstrating that later commits no longer need to queue behind every stale browser-capture run.
+
+## Loop 031 — Garden bounds assertion and current checks
+
+- Commit [8b8c44d](https://github.com/teyyara/darboussedra/commit/8b8c44db1ec20e29155275d81c0a4b322ebc50c4) reduces a false-positive generic tree depth bound and leaves the per-crown and per-shrub bounds checks intact.
+- Run [39063164627](https://github.com/teyyara/darboussedra/actions/runs/39063164627) has passed TypeScript, tests, production build and Chromium installation; browser capture is running. No new garden screenshot has been visually reviewed yet.
+- The previous complete capture [39060937008](https://github.com/teyyara/darboussedra/actions/runs/39060937008) passed 10/10 room arrivals, runtime checks and stair camera pitch. Later captures showed the lowered sun/entrance sconces, but one room arrival and some timed stair frames can still miss the capture phase.
+
+## Current acceptance state
+
+- Latest source-check result: pass for the exact source revision 8b8c44db1ec20e29155275d81c0a4b322ebc50c4.
+- Visual acceptance: pending fresh artifact from run 39063164627. The still-open living-room picture crop must be reassessed alongside the new kitchen fixtures and olive-style planting.
+- PR #5 remains open and draft-only. Main stays at 501cc6ccf3e6926504dfcd051ac98147360cd48a. No manual Vercel deployment; no paid dependencies/services/assets.
+
+### Next action
+Inspect run 39063164627's fresh visual artifact when uploaded. Verify the kitchen counter, sink/cooktop, olive trees and shrubs, the entrance sky/sconces, upper landing, room-art framing and 390px mobile layout before claiming final visual acceptance.
