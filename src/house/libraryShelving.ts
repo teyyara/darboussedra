@@ -16,7 +16,7 @@ const BOOK_DEPTH = 0.13;
 const BOOK_ROWS = [
   { y: 0.46, height: 0.31 },
   { y: 0.88, height: 0.32 },
-  { y: 1.265, height: 0.33 },
+  { y: 1.285, height: 0.285 },
 ] as const;
 
 /**
