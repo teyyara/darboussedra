@@ -14,6 +14,7 @@ import { GARDEN_SHRUBS, GARDEN_TREES } from "./gardenPlants";
 import { getGardenPavers } from "./gardenPath";
 import { getExteriorFacadePanels, getInteriorPerimeterWallPanels } from "./perimeterWalls";
 import { ROOF_SEATING_RUG, ROOF_TEA_STOOLS, ROOF_TEA_TABLE } from "./roofTerraceProps";
+import { getRoofDeckTileJoints } from "./roofDeckTiles";
 import { getRoofHatchGuardRails } from "./roofHatchRails";
 import { getCameraFrameDeltas } from "./cameraTiming";
 import { RealisticMaterialPass } from "./realisticMaterials";
@@ -979,6 +980,7 @@ function RoofDeck({ onSelect }: { onSelect: () => void }) {
     { x: 0, z: (-halfDepth + openBack) / 2, w: opening.width, d: openBack + halfDepth },
     { x: 0, z: (openFront + halfDepth) / 2, w: opening.width, d: halfDepth - openFront },
   ];
+  const tileJoints = getRoofDeckTileJoints({ width, depth, opening });
   const y = HOUSE_LAYOUT.roofY - 0.09, parapetHeight = 0.38, parapetY = HOUSE_LAYOUT.roofY + parapetHeight / 2;
   return <group>
     {panels.filter((panel) => panel.w > 0.02 && panel.d > 0.02).map((panel, index) => <mesh key={index}
@@ -987,6 +989,19 @@ function RoofDeck({ onSelect }: { onSelect: () => void }) {
       onPointerOut={() => { setHovered(false); document.body.style.cursor = ""; }}>
       <boxGeometry args={[panel.w, 0.18, panel.d]} />
       <meshStandardMaterial color={hovered ? "#ded0b7" : "#c6b79f"} roughness={0.96} />
+    </mesh>)}
+    {/* Fine grout joints give the broad plaster terrace a readable handmade tile scale.
+        Each run is clipped around the stair hatch and tucked inside the parapet edge. */}
+    {tileJoints.map((joint, index) => <mesh key={"roof-grout-" + index}
+      position={joint.axis === "x"
+        ? [(joint.start + joint.end) / 2, HOUSE_LAYOUT.roofY + 0.004, joint.coordinate]
+        : [joint.coordinate, HOUSE_LAYOUT.roofY + 0.004, (joint.start + joint.end) / 2]}
+      raycast={() => {}}
+      receiveShadow>
+      <boxGeometry args={joint.axis === "x"
+        ? [joint.end - joint.start, 0.004, 0.012]
+        : [0.012, 0.004, joint.end - joint.start]} />
+      <meshStandardMaterial color="#b5a68e" roughness={0.99} />
     </mesh>)}
     <NavigationHotspot position={[1.1, HOUSE_LAYOUT.roofY + 0.025, 0.35]} onSelect={onSelect} />
     {[
