@@ -1,13 +1,13 @@
 # AEOS Status — Dar Boussedra
 
-**State:** LOOP 047 GARDEN AND ROOFTOP FRAMING — SOURCE CHECKS PASSED, BROWSER REVIEW RUNNING  
-**Active keyphrase:** DAR BOUSSEDRA — LOOP 047: FRAME THE GARDEN PATH AND ROOFTOP TEA NOOK  
-**Run ID:** 20261017-darboussedra-aeos-v3-loop047  
-**Loop:** 047 · **Candidate:** dar-boussedra-garden-rooftop-framing-047  
+**State:** LOOP 049 MOVEMENT-PROBE PHASE FIX — SOURCE CHECKS PASSED, BROWSER REVIEW RUNNING  
+**Active keyphrase:** DAR BOUSSEDRA — LOOP 049: VERIFY DESCENT ON THE LOWER STAIR FLIGHT  
+**Run ID:** 20261017-darboussedra-aeos-v3-loop049  
+**Loop:** 049 · **Candidate:** dar-boussedra-stair-descent-phase-049  
 **Repository:** https://github.com/teyyara/darboussedra  
 **Branch:** fix/loop-004-architecture-coherence  
 **Base main:** 501cc6ccf3e6926504dfcd051ac98147360cd48a  
-**Latest source-code checkpoint commit:** fc2ddb1ca808d27ae05bcc38a2f5a507708e2b6d  
+**Latest source-code checkpoint commit:** bf40c6e12f4e16692b69122fccbfc416afd07a39  
 **Last updated:** 2026-10-17
 
 ## Loop 003 outcome
@@ -502,3 +502,25 @@ Retrieve the artifact from run 39070069994 after capture finishes, inspect all r
 
 ### Next action
 Inspect the fresh screenshots from run 39072071748 once the artifact appears. Confirm the garden path and both trees frame correctly, rooftop seating lands in the view without hiding the hatch, and the movement probe produces an ascent, roof-hatch and descent report. PR #5 remains draft-only; main and manual deployment remain untouched.
+
+
+## Loop 048 — Camera-phase rules and bounded follow-up
+
+- Source commit [`f9bfeaf`](https://github.com/teyyara/darboussedra/commit/f9bfeafc13158c620fb8eebe837e76c0e87e4fa3) centralizes camera-phase windows in `scripts/visualReviewPhases.mjs` and adds unit tests for the roof hatch, landing and lower stair phases.
+- The hatch window no longer requires `x > 1` at the same time as roof-zone/y/z predicates; that requirement was unnecessarily restrictive because the camera rises through the hatch near the stair centre.
+- Rooftop arrival now returns an explicit success result. If it fails, the script records a note and skips the descent map click instead of trying to reopen the map while the route is still moving.
+- Run [39072431412](https://github.com/teyyara/darboussedra/actions/runs/39072431412) passed typecheck, tests and production build, then was cancelled by the next push during browser capture. Partial artifact [12115603048](https://github.com/teyyara/darboussedra/actions/runs/39072431412) has only early room views.
+
+## Loop 049 — Give the descent probe enough time
+
+- Source commit [`bf40c6e`](https://github.com/teyyara/darboussedra/commit/bf40c6e12f4e16692b69122fccbfc416afd07a39) lets the lower-stair descent capture wait up to 90 seconds for the actual lower stair flight.
+- The motivation is concrete in the previous movement report [39072071748](https://github.com/teyyara/darboussedra/actions/runs/39072071748): it captured the roof-hatch exit and completed the rooftop transition, but the descent screenshot was at route progress 33/56, camera zone `upper`, elevation 4.65, with pitch `-0.033`. This correctly failed the requirement to look downward on the lower stairs.
+- Run [39072491627](https://github.com/teyyara/darboussedra/actions/runs/39072491627) has passed TypeScript, unit tests, production build and Chromium installation. Its browser capture is running; the updated descent frame/report are not published yet.
+
+## Loop 047 visual follow-up
+
+- Garden and rooftop destination framing from [`fc2ddb1`](https://github.com/teyyara/darboussedra/commit/fc2ddb1ca808d27ae05bcc38a2f5a507708e2b6d) has passed source tests. Its screenshots are still needed to verify centered stepping stones, olive trees clear of the façade, and the tea nook in the rooftop view.
+- The last complete still set visually confirms the exterior/paver entrance, filled library and fitted kitchen. The garden path view was still tree/corner-biased and the roof tea set remained off to the far left; Loop 047 changes those cameras but has not yet been visually accepted.
+
+### Next action
+Inspect run 39072491627's fresh artifact and report. Verify that the garden camera frames the stone path and olive trees, the rooftop camera frames the tea nook without losing hatch context, and the movement report has all of hatch exit plus a real lower-stair descent frame with downward camera pitch. PR #5 remains draft-only; main and manual deployment remain untouched.
