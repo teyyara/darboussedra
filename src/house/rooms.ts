@@ -72,10 +72,10 @@ const roomDefinitions = [
     scenePosition: [4.25, HOUSE_LAYOUT.upperY, -1.75], camera: { position: [3.75, HOUSE_LAYOUT.upperY + 1.65, 0.1], target: [4.7, HOUSE_LAYOUT.upperY + 1.35, -1.9] },
     footprint: [2.3, 4.4], connectedTo: [] },
   { id: "garden", slug: "garden", name: "Garden", kind: "outdoor", level: "outdoor",
-    scenePosition: [0, HOUSE_LAYOUT.groundY, 7.15], camera: { position: [2.6, 1.65, 8.5], target: [0, 1.75, 7.5] },
+    scenePosition: [0, HOUSE_LAYOUT.groundY, 7.15], camera: { position: [1.85, 1.65, 8.7], target: [0, 1.4, 6.5] },
     footprint: [7.4, 5.0], connectedTo: ["entrance"] },
   { id: "rooftop", slug: "rooftop", name: "Rooftop Terrace", kind: "outdoor", level: "roof",
-    scenePosition: [0, HOUSE_LAYOUT.roofY, 0], camera: { position: [3.45, HOUSE_LAYOUT.roofY + 1.65, 0.5], target: [0.55, HOUSE_LAYOUT.roofY, -1.7] },
+    scenePosition: [0, HOUSE_LAYOUT.roofY, 0], camera: { position: [3.45, HOUSE_LAYOUT.roofY + 1.65, 0.5], target: [-2.25, HOUSE_LAYOUT.roofY + 0.6, -0.25] },
     footprint: [10.6, 8.6], connectedTo: [] },
 ] as const satisfies readonly Room[];
 

@@ -14,10 +14,15 @@ describe("3D camera paths", () => {
       if (room.slug === "rooftop") {
         expect(verticalLook, "rooftop looks down across the terrace instead of at the horizon").toBeGreaterThan(1.0);
         expect(verticalLook).toBeLessThan(1.8);
+        expect(room.camera.target[0], "rooftop camera frames the tea nook instead of empty deck").toBeLessThan(-1.5);
+        expect(room.camera.target[2]).toBeGreaterThan(-0.8);
+        expect(room.camera.target[2]).toBeLessThan(0.5);
       } else if (room.slug === "garden") {
         expect(verticalLook, "garden view keeps the ground in frame").toBeLessThan(0.35);
         expect(Math.abs(room.camera.position[0] - room.camera.target[0]), "garden view looks across the garden rather than down the front-door axis").toBeGreaterThan(1.5);
         expect(room.camera.target[2]).toBeGreaterThan(frontZ);
+        expect(Math.abs(room.camera.target[0]), "garden camera keeps the stepping-stone route in frame").toBeLessThan(0.5);
+        expect(room.camera.target[2]).toBeLessThan(room.scenePosition[2]);
       } else if (room.slug === "family-table" || room.slug === "pets-corner") {
         expect(verticalLook, room.slug + " looks down enough to frame its furniture").toBeGreaterThan(0.3);
         expect(verticalLook).toBeLessThan(0.65);
