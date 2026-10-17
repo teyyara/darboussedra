@@ -1,13 +1,13 @@
 # AEOS Status — Dar Boussedra
 
-**State:** LOOP 018 ROOM DETAIL AND LIGHTING — SOURCE CHECKS RUNNING, VISUAL REVIEW PENDING  
-**Active keyphrase:** DAR BOUSSEDRA — LOOP 018: ADD WARM ROOM LIGHTING AND BELIEVABLE CORNICE DETAILS  
+**State:** LOOP 018 ROOM DETAIL AND LIGHTING — JSX REPAIR COMMITTED, VALIDATION RUNNING  
+**Active keyphrase:** DAR BOUSSEDRA — LOOP 018: WARM ROOM LIGHTING, PORTAL-AWARE CORNICES AND CEILING CONTINUITY  
 **Run ID:** 20261017-darboussedra-aeos-v3-loop018  
 **Loop:** 018 · **Candidate:** dar-boussedra-room-detail-lighting-018  
 **Repository:** https://github.com/teyyara/darboussedra  
 **Branch:** fix/loop-004-architecture-coherence  
 **Base main:** 501cc6ccf3e6926504dfcd051ac98147360cd48a  
-**Latest source-code checkpoint commit:** 3aea28fa6798c1fbbac8831bedac66be1afb872a  
+**Latest source-code checkpoint commit:** 0fef44087d026ff2440ec129e9bfb9cb743c596c  
 **Last updated:** 2026-10-17
 
 ## Loop 003 outcome
@@ -322,3 +322,15 @@ Inspect current CI and the newest exterior/upper landing/stair screenshots. Veri
 
 ### Next action
 Review new captures of Family Table, Kitchen, private bedrooms, upper landing/stairs and rooftop. Check that lighting warms the active room without making it orange, cornices respect portal gaps, the continuous ceiling blocks unwanted sky sightlines while the roof hatch remains open, and no room is reduced to a blank wall. Do not call visual acceptance until screenshots are available.
+
+
+## Loop 018 — Room ceiling fixtures and architectural cornices
+
+- Source commit [`3aea28f`](https://github.com/teyyara/darboussedra/commit/3aea28fa6798c1fbbac8831bedac66be1afb872a) adds warm flush ceiling fixtures and a restrained local point light for the selected room; it also adds portal-aware cornice trim around owned wall runs.
+- First validation attempt [39060862214](https://github.com/teyyara/darboussedra/actions/runs/39060862214) caught a JSX closing-brace typo. This is repaired in [`0fef440`](https://github.com/teyyara/darboussedra/commit/0fef44087d026ff2440ec129e9bfb9cb743c596c).
+- The fresh validation run [39060937008](https://github.com/teyyara/darboussedra/actions/runs/39060937008) is running. TypeScript, unit tests, build and browser captures are not yet confirmed for the corrected source.
+- Earlier room transition screenshots exposed a large sky sightline above the upper landing. Loop 017 added a roof-underside ceiling with an open stair hatch; visual verification remains blocked while browser capture jobs stall.
+- No paid services/assets or dependencies added. PR #5 remains draft, no merge to `main`, no manual deployment.
+
+### Next action
+Confirm Loop 018 TypeScript/tests/build pass, then inspect a fresh screenshot artifact for ceiling, cornice, fixture placement, hatch clearance, empty wall views and mobile. If Chromium capture keeps stalling, report that limitation honestly and focus on a reproducible local check rather than claiming a visual pass.
