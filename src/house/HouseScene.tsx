@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { ACESFilmicToneMapping, BackSide, Color, DoubleSide, Float32BufferAttribute, PerspectiveCamera, Quaternion, SphereGeometry, Vector3, type Group } from "three";
 import { makeCameraPath, type CameraPose } from "./cameraPath";
+import { RealisticMaterialPass } from "./realisticMaterials";
 import { getCameraZoneForPosition, getHouseSceneVisibility, type CameraZone } from "./sceneVisibility";
 import {
   EXTERIOR_CAMERA, HOUSE_LAYOUT, getFrontDoorAction, getRoomBySlug, getRoomPortalOpenings, getRoomWallRuns, roomOwnsPortalFrame, rooms,
@@ -70,11 +71,11 @@ function SkyEnvironment() {
         depthTest={false} depthWrite={false} />
     </mesh>
     {/* Distant sun and cloud forms still use depth testing: nearby roofs and walls must occlude them. */}
-    <mesh position={[-28, 12, -60]} renderOrder={-998} frustumCulled={false}>
+    <mesh position={[-28, 20, -60]} renderOrder={-998} frustumCulled={false}>
       <sphereGeometry args={[2.15, 32, 24]} />
       <meshBasicMaterial color="#fff4d2" toneMapped={false} depthTest={true} depthWrite={false} />
     </mesh>
-    <mesh position={[-28, 12, -60]} renderOrder={-999} frustumCulled={false}>
+    <mesh position={[-28, 20, -60]} renderOrder={-999} frustumCulled={false}>
       <sphereGeometry args={[4.5, 32, 24]} />
       <meshBasicMaterial color="#ffe0a1" transparent opacity={0.18} toneMapped={false}
         depthTest={true} depthWrite={false} />
@@ -909,7 +910,7 @@ export function HouseScene({ location, settledLocation, reducedMotion, onArrive,
   const visualTransition = transitioning || settledLocation !== location;
   const sceneFov = location === "exterior" || location === "map" ? 58 : 66;
   return <Canvas camera={{ position: EXTERIOR_CAMERA.position, fov: sceneFov, near: 0.1, far: 120 }}
-    gl={{ antialias: true }} dpr={reducedMotion ? 1 : ([1, 1.4] as [number, number])}
+    gl={{ antialias: true, powerPreference: "high-performance" }} dpr={reducedMotion ? 1 : ([1, 1.6] as [number, number])}
     frameloop="demand" shadows
     onCreated={({ gl, scene }) => {
       // Set the clear color explicitly as a final safety net: even if any architecture
@@ -921,8 +922,9 @@ export function HouseScene({ location, settledLocation, reducedMotion, onArrive,
     }}>
     <color attach="background" args={["#8fc9ed"]} /><fog attach="fog" args={["#e8dfcf", 28, 76]} />
     <SkyEnvironment />
-    <ambientLight intensity={0.58} /><hemisphereLight args={["#fff2db", "#8c9479", 0.82]} />
-    <directionalLight position={[8, 15, 9]} intensity={2.15} castShadow
+    <RealisticMaterialPass revision={`${location}:${settledLocation}:${transitioning}:${cameraZone}`} />
+    <ambientLight intensity={0.42} /><hemisphereLight args={["#fff2db", "#7e866e", 0.58]} />
+    <directionalLight color="#fff0d9" position={[8, 15, 9]} intensity={2.35} castShadow
       shadow-mapSize-width={2048} shadow-mapSize-height={2048}
       shadow-camera-left={-14} shadow-camera-right={14} shadow-camera-top={14} shadow-camera-bottom={-14}
       shadow-camera-near={0.1} shadow-camera-far={48}
