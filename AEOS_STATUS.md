@@ -1,13 +1,13 @@
 # AEOS Status — Dar Boussedra
 
-**State:** LOOP 031 GARDEN PLANTING AND VALIDATION CONCURRENCY — SOURCE CHECKS PASSED, BROWSER REVIEW RUNNING  
-**Active keyphrase:** DAR BOUSSEDRA — LOOP 031: GARDEN PLANTING BOUNDS AND PR VALIDATION  
-**Run ID:** 20261017-darboussedra-aeos-v3-loop031  
-**Loop:** 031 · **Candidate:** dar-boussedra-garden-planting-031  
+**State:** LOOP 033 STAIR-HATCH TRIM — COMMITTED, LATEST VALIDATION QUEUED, VISUAL REVIEW PENDING  
+**Active keyphrase:** DAR BOUSSEDRA — LOOP 033: FINISH THE ROOF STAIR-HATCH REVEAL  
+**Run ID:** 20261017-darboussedra-aeos-v3-loop033  
+**Loop:** 033 · **Candidate:** dar-boussedra-stair-hatch-trim-033  
 **Repository:** https://github.com/teyyara/darboussedra  
 **Branch:** fix/loop-004-architecture-coherence  
 **Base main:** 501cc6ccf3e6926504dfcd051ac98147360cd48a  
-**Latest source-code checkpoint commit:** 8b8c44db1ec20e29155275d81c0a4b322ebc50c4  
+**Latest source-code checkpoint commit:** a53100dfd7c21439bcd7c5598e8349b8d28eb3d1  
 **Last updated:** 2026-10-17
 
 ## Loop 003 outcome
@@ -421,3 +421,20 @@ Confirm run 39062350399. Retrieve fresh visual-review screenshots and re-check t
 
 ### Next action
 Inspect run 39063164627's fresh visual artifact when uploaded. Verify the kitchen counter, sink/cooktop, olive trees and shrubs, the entrance sky/sconces, upper landing, room-art framing and 390px mobile layout before claiming final visual acceptance.
+
+
+## Loop 032 — Living-room artwork sizing
+
+- Source commit [9a71e80](https://github.com/teyyara/darboussedra/commit/9a71e8064a47c6d84e1b93f8b0f325a48c64941e) caps the living-room wall accent at 0.62 m instead of 0.88 m after the actual screenshot showed the frame cropped at the left side of the first-person view. A regression test protects that size ceiling.
+- Latest visual confirmation is pending; the old screenshot is evidence for the issue, not proof that the smaller piece is now correctly framed.
+
+## Loop 033 — Finished roof stair-hatch reveal
+
+- Source commit [a53100d](https://github.com/teyyara/darboussedra/commit/a53100dfd7c21439bcd7c5598e8349b8d28eb3d1) adds a restrained timber reveal around the roof stair hatch. Its strips sit entirely on the solid ceiling side so the intended stair opening and head clearance remain unchanged.
+- Added a regression test to assert all four trim strips avoid overlapping the open hatch area.
+- Run [39063511034](https://github.com/teyyara/darboussedra/actions/runs/39063511034) is queued for this exact source commit. The earlier run [39063399389](https://github.com/teyyara/darboussedra/actions/runs/39063399389) for Loop 032 is still at browser capture; no current artifact is published for either commit.
+
+### Current acceptance state
+- Latest source checks are pending for Loop 032/033. Loop 031's typecheck/tests/build passed before that later source change, but its browser capture was cancelled by a newer push without publishing an artifact.
+- Do not claim the living-room crop or stair-hatch framing fixed until fresh screenshots from the newest source are inspected.
+- PR #5 remains open and draft-only. Main is unchanged; no manual deployment or paid assets/services/dependencies.
