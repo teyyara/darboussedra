@@ -6,6 +6,7 @@ import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.j
 import { getPropCornerRadius } from "./roundedProps";
 import { getInteriorRoofCeilingPanels } from "./interiorCeiling";
 import { getRoomCeilingBottomLocal } from "./roomDetails";
+import { getRoomWallDecor } from "./wallDecor";
 import { RealisticMaterialPass } from "./realisticMaterials";
 import { getCameraZoneForPosition, getHouseSceneVisibility, type CameraZone } from "./sceneVisibility";
 import {
@@ -628,6 +629,37 @@ function RoomCeilingFixture({ room, active }: { room: Room; active: boolean }) {
   </group>;
 }
 
+function RoomWallArtwork({ room }: { room: Room }) {
+  const artworks = useMemo(() => getRoomWallDecor(room), [room]);
+  return <group>
+    {artworks.map((art) => <group key={art.key} position={art.position} rotation={[0, art.rotationY, 0]}>
+      <mesh position={[0, 0, 0]} castShadow receiveShadow>
+        <boxGeometry args={[art.width, art.height, 0.055]} />
+        <meshStandardMaterial color={art.frameColor} roughness={0.78} />
+      </mesh>
+      <mesh position={[0, 0, 0.031]}>
+        <boxGeometry args={[art.width - 0.085, art.height - 0.085, 0.014]} />
+        <meshStandardMaterial color={art.fieldColor} roughness={0.92} />
+      </mesh>
+      <mesh position={[0, 0, 0.051]} scale={[art.width * 0.2, art.height * 0.27, 0.014]}>
+        <octahedronGeometry args={[1, 0]} />
+        <meshStandardMaterial color={art.accentColor} roughness={0.62} metalness={0.08} />
+      </mesh>
+      {[-1, 1].map((side) => <mesh key={side}
+        position={[side * art.width * 0.28, 0, 0.051]}>
+        <boxGeometry args={[0.025, art.height * 0.5, 0.009]} />
+        <meshStandardMaterial color={art.frameColor} roughness={0.76} />
+      </mesh>)}
+      {[-1, 1].map((side) => <mesh key={"rosette-" + side}
+        position={[0, side * art.height * 0.29, 0.052]}
+        scale={[art.width * 0.055, art.width * 0.055, 0.009]}>
+        <octahedronGeometry args={[1, 0]} />
+        <meshStandardMaterial color={art.frameColor} roughness={0.66} />
+      </mesh>)}
+    </group>)}
+  </group>;
+}
+
 function RoomArea({ room, active, onSelect, shellOnly = false }: { room: Room; active?: Room; onSelect: (slug: RoomSlug) => void; shellOnly?: boolean }) {
   const [x, y, z] = room.scenePosition, [width, depth] = room.footprint;
   const [hovered, setHovered] = useState(false);
@@ -705,6 +737,9 @@ function RoomArea({ room, active, onSelect, shellOnly = false }: { room: Room; a
     {cornices.map((board) => <mesh key={board.key} position={board.position} castShadow receiveShadow>
       <boxGeometry args={board.size} /><meshStandardMaterial color="#d7c4a7" roughness={0.88} />
     </mesh>)}
+
+    {/* Framed geometric accents give bare plaster a lived-in, locally grounded detail. */}
+    {!shellOnly && <RoomWallArtwork room={room} />}
 
     {!shellOnly && <RoomCeilingFixture room={room} active={selected} />}
     {!shellOnly && <RoomFurnishings room={room} />}
