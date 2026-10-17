@@ -4,6 +4,7 @@ import { ACESFilmicToneMapping, BackSide, Color, DoubleSide, Float32BufferAttrib
 import { makeCameraPath, type CameraPose } from "./cameraPath";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 import { getPropCornerRadius } from "./roundedProps";
+import { getInteriorRoofCeilingPanels } from "./interiorCeiling";
 import { RealisticMaterialPass } from "./realisticMaterials";
 import { getCameraZoneForPosition, getHouseSceneVisibility, type CameraZone } from "./sceneVisibility";
 import {
@@ -651,10 +652,10 @@ function RoomArea({ room, active, onSelect, shellOnly = false }: { room: Room; a
     </mesh>
     {!selected && !shellOnly && <NavigationHotspot position={[hintX, HOUSE_LAYOUT.floorThickness + 0.025, hintZ]}
       onSelect={() => onSelect(room.slug as RoomSlug)} />}
-    <mesh position={[0, HOUSE_LAYOUT.floorThickness + HOUSE_LAYOUT.roomWallHeight - 0.04, 0]} receiveShadow>
+    {room.level !== "upper" && <mesh position={[0, HOUSE_LAYOUT.floorThickness + HOUSE_LAYOUT.roomWallHeight - 0.04, 0]} receiveShadow>
       <boxGeometry args={[Math.max(0.2, width - 0.05), 0.08, Math.max(0.2, depth - 0.05)]} />
       <meshStandardMaterial color={room.kind === "spiritual" ? "#ede9dc" : "#f2e9dc"} roughness={0.98} />
-    </mesh>
+    </mesh>}
     {walls.map((wall) => <mesh key={wall.key} position={wall.position} castShadow receiveShadow>
       <boxGeometry args={wall.size} /><meshStandardMaterial color={wallColor} roughness={0.97} />
     </mesh>)}
@@ -834,6 +835,15 @@ function HouseArchitecture({ location, visualLocation, transitioning, exteriorSh
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.205, 0]} receiveShadow>
       <planeGeometry args={[220, 220]} /><meshStandardMaterial color="#d6d5c0" roughness={1} />
     </mesh>
+    {/* Continuous underside over the upper circulation. The real stair hatch remains open,
+        but interior walks no longer look through the house into the exterior sky. */}
+    {cameraZone !== "outside" && cameraZone !== "roof" && getInteriorRoofCeilingPanels().map((panel, index) =>
+      <mesh key={"interior-roof-ceiling-" + index}
+        position={[panel.x, HOUSE_LAYOUT.roofY - 0.09, panel.z]} receiveShadow>
+        <boxGeometry args={[panel.width, 0.18, panel.depth]} />
+        <meshStandardMaterial color="#e4d7c3" roughness={0.98} />
+      </mesh>
+    )}
     {visibility.showExteriorShell && <ExteriorShell location={location} onDoorActivate={onDoorActivate} reducedMotion={reducedMotion} />}
     {!visibility.showExteriorShell && cameraZone !== "outside" && cameraZone !== "roof" && (
       <mesh position={[0, HOUSE_LAYOUT.exterior.wallHeight / 2, -HOUSE_LAYOUT.exterior.depth / 2]} castShadow receiveShadow>
