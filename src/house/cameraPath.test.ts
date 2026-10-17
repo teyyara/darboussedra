@@ -257,4 +257,29 @@ describe("3D camera paths", () => {
         HOUSE_LAYOUT.upperBridge.width / 2)).toBe(true);
   });
 
+  it("keeps intermediate camera headings aligned with travel through outdoor and multi-storey turns", () => {
+    for (const [from, to] of [
+      ["zineb-room", "garden"],
+      ["garden", "rooftop"],
+      ["rooftop", "prayer-room"],
+    ] as const) {
+      const source = from === "exterior" ? EXTERIOR_CAMERA : poseFor(from);
+      const path = makeCameraPath(from, to, poseFor(to));
+      const positions = [source.position, ...path.map((pose) => pose.position)];
+      for (let index = 0; index < path.length - 1; index += 1) {
+        const previous = positions[index];
+        const next = positions[index + 2];
+        const dx = next[0] - previous[0];
+        const dz = next[2] - previous[2];
+        const directionLength = Math.hypot(dx, dz);
+        if (directionLength < 0.08) continue;
+        const headingX = path[index].target[0] - path[index].position[0];
+        const headingZ = path[index].target[2] - path[index].position[2];
+        const headingLength = Math.hypot(headingX, headingZ);
+        const alignment = (dx * headingX + dz * headingZ) / (directionLength * headingLength);
+        expect(alignment, from + " → " + to + " waypoint " + index).toBeGreaterThan(0.98);
+      }
+    }
+  });
+
 });

@@ -18,6 +18,8 @@ function poseRotation(pose: CameraPose): Quaternion {
 }
 
 const WALK_SPEED = 1.35;
+const WALK_ACCELERATION = 3.6;
+const WALK_DECELERATION = 3.2;
 const TURN_RESPONSE = 7.2;
 
 function poseFor(location: HouseLocation): CameraPose {
@@ -42,6 +44,7 @@ function CameraRig({ location, reducedMotion, onArrive, onTransitionChange, onEx
   const lastLocation = useRef<HouseLocation>("exterior");
   const path = useRef<AnimatedPose[]>([]);
   const index = useRef(0);
+  const currentWalkSpeed = useRef(0);
   const completedLocation = useRef<HouseLocation | undefined>(undefined);
   const doorTransition = useRef<"entering" | "exiting" | null>(null);
   const doorThresholdCrossed = useRef(false);
@@ -61,6 +64,7 @@ function CameraRig({ location, reducedMotion, onArrive, onTransitionChange, onEx
       ? true
       : doorTransition.current === "exiting" ? false : undefined);
     if (reducedMotion || from === location) {
+      currentWalkSpeed.current = 0;
       camera.position.copy(desired.position);
       camera.quaternion.copy(desired.rotation);
       camera.updateProjectionMatrix();
@@ -73,6 +77,7 @@ function CameraRig({ location, reducedMotion, onArrive, onTransitionChange, onEx
       onTransitionChange(false);
       onArrive(location);
     } else {
+      currentWalkSpeed.current = 0;
       path.current = makeCameraPath(from, location, pose).map((item) => ({
         position: new Vector3(...item.position),
         rotation: poseRotation(item),
@@ -85,7 +90,18 @@ function CameraRig({ location, reducedMotion, onArrive, onTransitionChange, onEx
 
   useFrame((_state, delta) => {
     const frameDelta = Math.min(delta, 0.2);
-    let travelRemaining = WALK_SPEED * frameDelta;
+    const distanceToTarget = camera.position.distanceTo(desired.position);
+    let remainingPathDistance = distanceToTarget;
+    for (let waypointIndex = index.current; waypointIndex < path.current.length; waypointIndex += 1) {
+      const segmentStart = waypointIndex === index.current ? camera.position : path.current[waypointIndex - 1].position;
+      remainingPathDistance += segmentStart.distanceTo(path.current[waypointIndex].position);
+    }
+    const targetSpeed = Math.min(WALK_SPEED, Math.sqrt(2 * WALK_DECELERATION * remainingPathDistance));
+    const speedChange = (targetSpeed - currentWalkSpeed.current) *
+      (targetSpeed < currentWalkSpeed.current ? WALK_DECELERATION : WALK_ACCELERATION);
+    currentWalkSpeed.current += Math.max(-WALK_DECELERATION * frameDelta,
+      Math.min(WALK_ACCELERATION * frameDelta, speedChange * frameDelta));
+    let travelRemaining = currentWalkSpeed.current * frameDelta;
     let waypoint = path.current[index.current];
 
     // Carry unused frame distance across waypoint boundaries. The 0.2s cap preserves
@@ -139,6 +155,7 @@ function CameraRig({ location, reducedMotion, onArrive, onTransitionChange, onEx
     if (stillMoving) invalidate();
     else if (completedLocation.current !== location) {
       completedLocation.current = location;
+      currentWalkSpeed.current = 0;
       doorTransition.current = null;
       onExteriorShellVisibilityChange(undefined);
       onTransitionChange(false);

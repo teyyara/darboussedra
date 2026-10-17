@@ -1,5 +1,5 @@
 import {
-  HOUSE_LAYOUT, getRoomBySlug, getRoomPortalOpenings, rooms,
+  EXTERIOR_CAMERA, HOUSE_LAYOUT, getRoomBySlug, getRoomPortalOpenings, rooms,
   type HouseLocation, type Room, type RoomPortalOpening, type Vector3Tuple,
 } from "./rooms";
 
@@ -255,5 +255,21 @@ export function makeCameraPath(from: HouseLocation, to: HouseLocation, finalPose
   if (start === destination) return [finalPose];
   const route = shortestRoute(buildRouteGraph(), start, destination);
   if (!route) return [finalPose];
-  return [...route.flatMap((edge) => edge.waypoints), finalPose];
+
+  const sourcePose = start === "exterior" ? EXTERIOR_CAMERA : getRoomBySlug(start)?.camera ?? EXTERIOR_CAMERA;
+  const poses = [...route.flatMap((edge) => edge.waypoints), finalPose];
+  // Aim intermediate waypoints along the actual path tangent, not stale per-node
+  // lookAt targets. This stops camera turns from facing directly into a wall at
+  // doorways and landings, while preserving the destination's authored composition.
+  const positions = [sourcePose.position, ...poses.map((pose) => pose.position)];
+  return poses.map((pose, index) => {
+    if (index === poses.length - 1) return finalPose;
+    const previous = positions[index];
+    const next = positions[index + 2];
+    const dx = next[0] - previous[0];
+    const dz = next[2] - previous[2];
+    const length = Math.hypot(dx, dz);
+    if (length < 0.08) return pose;
+    return poseFacing(pose.position, [dx / length, dz / length]);
+  });
 }
