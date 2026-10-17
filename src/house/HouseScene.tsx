@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { ACESFilmicToneMapping, DoubleSide, PerspectiveCamera, Quaternion, Vector3, type Group } from "three";
+import { ACESFilmicToneMapping, BackSide, Color, DoubleSide, Float32BufferAttribute, PerspectiveCamera, Quaternion, SphereGeometry, Vector3, type Group } from "three";
 import { makeCameraPath, type CameraPose } from "./cameraPath";
 import { getCameraZoneForPosition, getHouseSceneVisibility, type CameraZone } from "./sceneVisibility";
 import {
@@ -25,6 +25,50 @@ const TURN_RESPONSE = 7.2;
 function poseFor(location: HouseLocation): CameraPose {
   if (location === "exterior" || location === "map") return EXTERIOR_CAMERA;
   return getRoomBySlug(location)?.camera ?? EXTERIOR_CAMERA;
+}
+
+/** Infinite-feeling stylized daylight backdrop so openings never reveal an empty canvas. */
+function SkyEnvironment() {
+  const geometry = useMemo(() => {
+    const radius = 100;
+    const sphere = new SphereGeometry(radius, 64, 40);
+    const positions = sphere.getAttribute("position");
+    const colors = new Float32Array(positions.count * 3);
+    const low = new Color("#cbd8d5");
+    const horizon = new Color("#f1dfc2");
+    const paleBlue = new Color("#b7d9ed");
+    const zenith = new Color("#68afe2");
+    const value = (n: number) => {
+      const t = Math.max(0, Math.min(1, n));
+      return t * t * (3 - 2 * t);
+    };
+    const mixed = new Color();
+    for (let i = 0; i < positions.count; i += 1) {
+      const height = positions.getY(i) / radius;
+      if (height < 0) mixed.copy(low).lerp(horizon, value((height + 0.18) / 0.2));
+      else if (height < 0.42) mixed.copy(horizon).lerp(paleBlue, value(height / 0.42));
+      else mixed.copy(paleBlue).lerp(zenith, value((height - 0.42) / 0.58));
+      colors[i * 3] = mixed.r;
+      colors[i * 3 + 1] = mixed.g;
+      colors[i * 3 + 2] = mixed.b;
+    }
+    sphere.setAttribute("color", new Float32BufferAttribute(colors, 3));
+    return sphere;
+  }, []);
+
+  return <group>
+    <mesh geometry={geometry} renderOrder={-100}>
+      <meshBasicMaterial vertexColors side={BackSide} fog={false} depthWrite={false} />
+    </mesh>
+    <mesh position={[-27.3, 13.4, -36.3]} renderOrder={-90}>
+      <sphereGeometry args={[1.7, 32, 24]} />
+      <meshBasicMaterial color="#fff3c9" toneMapped={false} />
+    </mesh>
+    <mesh position={[-27.3, 13.4, -36.3]} renderOrder={-91}>
+      <sphereGeometry args={[3.8, 32, 24]} />
+      <meshBasicMaterial color="#ffe2a5" transparent opacity={0.18} toneMapped={false} depthWrite={false} />
+    </mesh>
+  </group>;
 }
 
 function CameraRig({ location, reducedMotion, onArrive, onTransitionChange, onExteriorShellVisibilityChange, onCameraZoneChange }: {
@@ -745,7 +789,7 @@ function HouseArchitecture({ location, visualLocation, transitioning, exteriorSh
   const upperStairLandingZ = HOUSE_LAYOUT.stairs.groundFlight.to[2] + 0.18;
   return <>
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.205, 0]} receiveShadow>
-      <planeGeometry args={[48, 48]} /><meshStandardMaterial color="#d6d5c0" roughness={1} />
+      <planeGeometry args={[220, 220]} /><meshStandardMaterial color="#d6d5c0" roughness={1} />
     </mesh>
     {visibility.showExteriorShell && <ExteriorShell location={location} onDoorActivate={onDoorActivate} reducedMotion={reducedMotion} />}
     {!visibility.showExteriorShell && cameraZone !== "outside" && cameraZone !== "roof" && (
@@ -833,7 +877,8 @@ export function HouseScene({ location, settledLocation, reducedMotion, onArrive,
       gl.toneMapping = ACESFilmicToneMapping;
       gl.toneMappingExposure = 1;
     }}>
-    <color attach="background" args={["#eee7da"]} /><fog attach="fog" args={["#eee7da", 24, 58]} />
+    <color attach="background" args={["#b7d9ed"]} /><fog attach="fog" args={["#e8dfcf", 28, 76]} />
+    <SkyEnvironment />
     <ambientLight intensity={0.58} /><hemisphereLight args={["#fff2db", "#8c9479", 0.82]} />
     <directionalLight position={[8, 15, 9]} intensity={2.15} castShadow
       shadow-mapSize-width={2048} shadow-mapSize-height={2048}

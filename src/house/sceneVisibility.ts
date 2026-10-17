@@ -81,12 +81,19 @@ export function getHouseSceneVisibility(
       settledLocation === "rooftop" || location === "rooftop";
     const showGarden = cameraZone === "outside" &&
       (location === "garden" || location === "exterior" || settledLocation === "garden" || settledLocation === "exterior");
+    // Keep both levels' wall shells alive while the camera walks between floors.
+    // Crossing a height threshold must not make the previous level disappear mid-step.
+    const crossesUpperLevel = movingBetweenStoreys ||
+      (crossingHouseBoundary && (usesUpperStorey(sourceLevel) || usesUpperStorey(destinationLevel)));
+    const keepBothStoreys = crossesUpperLevel && (cameraZone === "ground" || cameraZone === "upper");
     return {
       showExteriorShell,
-      showGroundRooms: cameraZone === "ground",
-      showUpperRooms: cameraZone === "upper",
+      showGroundRooms: cameraZone === "ground" || keepBothStoreys,
+      showUpperRooms: cameraZone === "upper" || keepBothStoreys,
       showUpperCirculation: inside &&
-        (cameraZone === "upper" || (cameraZone === "ground" && routeUsesLowerStairs)),
+        (cameraZone === "upper" ||
+          (cameraZone === "ground" && routeUsesLowerStairs) ||
+          (cameraZone === "roof" && routeUsesRoofStairs && transitioning)),
       showGroundStairs: inside && (cameraZone === "ground" || cameraZone === "upper") && routeUsesLowerStairs,
       showRoofStairs: inside && routeUsesRoofStairs && (cameraZone === "upper" || cameraZone === "roof"),
       showGarden,
