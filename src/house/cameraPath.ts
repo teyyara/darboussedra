@@ -8,6 +8,8 @@ export interface CameraPose {
   readonly target: Vector3Tuple;
   /** Preserve an authored viewing direction where a tight landing needs a deliberate glance into the hall. */
   readonly preserveHeading?: boolean;
+  /** Keep an intentionally authored target when the route tangent would point at a wall or the horizon. */
+  readonly preserveTarget?: boolean;
 }
 
 type NavigationNode = string;
@@ -38,6 +40,21 @@ function poseFacing(
   };
 }
 
+function poseFacingDown(
+  position: Vector3Tuple,
+  direction: readonly [number, number],
+  downwardAim = 0.7,
+): CameraPose {
+  const pose = poseFacing(position, direction);
+  return {
+    ...pose,
+    // Point below the horizon so the first step onto the roof includes the deck
+    // and hatch guardrails instead of a mostly empty sky frame.
+    target: [pose.target[0], position[1] - downwardAim, pose.target[2]],
+    preserveTarget: true,
+  };
+}
+
 function reverseRoute(path: readonly CameraPose[]): CameraPose[] {
   return [...path].reverse().map((pose) => ({
     position: pose.position,
@@ -52,8 +69,11 @@ function reverseRoute(path: readonly CameraPose[]): CameraPose[] {
           HOUSE_LAYOUT.upperY + 0.8,
           HOUSE_LAYOUT.upperBridge.centerZ,
         ]
-      : [2 * pose.position[0] - pose.target[0], pose.position[1] - 0.04, 2 * pose.position[2] - pose.target[2]],
+      : pose.preserveTarget
+        ? pose.target
+        : [2 * pose.position[0] - pose.target[0], pose.position[1] - 0.04, 2 * pose.position[2] - pose.target[2]],
     ...(pose.preserveHeading ? { preserveHeading: true } : {}),
+    ...(pose.preserveTarget ? { preserveTarget: true } : {}),
   }));
 }
 
@@ -137,9 +157,9 @@ function roofStairWalkway(): CameraPose[] {
     // Step sideways past the hatch edge onto solid deck, then turn into the
     // open terrace. Moving toward the rear parapet first made the camera stare
     // at a blank wall while its feet were still clearing the opening.
-    poseFacing([openingRightEdge + 0.16, roofEye, flight.to[2] + 0.05], [1, 0]),
-    poseFacing([1.45, roofEye, flight.to[2] + 0.48], [0.7, 0.7]),
-    poseFacing([1.65, roofEye, -1.55], [0, 1]),
+    poseFacingDown([openingRightEdge + 0.16, roofEye, flight.to[2] + 0.05], [1, 0]),
+    poseFacingDown([1.45, roofEye, flight.to[2] + 0.48], [0.7, 0.7]),
+    poseFacingDown([1.65, roofEye, -1.55], [0, 1]),
     poseFacing([1.85, roofEye, -0.55], [0.3, 1]),
     poseFacing([1.9, roofEye, 0.1], [0.7, 0.7]),
     poseFacing([0, roofEye, 0.6], [0, 1]),
@@ -292,7 +312,7 @@ export function makeCameraPath(from: HouseLocation, to: HouseLocation, finalPose
   const positions = [sourcePose.position, ...poses.map((pose) => pose.position)];
   return poses.map((pose, index) => {
     if (index === poses.length - 1) return finalPose;
-    if (pose.preserveHeading) return pose;
+    if (pose.preserveHeading || pose.preserveTarget) return pose;
     const previous = positions[index];
     const next = positions[index + 2];
     const dx = next[0] - previous[0];

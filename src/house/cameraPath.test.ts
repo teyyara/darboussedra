@@ -146,6 +146,22 @@ describe("3D camera paths", () => {
     expect(Math.max(...path.map((pose) => pose.position[1]))).toBeLessThanOrEqual(HOUSE_LAYOUT.roofY + 1.7);
   });
 
+  it("looks down to the roof deck immediately after clearing the hatch", () => {
+    const path = makeCameraPath("family-table", "rooftop", poseFor("rooftop"));
+    const opening = HOUSE_LAYOUT.stairs.roofOpening;
+    const roofEye = HOUSE_LAYOUT.roofY + 1.65;
+    const clearDeckViews = path.filter((pose) =>
+      pose.preserveTarget &&
+      Math.abs(pose.position[1] - roofEye) < 0.02 &&
+      pose.position[0] > opening.centerX + opening.width / 2 &&
+      pose.position[2] > -2.8 && pose.position[2] < -1.0);
+
+    expect(clearDeckViews.length).toBeGreaterThanOrEqual(3);
+    expect(clearDeckViews.every((pose) => pose.target[1] < pose.position[1] - 0.6)).toBe(true);
+    expect(clearDeckViews.every((pose) =>
+      pose.target[0] !== pose.position[0] || pose.target[2] !== pose.position[2])).toBe(true);
+  });
+
   it("descends from the roof and reaches ground rooms by the stair and doorway route", () => {
     const path = makeCameraPath("rooftop", "prayer-room", poseFor("prayer-room"));
     expect(path.some((pose) => pose.position[1] > HOUSE_LAYOUT.roofY + 1.2)).toBe(true);
