@@ -1,13 +1,13 @@
 # AEOS Status — Dar Boussedra
 
-**State:** LOOP 014 SUN VISIBILITY — WALL OCCLUSION VISUALLY CONFIRMED, EXTERIOR SUN POSITION REVIEW PENDING  
-**Active keyphrase:** DAR BOUSSEDRA — LOOP 014: MAKE THE SUN CLEARLY VISIBLE ABOVE THE EXTERIOR ROOFLINE  
-**Run ID:** 20261017-darboussedra-aeos-v3-loop014  
-**Loop:** 014 · **Candidate:** dar-boussedra-sun-framing-014  
+**State:** LOOP 015 PROCEDURAL MATERIAL REALISM — SOURCE CHECKS PASS, BROWSER VISUAL REVIEW IN PROGRESS  
+**Active keyphrase:** DAR BOUSSEDRA — LOOP 015: PROCEDURAL PBR MATERIALS AND NATURAL DAYLIGHT  
+**Run ID:** 20261017-darboussedra-aeos-v3-loop015  
+**Loop:** 015 · **Candidate:** dar-boussedra-procedural-pbr-015  
 **Repository:** https://github.com/teyyara/darboussedra  
 **Branch:** fix/loop-004-architecture-coherence  
 **Base main:** 501cc6ccf3e6926504dfcd051ac98147360cd48a  
-**Latest source-code checkpoint commit:** b14c7a3abf5168d210f65462a569d97092f04a2e  
+**Latest source-code checkpoint commit:** 9722fee072544d9013e2fa6dff5ddf794f11304e  
 **Last updated:** 2026-10-17
 
 ## Loop 003 outcome
@@ -260,3 +260,27 @@ Review the sun framing after Loop 014 moves the disk/halo sideways relative to t
 
 Inspect `01-exterior-desktop.png`, `08-exterior-mobile.png`, `14-upper-landing-turn.png`, and `15a-upper-landing-to-stair.png` from run 39058615280. The sun should be clearly visible in open sky and still be hidden naturally by nearby walls.
 
+
+
+## Loop 015 — Procedural PBR material realism
+
+**Source checkpoint:** [`9722fee`](https://github.com/teyyara/darboussedra/commit/9722fee072544d9013e2fa6dff5ddf794f11304e)  
+**Validation run:** [39059712137](https://github.com/teyyara/darboussedra/actions/runs/39059712137) — TypeScript, tests, and production build passed; Chromium walkthrough capture is still running.
+
+### Changes
+- Added browser-generated, deterministic albedo and bump textures for plaster, wood, stone and fabric; no downloaded/paid textures or runtime services.
+- Added an equirectangular procedural sky reflection for physically based surfaces.
+- Changed the facade panes from emissive mustard-coloured blocks to tinted physical glass with clearcoat and environment reflections.
+- Raised the sky sun and reduced the landing-page wash to preserve outdoor colour.
+- Tuned daylight balance and enabled a higher rendering pixel-ratio ceiling on capable devices.
+- Added six tests that check material selection, and ensure glossy glazing, greenery and the environment ground plane are left unchanged.
+
+### Acceptance state
+- Source checks: **PASS**.
+- Browser screenshot capture: **IN PROGRESS** at checkpoint time.
+- Visual quality, mobile appearance and rendered material assignment: **NOT YET ACCEPTED** until the latest artifact is available and inspected.
+- Dependencies added: **0**. No paid service/API/assets introduced.
+- PR #5 remains open and draft. No merge to `main` or manual Vercel deployment.
+
+### Next action
+Inspect the new exterior and representative room, landing/stair, rooftop and mobile screenshots. Check for visible plaster/wood texture scale, glass reflections, a clear sun above the roofline, wall occlusion, any bright or blank voids, runtime errors and mobile performance. If any material category looks wrong, correct the classifier before treating this realism pass as accepted.

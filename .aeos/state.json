@@ -1,16 +1,16 @@
 {
   "schema_version": "1.0",
-  "run_id": "20261017-darboussedra-aeos-v3-loop014",
-  "keyphrase": "DAR BOUSSEDRA — LOOP 014: make the sun clearly visible above the exterior roofline",
+  "run_id": "20261017-darboussedra-aeos-v3-loop015",
+  "keyphrase": "DAR BOUSSEDRA — LOOP 015: procedural PBR materials and natural daylight",
   "rulebook_version": "AEOS v3",
   "repository": "teyyara/darboussedra",
   "branch": "fix/loop-004-architecture-coherence",
-  "loop": 14,
-  "candidate": "dar-boussedra-sun-framing-014",
-  "state": "WAITING_FOR_CONTINUE",
-  "status": "LOOP013_VISUAL_REVIEW_PASS_WITH_SUN_VISIBILITY_FOLLOWUP_LOOP014_SOURCE_COMMITTED_CI_QUEUED_PR5_DRAFT_NO_MERGE",
+  "loop": 15,
+  "candidate": "dar-boussedra-procedural-pbr-015",
+  "state": "WAITING_FOR_VISUAL_REVIEW",
+  "status": "LOOP015_SOURCE_CHECKS_PASS_BROWSER_CAPTURE_IN_PROGRESS_PR5_DRAFT_NO_MERGE",
   "latest_known_good_commit": "d237375a364f25b0e30dade08f9b02790396b966",
-  "latest_source_checkpoint_commit": "b14c7a3abf5168d210f65462a569d97092f04a2e",
+  "latest_source_checkpoint_commit": "9722fee072544d9013e2fa6dff5ddf794f11304e",
   "pull_request": "https://github.com/teyyara/darboussedra/pull/5",
   "validation": {
     "loop013_browser_review": {
@@ -43,14 +43,29 @@
       "change": "Move sun disk and halo to [-28, 12, -60]; preserve depth testing for sky decorations."
     },
     "current_browser_review": {
-      "result": "QUEUED",
-      "workflow_run": 39058615280,
+      "result": "IN_PROGRESS",
+      "workflow_run": 39059712137,
       "artifact": "NOT_YET_PUBLISHED"
     },
     "merge": "NOT_PERFORMED",
     "manual_vercel_deployment": "NOT_PERFORMED",
-    "dependencies_added": 0
+    "dependencies_added": 0,
+    "loop015_source_change": {
+      "result": "COMMITTED_SOURCE_CHECKS_PASS_VISUAL_REVIEW_PENDING",
+      "commit": "9722fee072544d9013e2fa6dff5ddf794f11304e",
+      "workflow_run": 39059712137,
+      "change": "Generate local procedural plaster, wood, stone and fabric albedo/bump maps; use a procedural equirectangular sky for environment reflections; improve facade glazing, daylight balance, sun framing and exterior colour."
+    },
+    "loop015_source_checks": {
+      "result": "PASS",
+      "workflow_run": 39059712137,
+      "steps": [
+        "npm run typecheck",
+        "npm test",
+        "npm run build"
+      ]
+    }
   },
-  "next_high_value_work": "Inspect artifact from run 39058615280. Confirm sun disk appears clearly above/right of exterior roofline while sky decorations remain occluded by nearby walls on the stair/landing frames.",
-  "current_browser_review_run": 39058615280
+  "next_high_value_work": "Inspect artifact from run 39059712137. Review exterior, representative rooms, stair/landing transitions, rooftop and mobile captures for PBR material appearance, glass, sun framing, blank views, browser errors and performance.",
+  "current_browser_review_run": 39059712137
 }
