@@ -244,6 +244,25 @@ describe("3D camera paths", () => {
     expect(hatchCrossers.length).toBeLessThanOrEqual(1);
   });
 
+  it("looks up the slope while climbing and down the slope while descending stairs", () => {
+    const lowerFlight = HOUSE_LAYOUT.stairs.groundFlight;
+    const climb = makeCameraPath("family-table", "rooftop", poseFor("rooftop"));
+    const ascentFrames = climb.filter((pose) =>
+      pose.position[1] > lowerFlight.from[1] + 1.0 &&
+      pose.position[1] < HOUSE_LAYOUT.upperY + 1.4 &&
+      pose.position[2] < lowerFlight.from[2] - 0.2 &&
+      pose.position[2] > lowerFlight.to[2] + 0.2);
+    expect(ascentFrames.some((pose) => pose.target[1] > pose.position[1] + 0.25)).toBe(true);
+
+    const descent = makeCameraPath("rooftop", "prayer-room", poseFor("prayer-room"));
+    const descentFrames = descent.filter((pose) =>
+      pose.position[1] > lowerFlight.from[1] + 1.0 &&
+      pose.position[1] < HOUSE_LAYOUT.upperY + 1.4 &&
+      pose.position[2] < lowerFlight.from[2] - 0.2 &&
+      pose.position[2] > lowerFlight.to[2] + 0.2);
+    expect(descentFrames.some((pose) => pose.target[1] < pose.position[1] - 0.25)).toBe(true);
+  });
+
   it("uses the guarded side walkway to leave the lower stair opening", () => {
     const path = makeCameraPath("family-table", "rooftop", poseFor("rooftop"));
     const bridgeStart = HOUSE_LAYOUT.upperBridge.centerZ - HOUSE_LAYOUT.upperBridge.depth / 2;

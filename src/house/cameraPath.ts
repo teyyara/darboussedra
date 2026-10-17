@@ -259,18 +259,28 @@ export function makeCameraPath(from: HouseLocation, to: HouseLocation, finalPose
 
   const sourcePose = start === "exterior" ? EXTERIOR_CAMERA : getRoomBySlug(start)?.camera ?? EXTERIOR_CAMERA;
   const poses = [...route.flatMap((edge) => edge.waypoints), finalPose];
-  // Aim intermediate waypoints along the actual path tangent, not stale per-node
-  // lookAt targets. This stops camera turns from facing directly into a wall at
-  // doorways and landings, while preserving the destination's authored composition.
+  // Aim intermediate waypoints along the actual 3D path tangent, not stale
+  // per-node lookAt targets. Include vertical travel: a horizontal gaze on a
+  // steep flight looks into the landing underside instead of at the steps.
+  // Preserve the destination's authored composition for the final room view.
   const positions = [sourcePose.position, ...poses.map((pose) => pose.position)];
   return poses.map((pose, index) => {
     if (index === poses.length - 1) return finalPose;
     const previous = positions[index];
     const next = positions[index + 2];
     const dx = next[0] - previous[0];
+    const dy = next[1] - previous[1];
     const dz = next[2] - previous[2];
-    const length = Math.hypot(dx, dz);
+    const length = Math.hypot(dx, dy, dz);
     if (length < 0.08) return pose;
-    return poseFacing(pose.position, [dx / length, dz / length]);
+    const lookAhead = 1.2;
+    return {
+      position: pose.position,
+      target: [
+        pose.position[0] + dx / length * lookAhead,
+        pose.position[1] + dy / length * lookAhead,
+        pose.position[2] + dz / length * lookAhead,
+      ],
+    };
   });
 }
