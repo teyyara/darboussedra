@@ -44,6 +44,15 @@ describe("room-specific wall accents", () => {
     expect(getRoomWallDecor(livingRoom)[0].side).toBe("left");
   });
 
+  it("keeps living-room art small enough to avoid the camera-edge crop", () => {
+    const livingRoom = rooms.find((room) => room.slug === "living-room")!;
+    const art = getRoomWallDecor(livingRoom);
+    expect(art).toHaveLength(1);
+    expect(art[0].side).toBe("left");
+    expect(art[0].width).toBeLessThanOrEqual(0.62);
+    expect(art[0].height).toBeLessThanOrEqual(0.58);
+  });
+
   it("does not add wall art to garden or rooftop views", () => {
     expect(getRoomWallDecor(rooms.find((room) => room.slug === "garden")!)).toEqual([]);
     expect(getRoomWallDecor(rooms.find((room) => room.slug === "rooftop")!)).toEqual([]);

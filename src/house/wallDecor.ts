@@ -82,7 +82,8 @@ export function getRoomWallDecor(room: Room): RoomWallDecor[] {
   const chosen = candidates[0];
   if (!chosen) return [];
 
-  const width = Math.min(room.level === "upper" ? 0.72 : 0.88, chosen.length - 0.18);
+  const preferredWidth = room.slug === "living-room" ? 0.62 : room.level === "upper" ? 0.72 : 0.88;
+  const width = Math.min(preferredWidth, chosen.length - 0.18);
   if (width < 0.4) return [];
   const height = width >= 0.68 ? 0.7 : 0.58;
   return [{
