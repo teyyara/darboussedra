@@ -704,7 +704,7 @@ function RoomArea({ room, active, onSelect, shellOnly = false }: { room: Room; a
     {/* Continuous cornices sharpen the ceiling line while using the same wall-run gaps as doors. */}
     {cornices.map((board) => <mesh key={board.key} position={board.position} castShadow receiveShadow>
       <boxGeometry args={board.size} /><meshStandardMaterial color="#d7c4a7" roughness={0.88} />
-    </mesh>);
+    </mesh>)}
 
     {!shellOnly && <RoomCeilingFixture room={room} active={selected} />}
     {!shellOnly && <RoomFurnishings room={room} />}
