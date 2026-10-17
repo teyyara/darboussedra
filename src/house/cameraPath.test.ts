@@ -263,7 +263,7 @@ describe("3D camera paths", () => {
       ["garden", "rooftop"],
       ["rooftop", "prayer-room"],
     ] as const) {
-      const source = from === "exterior" ? EXTERIOR_CAMERA : poseFor(from);
+      const source = poseFor(from);
       const path = makeCameraPath(from, to, poseFor(to));
       const positions = [source.position, ...path.map((pose) => pose.position)];
       for (let index = 0; index < path.length - 1; index += 1) {
