@@ -372,7 +372,10 @@ describe("3D camera paths", () => {
     expect(returnViews.length).toBeGreaterThanOrEqual(4);
     for (const pose of returnViews) {
       expect(pose.target[0], "gaze remains inward toward the stair opening").toBeLessThan(pose.position[0] - 0.25);
-      expect(pose.target[2], "gaze still follows the descending route").toBeLessThan(pose.position[2] - 0.9);
+      expect(pose.target[2], "gaze is anchored over the stairwell, regardless of travel direction")
+        .toBeCloseTo(HOUSE_LAYOUT.upperBridge.centerZ, 2);
+      expect(pose.target[1], "return view looks down into the stairwell")
+        .toBeLessThan(pose.position[1] - 0.5);
     }
   });
 

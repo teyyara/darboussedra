@@ -45,9 +45,12 @@ function reverseRoute(path: readonly CameraPose[]): CameraPose[] {
     // Keep looking through the stairwell when reversing instead of flipping toward the bedroom wall.
     target: pose.preserveHeading
       ? [
+          // Keep the side-of-stairwell view tied to the opening itself, not to
+          // the direction of travel. This lets the return route look into the
+          // opening from either end of the upper bridge instead of at a wall.
           pose.position[0] + (pose.target[0] - pose.position[0]),
-          pose.position[1] - 0.04,
-          pose.position[2] + (pose.target[2] - pose.position[2]),
+          HOUSE_LAYOUT.upperY + 0.8,
+          HOUSE_LAYOUT.upperBridge.centerZ,
         ]
       : [2 * pose.position[0] - pose.target[0], pose.position[1] - 0.04, 2 * pose.position[2] - pose.target[2]],
     ...(pose.preserveHeading ? { preserveHeading: true } : {}),
