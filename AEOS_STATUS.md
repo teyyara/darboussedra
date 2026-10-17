@@ -1,13 +1,13 @@
 # AEOS Status — Dar Boussedra
 
-**State:** LOOP 008 KITCHEN PROP RENDER FIX — SOURCE CHECKS PASS, BROWSER CAPTURE PENDING  
-**Active keyphrase:** DAR BOUSSEDRA — LOOP 008: CLARIFY KITCHEN APPLIANCE AND RENDERING  
-**Run ID:** 20261017-darboussedra-aeos-v3-loop008  
-**Loop:** 008 · **Candidate:** dar-boussedra-kitchen-render-008  
+**State:** LOOP 009 INTERIOR FINISH DETAILS — SOURCE CHECKS IN PROGRESS, BROWSER REVIEW PENDING  
+**Active keyphrase:** DAR BOUSSEDRA — LOOP 009: ADD SUBTLE INTERIOR SKIRTING  
+**Run ID:** 20261017-darboussedra-aeos-v3-loop009  
+**Loop:** 009 · **Candidate:** dar-boussedra-interior-finish-009  
 **Repository:** https://github.com/teyyara/darboussedra  
 **Branch:** fix/loop-004-architecture-coherence  
 **Base main:** 501cc6ccf3e6926504dfcd051ac98147360cd48a  
-**Latest source-code checkpoint commit:** 505cda4d687ca5fe3c5e63eb64b9a32c8aca76a3  
+**Latest source-code checkpoint commit:** a74afe4e985bca0ce4fb75fc48b37f8ce02af21c  
 **Last updated:** 2026-10-17
 
 ## Loop 003 outcome
@@ -165,3 +165,19 @@ Inspect the new `01-exterior-desktop.png`, `05-living-room-eye-level.png`, `12-r
 
 ### Next action
 Inspect the new `06-kitchen-eye-level.png` and `01-exterior-desktop.png` from run 39052224425, then compare the lighting/shadow change against the prior artifact. If either capture run continues to stall, check which Playwright phase is waiting and bound that wait or tune software-renderer shadow cost before adding more visual effects.
+
+
+## Loop 009 — Interior finish details
+
+**State:** Skirting detail has been committed and CI is running. The kitchen-appliance screenshot for prior source commit 505cda4 is still pending because its browser-capture step has remained in progress. Fresh source validation for the current commit is queued/running.
+
+- **Source commit:** [`a74afe4`](https://github.com/teyyara/darboussedra/commit/a74afe4e985bca0ce4fb75fc48b37f8ce02af21c)
+- **CI run:** [Foundation checks #39052442310](https://github.com/teyyara/darboussedra/actions/runs/39052442310).
+- **Visual source evidence:** [Loop 007 browser artifact from run 39051923842](https://github.com/teyyara/darboussedra/actions/runs/39051923842) is complete. Its report recorded 10/10 expected room arrivals, zero page runtime errors, no Playwright notes, a detected WebGL2 context, and correct upward/downward stair camera pitch. Screenshots show more distinct light/shadow and smoother foliage than the earlier baseline, but interiors remain intentionally blocky and wall-floor transitions are abrupt.
+- **Kitchen prop:** commit [`505cda4`](https://github.com/teyyara/darboussedra/commit/505cda4d687ca5fe3c5e63eb64b9a32c8aca76a3) moved the refrigerator deeper into the rear-left corner and added a differentiated front panel, freezer seam, handle and top cap. Its [CI run 39052224425](https://github.com/teyyara/darboussedra/actions/runs/39052224425) passed typecheck/tests/build; browser capture still had not completed when last checked.
+- **Interior skirting:** this commit adds a low-profile baseboard in each registered room, derived from existing non-opening wall runs so the trim does not bridge doorways. Trim colors vary mildly for spiritual/private/shared spaces. No room footprints, door openings, furnishing layout outside the fridge, or navigation paths were changed.
+- **Current validation:** run 39052442310 had started dependency installation at checkpoint time; typecheck, tests, build and browser capture remain pending for the latest commit.
+- **Scope:** no dependencies or outside assets added; no main merge or manual Vercel deployment. PR #5 remains draft.
+
+### Next action
+Check the newest CI run, then review the updated kitchen view plus a bedroom/landing view to see whether the fridge is more legible and skirting gives the rooms clearer edge definition without visual clutter. If the screenshot runs continue to stall after code checks, investigate Playwright capture timing or software WebGL performance before adding more geometry.
