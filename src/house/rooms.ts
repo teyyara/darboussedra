@@ -48,7 +48,7 @@ const roomDefinitions = [
     scenePosition: [0, HOUSE_LAYOUT.groundY, 1.175], camera: { position: [1.15, 1.65, 2.3], target: [-1.15, 1.1, -0.15] },
     footprint: [3.6, 3.15], connectedTo: ["entrance", "living-room", "kitchen"] },
   { id: "kitchen", slug: "kitchen", name: "Kitchen", kind: "interior", level: "ground",
-    scenePosition: [3.6, HOUSE_LAYOUT.groundY, 1.175], camera: { position: [4.95, 1.65, 2.2], target: [4.65, 1.12, 1.34] },
+    scenePosition: [3.6, HOUSE_LAYOUT.groundY, 1.175], camera: { position: [4.95, 1.65, 2.2], target: [4.6, 1.25, 1.34] },
     footprint: [3.6, 3.15], connectedTo: ["family-table", "prayer-room"] },
   { id: "library", slug: "library", name: "Library", kind: "interior", level: "ground",
     scenePosition: [-4.1, HOUSE_LAYOUT.groundY, -2.49], camera: { position: [-2.95, 1.65, -0.55], target: [-4.85, 1.25, -2.4] },
