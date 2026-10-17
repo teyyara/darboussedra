@@ -89,7 +89,10 @@ export function getHouseSceneVisibility(
     return {
       showExteriorShell,
       showGroundRooms: cameraZone === "ground" || keepBothStoreys,
-      showUpperRooms: cameraZone === "upper" || keepBothStoreys,
+      // Keep the upper wall shell through the final roof-hatch transition. Otherwise
+      // crossing the height threshold removes every interior wall before the camera lands.
+      showUpperRooms: cameraZone === "upper" || keepBothStoreys ||
+        (cameraZone === "roof" && routeUsesRoofStairs),
       showUpperCirculation: inside &&
         (cameraZone === "upper" ||
           (cameraZone === "ground" && routeUsesLowerStairs) ||

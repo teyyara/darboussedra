@@ -136,7 +136,8 @@ describe("level-aware house rendering", () => {
 
     const roof = getHouseSceneVisibility("rooftop", "family-table", true, false, "roof");
     expect(roof.showGroundRooms).toBe(false);
-    expect(roof.showUpperRooms).toBe(false);
+    // Keep the upstairs partitions until the camera fully clears the hatch.
+    expect(roof.showUpperRooms).toBe(true);
     expect(roof.showUpperCirculation).toBe(true);
     expect(roof.showRoofStairs).toBe(true);
     expect(roof.showRoofDeck).toBe(true);

@@ -12,6 +12,7 @@ import { getKitchenFixtureLayout } from "./kitchenLayout";
 import { getLibraryBookProps } from "./libraryShelving";
 import { GARDEN_SHRUBS, GARDEN_TREES } from "./gardenPlants";
 import { getGardenPavers } from "./gardenPath";
+import { getExteriorFacadePanels, getInteriorPerimeterWallPanels } from "./perimeterWalls";
 import { ROOF_SEATING_RUG, ROOF_TEA_STOOLS, ROOF_TEA_TABLE } from "./roofTerraceProps";
 import { RealisticMaterialPass } from "./realisticMaterials";
 import { getCameraZoneForPosition, getHouseSceneVisibility, type CameraZone } from "./sceneVisibility";
@@ -265,26 +266,8 @@ function ExteriorShell({ location, onDoorActivate, reducedMotion }: { location: 
   const halfWidth = HOUSE_LAYOUT.exterior.width / 2;
   const wallThickness = HOUSE_LAYOUT.exterior.wallThickness;
   const frontWindowWidth = 1.3;
-  const frontWindowInset = 2.55;
-  const windowCenterX = halfWidth - frontWindowInset;
-  const windowOuterEdge = windowCenterX + frontWindowWidth / 2;
-  const windowInnerEdge = windowCenterX - frontWindowWidth / 2;
-  const outerPanelWidth = halfWidth - windowOuterEdge;
-  const sidePanelWidth = windowInnerEdge - doorWidth / 2;
-  const sidePanelCenter = (windowInnerEdge + doorWidth / 2) / 2;
-  const panels: { position: Vector3Tuple; size: Vector3Tuple }[] = [
-    { position: [-(windowOuterEdge + halfWidth) / 2, wallHeight / 2, frontZ], size: [outerPanelWidth, wallHeight, wallThickness] },
-    { position: [-windowCenterX, 0.775, frontZ], size: [frontWindowWidth, 1.55, wallThickness] },
-    { position: [-windowCenterX, 3.1, frontZ], size: [frontWindowWidth, 0.8, wallThickness] },
-    { position: [-windowCenterX, (4.65 + wallHeight) / 2, frontZ], size: [frontWindowWidth, wallHeight - 4.65, wallThickness] },
-    { position: [-sidePanelCenter, wallHeight / 2, frontZ], size: [sidePanelWidth, wallHeight, wallThickness] },
-    { position: [0, (doorHeight + wallHeight) / 2, frontZ], size: [doorWidth, wallHeight - doorHeight, wallThickness] },
-    { position: [sidePanelCenter, wallHeight / 2, frontZ], size: [sidePanelWidth, wallHeight, wallThickness] },
-    { position: [windowCenterX, 0.775, frontZ], size: [frontWindowWidth, 1.55, wallThickness] },
-    { position: [windowCenterX, 3.1, frontZ], size: [frontWindowWidth, 0.8, wallThickness] },
-    { position: [windowCenterX, (4.65 + wallHeight) / 2, frontZ], size: [frontWindowWidth, wallHeight - 4.65, wallThickness] },
-    { position: [(windowOuterEdge + halfWidth) / 2, wallHeight / 2, frontZ], size: [outerPanelWidth, wallHeight, wallThickness] },
-  ];
+  const windowCenterX = halfWidth - 2.55;
+  const panels = getExteriorFacadePanels();
   useEffect(() => { invalidate(); }, [location, invalidate]);
   useFrame((_state, delta) => {
     if (!door.current) return;
@@ -402,6 +385,49 @@ function ExteriorShell({ location, onDoorActivate, reducedMotion }: { location: 
     </mesh>
     <mesh position={[0, 0.08, frontZ + 0.92]} receiveShadow>
       <boxGeometry args={[1.8, 0.12, 0.56]} /><meshStandardMaterial color="#d6c5a8" roughness={0.98} />
+    </mesh>
+  </group>;
+}
+
+
+/**
+ * Interior-only boundary walls. The exterior shell is intentionally hidden indoors
+ * to avoid its roof slab covering the ceiling and stair hatch, so its perimeter
+ * walls must be recreated independently rather than leaving open sides to the sky.
+ */
+function InteriorPerimeterShell() {
+  const { wallHeight } = HOUSE_LAYOUT.exterior;
+  const halfWidth = HOUSE_LAYOUT.exterior.width / 2;
+  const frontZ = HOUSE_LAYOUT.exterior.depth / 2;
+  const frontWindowWidth = 1.3;
+  const windowCenterX = halfWidth - 2.55;
+
+  return <group>
+    {getInteriorPerimeterWallPanels().map((panel) => <mesh key={panel.key}
+      position={panel.position} castShadow receiveShadow>
+      <boxGeometry args={panel.size} />
+      <meshStandardMaterial color="#dfcfb8" roughness={0.95} />
+    </mesh>)}
+    {[-windowCenterX, windowCenterX].flatMap((x) => [2.1, 4.075].map((y, index) =>
+      <group key={x + "-interior-window-" + index} position={[x, y, frontZ + 0.03]}>
+        <mesh>
+          <boxGeometry args={[frontWindowWidth - 0.18, 1.0, 0.06]} />
+          <meshPhysicalMaterial color="#b6ced3" transparent opacity={0.68} roughness={0.16}
+            metalness={0.12} clearcoat={1} clearcoatRoughness={0.08} envMapIntensity={0.75} />
+        </mesh>
+        <mesh>
+          <boxGeometry args={[0.055, 1.04, 0.08]} />
+          <meshStandardMaterial color="#947052" roughness={0.7} />
+        </mesh>
+        <mesh>
+          <boxGeometry args={[frontWindowWidth - 0.14, 0.055, 0.08]} />
+          <meshStandardMaterial color="#947052" roughness={0.7} />
+        </mesh>
+      </group>
+    ))}
+    <mesh position={[0, wallHeight - 0.06, frontZ + 0.015]} receiveShadow>
+      <boxGeometry args={[HOUSE_LAYOUT.exterior.width, 0.12, HOUSE_LAYOUT.exterior.wallThickness + 0.04]} />
+      <meshStandardMaterial color="#d4c1a5" roughness={0.92} />
     </mesh>
   </group>;
 }
@@ -1072,12 +1098,7 @@ function HouseArchitecture({ location, visualLocation, transitioning, exteriorSh
       </mesh>
     )}
     {visibility.showExteriorShell && <ExteriorShell location={location} onDoorActivate={onDoorActivate} reducedMotion={reducedMotion} />}
-    {!visibility.showExteriorShell && cameraZone !== "outside" && cameraZone !== "roof" && (
-      <mesh position={[0, HOUSE_LAYOUT.exterior.wallHeight / 2, -HOUSE_LAYOUT.exterior.depth / 2]} castShadow receiveShadow>
-        <boxGeometry args={[HOUSE_LAYOUT.exterior.width, HOUSE_LAYOUT.exterior.wallHeight, HOUSE_LAYOUT.exterior.wallThickness]} />
-        <meshStandardMaterial color="#dfcfb8" roughness={0.95} />
-      </mesh>
-    )}
+    {!visibility.showExteriorShell && cameraZone !== "outside" && <InteriorPerimeterShell />}
     {rooms.filter((room) =>
       (room.level === "ground" && visibility.showGroundRooms) ||
       (room.level === "upper" && visibility.showUpperRooms)).map((room) =>
