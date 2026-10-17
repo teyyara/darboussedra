@@ -35,7 +35,7 @@ export function getKitchenFixtureLayout(roomWidth: number): KitchenFixtureLayout
   return {
     counterCenterX,
     cabinetFrontX: counterCenterX - 0.37,
-    cabinetHandleX: counterCenterX - 0.415,
+    cabinetHandleX: counterCenterX - 0.4,
     cabinetDoorZs: [-0.75, -0.05, 0.65],
     cooktop: {
       center: cooktopCenter,

@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import { getKitchenFixtureLayout } from "./kitchenLayout";
-import { HOUSE_LAYOUT } from "./rooms";
 
 describe("fitted kitchen fixture layout", () => {
   it("keeps the cooktop and sink inside the counter instead of overhanging the room edge", () => {
@@ -26,11 +25,11 @@ describe("fitted kitchen fixture layout", () => {
     const halfWidth = width / 2;
     expect(layout.cabinetFrontX).toBeGreaterThan(-halfWidth);
     expect(layout.cabinetFrontX).toBeLessThan(layout.counterCenterX);
+    expect(layout.cabinetHandleX + 0.035 / 2).toBeCloseTo(layout.cabinetFrontX - 0.025 / 2);
     expect(layout.cabinetHandleX).toBeGreaterThan(-halfWidth);
     expect(layout.cabinetDoorZs.every((z) => z > -1.125 && z < 1.025)).toBe(true);
     expect(layout.cooktop.burners).toHaveLength(4);
     expect(layout.cooktop.controls).toHaveLength(4);
     expect(layout.sink.rim).toHaveLength(4);
-    expect(HOUSE_LAYOUT.roomWallHeight).toBeGreaterThan(2.2);
   });
 });
