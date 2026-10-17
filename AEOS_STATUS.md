@@ -1,13 +1,13 @@
 # AEOS Status — Dar Boussedra
 
-**State:** LOOP 015 PROCEDURAL MATERIAL REALISM — SOURCE CHECKS PASS, BROWSER VISUAL REVIEW IN PROGRESS  
-**Active keyphrase:** DAR BOUSSEDRA — LOOP 015: PROCEDURAL PBR MATERIALS AND NATURAL DAYLIGHT  
-**Run ID:** 20261017-darboussedra-aeos-v3-loop015  
-**Loop:** 015 · **Candidate:** dar-boussedra-procedural-pbr-015  
+**State:** LOOP 016 SOFT-EDGE FURNITURE GEOMETRY — SOURCE VALIDATION QUEUED, VISUAL ACCEPTANCE PENDING  
+**Active keyphrase:** DAR BOUSSEDRA — LOOP 016: SOFTEN FURNITURE AND PROP SILHOUETTES  
+**Run ID:** 20261017-darboussedra-aeos-v3-loop016  
+**Loop:** 016 · **Candidate:** dar-boussedra-soft-edge-props-016  
 **Repository:** https://github.com/teyyara/darboussedra  
 **Branch:** fix/loop-004-architecture-coherence  
 **Base main:** 501cc6ccf3e6926504dfcd051ac98147360cd48a  
-**Latest source-code checkpoint commit:** 9722fee072544d9013e2fa6dff5ddf794f11304e  
+**Latest source-code checkpoint commit:** 42d6b5a5b7aaa4244261eb5e5cd8e1ccaf4b214b  
 **Last updated:** 2026-10-17
 
 ## Loop 003 outcome
@@ -284,3 +284,15 @@ Inspect `01-exterior-desktop.png`, `08-exterior-mobile.png`, `14-upper-landing-t
 
 ### Next action
 Inspect the new exterior and representative room, landing/stair, rooftop and mobile screenshots. Check for visible plaster/wood texture scale, glass reflections, a clear sun above the roofline, wall occlusion, any bright or blank voids, runtime errors and mobile performance. If any material category looks wrong, correct the classifier before treating this realism pass as accepted.
+
+
+## Loop 016 — Softer furniture and prop silhouettes
+
+- Source commit [`42d6b5a`](https://github.com/teyyara/darboussedra/commit/42d6b5a5b7aaa4244261eb5e5cd8e1ccaf4b214b) uses Three.js `RoundedBoxGeometry` for furniture and prop boxes. Bevel radii are scaled to object thickness so chair legs and tabletops retain their silhouettes.
+- Added four unit tests for radius bounds, thin dimensions and invalid inputs.
+- Validation run [39059973378](https://github.com/teyyara/darboussedra/actions/runs/39059973378) is queued at checkpoint time. TypeScript, tests, build and rendered screenshots are **not yet confirmed** for Loop 016.
+- The prior Loop 015 run [39059712137](https://github.com/teyyara/darboussedra/actions/runs/39059712137) had passed TypeScript, tests and production build, but its Chromium walkthrough capture remained in progress and had not published an artifact.
+- No dependency added; no paid asset/service introduced. PR #5 remains draft and unmerged. No manual deployment performed.
+
+### Next action
+Inspect the fresh visual artifact after CI publishes it. Confirm the new bevels soften furniture edges without altering proportions, then verify material patterns and reflections from Loop 015 under real screenshots. If Chromium capture stalls again, report that limitation clearly rather than claiming visual acceptance.

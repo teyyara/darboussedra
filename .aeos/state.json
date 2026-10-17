@@ -1,16 +1,16 @@
 {
   "schema_version": "1.0",
-  "run_id": "20261017-darboussedra-aeos-v3-loop015",
-  "keyphrase": "DAR BOUSSEDRA — LOOP 015: procedural PBR materials and natural daylight",
+  "run_id": "20261017-darboussedra-aeos-v3-loop016",
+  "keyphrase": "DAR BOUSSEDRA — LOOP 016: soften furniture and prop silhouettes",
   "rulebook_version": "AEOS v3",
   "repository": "teyyara/darboussedra",
   "branch": "fix/loop-004-architecture-coherence",
-  "loop": 15,
-  "candidate": "dar-boussedra-procedural-pbr-015",
-  "state": "WAITING_FOR_VISUAL_REVIEW",
-  "status": "LOOP015_SOURCE_CHECKS_PASS_BROWSER_CAPTURE_IN_PROGRESS_PR5_DRAFT_NO_MERGE",
+  "loop": 16,
+  "candidate": "dar-boussedra-soft-edge-props-016",
+  "state": "WAITING_FOR_VALIDATION",
+  "status": "LOOP016_SOURCE_COMMITTED_VALIDATION_QUEUED_VISUAL_ACCEPTANCE_PENDING_PR5_DRAFT_NO_MERGE",
   "latest_known_good_commit": "d237375a364f25b0e30dade08f9b02790396b966",
-  "latest_source_checkpoint_commit": "9722fee072544d9013e2fa6dff5ddf794f11304e",
+  "latest_source_checkpoint_commit": "42d6b5a5b7aaa4244261eb5e5cd8e1ccaf4b214b",
   "pull_request": "https://github.com/teyyara/darboussedra/pull/5",
   "validation": {
     "loop013_browser_review": {
@@ -43,8 +43,8 @@
       "change": "Move sun disk and halo to [-28, 12, -60]; preserve depth testing for sky decorations."
     },
     "current_browser_review": {
-      "result": "IN_PROGRESS",
-      "workflow_run": 39059712137,
+      "result": "PENDING",
+      "workflow_run": 39059973378,
       "artifact": "NOT_YET_PUBLISHED"
     },
     "merge": "NOT_PERFORMED",
@@ -64,8 +64,18 @@
         "npm test",
         "npm run build"
       ]
+    },
+    "loop016_source_change": {
+      "result": "COMMITTED_VALIDATION_QUEUED",
+      "commit": "42d6b5a5b7aaa4244261eb5e5cd8e1ccaf4b214b",
+      "workflow_run": 39059973378,
+      "change": "Replace furniture and prop box geometry with scale-aware RoundedBoxGeometry bevels and add four pure regression tests."
+    },
+    "loop016_source_checks": {
+      "result": "QUEUED",
+      "workflow_run": 39059973378
     }
   },
-  "next_high_value_work": "Inspect artifact from run 39059712137. Review exterior, representative rooms, stair/landing transitions, rooftop and mobile captures for PBR material appearance, glass, sun framing, blank views, browser errors and performance.",
+  "next_high_value_work": "Inspect the rendered Loop 016 artifact; confirm the furniture bevels are subtle and check the Loop 015 PBR textures, glazing, sun framing, wall occlusion and mobile screenshots.",
   "current_browser_review_run": 39059712137
 }
