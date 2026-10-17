@@ -31,6 +31,19 @@ describe("room-specific wall accents", () => {
     }
   });
 
+
+  it("keeps wall art off tall built-ins such as the kitchen appliance and library shelves", () => {
+    const kitchen = rooms.find((room) => room.slug === "kitchen")!;
+    const library = rooms.find((room) => room.slug === "library")!;
+    expect(getRoomWallDecor(kitchen)[0].side).not.toBe("back");
+    expect(getRoomWallDecor(library)[0].side).not.toBe("left");
+  });
+
+  it("chooses a wall inside the named room's viewing direction rather than a side-on crop", () => {
+    const livingRoom = rooms.find((room) => room.slug === "living-room")!;
+    expect(getRoomWallDecor(livingRoom)[0].side).toBe("left");
+  });
+
   it("does not add wall art to garden or rooftop views", () => {
     expect(getRoomWallDecor(rooms.find((room) => room.slug === "garden")!)).toEqual([]);
     expect(getRoomWallDecor(rooms.find((room) => room.slug === "rooftop")!)).toEqual([]);
