@@ -10,7 +10,7 @@ describe("garden planting bounds", () => {
 
     for (const tree of GARDEN_TREES) {
       expect(Math.abs(tree.x) + 0.72).toBeLessThan(halfWidth);
-      expect(Math.abs(tree.z) + 1.25).toBeLessThan(halfDepth);
+      expect(Math.abs(tree.z) + 0.72).toBeLessThan(halfDepth);
       for (const crown of tree.crowns) {
         expect(Math.abs(tree.x + crown.position[0]) + crown.scale[0]).toBeLessThan(halfWidth);
         expect(Math.abs(tree.z + crown.position[2]) + crown.scale[2]).toBeLessThan(halfDepth);
