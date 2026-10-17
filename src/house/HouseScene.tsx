@@ -14,6 +14,7 @@ import { GARDEN_SHRUBS, GARDEN_TREES } from "./gardenPlants";
 import { getGardenPavers } from "./gardenPath";
 import { getExteriorFacadePanels, getInteriorPerimeterWallPanels } from "./perimeterWalls";
 import { ROOF_SEATING_RUG, ROOF_TEA_STOOLS, ROOF_TEA_TABLE } from "./roofTerraceProps";
+import { getRoofHatchGuardRails } from "./roofHatchRails";
 import { RealisticMaterialPass } from "./realisticMaterials";
 import { getCameraZoneForPosition, getHouseSceneVisibility, shouldRenderInteriorPerimeterShell, type CameraZone } from "./sceneVisibility";
 import {
@@ -928,6 +929,22 @@ function GardenArea({ onSelect }: { onSelect: () => void }) {
   </group>;
 }
 
+
+function RoofHatchGuardRails() {
+  const rails = useMemo(() => getRoofHatchGuardRails(), []);
+  return <group>
+    {rails.map((rail) => <mesh key={rail.key} position={rail.position} castShadow receiveShadow>
+      <boxGeometry args={rail.size} />
+      <meshStandardMaterial color="#9b704e" roughness={0.84} />
+    </mesh>)}
+    {rails.flatMap((rail) => rail.posts.map((position, index) => <mesh
+      key={rail.key + "-post-" + index} position={position} castShadow receiveShadow>
+      <boxGeometry args={[0.065, 0.82, 0.065]} />
+      <meshStandardMaterial color="#a77d58" roughness={0.86} />
+    </mesh>))}
+  </group>;
+}
+
 function RoofDeck({ onSelect }: { onSelect: () => void }) {
   const [hovered, setHovered] = useState(false);
   const rooftop = getRoomBySlug("rooftop");
@@ -1146,6 +1163,7 @@ function HouseArchitecture({ location, visualLocation, transitioning, exteriorSh
     </>}
     {visibility.showGroundStairs && <StairFlight flight={HOUSE_LAYOUT.stairs.groundFlight} width={HOUSE_LAYOUT.stairs.width} />}
     {visibility.showRoofStairs && <StairFlight flight={HOUSE_LAYOUT.stairs.roofFlight} width={HOUSE_LAYOUT.stairs.width} onSelectRoof={() => onSelectRoom("rooftop")} />}
+    {(visibility.showRoofStairs || visibility.showRoofDeck) && <RoofHatchGuardRails />}
     {visibility.showRoofDeck && <RoofDeck onSelect={() => onSelectRoom("rooftop")} />}
   </>;
 }
