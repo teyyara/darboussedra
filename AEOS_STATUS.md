@@ -1,13 +1,13 @@
 # AEOS Status — Dar Boussedra
 
-**State:** LOOP 012 SKY BACKDROP / NO-BLANK ENVIRONMENT — SOURCE CHECKS PASS, BROWSER REVIEW PENDING  
-**Active keyphrase:** DAR BOUSSEDRA — LOOP 012: ENSURE PERSISTENT SKY, SUN, AND NO BLANK BACKDROP  
-**Run ID:** 20261017-darboussedra-aeos-v3-loop012  
-**Loop:** 012 · **Candidate:** dar-boussedra-sky-backdrop-012  
+**State:** LOOP 013 SKY DECORATION OCCLUSION — SOURCE CHECKS PASS, BROWSER REVIEW PENDING  
+**Active keyphrase:** DAR BOUSSEDRA — LOOP 013: ENSURE SKY DECORATIONS RESPECT WALL DEPTH  
+**Run ID:** 20261017-darboussedra-aeos-v3-loop013  
+**Loop:** 013 · **Candidate:** dar-boussedra-sky-occlusion-013  
 **Repository:** https://github.com/teyyara/darboussedra  
 **Branch:** fix/loop-004-architecture-coherence  
 **Base main:** 501cc6ccf3e6926504dfcd051ac98147360cd48a  
-**Latest source-code checkpoint commit:** 000746089e11575f5b8d5d97800402e2b701a2c5  
+**Latest source-code checkpoint commit:** 34889caf7e4459655028d95f911c6904346b59ca  
 **Last updated:** 2026-10-17
 
 ## Loop 003 outcome
@@ -227,3 +227,19 @@ Inspect `14-upper-landing-turn.png`, `15a-upper-landing-to-stair.png`, and `16-u
 
 ### Next action
 Inspect `01-exterior-desktop.png`, `08-exterior-mobile.png`, and the stair/landing frames from run 39056997214. Confirm the sky is visibly blue with a sun/cloud details at desktop and mobile widths, and that room transition gaps show a coherent environment without the sun/cloud layer drawing over nearby walls. If captures stall again, preserve this checkpoint and investigate the screenshot workflow separately from application behavior.
+
+
+## Loop 013 — Sky decoration occlusion
+
+**State:** Source changes committed; TypeScript, tests, and production build pass. Browser capture is in progress; visual acceptance is not yet claimed.
+
+- **Source commit:** [`34889ca`](https://github.com/teyyara/darboussedra/commit/34889caf7e4459655028d95f911c6904346b59ca)
+- **CI run:** [Foundation checks #39058157769](https://github.com/teyyara/darboussedra/actions/runs/39058157769).
+- **Observed defect:** The fresh artifact from [run 39056997214](https://github.com/teyyara/darboussedra/actions/runs/39056997214) showed a blue sky, but the sun halo and cloud shapes appeared over nearby walls in stair/landing frames because their materials bypassed depth testing.
+- **Change:** The sky dome remains a persistent non-depth-writing backdrop. Sun/halo/cloud materials now use depth testing so intervening architecture can occlude them. The sun was raised to improve the chance of reading clearly against the exterior sky. No house layout, camera path, or room visibility rules changed.
+- **Validation:** In run 39058157769, `npm run typecheck`, `npm test`, `npm run build`, and Chromium setup passed. Screenshot capture is still active; the new artifact is not available yet, so wall occlusion, sun visibility, and the current transition frames remain unverified.
+- **Boundaries:** PR #5 remains open and draft. No merge to `main`, manual Vercel deploy, new dependencies, or remote assets.
+
+### Next action
+
+Inspect the artifact from run 39058157769 when available: `01-exterior-desktop.png`, `08-exterior-mobile.png`, `14-upper-landing-turn.png`, `15a-upper-landing-to-stair.png`, and `16-upper-bridge-after-ascent.png`. Confirm that sky decorations sit behind walls, the sun is visible in the open sky rather than clipped out or hidden by the house, and movement frames no longer show a misleading blank/transparent canvas. If the capture remains pending, resume from this exact commit and run without an unbounded wait.

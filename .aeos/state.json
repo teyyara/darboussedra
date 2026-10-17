@@ -1,54 +1,53 @@
 {
   "schema_version": "1.0",
-  "run_id": "20261017-darboussedra-aeos-v3-loop012",
-  "keyphrase": "DAR BOUSSEDRA — LOOP 012: ensure persistent sky, sun, and no blank backdrop",
+  "run_id": "20261017-darboussedra-aeos-v3-loop013",
+  "keyphrase": "DAR BOUSSEDRA — LOOP 013: ensure sky decorations respect wall depth",
   "rulebook_version": "AEOS v3",
   "repository": "teyyara/darboussedra",
   "branch": "fix/loop-004-architecture-coherence",
-  "loop": 12,
-  "candidate": "dar-boussedra-sky-backdrop-012",
+  "loop": 13,
+  "candidate": "dar-boussedra-sky-occlusion-013",
   "state": "WAITING_FOR_CONTINUE",
-  "status": "SKY_BACKDROP_IMPLEMENTED_SOURCE_CHECKS_PASS_BROWSER_CAPTURE_IN_PROGRESS_PR5_DRAFT_NO_MERGE",
+  "status": "SKY_DECORATION_OCCLUSION_FIX_COMMITTED_SOURCE_CHECKS_PASS_BROWSER_CAPTURE_IN_PROGRESS_PR5_DRAFT_NO_MERGE",
   "latest_known_good_commit": "d237375a364f25b0e30dade08f9b02790396b966",
-  "latest_source_checkpoint_commit": "000746089e11575f5b8d5d97800402e2b701a2c5",
+  "latest_source_checkpoint_commit": "34889caf7e4459655028d95f911c6904346b59ca",
   "pull_request": "https://github.com/teyyara/darboussedra/pull/5",
   "validation": {
-    "previous_browser_baseline": {
+    "prior_render_review": {
       "result": "VISUAL_DEFECT_OBSERVED",
-      "workflow_run": 39053389810,
+      "workflow_run": 39056997214,
       "artifact": "darboussedra-visual-review",
-      "frame": "01-exterior-desktop.png",
-      "observed": "Cream background instead of visible sky/sun; blank-looking openings in some transition views"
+      "observed": "Sky is now visible but transparent sun halo/clouds render over nearby wall geometry because depth testing is disabled."
     },
     "source_checks": {
       "result": "PASS",
-      "workflow_run": 39056997214,
+      "workflow_run": 39058157769,
       "steps": [
         "npm run typecheck",
         "npm test",
-        "npm run build"
+        "npm run build",
+        "Install Chromium for visual review"
       ]
     },
     "current_browser_capture": {
       "result": "IN_PROGRESS_AT_CHECKPOINT",
-      "workflow_run": 39056997214,
+      "workflow_run": 39058157769,
       "step": "Capture exterior, walkthrough, floor/map and mobile views",
       "artifact": "NOT_YET_PUBLISHED"
     },
-    "sky_implementation": {
+    "sky_occlusion_fix": {
       "result": "COMMITTED_NOT_VISUALLY_VERIFIED",
-      "commit": "000746089e11575f5b8d5d97800402e2b701a2c5",
+      "commit": "34889caf7e4459655028d95f911c6904346b59ca",
       "features": [
-        "camera-safe gradient sky dome",
-        "explicit sky-blue scene background fallback",
-        "sun disk and halo",
-        "subtle distant cloud clusters",
-        "reduced overlay wash"
+        "sun/halo/cloud depth testing enabled",
+        "sun raised against open sky",
+        "dome retained as persistent backdrop"
       ]
     },
     "merge": "NOT_PERFORMED",
     "manual_vercel_deployment": "NOT_PERFORMED",
     "dependencies_added": 0
   },
-  "next_high_value_work": "Inspect the fresh exterior/mobile and stair/landing screenshots from run 39056997214. Verify blue sky and sun/clouds are visible and transition gaps never show the cream page background. If screenshots remain pending, resume from this exact state rather than starting another unbounded wait."
+  "next_high_value_work": "Inspect browser artifact from run 39058157769. Confirm the sun/cloud meshes are occluded by nearby walls while remaining visible in open sky and no blank/transparent transitions. Resume from exact source commit if artifact is still pending.",
+  "current_browser_review_run": 39058157769
 }
