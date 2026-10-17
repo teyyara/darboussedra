@@ -27,47 +27,83 @@ function poseFor(location: HouseLocation): CameraPose {
   return getRoomBySlug(location)?.camera ?? EXTERIOR_CAMERA;
 }
 
-/** Infinite-feeling stylized daylight backdrop so openings never reveal an empty canvas. */
+/** Persistent, camera-safe daylight environment. The mesh follows the camera horizontally
+ * so its far surface never leaves the frustum, while its horizon stays anchored to world height.
+ * This remains mounted through every room/level transition so uncovered sightlines never show a blank canvas.
+ */
 function SkyEnvironment() {
+  const skyGroup = useRef<Group>(null);
   const geometry = useMemo(() => {
-    const radius = 100;
+    const radius = 90;
     const sphere = new SphereGeometry(radius, 64, 40);
     const positions = sphere.getAttribute("position");
     const colors = new Float32Array(positions.count * 3);
-    const low = new Color("#cbd8d5");
-    const horizon = new Color("#f1dfc2");
-    const paleBlue = new Color("#b7d9ed");
-    const zenith = new Color("#68afe2");
-    const value = (n: number) => {
-      const t = Math.max(0, Math.min(1, n));
+    const low = new Color("#c5d5d2");
+    const horizon = new Color("#f3dfbd");
+    const paleBlue = new Color("#9fd2f1");
+    const zenith = new Color("#4a9bd6");
+    const smooth = (value: number) => {
+      const t = Math.max(0, Math.min(1, value));
       return t * t * (3 - 2 * t);
     };
     const mixed = new Color();
-    for (let i = 0; i < positions.count; i += 1) {
-      const height = positions.getY(i) / radius;
-      if (height < 0) mixed.copy(low).lerp(horizon, value((height + 0.18) / 0.2));
-      else if (height < 0.42) mixed.copy(horizon).lerp(paleBlue, value(height / 0.42));
-      else mixed.copy(paleBlue).lerp(zenith, value((height - 0.42) / 0.58));
-      colors[i * 3] = mixed.r;
-      colors[i * 3 + 1] = mixed.g;
-      colors[i * 3 + 2] = mixed.b;
+    for (let index = 0; index < positions.count; index += 1) {
+      const height = positions.getY(index) / radius;
+      if (height < 0) mixed.copy(low).lerp(horizon, smooth((height + 0.2) / 0.2));
+      else if (height < 0.44) mixed.copy(horizon).lerp(paleBlue, smooth(height / 0.44));
+      else mixed.copy(paleBlue).lerp(zenith, smooth((height - 0.44) / 0.56));
+      colors[index * 3] = mixed.r;
+      colors[index * 3 + 1] = mixed.g;
+      colors[index * 3 + 2] = mixed.b;
     }
     sphere.setAttribute("color", new Float32BufferAttribute(colors, 3));
     return sphere;
   }, []);
 
-  return <group>
-    <mesh geometry={geometry} renderOrder={-100}>
-      <meshBasicMaterial vertexColors side={BackSide} fog={false} depthWrite={false} />
+  useFrame(({ camera }) => {
+    if (skyGroup.current) skyGroup.current.position.set(camera.position.x, 0, camera.position.z);
+  });
+
+  return <group ref={skyGroup}>
+    <mesh geometry={geometry} renderOrder={-1000} frustumCulled={false}>
+      <meshBasicMaterial vertexColors side={BackSide} fog={false} toneMapped={false}
+        depthTest={false} depthWrite={false} />
     </mesh>
-    <mesh position={[-27.3, 13.4, -36.3]} renderOrder={-90}>
-      <sphereGeometry args={[1.7, 32, 24]} />
-      <meshBasicMaterial color="#fff3c9" toneMapped={false} />
+    {/* Sun and a few restrained cloud forms live far beyond the house, but are rendered
+        as part of the sky layer so they can never be accidentally hidden by a room shell. */}
+    <mesh position={[-38, 8, -60]} renderOrder={-998} frustumCulled={false}>
+      <sphereGeometry args={[2.15, 32, 24]} />
+      <meshBasicMaterial color="#fff4d2" toneMapped={false} depthTest={false} depthWrite={false} />
     </mesh>
-    <mesh position={[-27.3, 13.4, -36.3]} renderOrder={-91}>
-      <sphereGeometry args={[3.8, 32, 24]} />
-      <meshBasicMaterial color="#ffe2a5" transparent opacity={0.18} toneMapped={false} depthWrite={false} />
+    <mesh position={[-38, 8, -60]} renderOrder={-999} frustumCulled={false}>
+      <sphereGeometry args={[4.5, 32, 24]} />
+      <meshBasicMaterial color="#ffe0a1" transparent opacity={0.18} toneMapped={false}
+        depthTest={false} depthWrite={false} />
     </mesh>
+    <group position={[-18, 17, -72]}>
+      {[
+        { position: [0, 0, 0] as Vector3Tuple, size: [4.5, 1.25, 0.5] as Vector3Tuple },
+        { position: [-2.3, -0.25, 0.05] as Vector3Tuple, size: [2.7, 1.0, 0.45] as Vector3Tuple },
+        { position: [2.2, -0.18, -0.08] as Vector3Tuple, size: [2.9, 0.92, 0.45] as Vector3Tuple },
+      ].map((cloud, index) => <mesh key={index} position={cloud.position} scale={cloud.size} renderOrder={-997}
+        frustumCulled={false}>
+        <sphereGeometry args={[1, 18, 12]} />
+        <meshBasicMaterial color="#fffaf0" transparent opacity={0.58} toneMapped={false}
+          depthTest={false} depthWrite={false} />
+      </mesh>)}
+    </group>
+    <group position={[29, 21, -78]}>
+      {[
+        { position: [0, 0, 0] as Vector3Tuple, size: [4.2, 1.1, 0.45] as Vector3Tuple },
+        { position: [-1.9, -0.18, 0] as Vector3Tuple, size: [2.5, 0.8, 0.4] as Vector3Tuple },
+        { position: [2.1, -0.1, 0.04] as Vector3Tuple, size: [2.4, 0.82, 0.42] as Vector3Tuple },
+      ].map((cloud, index) => <mesh key={index} position={cloud.position} scale={cloud.size} renderOrder={-997}
+        frustumCulled={false}>
+        <sphereGeometry args={[1, 18, 12]} />
+        <meshBasicMaterial color="#fffaf0" transparent opacity={0.48} toneMapped={false}
+          depthTest={false} depthWrite={false} />
+      </mesh>)}
+    </group>
   </group>;
 }
 
@@ -876,12 +912,15 @@ export function HouseScene({ location, settledLocation, reducedMotion, onArrive,
   return <Canvas camera={{ position: EXTERIOR_CAMERA.position, fov: sceneFov, near: 0.1, far: 120 }}
     gl={{ antialias: true }} dpr={reducedMotion ? 1 : ([1, 1.4] as [number, number])}
     frameloop="demand" shadows
-    onCreated={({ gl }) => {
+    onCreated={({ gl, scene }) => {
+      // Set the clear color explicitly as a final safety net: even if any architecture
+      // is temporarily out of view, a camera frame can never fall back to page beige.
+      scene.background = new Color("#8fc9ed");
       // Filmic tone mapping protects plaster highlights while keeping wood and terracotta distinct.
       gl.toneMapping = ACESFilmicToneMapping;
       gl.toneMappingExposure = 1;
     }}>
-    <color attach="background" args={["#b7d9ed"]} /><fog attach="fog" args={["#e8dfcf", 28, 76]} />
+    <color attach="background" args={["#8fc9ed"]} /><fog attach="fog" args={["#e8dfcf", 28, 76]} />
     <SkyEnvironment />
     <ambientLight intensity={0.58} /><hemisphereLight args={["#fff2db", "#8c9479", 0.82]} />
     <directionalLight position={[8, 15, 9]} intensity={2.15} castShadow
