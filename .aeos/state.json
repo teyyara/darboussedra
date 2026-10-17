@@ -7,8 +7,8 @@
   "branch": "fix/loop-004-architecture-coherence",
   "loop": 33,
   "candidate": "dar-boussedra-stair-hatch-trim-033",
-  "state": "WAITING_FOR_VALIDATION",
-  "status": "LOOP033_HATCH_TRIM_COMMITTED_VALIDATION_QUEUED_VISUAL_ACCEPTANCE_PENDING_PR5_DRAFT_NO_MERGE",
+  "state": "VALIDATING",
+  "status": "LOOP033_SOURCE_CHECKS_PASS_BROWSER_CAPTURE_RUNNING_VISUAL_ACCEPTANCE_PENDING_PR5_DRAFT_NO_MERGE",
   "latest_known_good_commit": "d237375a364f25b0e30dade08f9b02790396b966",
   "latest_source_checkpoint_commit": "a53100dfd7c21439bcd7c5598e8349b8d28eb3d1",
   "pull_request": "https://github.com/teyyara/darboussedra/pull/5",
@@ -256,10 +256,17 @@
       "change": "Add a four-sided timber reveal outside the roof stair hatch's clear opening; test that trim does not overlap or narrow the hatch."
     },
     "loop033_source_checks": {
-      "result": "QUEUED",
-      "workflow_run": 39063511034
+      "result": "PASS_BROWSER_CAPTURE_RUNNING",
+      "workflow_run": 39063511034,
+      "steps": [
+        "npm run typecheck passed",
+        "npm test passed",
+        "npm run build passed",
+        "Chromium installation in progress",
+        "Browser screenshots not yet published"
+      ]
     }
   },
-  "next_high_value_work": "Confirm Loop 033 typecheck/tests/build, then inspect fresh screenshots for the smaller living-room art, fitted kitchen, olive planting, hatch timber trim, sun/sconces, upper landing and mobile composition.",
+  "next_high_value_work": "Inspect the visual-review artifact from run 39063511034 when uploaded. Verify reduced living-room artwork sizing, kitchen sink/cooktop, olive tree silhouettes, roof-hatch trim clearance, exterior sky/sconces and mobile view.",
   "current_browser_review_run": 39063511034
 }
