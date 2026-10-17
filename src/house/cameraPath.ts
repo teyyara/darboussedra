@@ -6,6 +6,8 @@ import {
 export interface CameraPose {
   readonly position: Vector3Tuple;
   readonly target: Vector3Tuple;
+  /** Preserve an authored viewing direction where a tight landing needs a deliberate glance into the hall. */
+  readonly preserveHeading?: boolean;
 }
 
 type NavigationNode = string;
@@ -24,10 +26,15 @@ function eyeHeight(room: Room): number {
   return room.scenePosition[1] + HEAD_HEIGHT;
 }
 
-function poseFacing(position: Vector3Tuple, direction: readonly [number, number]): CameraPose {
+function poseFacing(
+  position: Vector3Tuple,
+  direction: readonly [number, number],
+  preserveHeading = false,
+): CameraPose {
   return {
     position,
     target: [position[0] + direction[0] * 1.2, position[1] - 0.04, position[2] + direction[1] * 1.2],
+    ...(preserveHeading ? { preserveHeading: true } : {}),
   };
 }
 
@@ -83,8 +90,10 @@ function groundStairWalkway(): CameraPose[] {
     // then move forward along the guarded landing. The former diagonal U-turn
     // aimed the camera straight into the bedroom's side wall for several frames.
     poseFacing([sideLaneX, upperEye, flight.to[2]], [1, 0]),
-    poseFacing([sideLaneX, upperEye, flight.to[2] + 0.2], [0, 1]),
-    poseFacing([sideLaneX, upperEye, flight.to[2] + 0.6], [0, 1]),
+    // Angle the first corridor views inward, away from the nearby bedroom side wall.
+    // The camera's feet stay on the guarded lane; only its gaze moves toward the central hall.
+    poseFacing([sideLaneX, upperEye, flight.to[2] + 0.2], [-0.42, 0.91], true),
+    poseFacing([sideLaneX, upperEye, flight.to[2] + 0.6], [-0.25, 0.97], true),
     ...[-2.8, -1.8, -0.8, 0.2].map((z) => poseFacing([sideLaneX, upperEye, z], [0, 1])),
     // Rejoin the full-width upper landing beyond the end of the open stair shaft.
     poseFacing([sideLaneX * 0.7, upperEye, 0.72], [0.2, 1]),
@@ -266,6 +275,7 @@ export function makeCameraPath(from: HouseLocation, to: HouseLocation, finalPose
   const positions = [sourcePose.position, ...poses.map((pose) => pose.position)];
   return poses.map((pose, index) => {
     if (index === poses.length - 1) return finalPose;
+    if (pose.preserveHeading) return pose;
     const previous = positions[index];
     const next = positions[index + 2];
     const dx = next[0] - previous[0];

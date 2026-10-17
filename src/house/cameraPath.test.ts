@@ -295,9 +295,25 @@ describe("3D camera paths", () => {
 
     expect(laneEntry, "the route reaches the side lane after clearing the stair edge").toBeDefined();
     expect(laneEntry!.position[2], "the turn remains behind the rear bedroom-wall line").toBeLessThan(-3.95);
-    expect(Math.abs(laneEntry!.target[0] - laneEntry!.position[0]),
-      "the camera faces down the landing, not into the side wall").toBeLessThan(0.02);
     expect(laneEntry!.target[2] - laneEntry!.position[2]).toBeGreaterThan(1.0);
+    expect(laneEntry!.target[0]).toBeGreaterThan(laneEntry!.position[0] - 0.02);
+  });
+
+  it("aims inward from the upper landing while keeping the camera on the protected side lane", () => {
+    const path = makeCameraPath("family-table", "rooftop", poseFor("rooftop"));
+    const upperEye = HOUSE_LAYOUT.upperY + 1.65;
+    const sideLaneX = HOUSE_LAYOUT.upperBridge.centerX + HOUSE_LAYOUT.stairs.openingWidth / 2 + 0.12;
+    const turnViews = path.filter((pose) =>
+      pose.preserveHeading &&
+      Math.abs(pose.position[1] - upperEye) < 0.02 &&
+      Math.abs(pose.position[0] - sideLaneX) < 0.02);
+
+    expect(turnViews).toHaveLength(2);
+    for (const pose of turnViews) {
+      expect(pose.position[0]).toBeGreaterThan(HOUSE_LAYOUT.stairs.openingWidth / 2 + 0.08);
+      expect(pose.target[0]).toBeLessThan(pose.position[0] - 0.25);
+      expect(pose.target[2]).toBeGreaterThan(pose.position[2] + 0.9);
+    }
   });
 
   it("keeps intermediate camera headings aligned with travel through outdoor and multi-storey turns", () => {
@@ -310,6 +326,7 @@ describe("3D camera paths", () => {
       const path = makeCameraPath(from, to, poseFor(to));
       const positions = [source.position, ...path.map((pose) => pose.position)];
       for (let index = 0; index < path.length - 1; index += 1) {
+        if (path[index].preserveHeading) continue;
         const previous = positions[index];
         const next = positions[index + 2];
         const dx = next[0] - previous[0];
