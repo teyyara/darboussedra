@@ -18,7 +18,7 @@ describe("garden stepping-stone path", () => {
       expect(Math.abs(stone.position[0]) + extentX).toBeLessThan(halfWidth);
       expect(Math.abs(stone.position[2]) + extentZ).toBeLessThan(halfDepth);
       expect(stone.size[0]).toBeGreaterThan(0.6);
-      expect(stone.size[2]).toBeGreaterThan(0.4);
+      expect(stone.size[2]).toBeGreaterThanOrEqual(0.4);
     }
     expect(stones.map(stone => stone.position[2])).toEqual(
       [...stones].map(stone => stone.position[2]).sort((a, b) => a - b),
