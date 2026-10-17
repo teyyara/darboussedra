@@ -18,6 +18,7 @@ const report = {
 
 const browser = await chromium.launch({
   headless: true,
+  timeout: 15000,
   args: [
     "--enable-webgl",
     "--ignore-gpu-blocklist",
@@ -34,7 +35,7 @@ function captureRuntimeErrors(page, label) {
 }
 
 async function waitForExperience(page) {
-  await page.locator("canvas, .fallback-art").first().waitFor({ state: "visible", timeout: 20000 });
+  await page.locator("canvas, .fallback-art").first().waitFor({ state: "visible", timeout: 12000 });
   await page.waitForTimeout(900);
 }
 
@@ -57,11 +58,17 @@ async function saveScreenshot(page, filename) {
     };
   }).catch(() => null);
   report.frameStates.push({ filename, ...frameState });
-  await page.screenshot({ path: filepath, animations: "disabled" });
-  report.screenshots.push(filename);
+  try {
+    await page.screenshot({ path: filepath, animations: "disabled", timeout: 12000 });
+    report.screenshots.push(filename);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    report.runtimeErrors.push({ view: filename, message: "Screenshot capture failed: " + message });
+    report.notes.push("Could not save " + filename + "; continuing to collect the rest of the visual review.");
+  }
 }
 
-async function arrivalStatus(page, slug, name, timeout = 60000) {
+async function arrivalStatus(page, slug, name, timeout = 15000) {
   await page.waitForFunction(
     () => {
       const label = document.querySelector(".room-welcome .eyebrow");
@@ -95,7 +102,7 @@ async function openMap(page) {
   await page.locator(".map-panel").waitFor({ state: "visible", timeout: 8000 });
 }
 
-async function waitForCameraPhase(page, destination, phase, timeout = 45000) {
+async function waitForCameraPhase(page, destination, phase, timeout = 14000) {
   await page.waitForFunction(({ expectedDestination, expectedPhase }) => {
     const canvas = document.querySelector("canvas");
     if (!canvas || canvas.dataset.destination !== expectedDestination) return false;
@@ -128,7 +135,11 @@ async function selectDirectoryRoom(page, name, slug, transitionCaptures = []) {
   const transitionStarted = Date.now();
   for (const capture of transitionCaptures) {
     if (capture.phase) {
-      await waitForCameraPhase(page, slug, capture.phase, capture.timeout ?? 45000);
+      try {
+        await waitForCameraPhase(page, slug, capture.phase, capture.timeout ?? 14000);
+      } catch {
+        report.notes.push("Timed out waiting for camera phase " + capture.phase + " on route " + slug + "; capturing the current frame instead.");
+      }
     } else {
       const delay = Math.max(0, capture.afterMs - (Date.now() - transitionStarted));
       if (delay > 0) await page.waitForTimeout(delay);
@@ -138,13 +149,16 @@ async function selectDirectoryRoom(page, name, slug, transitionCaptures = []) {
   await arrivalStatus(page, slug, name);
 }
 
+try {
 const desktop = await browser.newPage({
   viewport: { width: 1440, height: 1000 },
   deviceScaleFactor: 1,
   reducedMotion: "no-preference",
 });
+desktop.setDefaultTimeout(8000);
+desktop.setDefaultNavigationTimeout(15000);
 captureRuntimeErrors(desktop, "desktop");
-await desktop.goto(baseUrl, { waitUntil: "domcontentloaded" });
+await desktop.goto(baseUrl, { waitUntil: "domcontentloaded", timeout: 15000 });
 await waitForExperience(desktop);
 report.navigationGuideDetected = await desktop.locator(".navigation-guide").isVisible().catch(() => false);
 report.navigationGuideText = (await desktop.locator(".navigation-guide").innerText().catch(() => "")).trim();
@@ -220,8 +234,10 @@ const mobile = await browser.newPage({
   hasTouch: true,
   reducedMotion: "reduce",
 });
+mobile.setDefaultTimeout(8000);
+mobile.setDefaultNavigationTimeout(15000);
 captureRuntimeErrors(mobile, "mobile");
-await mobile.goto(baseUrl, { waitUntil: "domcontentloaded" });
+await mobile.goto(baseUrl, { waitUntil: "domcontentloaded", timeout: 15000 });
 await waitForExperience(mobile);
 report.mobileNavigationGuideVisible = await mobile.locator(".navigation-guide").isVisible().catch(() => false);
 report.mobileDocumentWidth = await mobile.evaluate(() => document.documentElement.scrollWidth);
@@ -250,8 +266,17 @@ if (!report.stairCameraAiming.looksDownDuringDescent) {
   report.notes.push("Camera should pitch downward while descending the lower stair flight.");
 }
 
-await writeFile(outputDir + "/browser-review.json", JSON.stringify(report, null, 2) + "\n");
-await browser.close();
+} catch (error) {
+  const message = error instanceof Error ? (error.stack || error.message) : String(error);
+  report.runtimeErrors.push({ view: "capture-script", message });
+  report.notes.push("Visual review stopped safely after an interaction or navigation failure: " + message.split("\n")[0]);
+  process.exitCode = 1;
+} finally {
+  await browser.close().catch((error) => {
+    report.notes.push("Browser shutdown reported an error: " + String(error));
+  });
+  await writeFile(outputDir + "/browser-review.json", JSON.stringify(report, null, 2) + "\n");
+}
 
 console.log(JSON.stringify(report, null, 2));
 if (
