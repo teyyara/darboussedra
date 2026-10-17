@@ -22,7 +22,7 @@ PR #5: https://github.com/teyyara/darboussedra/pull/5 (open, draft)
 - [Loop 009, run 39052442310](https://github.com/teyyara/darboussedra/actions/runs/39052442310): source and browser capture passed; subtle baseboards are visible without bridging door openings.
 
 ## Validation status for this loop
-- [CI run 39052970714](https://github.com/teyyara/darboussedra/actions/runs/39052970714) is running for `1b89548`; it was at dependency installation when this note was written. No claim of current test or screenshot success until run completion.
+- [CI run 39052970714](https://github.com/teyyara/darboussedra/actions/runs/39052970714) has passed `npm run typecheck`, `npm test`, and `npm run build`, and Chromium installation passed. The browser capture step remains in progress and no post-fix screenshot artifact is available yet.
 
 ## Boundaries
 - PR #5 is still open/draft; no merge to main.

@@ -8,7 +8,7 @@
   "loop": 10,
   "candidate": "dar-boussedra-upper-landing-camera-010",
   "state": "WAITING_FOR_CONTINUE",
-  "status": "UPPER_LANDING_CAMERA_FIX_COMMITTED_CI_IN_PROGRESS_PR5_DRAFT_NO_MERGE",
+  "status": "UPPER_LANDING_CAMERA_SOURCE_CHECKS_PASS_BROWSER_CAPTURE_IN_PROGRESS_PR5_DRAFT_NO_MERGE",
   "latest_known_good_commit": "d237375a364f25b0e30dade08f9b02790396b966",
   "latest_source_checkpoint_commit": "1b895480bc625763fdd9277aabf7767f30a7f4c9",
   "pull_request": "https://github.com/teyyara/darboussedra/pull/5",
@@ -36,10 +36,15 @@
     "upper_landing_camera": {
       "commit": "1b895480bc625763fdd9277aabf7767f30a7f4c9",
       "code_checks": {
-        "result": "IN_PROGRESS",
-        "workflow_run": 39052970714
+        "result": "PASS",
+        "workflow_run": 39052970714,
+        "steps": [
+          "npm run typecheck",
+          "npm test",
+          "npm run build"
+        ]
       },
-      "browser_capture": "PENDING"
+      "browser_capture": "IN_PROGRESS_AT_CAPTURE_STEP_NO_ARTIFACT"
     },
     "merge": "NOT_PERFORMED",
     "manual_vercel_deployment": "NOT_PERFORMED",
