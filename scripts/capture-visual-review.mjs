@@ -200,7 +200,7 @@ await openMap(desktop);
 await selectDirectoryRoom(desktop, "Garden", "garden", [
   { phase: "upper-side-landing", filename: "15a-upper-landing-to-stair.png" },
   { phase: "lower-stair-flight", filename: "15-stair-descent-midflight.png" },
-  { phase: "front-door-clear", filename: "15-stair-descent-ground-landing.png" },
+  { phase: "front-door-clear", filename: "15-front-door-exit.png" },
 ]);
 await saveScreenshot(desktop, "11-garden-eye-level.png");
 
