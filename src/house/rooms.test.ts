@@ -111,6 +111,26 @@ describe("authoritative room and architectural layout", () => {
     const rearInteriorFaceZ = -HOUSE_LAYOUT.exterior.depth / 2 + HOUSE_LAYOUT.exterior.wallThickness / 2;
     expect(lastTreadMinZ).toBeGreaterThanOrEqual(rearInteriorFaceZ + 0.05);
   });
+  it("frames the kitchen counter, rather than the refrigerator, in its first-person destination view", () => {
+    const kitchen = getRoomBySlug("kitchen")!;
+    const counterCenter = [
+      kitchen.scenePosition[0] + kitchen.footprint[0] / 2 - 0.48,
+      kitchen.scenePosition[2] - 0.05,
+    ];
+    const cameraToTarget = [
+      kitchen.camera.target[0] - kitchen.camera.position[0],
+      kitchen.camera.target[2] - kitchen.camera.position[2],
+    ];
+    const cameraToCounter = [
+      counterCenter[0] - kitchen.camera.position[0],
+      counterCenter[1] - kitchen.camera.position[2],
+    ];
+    expect(cameraToTarget[0] * cameraToCounter[0] + cameraToTarget[1] * cameraToCounter[1]).toBeGreaterThan(0);
+    expect(Math.abs(kitchen.camera.target[0] - counterCenter[0])).toBeLessThan(0.5);
+    expect(kitchen.camera.target[2]).toBeGreaterThan(kitchen.scenePosition[2] - 0.25);
+    expect(kitchen.camera.target[2]).toBeLessThan(kitchen.camera.position[2]);
+  });
+
   it("keeps the ground stair shaft clear of every ground-floor room", () => {
     const flight = HOUSE_LAYOUT.stairs.groundFlight;
     const minZ = Math.min(flight.from[2], flight.to[2]), maxZ = Math.max(flight.from[2], flight.to[2]);
