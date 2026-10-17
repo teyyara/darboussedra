@@ -69,16 +69,15 @@ function SkyEnvironment() {
       <meshBasicMaterial vertexColors side={BackSide} fog={false} toneMapped={false}
         depthTest={false} depthWrite={false} />
     </mesh>
-    {/* Sun and a few restrained cloud forms live far beyond the house, but are rendered
-        as part of the sky layer so they can never be accidentally hidden by a room shell. */}
-    <mesh position={[-38, 8, -60]} renderOrder={-998} frustumCulled={false}>
+    {/* Distant sun and cloud forms still use depth testing: nearby roofs and walls must occlude them. */}
+    <mesh position={[-38, 24, -60]} renderOrder={-998} frustumCulled={false}>
       <sphereGeometry args={[2.15, 32, 24]} />
-      <meshBasicMaterial color="#fff4d2" toneMapped={false} depthTest={false} depthWrite={false} />
+      <meshBasicMaterial color="#fff4d2" toneMapped={false} depthTest={true} depthWrite={false} />
     </mesh>
-    <mesh position={[-38, 8, -60]} renderOrder={-999} frustumCulled={false}>
+    <mesh position={[-38, 24, -60]} renderOrder={-999} frustumCulled={false}>
       <sphereGeometry args={[4.5, 32, 24]} />
       <meshBasicMaterial color="#ffe0a1" transparent opacity={0.18} toneMapped={false}
-        depthTest={false} depthWrite={false} />
+        depthTest={true} depthWrite={false} />
     </mesh>
     <group position={[-18, 17, -72]}>
       {[
@@ -89,7 +88,7 @@ function SkyEnvironment() {
         frustumCulled={false}>
         <sphereGeometry args={[1, 18, 12]} />
         <meshBasicMaterial color="#fffaf0" transparent opacity={0.58} toneMapped={false}
-          depthTest={false} depthWrite={false} />
+          depthTest={true} depthWrite={false} />
       </mesh>)}
     </group>
     <group position={[29, 21, -78]}>
@@ -101,7 +100,7 @@ function SkyEnvironment() {
         frustumCulled={false}>
         <sphereGeometry args={[1, 18, 12]} />
         <meshBasicMaterial color="#fffaf0" transparent opacity={0.48} toneMapped={false}
-          depthTest={false} depthWrite={false} />
+          depthTest={true} depthWrite={false} />
       </mesh>)}
     </group>
   </group>;
