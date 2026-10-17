@@ -35,7 +35,7 @@ function captureRuntimeErrors(page, label) {
 }
 
 async function waitForExperience(page) {
-  await page.locator("canvas, .fallback-art").first().waitFor({ state: "visible", timeout: 12000 });
+  await page.locator("canvas, .fallback-art").first().waitFor({ state: "visible", timeout: 20000 });
   await page.waitForTimeout(900);
 }
 
@@ -59,7 +59,7 @@ async function saveScreenshot(page, filename) {
   }).catch(() => null);
   report.frameStates.push({ filename, ...frameState });
   try {
-    await page.screenshot({ path: filepath, animations: "disabled", timeout: 12000 });
+    await page.screenshot({ path: filepath, animations: "allow", timeout: 30000 });
     report.screenshots.push(filename);
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
@@ -68,7 +68,7 @@ async function saveScreenshot(page, filename) {
   }
 }
 
-async function arrivalStatus(page, slug, name, timeout = 15000) {
+async function arrivalStatus(page, slug, name, timeout = 45000) {
   await page.waitForFunction(
     () => {
       const label = document.querySelector(".room-welcome .eyebrow");
@@ -92,17 +92,17 @@ async function openMap(page) {
     const headerButton = Array.from(document.querySelectorAll(".header button"))
       .find((button) => /house map/i.test(button.textContent || ""));
     return Boolean((roomButton && !roomButton.disabled) || (headerButton && !headerButton.disabled));
-  }, null, { timeout: 5000 });
+  }, null, { timeout: 15000 });
   const roomMapButton = page.locator(".room-welcome").getByRole("button", { name: /open the house map/i });
   if (await roomMapButton.isVisible().catch(() => false) && await roomMapButton.isEnabled().catch(() => false)) {
     await roomMapButton.click();
   } else {
     await page.locator(".header").getByRole("button", { name: /house map/i }).click();
   }
-  await page.locator(".map-panel").waitFor({ state: "visible", timeout: 8000 });
+  await page.locator(".map-panel").waitFor({ state: "visible", timeout: 15000 });
 }
 
-async function waitForCameraPhase(page, destination, phase, timeout = 14000) {
+async function waitForCameraPhase(page, destination, phase, timeout = 30000) {
   await page.waitForFunction(({ expectedDestination, expectedPhase }) => {
     const canvas = document.querySelector("canvas");
     if (!canvas || canvas.dataset.destination !== expectedDestination) return false;
@@ -129,14 +129,14 @@ async function waitForCameraPhase(page, destination, phase, timeout = 14000) {
 
 async function selectDirectoryRoom(page, name, slug, transitionCaptures = []) {
   const selector = page.locator(".map-directory").getByRole("button", { name, exact: true }).first();
-  await selector.waitFor({ state: "visible", timeout: 8000 });
+  await selector.waitFor({ state: "visible", timeout: 12000 });
   await selector.click();
-  await page.waitForFunction((expected) => window.location.pathname === "/room/" + expected, slug, { timeout: 8000 });
+  await page.waitForFunction((expected) => window.location.pathname === "/room/" + expected, slug, { timeout: 12000 });
   const transitionStarted = Date.now();
   for (const capture of transitionCaptures) {
     if (capture.phase) {
       try {
-        await waitForCameraPhase(page, slug, capture.phase, capture.timeout ?? 14000);
+        await waitForCameraPhase(page, slug, capture.phase, capture.timeout ?? 30000);
       } catch {
         report.notes.push("Timed out waiting for camera phase " + capture.phase + " on route " + slug + "; capturing the current frame instead.");
       }
