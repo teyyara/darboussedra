@@ -1,14 +1,14 @@
 # AEOS Status — Dar Boussedra
 
-**State:** LOOP 004 CORRECTION BRANCH — AWAITING VALIDATION AND REVIEW  
-**Active keyphrase:** DAR BOUSSEDRA — LOOP 004: ARCHITECTURE COHERENCE REVIEW AND CORRECTION  
-**Run ID:** 20261016-darboussedra-loop004-architecture-coherence  
-**Loop:** 004 · **Candidate:** dar-boussedra-architecture-coherence-004  
+**State:** LOOP 005 SOURCE CHECKS PASS — BROWSER RE-CAPTURE PENDING  
+**Active keyphrase:** DAR BOUSSEDRA — LOOP 005: REPAIR THE UPPER-LANDING CAMERA TURN  
+**Run ID:** 20261017-darboussedra-aeos-v3-loop005  
+**Loop:** 005 · **Candidate:** dar-boussedra-stair-landing-camera-005  
 **Repository:** https://github.com/teyyara/darboussedra  
 **Branch:** fix/loop-004-architecture-coherence  
 **Base main:** 501cc6ccf3e6926504dfcd051ac98147360cd48a  
-**Latest source-code correction commit:** 810785472787924c98ee2a49deedbf13ee1c1927  
-**Last updated:** 2026-10-16
+**Latest source-code correction commit:** 21cf57d44d53c1f6eefb46b4f9bbf2d802db56e1  
+**Last updated:** 2026-10-17
 
 ## Loop 003 outcome
 - Lazy-loaded the 3D house scene so the initial navigation UI is not coupled to the full Three.js scene bundle.
@@ -107,3 +107,19 @@ The source-code updates below passed automated validation in [run 38953581339](h
 
 ### Next useful loop
 Inspect the latest frames at full size, especially Kitchen, Library, Pets’ Corner and Rooftop Terrace, and refine any remaining scale/spacing issues without moving items outside their authoritative room footprints. Keep the room registry the source of truth. Do not deploy, promote to `main` or merge PR #5 as part of this work.
+
+
+## Loop 005 — upper-landing camera orientation repair
+
+**State:** Source checks passed; browser re-capture was still in progress at this checkpoint. PR #5 remains draft-only.
+
+- **Source checkpoint:** [`21cf57d`](https://github.com/teyyara/darboussedra/commit/21cf57d44d53c1f6eefb46b4f9bbf2d802db56e1)
+- **CI run:** [Foundation checks #39050232013](https://github.com/teyyara/darboussedra/actions/runs/39050232013).
+- **Observed defect:** The browser artifact from run [39047506141](https://github.com/teyyara/darboussedra/actions/runs/39047506141), frame `14-upper-landing-turn.png`, shows a near-full-frame blank wall during the lower stair landing turn. `browser-review.json` recorded camera direction approximately `[0.689, 0.001, 0.724]` at route progress `25/36`.
+- **Cause addressed:** Intermediate headings use the route tangent, so the previous diagonal U-turn sent the lens into the private-room side wall.
+- **Change:** Route now moves laterally into the guarded side lane while still behind the rear wall line, then advances down the landing. Added a camera-path regression asserting the lane waypoint remains behind the wall line and the lens faces down the corridor.
+- **Validation:** GitHub Actions `npm run typecheck`, `npm test`, and `npm run build` all passed on this source checkpoint. At the time the state was recorded, the Chromium installation step was still running; a fresh screenshot artifact and post-fix rendered acceptance are **not yet verified**.
+- **Boundaries:** No merge to `main`, no manual Vercel deployment, no paid dependencies or services. PR #5 remains open and draft.
+
+### Next loop
+Verify the newly captured upper-landing and upper-bridge frames from the current source checkpoint. If the turn now clears the wall, continue with the remaining stair descent, roof-hatch and outdoor-route frames; record any remaining visible defect as a separate, bounded fix.
