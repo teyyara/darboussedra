@@ -312,7 +312,7 @@ export function makeCameraPath(from: HouseLocation, to: HouseLocation, finalPose
   const positions = [sourcePose.position, ...poses.map((pose) => pose.position)];
   return poses.map((pose, index) => {
     if (index === poses.length - 1) return finalPose;
-    if (pose.preserveHeading || pose.preserveTarget) return pose;
+    if (pose.preserveHeading) return pose;
     const previous = positions[index];
     const next = positions[index + 2];
     const dx = next[0] - previous[0];
@@ -321,12 +321,26 @@ export function makeCameraPath(from: HouseLocation, to: HouseLocation, finalPose
     const horizontalLength = Math.hypot(dx, dz);
     if (horizontalLength < 0.08) return pose;
 
+    const lookAhead = 1.2;
+    if (pose.preserveTarget) {
+      // Preserve the authored downward pitch while still deriving horizontal
+      // gaze from the path tangent. This avoids a sideways snap at each deck turn.
+      return {
+        position: pose.position,
+        target: [
+          pose.position[0] + dx / horizontalLength * lookAhead,
+          pose.target[1],
+          pose.position[2] + dz / horizontalLength * lookAhead,
+        ],
+        preserveTarget: true,
+      };
+    }
+
     // A literal stair-slope gaze (about 38° here) stares into the back wall on
     // ascent. Let the eyes lead the path, but limit vertical pitch to a natural
     // range: around 10° up while climbing and 15° down while descending.
     const verticalAim = dy * (dy >= 0 ? 0.22 : 0.35);
     const length = Math.hypot(dx, verticalAim, dz);
-    const lookAhead = 1.2;
     return {
       position: pose.position,
       target: [
