@@ -612,8 +612,6 @@ function RoomFurnishings({ room }: { room: Room }) {
     </group>}
 
     {room.kind === "private" && <group>
-
-    {room.kind === "private" && <group>
       <PropBox position={[0, 0.02, 0]} size={[Math.min(1.65, width - 0.15), 0.025, 2.4]} color="#d5c2a8" />
       <PropBox position={[0, 0.16, -0.22]} size={[Math.min(1.35, width - 0.3), 0.22, 1.98]} color="#8c6d50" />
       <PropBox position={[0, 0.34, -0.22]} size={[Math.min(1.28, width - 0.36), 0.18, 1.9]} color="#f0e4d3" />
