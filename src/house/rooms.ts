@@ -42,7 +42,7 @@ const roomDefinitions = [
     scenePosition: [0, HOUSE_LAYOUT.groundY, 3.695], camera: { position: [0, 1.65, 4.2], target: [0, 1.35, 2.85] },
     footprint: [2.1, 1.89], connectedTo: ["family-table", "garden"] },
   { id: "living-room", slug: "living-room", name: "Living Room", kind: "interior", level: "ground",
-    scenePosition: [-3.6, HOUSE_LAYOUT.groundY, 1.175], camera: { position: [-2.65, 1.65, 2.05], target: [-4.05, 1.25, 0.35] },
+    scenePosition: [-3.6, HOUSE_LAYOUT.groundY, 1.175], camera: { position: [-2.65, 1.65, 2.05], target: [-4.05, 1.25, 1.2] },
     footprint: [3.6, 3.15], connectedTo: ["family-table", "library"] },
   { id: "family-table", slug: "family-table", name: "Family Table", kind: "interior", level: "ground",
     scenePosition: [0, HOUSE_LAYOUT.groundY, 1.175], camera: { position: [1.15, 1.65, 2.3], target: [-1.15, 1.1, -0.15] },

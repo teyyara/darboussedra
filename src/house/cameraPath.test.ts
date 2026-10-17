@@ -63,7 +63,7 @@ describe("3D camera paths", () => {
     const pets = poseFor("pets-corner");
     const prayer = poseFor("prayer-room");
     expect(living.target[2]).toBeLessThan(living.position[2]); // sofa sits toward the back of the living room
-    expect(kitchen.target[0]).toBeLessThan(kitchen.position[0]); // frame the hob and fridge from the counter side
+    expect(kitchen.target[0]).toBeGreaterThan(kitchen.position[0]); // frame the fitted hob and sink from inside the kitchen
     expect(kitchen.target[2]).toBeLessThan(kitchen.position[2]);
     expect(library.target[0]).toBeLessThan(library.position[0]); // shelves run along the left wall
     expect(library.position[2]).toBeGreaterThan(-1.0); // keep the viewpoint near the doorway to avoid a shelf close-up

@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { PerspectiveCamera, Vector3 } from "three";
 import { getRoomWallDecor } from "./wallDecor";
 import { HOUSE_LAYOUT, getRoomWallRuns, rooms } from "./rooms";
 
@@ -51,6 +52,27 @@ describe("room-specific wall accents", () => {
     expect(art[0].side).toBe("left");
     expect(art[0].width).toBeLessThanOrEqual(0.62);
     expect(art[0].height).toBeLessThanOrEqual(0.58);
+  });
+
+  it("keeps the living-room geometric art inside the first-person camera frame", () => {
+    const livingRoom = rooms.find((room) => room.slug === "living-room")!;
+    const artwork = getRoomWallDecor(livingRoom)[0];
+    const camera = new PerspectiveCamera(50, 1440 / 1000, 0.1, 100);
+    camera.position.set(...livingRoom.camera.position);
+    camera.lookAt(new Vector3(...livingRoom.camera.target));
+    camera.updateProjectionMatrix();
+    camera.updateMatrixWorld(true);
+
+    const artWorldPosition = new Vector3(
+      livingRoom.scenePosition[0] + artwork.position[0],
+      livingRoom.scenePosition[1] + artwork.position[1],
+      livingRoom.scenePosition[2] + artwork.position[2],
+    );
+    const projected = artWorldPosition.project(camera);
+    expect(projected.x).toBeGreaterThan(-0.75);
+    expect(projected.x).toBeLessThan(0.75);
+    expect(projected.y).toBeGreaterThan(-0.75);
+    expect(projected.y).toBeLessThan(0.75);
   });
 
   it("does not add wall art to garden or rooftop views", () => {
