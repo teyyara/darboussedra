@@ -1,16 +1,16 @@
 {
   "schema_version": "1.0",
-  "run_id": "20261017-darboussedra-aeos-v3-loop019",
-  "keyphrase": "DAR BOUSSEDRA — LOOP 019: room-aware Moroccan wall accents",
+  "run_id": "20261017-darboussedra-aeos-v3-loop020",
+  "keyphrase": "DAR BOUSSEDRA — LOOP 020: bounded browser visual review",
   "rulebook_version": "AEOS v3",
   "repository": "teyyara/darboussedra",
   "branch": "fix/loop-004-architecture-coherence",
-  "loop": 19,
-  "candidate": "dar-boussedra-room-wall-accents-019",
-  "state": "WAITING_FOR_VALIDATION",
-  "status": "LOOP019_WALL_ACCENTS_COMMITTED_VALIDATION_QUEUED_VISUAL_ACCEPTANCE_PENDING_PR5_DRAFT_NO_MERGE",
+  "loop": 20,
+  "candidate": "dar-boussedra-visual-capture-020",
+  "state": "VALIDATING",
+  "status": "LOOP020_CAPTURE_WAITS_BOUNDED_REPORT_PRESERVED_VALIDATION_RUNNING_VISUAL_ACCEPTANCE_PENDING_PR5_DRAFT_NO_MERGE",
   "latest_known_good_commit": "d237375a364f25b0e30dade08f9b02790396b966",
-  "latest_source_checkpoint_commit": "61d00606d2bd3889fb4cdca583841541467be877",
+  "latest_source_checkpoint_commit": "64b3297f57a201bcb5018da5f15b66b5303fbe9b",
   "pull_request": "https://github.com/teyyara/darboussedra/pull/5",
   "validation": {
     "loop013_browser_review": {
@@ -44,7 +44,7 @@
     },
     "current_browser_review": {
       "result": "PENDING",
-      "workflow_run": 39061389044,
+      "workflow_run": 39061538620,
       "artifact": "NOT_YET_PUBLISHED"
     },
     "merge": "NOT_PERFORMED",
@@ -108,10 +108,31 @@
       "change": "Add camera-aware framed geometric accents to each enclosed room, positioned within uninterrupted door-free wall runs; exclude rear-window walls and outdoor/roof destinations; add two geometry regression tests."
     },
     "loop019_source_checks": {
-      "result": "QUEUED",
-      "workflow_run": 39061389044
+      "result": "PASS",
+      "workflow_run": 39061389044,
+      "steps": [
+        "npm run typecheck passed",
+        "npm test passed",
+        "npm run build passed",
+        "Browser capture remains in progress without an artifact"
+      ]
+    },
+    "loop019_browser_review": {
+      "result": "STALLED_NO_ARTIFACT",
+      "workflow_run": 39061389044,
+      "artifact": "NOT_YET_PUBLISHED"
+    },
+    "loop020_source_change": {
+      "result": "COMMITTED_VALIDATION_RUNNING",
+      "commit": "64b3297f57a201bcb5018da5f15b66b5303fbe9b",
+      "workflow_run": 39061538620,
+      "change": "Bound Playwright launch/navigation/arrival/camera/screenshot waits; continue after missed camera phase and write browser-review.json from a finally block to preserve partial review evidence."
+    },
+    "loop020_source_checks": {
+      "result": "RUNNING",
+      "workflow_run": 39061538620
     }
   },
-  "next_high_value_work": "Confirm Loop 019 typecheck/tests/build in run 39061389044; inspect its fresh room/stair/exterior/mobile screenshots if a browser artifact publishes. Earlier run 39060937008 remains stuck on browser capture with no artifact, so do not claim visual acceptance.",
-  "current_browser_review_run": 39061389044
+  "next_high_value_work": "Confirm run 39061538620 typecheck/tests/build and retrieve the newly bounded visual review artifact. Review interior room art, stairwell ceiling/hatch, daylight/exterior and mobile frames; visual acceptance remains pending.",
+  "current_browser_review_run": 39061538620
 }

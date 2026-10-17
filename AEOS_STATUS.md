@@ -1,13 +1,13 @@
 # AEOS Status — Dar Boussedra
 
-**State:** LOOP 019 ROOM WALL ACCENTS — IMPLEMENTED, VALIDATION QUEUED, VISUAL REVIEW PENDING  
-**Active keyphrase:** DAR BOUSSEDRA — LOOP 019: ROOM-AWARE MOROCCAN WALL ACCENTS  
-**Run ID:** 20261017-darboussedra-aeos-v3-loop019  
-**Loop:** 019 · **Candidate:** dar-boussedra-room-wall-accents-019  
+**State:** LOOP 020 BOUNDED VISUAL CAPTURE — IMPLEMENTED, VALIDATION RUNNING  
+**Active keyphrase:** DAR BOUSSEDRA — LOOP 020: BOUNDED BROWSER VISUAL REVIEW  
+**Run ID:** 20261017-darboussedra-aeos-v3-loop020  
+**Loop:** 020 · **Candidate:** dar-boussedra-visual-capture-020  
 **Repository:** https://github.com/teyyara/darboussedra  
 **Branch:** fix/loop-004-architecture-coherence  
 **Base main:** 501cc6ccf3e6926504dfcd051ac98147360cd48a  
-**Latest source-code checkpoint commit:** 61d00606d2bd3889fb4cdca583841541467be877  
+**Latest source-code checkpoint commit:** 64b3297f57a201bcb5018da5f15b66b5303fbe9b  
 **Last updated:** 2026-10-17
 
 ## Loop 003 outcome
@@ -346,3 +346,14 @@ Confirm Loop 018 TypeScript/tests/build pass, then inspect a fresh screenshot ar
 
 ### Next action
 Confirm Loop 019 typecheck, tests and production build. Review a fresh room-by-room screenshot artifact when the capture job is available; do not treat the older Loop 014 screenshots as proof of the new geometry.
+
+
+## Loop 020 — Bounded browser visual capture
+
+- Source commit [`64b3297`](https://github.com/teyyara/darboussedra/commit/64b3297f57a201bcb5018da5f15b66b5303fbe9b) bounds Playwright launch, navigation, room-arrival, camera-phase and screenshot waits. Missed stair-camera phases are recorded as notes and the report is written in a `finally` block, so an early interaction failure still leaves a partial artifact.
+- Loop 019 source checks passed in [run 39061389044](https://github.com/teyyara/darboussedra/actions/runs/39061389044): TypeScript, tests and production build. Its browser-capture step still had not completed or published screenshots at last check.
+- Loop 020 validation [run 39061538620](https://github.com/teyyara/darboussedra/actions/runs/39061538620) is in progress. Its result is not yet claimed.
+- No paid services/assets, new dependencies, backend, storage, merge to `main`, or manual deployment.
+
+### Next action
+Confirm run 39061538620's checks and inspect its uploaded visual artifact when capture finishes. The newly added wall accents are not visually accepted until the actual rendered frames can be reviewed.
