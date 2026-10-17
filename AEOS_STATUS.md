@@ -1,13 +1,13 @@
 # AEOS Status — Dar Boussedra
 
-**State:** LOOP 033 STAIR-HATCH TRIM — SOURCE CHECKS PASSED, BROWSER REVIEW RUNNING  
-**Active keyphrase:** DAR BOUSSEDRA — LOOP 033: FINISH THE ROOF STAIR-HATCH REVEAL  
-**Run ID:** 20261017-darboussedra-aeos-v3-loop033  
-**Loop:** 033 · **Candidate:** dar-boussedra-stair-hatch-trim-033  
+**State:** LOOP 036 KITCHEN COMPOSITION AND CAPTURE FLOW — SOURCE CHECKS PASSED, BROWSER REVIEW RUNNING  
+**Active keyphrase:** DAR BOUSSEDRA — LOOP 036: EYE-LEVEL KITCHEN VIEW AND RELIABLE VISUAL REVIEW  
+**Run ID:** 20261017-darboussedra-aeos-v3-loop036  
+**Loop:** 036 · **Candidate:** dar-boussedra-kitchen-composition-036  
 **Repository:** https://github.com/teyyara/darboussedra  
 **Branch:** fix/loop-004-architecture-coherence  
 **Base main:** 501cc6ccf3e6926504dfcd051ac98147360cd48a  
-**Latest source-code checkpoint commit:** a53100dfd7c21439bcd7c5598e8349b8d28eb3d1  
+**Latest source-code checkpoint commit:** 68baa601ff4c0a7052e534f00b0fa2662d2ea904  
 **Last updated:** 2026-10-17
 
 ## Loop 003 outcome
@@ -438,3 +438,27 @@ Inspect run 39063164627's fresh visual artifact when uploaded. Verify the kitche
 - Latest source checks are pending for Loop 032/033. Loop 031's typecheck/tests/build passed before that later source change, but its browser capture was cancelled by a newer push without publishing an artifact.
 - Do not claim the living-room crop or stair-hatch framing fixed until fresh screenshots from the newest source are inspected.
 - PR #5 remains open and draft-only. Main is unchanged; no manual deployment or paid assets/services/dependencies.
+
+
+## Loop 034 — Kitchen composition
+
+- Source commit [2f0ee6c](https://github.com/teyyara/darboussedra/commit/2f0ee6c2ee3e193e9ac8ce6ac1bea99db9eb5d4b) redirected the kitchen view toward the worktop, sink and cooktop rather than the refrigerator. The first target did not satisfy eye-level / horizontal framing rules, which CI caught.
+- The camera was refined in [68baa60](https://github.com/teyyara/darboussedra/commit/68baa601ff4c0a7052e534f00b0fa2662d2ea904) to keep a 0.4 m target drop and maintain a modest diagonal view. A regression test asserts that the camera still points toward the fitted worktop.
+
+## Loop 035 — Deterministic room screenshots plus a movement probe
+
+- Source commit [cc221f7](https://github.com/teyyara/darboussedra/commit/cc221f772d1aed57153d857475fff9c5431faef5) captures static room/exterior/map views with reduced motion so an incomplete slow route does not leave the whole room photo set half-finished.
+- It then uses a separate browser page to re-enable normal motion and capture the lower stair flight, upper landing, roof stair flight, hatch clearance and descent. The intention is to preserve real animated movement checks while keeping still-image evidence complete.
+
+## Loop 036 — Current validation
+
+- Run [39070069994](https://github.com/teyyara/darboussedra/actions/runs/39070069994) has passed typecheck, tests, production build and Chromium installation. Its browser capture is running; no artifact has been published yet.
+- The prior full frame set [39063511034](https://github.com/teyyara/darboussedra/actions/runs/39063511034) documented the incomplete route issue: the captured entrance, kitchen, library and prayer-room views were still marked WALKING TO, and the test timed out trying to reopen the map while the camera was moving. The new capture flow separates those static views from its movement probe.
+
+### Current acceptance state
+- Source checks: PASS for commit 68baa601ff4c0a7052e534f00b0fa2662d2ea904.
+- Visual acceptance: PENDING. Inspect fresh kitchen and living-room compositions, garden planting, roof-hatch trim, desktop exterior and mobile map before treating the latest geometry as accepted.
+- PR #5 remains open and draft-only; main is unchanged, and no manual Vercel deployment or paid services/assets/dependencies were added.
+
+### Next action
+Retrieve the artifact from run 39070069994 after capture finishes, inspect all rendered views and the movement report, then address any remaining concrete issues.
