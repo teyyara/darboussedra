@@ -7,6 +7,7 @@ import { getPropCornerRadius } from "./roundedProps";
 import { getInteriorRoofCeilingPanels } from "./interiorCeiling";
 import { getRoomCeilingBottomLocal } from "./roomDetails";
 import { getRoomWallDecor } from "./wallDecor";
+import { SKY_CLOUD_GROUPS, SKY_SUN_POSITION } from "./skyLayout";
 import { RealisticMaterialPass } from "./realisticMaterials";
 import { getCameraZoneForPosition, getHouseSceneVisibility, type CameraZone } from "./sceneVisibility";
 import {
@@ -76,39 +77,25 @@ function SkyEnvironment() {
         depthTest={false} depthWrite={false} />
     </mesh>
     {/* Distant sun and cloud forms still use depth testing: nearby roofs and walls must occlude them. */}
-    <mesh position={[-28, 20, -60]} renderOrder={-998} frustumCulled={false}>
+    <mesh position={SKY_SUN_POSITION} renderOrder={-998} frustumCulled={false}>
       <sphereGeometry args={[2.15, 32, 24]} />
       <meshBasicMaterial color="#fff4d2" toneMapped={false} depthTest={true} depthWrite={false} />
     </mesh>
-    <mesh position={[-28, 20, -60]} renderOrder={-999} frustumCulled={false}>
+    <mesh position={SKY_SUN_POSITION} renderOrder={-999} frustumCulled={false}>
       <sphereGeometry args={[4.5, 32, 24]} />
       <meshBasicMaterial color="#ffe0a1" transparent opacity={0.18} toneMapped={false}
         depthTest={true} depthWrite={false} />
     </mesh>
-    <group position={[-18, 17, -72]}>
-      {[
-        { position: [0, 0, 0] as Vector3Tuple, size: [4.5, 1.25, 0.5] as Vector3Tuple },
-        { position: [-2.3, -0.25, 0.05] as Vector3Tuple, size: [2.7, 1.0, 0.45] as Vector3Tuple },
-        { position: [2.2, -0.18, -0.08] as Vector3Tuple, size: [2.9, 0.92, 0.45] as Vector3Tuple },
-      ].map((cloud, index) => <mesh key={index} position={cloud.position} scale={cloud.size} renderOrder={-997}
-        frustumCulled={false}>
-        <sphereGeometry args={[1, 18, 12]} />
-        <meshBasicMaterial color="#fffaf0" transparent opacity={0.58} toneMapped={false}
-          depthTest={true} depthWrite={false} />
-      </mesh>)}
-    </group>
-    <group position={[29, 21, -78]}>
-      {[
-        { position: [0, 0, 0] as Vector3Tuple, size: [4.2, 1.1, 0.45] as Vector3Tuple },
-        { position: [-1.9, -0.18, 0] as Vector3Tuple, size: [2.5, 0.8, 0.4] as Vector3Tuple },
-        { position: [2.1, -0.1, 0.04] as Vector3Tuple, size: [2.4, 0.82, 0.42] as Vector3Tuple },
-      ].map((cloud, index) => <mesh key={index} position={cloud.position} scale={cloud.size} renderOrder={-997}
-        frustumCulled={false}>
-        <sphereGeometry args={[1, 18, 12]} />
-        <meshBasicMaterial color="#fffaf0" transparent opacity={0.48} toneMapped={false}
-          depthTest={true} depthWrite={false} />
-      </mesh>)}
-    </group>
+    {SKY_CLOUD_GROUPS.map((cloudGroup, groupIndex) =>
+      <group key={"sky-cloud-group-" + groupIndex} position={cloudGroup.position}>
+        {cloudGroup.clouds.map((cloud, index) => <mesh key={index} position={cloud.position}
+          scale={cloud.size} renderOrder={-997} frustumCulled={false}>
+          <sphereGeometry args={[1, 18, 12]} />
+          <meshBasicMaterial color="#fffaf0" transparent opacity={cloud.opacity} toneMapped={false}
+            depthTest={true} depthWrite={false} />
+        </mesh>)}
+      </group>
+    )}
   </group>;
 }
 
@@ -360,6 +347,25 @@ function ExteriorShell({ location, onDoorActivate, reducedMotion }: { location: 
       <boxGeometry args={[HOUSE_LAYOUT.exterior.width, 0.12, wallThickness + 0.04]} />
       <meshStandardMaterial color="#d4c1a5" roughness={0.92} />
     </mesh>
+
+    {/* Warm exterior sconces help the entrance read as a real arrival point even in daylight. */}
+    {[-1, 1].map((side) => <group key={"entry-sconce-" + side}
+      position={[side * (doorWidth / 2 + 0.58), 2.02, frontZ + wallThickness / 2 + 0.015]}>
+      <mesh castShadow>
+        <boxGeometry args={[0.16, 0.28, 0.09]} />
+        <meshStandardMaterial color="#795b43" roughness={0.72} metalness={0.18} />
+      </mesh>
+      <mesh position={[0, 0, 0.052]}>
+        <boxGeometry args={[0.095, 0.16, 0.018]} />
+        <meshStandardMaterial color="#fff0c4" emissive="#ffce7b" emissiveIntensity={0.72}
+          roughness={0.36} toneMapped={false} />
+      </mesh>
+      <mesh position={[0, 0.17, 0]} castShadow>
+        <boxGeometry args={[0.2, 0.045, 0.13]} />
+        <meshStandardMaterial color="#795b43" roughness={0.74} metalness={0.12} />
+      </mesh>
+      <pointLight position={[0, 0, 0.18]} color="#ffd89b" intensity={0.12} distance={2.8} decay={2} />
+    </group>)}
     <group ref={door} position={[-doorWidth / 2, 0, frontZ + 0.015]}>
       <mesh position={[doorWidth / 2, doorHeight / 2, 0]} castShadow
         onClick={doorAction ? (event) => { event.stopPropagation(); onDoorActivate(doorAction === "enter"); } : undefined}
