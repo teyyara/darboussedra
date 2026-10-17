@@ -34,8 +34,8 @@ export interface GardenShrub {
 export const GARDEN_TREES: readonly GardenTree[] = [
   {
     key: "left-olive",
-    x: -1.95,
-    z: 0.05,
+    x: -2.15,
+    z: 0.65,
     trunkHeight: 1.12,
     branches: [
       { position: [-0.18, 1.14, 0], rotation: [0, 0, -0.56], length: 0.56 },
@@ -51,8 +51,8 @@ export const GARDEN_TREES: readonly GardenTree[] = [
   },
   {
     key: "right-olive",
-    x: 1.95,
-    z: 0.35,
+    x: 2.15,
+    z: 1.0,
     trunkHeight: 1.02,
     branches: [
       { position: [-0.16, 1.08, 0], rotation: [0.05, 0, -0.52], length: 0.5 },
