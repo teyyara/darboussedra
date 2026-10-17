@@ -12,6 +12,7 @@ import { getKitchenFixtureLayout } from "./kitchenLayout";
 import { getLibraryBookProps } from "./libraryShelving";
 import { GARDEN_SHRUBS, GARDEN_TREES } from "./gardenPlants";
 import { getGardenPavers } from "./gardenPath";
+import { ROOF_SEATING_RUG, ROOF_TEA_STOOLS, ROOF_TEA_TABLE } from "./roofTerraceProps";
 import { RealisticMaterialPass } from "./realisticMaterials";
 import { getCameraZoneForPosition, getHouseSceneVisibility, type CameraZone } from "./sceneVisibility";
 import {
@@ -934,6 +935,69 @@ function RoofDeck({ onSelect }: { onSelect: () => void }) {
     ].map((wall, index) => <mesh key={index} position={wall.position} castShadow>
       <boxGeometry args={wall.size} /><meshStandardMaterial color="#e5d8c4" roughness={0.98} />
     </mesh>)}
+    {/* A woven rug anchors the existing bench and brings Moroccan textile color onto the terrace. */}
+    <group>
+      <PropBox position={[ROOF_SEATING_RUG.position[0], HOUSE_LAYOUT.roofY + 0.02, ROOF_SEATING_RUG.position[1]]}
+        size={[ROOF_SEATING_RUG.size[0], 0.035, ROOF_SEATING_RUG.size[1]]} color="#a16d55" />
+      <PropBox position={[ROOF_SEATING_RUG.position[0], HOUSE_LAYOUT.roofY + 0.04, ROOF_SEATING_RUG.position[1]]}
+        size={[ROOF_SEATING_RUG.size[0] - 0.22, 0.01, ROOF_SEATING_RUG.size[1] - 0.22]} color="#e0c9a7" />
+      {[-0.82, 0, 0.82].map((offset, index) => <PropBox key={"rug-band-" + index}
+        position={[ROOF_SEATING_RUG.position[0] + offset, HOUSE_LAYOUT.roofY + 0.048, ROOF_SEATING_RUG.position[1]]}
+        size={[0.026, 0.008, ROOF_SEATING_RUG.size[1] - 0.38]}
+        color={index === 1 ? "#71806b" : "#945b48"} />)}
+    </group>
+
+    {/* Low tea table and two stools occupy the far-left seating nook, away from the hatch and stair route. */}
+    <group>
+      {ROOF_TEA_STOOLS.map((stool, index) => <group key={"tea-stool-" + index}
+        position={[stool.position[0], HOUSE_LAYOUT.roofY, stool.position[1]]}>
+        <PropBox position={[0, 0.22, 0]} size={[stool.size[0], 0.1, stool.size[1]]} color="#a67e5b" />
+        {[-1, 1].flatMap((xSide) => [-1, 1].map((zSide) =>
+          <PropBox key={xSide + ":" + zSide}
+            position={[xSide * (stool.size[0] / 2 - 0.06), 0.105, zSide * (stool.size[1] / 2 - 0.06)]}
+            size={[0.065, 0.21, 0.065]} color="#79583f" />))}
+      </group>)}
+      <group position={[ROOF_TEA_TABLE.position[0], HOUSE_LAYOUT.roofY, ROOF_TEA_TABLE.position[1]]}>
+        {[-1, 1].flatMap((xSide) => [-1, 1].map((zSide) =>
+          <PropBox key={"table-leg-" + xSide + ":" + zSide}
+            position={[xSide * 0.34, 0.21, zSide * 0.23]} size={[0.07, 0.4, 0.07]} color="#755039" />))}
+        <PropBox position={[0, 0.42, 0]} size={[ROOF_TEA_TABLE.size[0], 0.07, ROOF_TEA_TABLE.size[1]]}
+          color="#8d6448" />
+        <PropBox position={[0, 0.472, 0]} size={[0.56, 0.022, 0.42]} color="#c5a16e" roughness={0.52} metalness={0.24} />
+        {/* A small teapot and two cups make the outdoor seating feel used, not staged empty. */}
+        <mesh position={[0, 0.55, -0.035]} castShadow>
+          <cylinderGeometry args={[0.09, 0.11, 0.11, 20]} />
+          <meshStandardMaterial color="#9b7453" roughness={0.48} metalness={0.1} />
+        </mesh>
+        <mesh position={[0, 0.612, -0.035]}>
+          <cylinderGeometry args={[0.07, 0.08, 0.014, 20]} />
+          <meshStandardMaterial color="#77563f" roughness={0.5} />
+        </mesh>
+        <mesh position={[0, 0.63, -0.035]}>
+          <sphereGeometry args={[0.025, 12, 10]} />
+          <meshStandardMaterial color="#c5a16e" metalness={0.3} roughness={0.42} />
+        </mesh>
+        <mesh position={[-0.105, 0.56, -0.035]} rotation={[0, 0, -Math.PI / 3]}>
+          <cylinderGeometry args={[0.018, 0.034, 0.11, 12]} />
+          <meshStandardMaterial color="#9b7453" roughness={0.5} />
+        </mesh>
+        <mesh position={[0.103, 0.565, -0.035]} rotation={[0, Math.PI / 2, 0]}>
+          <torusGeometry args={[0.045, 0.012, 8, 18]} />
+          <meshStandardMaterial color="#9b7453" roughness={0.48} />
+        </mesh>
+        {[-0.16, 0.16].map((cupX) => <group key={"tea-cup-" + cupX}>
+          <mesh position={[cupX, 0.53, 0.15]}>
+            <cylinderGeometry args={[0.045, 0.053, 0.07, 18]} />
+            <meshStandardMaterial color="#f1e5ce" roughness={0.32} />
+          </mesh>
+          <mesh position={[cupX, 0.562, 0.15]}>
+            <cylinderGeometry args={[0.038, 0.04, 0.006, 18]} />
+            <meshStandardMaterial color="#8a9b73" roughness={0.4} />
+          </mesh>
+        </group>)}
+      </group>
+    </group>
+
     {/* Usable terrace seating set away from the stair hatch, with planters at the parapet corners. */}
     <group>
       <mesh position={[-3.55, HOUSE_LAYOUT.roofY + 0.28, -1.35]} castShadow receiveShadow>
