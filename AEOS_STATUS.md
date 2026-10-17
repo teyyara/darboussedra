@@ -1,13 +1,13 @@
 # AEOS Status — Dar Boussedra
 
-**State:** LOOP 009 INTERIOR FINISH DETAILS — SOURCE CHECKS PASS, BROWSER CAPTURE PENDING  
-**Active keyphrase:** DAR BOUSSEDRA — LOOP 009: ADD SUBTLE INTERIOR SKIRTING  
-**Run ID:** 20261017-darboussedra-aeos-v3-loop009  
-**Loop:** 009 · **Candidate:** dar-boussedra-interior-finish-009  
+**State:** LOOP 010 UPPER-LANDING CAMERA COMPOSITION — SOURCE CHECKS IN PROGRESS, BROWSER REVIEW PENDING  
+**Active keyphrase:** DAR BOUSSEDRA — LOOP 010: KEEP STAIRWELL IN VIEW DURING UPPER-BRIDGE TRAVEL  
+**Run ID:** 20261017-darboussedra-aeos-v3-loop010  
+**Loop:** 010 · **Candidate:** dar-boussedra-upper-landing-camera-010  
 **Repository:** https://github.com/teyyara/darboussedra  
 **Branch:** fix/loop-004-architecture-coherence  
 **Base main:** 501cc6ccf3e6926504dfcd051ac98147360cd48a  
-**Latest source-code checkpoint commit:** a74afe4e985bca0ce4fb75fc48b37f8ce02af21c  
+**Latest source-code checkpoint commit:** 1b895480bc625763fdd9277aabf7767f30a7f4c9  
 **Last updated:** 2026-10-17
 
 ## Loop 003 outcome
@@ -181,3 +181,18 @@ Inspect the new `06-kitchen-eye-level.png` and `01-exterior-desktop.png` from ru
 
 ### Next action
 Check the newest CI run, then review the updated kitchen view plus a bedroom/landing view to see whether the fridge is more legible and skirting gives the rooms clearer edge definition without visual clutter. If the screenshot runs continue to stall after code checks, investigate Playwright capture timing or software WebGL performance before adding more geometry.
+
+
+## Loop 010 — Upper-landing camera composition
+
+**State:** Camera route source fix committed. Fresh CI is running; no post-fix browser verdict claimed yet.
+- **Source commit:** [`1b89548`](https://github.com/teyyara/darboussedra/commit/1b895480bc625763fdd9277aabf7767f30a7f4c9)
+- **CI run:** [Foundation checks #39052970714](https://github.com/teyyara/darboussedra/actions/runs/39052970714).
+- **Evidence that motivated the change:** browser capture from [run 39052442310](https://github.com/teyyara/darboussedra/actions/runs/39052442310), artifact `darboussedra-visual-review`. The `15a-upper-landing-to-stair.png` and `16-upper-bridge-after-ascent.png` frames show that on the narrow side lane the camera stares along the lane at a blank wall or into the next stair flight, giving little view of the stair opening.
+- **Change:** side-lane waypoints now carry a mild inward gaze toward the opening. When reversing the ground stair route, preserved headings reverse their forward/back component but keep the inward lateral glance. The travel positions and guarded side-lane remain unchanged. Added a regression test covering both directions.
+- **Previously validated polish:** [Loop 007 run 39051923842](https://github.com/teyyara/darboussedra/actions/runs/39051923842) passed browser checks, with 10/10 arrivals, zero runtime errors and correct stair ascent/descent pitch. [Loop 008 run 39052224425](https://github.com/teyyara/darboussedra/actions/runs/39052224425) passed source and browser checks; the fridge panel/handle reads clearly in the kitchen capture. [Loop 009 run 39052442310](https://github.com/teyyara/darboussedra/actions/runs/39052442310) passed source and browser checks; skirting is visible and doorway openings remain clear.
+- **Current validation:** CI run 39052970714 was at dependency installation when this checkpoint was written; typecheck, tests, build and browser artifact remain pending for this camera change.
+- **Scope:** no dependency or layout changes. PR #5 stays draft/unmerged. No manual Vercel deployment.
+
+### Next action
+Inspect the new `14-upper-landing-turn.png`, `15a-upper-landing-to-stair.png`, and `16-upper-bridge-after-ascent.png` after run 39052970714 completes. Verify that camera glances into the stair opening during both ascent and return travel, while the direction of walking remains legible.
