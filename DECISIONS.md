@@ -11,3 +11,39 @@
 9. **Validation honesty.** CI typecheck, unit tests and production build are green on main. Visual browser, keyboard/mobile, real-device performance and accessibility conformance remain unverified because connected browser/Vercel inspection was denied.
 10. **Vercel boundary.** The owner manages Vercel. Git-connected deployments follow the owner's project settings. The agent does not manually deploy/promote/rollback.
 11. **Public-repository data minimization.** Keep an actionable project summary instead of republishing the full source brief or entire operating prompt verbatim.
+
+12. **Loop 004 geometry contract.** `HOUSE_LAYOUT` and `rooms.ts` own shell dimensions, room bounds, floor elevations, landing positions, stair endpoints and the roof opening. Spatial plan positions derive from the same room coordinates and footprints.
+13. **Connections mean geometry.** A declared same-level room edge is valid only when a usable shared boundary exists; both wall gaps derive from that connection. Stair hall and upper landing openings are explicit circulation portals, not additional permanent destinations. All 13 public room slugs remain stable.
+14. **Acceptance evidence.** Code invariants and CI cannot establish rendered visual correctness or collision-free camera paths. Loop 004 remains visually unaccepted until real browser images/interaction checks cover the facade/entry, ground and upper rooms, stairs, rooftop, garden, plan tabs, mobile, keyboard, reduced motion, fallback and console.
+15. **Family approval.** The changed proportions and spatial relationships remain a provisional blockout. In particular, Pets’ Corner width, Musalla proportions, central stair-hall arrangement, stair pitch and threshold layout require family review before the floor plan is treated as final.
+
+16. **Loop 004 CI outcome.** GitHub Actions run [38946031721](https://github.com/teyyara/darboussedra/actions/runs/38946031721) passed TypeScript typecheck, 12 unit tests across three files, and the production build for code commit `a19287f01d84b4c61fb14245e7f20b2efa0f3a90`. This does not certify the rendered architecture.
+17. **No merge without visual acceptance.** The Loop 004 branch/PR remains unmerged; no manual Vercel deployment is permitted in this loop. A green preview status is not substitute evidence for browser screenshots and interaction review.
+
+18. **Loop 004 bundle measurement.** Production build measured the entry bundle at 242.65 kB minified / 75.72 kB gzip and lazy HouseScene at 896.14 kB / 241.52 kB gzip; Vite retains its >500 kB chunk warning. Keep the existing lazy boundary and defer additional chunk splitting until renderer/runtime measurements identify the best split.
+
+19. **Loop 004 partition and stair clearance.** Shared wall intervals and portal frames are rendered by one owner; the exterior shell owns the entrance facade. The first stair tread is kept clear of the rear wall by geometry math and a regression test.
+20. **Latest Loop 004 source-code CI.** GitHub Actions run [38951780470](https://github.com/teyyara/darboussedra/actions/runs/38951780470) passed typecheck, 16 tests across three files and production build for source-code commit `adcc4cff71e3d1487681294c7b9560ee7d484126`. Vercel Git statuses are green, but visual browser verification remains blocked.
+21. **Last recorded build-size measurement.** On source-code commit `9b541fdc19dd03f951371c22a0e1528961732304`, the entry bundle was 244.05 kB minified / 76.23 kB gzip and lazy HouseScene was 896.19 kB / 241.56 kB gzip. The newer source commit passed build, but a separate size report was not recorded. Keep the >500 kB warning visible rather than hiding it; measure before restructuring chunks.
+
+22. **Follow-up geometry consistency.** The main facade doorway and entrance-to-garden portal now both use a dedicated 1.5 m entrance-door setting; the 1.2 m stair-hall portal remains independent. A regression test asserts the facade-linked room opening width. Facade panels derive from shell dimensions, garden props remain within the registered garden width, and back-wall trim uses single-owner intervals. These source-level refinements pass CI but still require rendered visual review.
+
+23. **Portal-clear wall details.** Wall segments and their top trim share a tested wall-run helper that excludes all declared doorway intervals; in particular, the family-table stair-hall opening must never be covered by decorative trim.
+
+24. **Front-door navigation.** Clicking the front door enters the house from the exterior and returns outside from the entrance, while the front-door hit target is disabled for unrelated room views; the action mapping has a unit test.
+
+
+25. **3D discoverability.** Room floors give a soft, room-type-aware hover tint before click selection, complementing the active-room ring. This is an input affordance, not new room content; actual colour/contrast still requires visual review.
+
+26. **Preview access and honesty.** The branch preview hostname is known from the Vercel PR status, but this session cannot retrieve it because team scope `tyyr1` returns 403 and direct web access is blocked. Do not mark the 3D work visually approved or claim screenshots exist until an authorized browser review is possible.
+
+27. **Camera routes respect openings.** Exterior transitions cross the front wall at a shared eye-height waypoint under the registered entrance-door height before raising above the interior wall envelope. Camera waypoint logic lives in `src/house/cameraPath.ts` and is covered by tests for entry, exit, garden and rooftop movement.
+28. **3D target discoverability.** The clickable front door, roof-bound stair treads, garden surface and rooftop deck provide a subtle hover material cue. This does not replace keyboard-accessible room directory/map controls or the need to inspect contrast in the real renderer.
+29. **Short viewport containment.** The app shell minimum height cannot exceed the small viewport; short-height layouts compact the welcome controls and keep the map panel inside the available vertical space.
+30. **Visual acceptance evidence stays separate.** Passing CI validates types, tests and bundling only. No screenshots or visual pass may be claimed until the actual authorized preview is reviewed.
+
+31. **Camera/viewport follow-up validation.** Commit `810785472787924c98ee2a49deedbf13ee1c1927` passed TypeScript, 20 tests across four files, and production build in [run 38953581339](https://github.com/teyyara/darboussedra/actions/runs/38953581339). The later documentation-sync commit also passed in [run 38953849607](https://github.com/teyyara/darboussedra/actions/runs/38953849607). CI success still does not certify the visual appearance.
+
+32. **A destination camera must stay inside its named room.** Room camera/focus points are constrained by the authoritative footprint. A doorway-facing hint must not send the final view into an adjacent destination.
+33. **Level-aware cutaway.** Settled ground views hide upstairs rooms and the roof slab; settled upper views hide ground rooms; both storeys are revealed only while crossing between floors. This keeps the camera and visible geometry aligned.
+34. **Latest camera/visibility validation.** Source commit `96d5f291f6d940ac1a6046be5b85e2442fb985ae` passed TypeScript, 30 tests across five files and production build in [run 38959873489](https://github.com/teyyara/darboussedra/actions/runs/38959873489). Real rendered visual acceptance remains blocked by preview access, so source tests must not be described as screenshot QA.

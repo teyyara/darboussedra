@@ -1,35 +1,42 @@
 {
   "schema_version": "1.0",
-  "run_id": "20261016-darboussedra-aeos-v3-loop003",
-  "keyphrase": "read DAR BOUSSEDRA Master Build Strategy — Initial 3D House and Website Foundation",
+  "run_id": "20261017-darboussedra-aeos-v3-loop005",
+  "keyphrase": "DAR BOUSSEDRA — LOOP 005: repair the upper-landing camera turn using rendered browser evidence",
   "rulebook_version": "AEOS v3",
   "repository": "teyyara/darboussedra",
-  "branch": "main",
-  "loop": 3,
-  "candidate": "dar-boussedra-cutaway-performance-003",
+  "branch": "fix/loop-004-architecture-coherence",
+  "loop": 5,
+  "candidate": "dar-boussedra-stair-landing-camera-005",
   "state": "WAITING_FOR_CONTINUE",
-  "status": "MERGED_TO_MAIN_CI_PASS_VERCEL_STATUS_SUCCESS_BROWSER_VISUAL_QA_PENDING",
+  "status": "SOURCE_CHECKS_PASS_BROWSER_RECAPTURE_PENDING_PR5_DRAFT_NO_MERGE_NO_MANUAL_DEPLOY",
   "latest_known_good_commit": "d237375a364f25b0e30dade08f9b02790396b966",
+  "latest_source_checkpoint_commit": "21cf57d44d53c1f6eefb46b4f9bbf2d802db56e1",
+  "pull_request": "https://github.com/teyyara/darboussedra/pull/5",
   "validation": {
-    "repository": "PASS",
-    "loop_1_ci_repair_pr": "PASS",
-    "loop_2_map_camera_pr": "PASS",
-    "loop_3_lazy_load_pr": "PASS",
-    "loop_3_architectural_pr_corrected": "PASS",
-    "main_after_architecture": "PASS",
-    "main_vercel_status": "SUCCESS_DEPLOYMENT_COMPLETED",
-    "local_install": "BLOCKED_NETWORK_DNS",
-    "local_typecheck": "NOT_RUN",
-    "local_tests": "NOT_RUN",
-    "local_build": "NOT_RUN",
-    "browser_visual_accessibility": "NOT_AVAILABLE",
-    "unit_tests_in_ci": "5_PASS",
-    "main_entry_bundle_minified_kb": 235.24,
-    "main_entry_bundle_gzip_kb": 73.54,
-    "house_scene_bundle_minified_kb": 890.96,
-    "house_scene_bundle_gzip_kb": 240.04,
-    "bundle_warning": "Vite warns about the deferred scene chunk exceeding 500 kB minified.",
-    "manual_deployment_by_agent": "NOT_PERFORMED"
+    "repository_access": "PASS",
+    "branch_checkpoint": "PASS",
+    "typecheck": {
+      "result": "PASS",
+      "workflow_run": 39050232013
+    },
+    "tests": {
+      "result": "PASS",
+      "workflow_run": 39050232013
+    },
+    "production_build": {
+      "result": "PASS",
+      "workflow_run": 39050232013
+    },
+    "previous_browser_baseline": {
+      "result": "OBSERVED_DEFECT",
+      "workflow_run": 39047506141,
+      "artifact": "darboussedra-visual-review",
+      "frame": "14-upper-landing-turn.png"
+    },
+    "current_browser_recapture": "PENDING_AT_CHECKPOINT; Chromium installation was in progress",
+    "local_clone": "BLOCKED_DNS_IN_THIS_SESSION",
+    "merge": "NOT_PERFORMED",
+    "manual_vercel_deployment": "NOT_PERFORMED"
   },
-  "next_high_value_work": "Visually verify the house cutaway and navigation in a browser, then refine proportions/circulation and measure performance."
+  "next_high_value_work": "Inspect fresh CI browser frames for upper landing / upper bridge to verify the camera clears the side wall; continue visual QA only after that evidence is available."
 }
