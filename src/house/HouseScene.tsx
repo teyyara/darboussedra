@@ -70,11 +70,11 @@ function SkyEnvironment() {
         depthTest={false} depthWrite={false} />
     </mesh>
     {/* Distant sun and cloud forms still use depth testing: nearby roofs and walls must occlude them. */}
-    <mesh position={[-38, 24, -60]} renderOrder={-998} frustumCulled={false}>
+    <mesh position={[-28, 12, -60]} renderOrder={-998} frustumCulled={false}>
       <sphereGeometry args={[2.15, 32, 24]} />
       <meshBasicMaterial color="#fff4d2" toneMapped={false} depthTest={true} depthWrite={false} />
     </mesh>
-    <mesh position={[-38, 24, -60]} renderOrder={-999} frustumCulled={false}>
+    <mesh position={[-28, 12, -60]} renderOrder={-999} frustumCulled={false}>
       <sphereGeometry args={[4.5, 32, 24]} />
       <meshBasicMaterial color="#ffe0a1" transparent opacity={0.18} toneMapped={false}
         depthTest={true} depthWrite={false} />
