@@ -308,12 +308,28 @@ describe("3D camera paths", () => {
       Math.abs(pose.position[1] - upperEye) < 0.02 &&
       Math.abs(pose.position[0] - sideLaneX) < 0.02);
 
-    expect(turnViews.length).toBeGreaterThanOrEqual(6);
+    expect(turnViews.length).toBeGreaterThanOrEqual(7);
     for (const pose of turnViews) {
       expect(pose.position[0]).toBeGreaterThan(HOUSE_LAYOUT.stairs.openingWidth / 2 + 0.08);
       expect(pose.target[0]).toBeLessThan(pose.position[0] - 0.25);
       expect(pose.target[2]).toBeGreaterThan(pose.position[2] + 0.9);
     }
+  });
+
+  it("looks into the stairwell at the first lateral step off the lower flight", () => {
+    const path = makeCameraPath("family-table", "rooftop", poseFor("rooftop"));
+    const flightEndZ = HOUSE_LAYOUT.stairs.groundFlight.to[2];
+    const upperEye = HOUSE_LAYOUT.upperY + 1.65;
+    const sideLaneX = HOUSE_LAYOUT.upperBridge.centerX + HOUSE_LAYOUT.stairs.openingWidth / 2 + 0.12;
+    const turn = path.find((pose) =>
+      pose.preserveHeading &&
+      Math.abs(pose.position[1] - upperEye) < 0.02 &&
+      Math.abs(pose.position[0] - sideLaneX) < 0.02 &&
+      Math.abs(pose.position[2] - flightEndZ) < 0.02);
+
+    expect(turn, "the lateral turn uses an authored inward gaze").toBeDefined();
+    expect(turn!.target[0]).toBeLessThan(turn!.position[0] - 0.25);
+    expect(turn!.target[2]).toBeGreaterThan(turn!.position[2] + 0.9);
   });
 
   it("keeps the stairwell in view while returning along the upper side lane", () => {

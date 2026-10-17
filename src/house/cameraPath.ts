@@ -98,9 +98,11 @@ function groundStairWalkway(): CameraPose[] {
     // Finish the turn laterally while still behind the rear bedroom-wall line,
     // then move forward along the guarded landing. The former diagonal U-turn
     // aimed the camera straight into the bedroom's side wall for several frames.
-    poseFacing([sideLaneX, upperEye, flight.to[2]], [1, 0]),
-    // Angle the first corridor views inward, away from the nearby bedroom side wall.
-    // The camera's feet stay on the guarded lane; only its gaze moves toward the central hall.
+    // The lateral step is the critical turn: a tangent-facing pose here looks
+    // straight into the rear bedroom wall. Keep the camera on the protected lane
+    // but start looking through the open stairwell before the forward walk begins.
+    poseFacing([sideLaneX, upperEye, flight.to[2]], [-0.42, 0.91], true),
+    // Continue the inward view along the upper bridge rather than tracking the wall.
     poseFacing([sideLaneX, upperEye, flight.to[2] + 0.2], [-0.42, 0.91], true),
     poseFacing([sideLaneX, upperEye, flight.to[2] + 0.6], [-0.25, 0.97], true),
     // The side lane is narrow and bordered by bedroom walls. Let the view glance
