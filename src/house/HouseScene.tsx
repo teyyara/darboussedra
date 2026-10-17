@@ -563,7 +563,7 @@ function RoomFurnishings({ room }: { room: Room }) {
   </group>;
 }
 
-function RoomArea({ room, active, onSelect }: { room: Room; active?: Room; onSelect: (slug: RoomSlug) => void }) {
+function RoomArea({ room, active, onSelect, shellOnly = false }: { room: Room; active?: Room; onSelect: (slug: RoomSlug) => void; shellOnly?: boolean }) {
   const [x, y, z] = room.scenePosition, [width, depth] = room.footprint;
   const [hovered, setHovered] = useState(false);
   const rearWindow = roomHasRearWindow(room);
@@ -592,7 +592,7 @@ function RoomArea({ room, active, onSelect }: { room: Room; active?: Room; onSel
           : [0.08, 0.11, segmentLength] as Vector3Tuple,
       };
     }));
-  const selected = active?.slug === room.slug;
+  const selected = !shellOnly && active?.slug === room.slug;
   const hintX = Math.max(-width * 0.32, Math.min(width * 0.32, room.camera.position[0] - x));
   const hintZ = Math.max(-depth * 0.32, Math.min(depth * 0.32, room.camera.position[2] - z));
   const floorColor = selected ? "#d9b9a4" : hovered
@@ -606,7 +606,7 @@ function RoomArea({ room, active, onSelect }: { room: Room; active?: Room; onSel
       onPointerOut={() => { setHovered(false); document.body.style.cursor = ""; }}>
       <boxGeometry args={[width, HOUSE_LAYOUT.floorThickness, depth]} /><meshStandardMaterial color={floorColor} roughness={0.94} />
     </mesh>
-    {!selected && <NavigationHotspot position={[hintX, HOUSE_LAYOUT.floorThickness + 0.025, hintZ]}
+    {!selected && !shellOnly && <NavigationHotspot position={[hintX, HOUSE_LAYOUT.floorThickness + 0.025, hintZ]}
       onSelect={() => onSelect(room.slug as RoomSlug)} />}
     <mesh position={[0, HOUSE_LAYOUT.floorThickness + HOUSE_LAYOUT.roomWallHeight - 0.04, 0]} receiveShadow>
       <boxGeometry args={[Math.max(0.2, width - 0.05), 0.08, Math.max(0.2, depth - 0.05)]} />
@@ -619,7 +619,7 @@ function RoomArea({ room, active, onSelect }: { room: Room; active?: Room; onSel
     {baseboards.map((board) => <mesh key={board.key} position={board.position} castShadow receiveShadow>
       <boxGeometry args={board.size} /><meshStandardMaterial color={baseboardColor} roughness={0.86} />
     </mesh>)}
-    <RoomFurnishings room={room} />
+    {!shellOnly && <RoomFurnishings room={room} />}
     {rearWindow && <group position={[0, 0, -depth / 2 + 0.035]}>
       <mesh position={[0, rearWindowCenterY, 0]}>
         <boxGeometry args={[rearWindowWidth - 0.1, rearWindowHeight - 0.1, 0.045]} />
@@ -801,7 +801,11 @@ function HouseArchitecture({ location, visualLocation, transitioning, exteriorSh
     {rooms.filter((room) =>
       (room.level === "ground" && visibility.showGroundRooms) ||
       (room.level === "upper" && visibility.showUpperRooms)).map((room) =>
-      <RoomArea key={room.id} room={room} active={active} onSelect={onSelectRoom} />)}
+      <RoomArea key={room.id} room={room} active={active} onSelect={onSelectRoom}
+        shellOnly={transitioning && (
+          (room.level === "ground" && cameraZone !== "ground") ||
+          (room.level === "upper" && cameraZone !== "upper")
+        )} />)}
     {visibility.showGarden && <GardenArea onSelect={() => onSelectRoom("garden")} />}
     {visibility.showUpperCirculation && <>
       <mesh position={[HOUSE_LAYOUT.upperLanding.centerX, HOUSE_LAYOUT.upperLanding.levelY + HOUSE_LAYOUT.floorThickness / 2, HOUSE_LAYOUT.upperLanding.centerZ]} receiveShadow>
