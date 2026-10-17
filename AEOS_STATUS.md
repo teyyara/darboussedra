@@ -1,13 +1,13 @@
 # AEOS Status — Dar Boussedra
 
-**State:** LOOP 020 BOUNDED VISUAL CAPTURE — IMPLEMENTED, VALIDATION RUNNING  
-**Active keyphrase:** DAR BOUSSEDRA — LOOP 020: BOUNDED BROWSER VISUAL REVIEW  
-**Run ID:** 20261017-darboussedra-aeos-v3-loop020  
-**Loop:** 020 · **Candidate:** dar-boussedra-visual-capture-020  
+**State:** LOOP 023 CAMERA-AWARE WALL ART — COMMITTED, VALIDATION RUNNING, VISUAL REVIEW PENDING  
+**Active keyphrase:** DAR BOUSSEDRA — LOOP 023: CAMERA-AWARE ROOM WALL ACCENTS  
+**Run ID:** 20261017-darboussedra-aeos-v3-loop023  
+**Loop:** 023 · **Candidate:** dar-boussedra-camera-aware-wall-accents-023  
 **Repository:** https://github.com/teyyara/darboussedra  
 **Branch:** fix/loop-004-architecture-coherence  
 **Base main:** 501cc6ccf3e6926504dfcd051ac98147360cd48a  
-**Latest source-code checkpoint commit:** 64b3297f57a201bcb5018da5f15b66b5303fbe9b  
+**Latest source-code checkpoint commit:** 43d23f6cf0aa79ce7f71e315aeea0f6224f19a17  
 **Last updated:** 2026-10-17
 
 ## Loop 003 outcome
@@ -357,3 +357,31 @@ Confirm Loop 019 typecheck, tests and production build. Review a fresh room-by-r
 
 ### Next action
 Confirm run 39061538620's checks and inspect its uploaded visual artifact when capture finishes. The newly added wall accents are not visually accepted until the actual rendered frames can be reviewed.
+
+
+## Loop 021 — Browser capture timing adjustment
+
+- Source commit [914b2c6](https://github.com/teyyara/darboussedra/commit/914b2c628a85a2818af8baad20bc4a377ae6a3c6) allows more time for software-rendered WebGL screenshots and room arrivals, and leaves CSS animation in its natural state during capture.
+- Run [39061980927](https://github.com/teyyara/darboussedra/actions/runs/39061980927) passed install, TypeScript, tests, production build and Chromium setup; browser capture was still in progress at last check.
+- Earlier Loop 020 artifact [12111348841](https://github.com/teyyara/darboussedra/actions/runs/39061538620) preserved a partial report showing 12-second screenshot timeouts and an arrival wait too short for the actual walk duration.
+
+## Loop 022 — Exterior daylight framing and arrival details
+
+- Source commit [c5b078b](https://github.com/teyyara/darboussedra/commit/c5b078b62271f45db23a5beb50a0e30f4624c84b) lowers the sun and cloud groups into the exterior camera frustum, keeps the second cloud cluster in view, adds understated entrance sconces, and reduces the landing-page wash so the actual 3D façade is clearer.
+- Added a sky-layout regression test to guard sun/cloud placement in the exterior camera frame.
+- Run [39062169991](https://github.com/teyyara/darboussedra/actions/runs/39062169991) passed install, TypeScript, tests, production build and Chromium setup; its browser-capture step was still running. Updated sky/sconce screenshots have not yet been inspected.
+
+## Loop 023 — Camera-aware artwork placement
+
+- Successful visual-review artifact [12111871924](https://github.com/teyyara/darboussedra/actions/runs/39061389044) confirmed the wall art renders. Manual review found the kitchen piece too close in screen space to the fridge and the living-room piece cropped at the edge of the view.
+- Source commit [43d23f6](https://github.com/teyyara/darboussedra/commit/43d23f6cf0aa79ce7f71e315aeea0f6224f19a17) scores wall segments against the destination camera direction and excludes the kitchen appliance wall and library shelving wall. Regression tests cover those reservations and the living-room wall choice.
+- Run [39062350399](https://github.com/teyyara/darboussedra/actions/runs/39062350399) is running; results for this latest wall-selection change are not yet confirmed.
+
+## Visual evidence notes
+
+- Full browser review [39060937008](https://github.com/teyyara/darboussedra/actions/runs/39060937008) passed with 10/10 destination arrivals, no browser runtime errors/notes, correct stair ascent/descent camera pitch, and usable 390px mobile width.
+- The actual frames nevertheless showed a sun clipped near the top of the exterior, sparse rooms, and a broad sky sightline at the upper landing. The visible sky may be the intentional stair hatch, so keep verifying the new frame rather than sealing that opening blindly.
+- Loops 021–023 visual review is not yet complete. Do not claim final visual acceptance until fresh screenshots from the latest source are available.
+
+### Next action
+Confirm run 39062350399. Retrieve fresh visual-review screenshots and re-check the sun/cloud framing, entrance sconces, kitchen and living-room artwork, upper landing/hatch and mobile view. PR #5 remains draft; main and manual deployment are untouched.
