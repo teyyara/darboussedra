@@ -1,13 +1,13 @@
 # AEOS Status — Dar Boussedra
 
-**State:** LOOP 036 KITCHEN COMPOSITION AND CAPTURE FLOW — SOURCE CHECKS PASSED, BROWSER REVIEW RUNNING  
-**Active keyphrase:** DAR BOUSSEDRA — LOOP 036: EYE-LEVEL KITCHEN VIEW AND RELIABLE VISUAL REVIEW  
-**Run ID:** 20261017-darboussedra-aeos-v3-loop036  
-**Loop:** 036 · **Candidate:** dar-boussedra-kitchen-composition-036  
+**State:** LOOP 047 GARDEN AND ROOFTOP FRAMING — SOURCE CHECKS PASSED, BROWSER REVIEW RUNNING  
+**Active keyphrase:** DAR BOUSSEDRA — LOOP 047: FRAME THE GARDEN PATH AND ROOFTOP TEA NOOK  
+**Run ID:** 20261017-darboussedra-aeos-v3-loop047  
+**Loop:** 047 · **Candidate:** dar-boussedra-garden-rooftop-framing-047  
 **Repository:** https://github.com/teyyara/darboussedra  
 **Branch:** fix/loop-004-architecture-coherence  
 **Base main:** 501cc6ccf3e6926504dfcd051ac98147360cd48a  
-**Latest source-code checkpoint commit:** 68baa601ff4c0a7052e534f00b0fa2662d2ea904  
+**Latest source-code checkpoint commit:** fc2ddb1ca808d27ae05bcc38a2f5a507708e2b6d  
 **Last updated:** 2026-10-17
 
 ## Loop 003 outcome
@@ -462,3 +462,43 @@ Inspect run 39063164627's fresh visual artifact when uploaded. Verify the kitche
 
 ### Next action
 Retrieve the artifact from run 39070069994 after capture finishes, inspect all rendered views and the movement report, then address any remaining concrete issues.
+
+
+## Loop 037–038 — Camera clearance and composition tests
+
+- [`1191265`](https://github.com/teyyara/darboussedra/commit/11912659d9c665059c0b38f3484cf27194ea4b95) placed the kitchen camera on the walkable side of the counter and added minimum clearance assertions.
+- [`62b1f64`](https://github.com/teyyara/darboussedra/commit/62b1f64e9dbcc310209862015eb6f9299e17c385) updated the kitchen-target expectations, re-aimed the living-room camera away from the rear doorway, and tests the framed artwork position with a PerspectiveCamera projection.
+- A fresh screenshot [`05-living-room-eye-level.png`](https://github.com/teyyara/darboussedra/actions/runs/39070641063) showed the artwork inside the frame, while the sofa still occupies much of the foreground. The kitchen is improved but worktop remains dominant in the foreground; Loop 044 pulls it further back.
+
+## Loop 039–040 — Make the library look stocked
+
+- [`d42a4bd`](https://github.com/teyyara/darboussedra/commit/d42a4bd17086f16a1cb9ca2fe180c4be7f158040) moved book spines to the room-facing side of the shelf backing, and added geometry tests.
+- [`9c3e602`](https://github.com/teyyara/darboussedra/commit/9c3e6024693b6d7474ec03809b0fa231573c856e) adjusted the upper row so books clear the board above it.
+- Full room frames from artifact [12114724022](https://github.com/teyyara/darboussedra/actions/runs/39071686186) show the shelf appears fully stocked, although the volumes read as simplified blocks rather than individually textured printed books. Loop 045 increases the count to 27.
+
+## Loop 041–042 — Garden path
+
+- [`66d7ae1`](https://github.com/teyyara/darboussedra/commit/66d7ae125724570f0feae82c9d44b575de5bce36) adds a doorstep and six staggered stone pavers; tests bound them inside the garden and preserve visible grass joints.
+- [`bf98c5c`](https://github.com/teyyara/darboussedra/commit/bf98c5c9af8254e9b924be82b618d9fffd37e9a4) corrected the test to permit the intentionally authored 0.40m stone depth.
+
+## Loop 043–044 — Rooftop tea nook and kitchen framing
+
+- [`9c8a652`](https://github.com/teyyara/darboussedra/commit/9c8a6528d6ce32492b2440b04c4f5d1930203cb9) adds a rug and low tea-table set to make the rooftop seating read as a lived-in place, with bounding tests to keep the furniture clear of the stair hatch and parapet.
+- [`e0267c0`](https://github.com/teyyara/darboussedra/commit/e0267c0148d4c730a939433c2380409f0f9f086d) pulls the kitchen viewpoint back from the countertop; tests now assert a minimum lateral clearance and room-boundary clearance.
+- Actual screenshots show these details render, but the tea set is still far to the left in the rooftop shot, and the kitchen worktop occupies much of the foreground. Loop 047 retargets the two outdoor compositions; kitchen further pullback can be revisited only after fresh views.
+
+## Loop 045–046 — Denser library and settled-view review
+
+- [`992954f`](https://github.com/teyyara/darboussedra/commit/992954f7809a075413b904b0705a32d47066f327) increases the book count from 18 to 27 (three rows of nine) with shelf/spine geometry tests.
+- [`619e545`](https://github.com/teyyara/darboussedra/commit/619e54590401923a3ec2c7a7575525c089e9d4d1) fixes the capture’s arrival predicate to require the expected room title and enabled navigation button, and deep-links settled room stills so the screenshots no longer depend on chaining long walks.
+- Run [39071795119](https://github.com/teyyara/darboussedra/actions/runs/39071795119) was superseded while the movement probe was still running. It uploaded partial artifact [12115955169](https://github.com/teyyara/darboussedra/actions/runs/39071795119) with the full room/mobile still set and ascent/landing/roof-stair frames, but the process was cancelled before `browser-review.json` and the remaining movement frames were uploaded.
+
+## Loop 047 — Garden and rooftop view framing
+
+- Source commit [`fc2ddb1`](https://github.com/teyyara/darboussedra/commit/fc2ddb1ca808d27ae05bcc38a2f5a507708e2b6d) moves the olive-style trees forward into the garden so they flank the walking line instead of visually merging with the house facade. The camera is moved closer to the garden centreline and tilted slightly downward to keep the pavers in the frame.
+- Rooftop camera now aims at the bench/rug/tea-table nook while looking down across the terrace, instead of centring the empty deck and hatch.
+- Added regression expectations for tree clearance, garden-path framing and the rooftop seating target.
+- Run [39072071748](https://github.com/teyyara/darboussedra/actions/runs/39072071748) has passed TypeScript, tests, production build and Chromium installation. Its new screenshots are still being captured; the new camera framing is not yet visually accepted.
+
+### Next action
+Inspect the fresh screenshots from run 39072071748 once the artifact appears. Confirm the garden path and both trees frame correctly, rooftop seating lands in the view without hiding the hatch, and the movement probe produces an ascent, roof-hatch and descent report. PR #5 remains draft-only; main and manual deployment remain untouched.

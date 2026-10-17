@@ -1,16 +1,16 @@
 {
   "schema_version": "1.0",
-  "run_id": "20261017-darboussedra-aeos-v3-loop036",
-  "keyphrase": "DAR BOUSSEDRA — LOOP 036: eye-level kitchen view and reliable visual review",
+  "run_id": "20261017-darboussedra-aeos-v3-loop047",
+  "keyphrase": "DAR BOUSSEDRA — LOOP 047: frame the garden path and rooftop tea nook",
   "rulebook_version": "AEOS v3",
   "repository": "teyyara/darboussedra",
   "branch": "fix/loop-004-architecture-coherence",
-  "loop": 36,
-  "candidate": "dar-boussedra-kitchen-composition-036",
+  "loop": 47,
+  "candidate": "dar-boussedra-garden-rooftop-framing-047",
   "state": "VALIDATING",
-  "status": "LOOP036_SOURCE_CHECKS_PASS_BROWSER_CAPTURE_RUNNING_VISUAL_ACCEPTANCE_PENDING_PR5_DRAFT_NO_MERGE",
+  "status": "LOOP047_SOURCE_CHECKS_PASS_BROWSER_CAPTURE_RUNNING_VISUAL_ACCEPTANCE_PENDING_PR5_DRAFT_NO_MERGE",
   "latest_known_good_commit": "d237375a364f25b0e30dade08f9b02790396b966",
-  "latest_source_checkpoint_commit": "68baa601ff4c0a7052e534f00b0fa2662d2ea904",
+  "latest_source_checkpoint_commit": "fc2ddb1ca808d27ae05bcc38a2f5a507708e2b6d",
   "pull_request": "https://github.com/teyyara/darboussedra/pull/5",
   "validation": {
     "loop013_browser_review": {
@@ -44,7 +44,7 @@
     },
     "current_browser_review": {
       "result": "PENDING",
-      "workflow_run": 39070069994,
+      "workflow_run": 39072071748,
       "artifact": "NOT_YET_PUBLISHED"
     },
     "merge": "NOT_PERFORMED",
@@ -290,8 +290,65 @@
         "Chromium install passed",
         "Browser screenshot capture running; artifact not published yet"
       ]
+    },
+    "loop039_040_library": {
+      "result": "SOURCE_CHECKS_PASSED_VISUAL_STOCKING_IMPROVED",
+      "commits": [
+        "d42a4bd17086f16a1cb9ca2fe180c4be7f158040",
+        "9c3e6024693b6d7474ec03809b0fa231573c856e"
+      ],
+      "artifact_id": 12114724022,
+      "findings": [
+        "Books now appear on the camera-facing side of shelf backing",
+        "Loop 045 increases quantity to 27 to improve density"
+      ]
+    },
+    "loop041_042_garden_path": {
+      "result": "SOURCE_CHECKS_PASSED",
+      "commits": [
+        "66d7ae125724570f0feae82c9d44b575de5bce36",
+        "bf98c5c9af8254e9b924be82b618d9fffd37e9a4"
+      ],
+      "change": "Adds porch landing and six staggered stones; fixed a strict >0.4m test assertion to allow the authored 0.4m stone."
+    },
+    "loop043_044_kitchen_roof": {
+      "result": "SOURCE_CHECKS_PASSED_VISUAL_FOLLOWUP",
+      "commits": [
+        "9c8a6528d6ce32492b2440b04c4f5d1930203cb9",
+        "e0267c0148d4c730a939433c2380409f0f9f086d"
+      ],
+      "findings": [
+        "Rooftop rug and tea set are visible but pushed far left",
+        "Kitchen view is improved but still countertop-heavy"
+      ]
+    },
+    "loop045_046_capture": {
+      "result": "STATIC_ROOM_STILLS_CAPTURED_MOVEMENT_ARTIFACT_PARTIAL",
+      "commits": [
+        "992954f7809a075413b904b0705a32d47066f327",
+        "619e54590401923a3ec2c7a7575525c089e9d4d1"
+      ],
+      "workflow_run": 39071795119,
+      "artifact_id": 12115955169,
+      "findings": [
+        "Complete 12 room/exterior/mobile still set captured",
+        "Ascent, upper landing and roof-stair frames captured",
+        "Run was cancelled during movement probe before browser-review.json / remaining motion frames were uploaded"
+      ]
+    },
+    "loop047_source_checks": {
+      "result": "PASS_BROWSER_CAPTURE_RUNNING",
+      "commit": "fc2ddb1ca808d27ae05bcc38a2f5a507708e2b6d",
+      "workflow_run": 39072071748,
+      "steps": [
+        "TypeScript passed",
+        "Unit tests passed",
+        "Production build passed",
+        "Chromium installation passed",
+        "Browser screenshot capture still running"
+      ]
     }
   },
-  "next_high_value_work": "Inspect fresh artifact from run 39070069994. Confirm kitchen fixtures are visible at eye level, living-room art no longer feels cropped, garden olive planting looks contained, hatch trim is clear of the opening, and the animated stair movement probe records the expected ascent/descent camera pitch.",
-  "current_browser_review_run": 39070069994
+  "next_high_value_work": "Inspect the fresh artifact from run 39072071748. Verify the recentered garden paver path with olive trees flanking it, rooftop tea nook composition, clear roof hatch and mobile stills. Confirm motion probe produces hatch and descent frames plus browser-review.json before visual acceptance.",
+  "current_browser_review_run": 39072071748
 }
