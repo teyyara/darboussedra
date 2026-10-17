@@ -1,13 +1,13 @@
 # AEOS Status — Dar Boussedra
 
-**State:** LOOP 007 RENDER-POLISH SOURCE CHECKS PASS — BROWSER REVIEW PENDING  
-**Active keyphrase:** DAR BOUSSEDRA — LOOP 007: IMPROVE 3D RENDERING FINISH  
-**Run ID:** 20261017-darboussedra-aeos-v3-loop007  
-**Loop:** 007 · **Candidate:** dar-boussedra-render-finish-007  
+**State:** LOOP 008 KITCHEN PROP RENDER FIX — SOURCE CHECKS PASS, BROWSER CAPTURE PENDING  
+**Active keyphrase:** DAR BOUSSEDRA — LOOP 008: CLARIFY KITCHEN APPLIANCE AND RENDERING  
+**Run ID:** 20261017-darboussedra-aeos-v3-loop008  
+**Loop:** 008 · **Candidate:** dar-boussedra-kitchen-render-008  
 **Repository:** https://github.com/teyyara/darboussedra  
 **Branch:** fix/loop-004-architecture-coherence  
 **Base main:** 501cc6ccf3e6926504dfcd051ac98147360cd48a  
-**Latest source-code checkpoint commit:** 40dfb0ce8495fe42977072584d20876284c737d5  
+**Latest source-code checkpoint commit:** 505cda4d687ca5fe3c5e63eb64b9a32c8aca76a3  
 **Last updated:** 2026-10-17
 
 ## Loop 003 outcome
@@ -150,3 +150,18 @@ Inspect the fresh `14-upper-landing-turn.png` and `16-upper-bridge-after-ascent.
 
 ### Next action
 Inspect the new `01-exterior-desktop.png`, `05-living-room-eye-level.png`, `12-rooftop-eye-level.png`, and stair-landing frames from run 39051923842. Compare brightness, material separation, foliage faceting and shadow quality against the previous artifact. Keep PR #5 draft-only until visual QA of the actual result is complete.
+
+
+## Loop 008 — Kitchen prop readability and rendering
+
+**State:** Latest source checks passed on the kitchen fix. Chromium visual capture is in progress and has not yet produced a new artifact.
+- **Source commit:** [`505cda4`](https://github.com/teyyara/darboussedra/commit/505cda4d687ca5fe3c5e63eb64b9a32c8aca76a3)
+- **CI run:** [Foundation checks #39052224425](https://github.com/teyyara/darboussedra/actions/runs/39052224425).
+- **Problem confirmed from rendered baseline:** The kitchen refrigerator's pale block geometry blended into the pale wall and sat near the camera's main view, reading more like an architectural obstruction than an appliance.
+- **Change:** Moved the refrigerator deeper into the rear-left kitchen corner, added a differentiated body and inset front panel, upper-compartment seam, vertical handle, and top cap. The worktop, cabinets and registered room footprint remain unchanged.
+- **Prior render-polish change:** [`40dfb0c`](https://github.com/teyyara/darboussedra/commit/40dfb0ce8495fe42977072584d20876284c737d5) adds antialiasing, ACES filmic tone mapping, a rebalanced light rig, tighter 2048 shadow map, and smoother foliage primitives. Its browser run [39051923842](https://github.com/teyyara/darboussedra/actions/runs/39051923842) still had not completed the capture step at checkpoint time. Effects on actual rendered quality and capture/performance are therefore not certified.
+- **Validation:** On [run 39052224425](https://github.com/teyyara/darboussedra/actions/runs/39052224425), `npm run typecheck`, `npm test`, and `npm run build` all passed. Browser screenshot capture had started but no artifact was ready at checkpoint time.
+- **Scope:** No packages/assets/services added. PR #5 remains draft and unmerged; no manual Vercel deploy/promotion performed.
+
+### Next action
+Inspect the new `06-kitchen-eye-level.png` and `01-exterior-desktop.png` from run 39052224425, then compare the lighting/shadow change against the prior artifact. If either capture run continues to stall, check which Playwright phase is waiting and bound that wait or tune software-renderer shadow cost before adding more visual effects.
