@@ -252,7 +252,9 @@ describe("3D camera paths", () => {
       pose.position[1] < HOUSE_LAYOUT.upperY + 1.4 &&
       pose.position[2] < lowerFlight.from[2] - 0.2 &&
       pose.position[2] > lowerFlight.to[2] + 0.2);
-    expect(ascentFrames.some((pose) => pose.target[1] > pose.position[1] + 0.25)).toBe(true);
+    expect(ascentFrames.some((pose) =>
+      pose.target[1] > pose.position[1] + 0.1 &&
+      pose.target[1] < pose.position[1] + 0.45)).toBe(true);
 
     const descent = makeCameraPath("rooftop", "prayer-room", poseFor("prayer-room"));
     const descentFrames = descent.filter((pose) =>
@@ -260,7 +262,9 @@ describe("3D camera paths", () => {
       pose.position[1] < HOUSE_LAYOUT.upperY + 1.4 &&
       pose.position[2] < lowerFlight.from[2] - 0.2 &&
       pose.position[2] > lowerFlight.to[2] + 0.2);
-    expect(descentFrames.some((pose) => pose.target[1] < pose.position[1] - 0.25)).toBe(true);
+    expect(descentFrames.some((pose) =>
+      pose.target[1] < pose.position[1] - 0.1 &&
+      pose.target[1] > pose.position[1] - 0.5)).toBe(true);
   });
 
   it("uses the guarded side walkway to leave the lower stair opening", () => {

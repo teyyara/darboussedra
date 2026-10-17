@@ -238,8 +238,10 @@ const stairDescent = report.frameStates.find((frame) => frame.filename === "15-s
 report.stairCameraAiming = {
   ascentDirectionY: stairAscent?.cameraDirection?.[1] ?? null,
   descentDirectionY: stairDescent?.cameraDirection?.[1] ?? null,
-  looksUpDuringAscent: typeof stairAscent?.cameraDirection?.[1] === "number" && stairAscent.cameraDirection[1] > 0.1,
-  looksDownDuringDescent: typeof stairDescent?.cameraDirection?.[1] === "number" && stairDescent.cameraDirection[1] < -0.1,
+  looksUpDuringAscent: typeof stairAscent?.cameraDirection?.[1] === "number" &&
+    stairAscent.cameraDirection[1] > 0.1 && stairAscent.cameraDirection[1] < 0.45,
+  looksDownDuringDescent: typeof stairDescent?.cameraDirection?.[1] === "number" &&
+    stairDescent.cameraDirection[1] < -0.1 && stairDescent.cameraDirection[1] > -0.45,
 };
 if (!report.stairCameraAiming.looksUpDuringAscent) {
   report.notes.push("Camera should pitch upward while climbing the lower stair flight.");

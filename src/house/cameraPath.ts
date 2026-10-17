@@ -271,14 +271,20 @@ export function makeCameraPath(from: HouseLocation, to: HouseLocation, finalPose
     const dx = next[0] - previous[0];
     const dy = next[1] - previous[1];
     const dz = next[2] - previous[2];
-    const length = Math.hypot(dx, dy, dz);
-    if (length < 0.08) return pose;
+    const horizontalLength = Math.hypot(dx, dz);
+    if (horizontalLength < 0.08) return pose;
+
+    // A literal stair-slope gaze (about 38° here) stares into the back wall on
+    // ascent. Let the eyes lead the path, but limit vertical pitch to a natural
+    // range: around 10° up while climbing and 15° down while descending.
+    const verticalAim = dy * (dy >= 0 ? 0.22 : 0.35);
+    const length = Math.hypot(dx, verticalAim, dz);
     const lookAhead = 1.2;
     return {
       position: pose.position,
       target: [
         pose.position[0] + dx / length * lookAhead,
-        pose.position[1] + dy / length * lookAhead,
+        pose.position[1] + verticalAim / length * lookAhead,
         pose.position[2] + dz / length * lookAhead,
       ],
     };
