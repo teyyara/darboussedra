@@ -933,10 +933,16 @@ function GardenArea({ onSelect }: { onSelect: () => void }) {
 function RoofHatchGuardRails() {
   const rails = useMemo(() => getRoofHatchGuardRails(), []);
   return <group>
-    {rails.map((rail) => <mesh key={rail.key} position={rail.position} castShadow receiveShadow>
-      <boxGeometry args={rail.size} />
-      <meshStandardMaterial color="#9b704e" roughness={0.84} />
-    </mesh>)}
+    {rails.map((rail) => <group key={rail.key}>
+      <mesh position={rail.position} castShadow receiveShadow>
+        <boxGeometry args={rail.size} />
+        <meshStandardMaterial color="#9b704e" roughness={0.84} />
+      </mesh>
+      <mesh position={rail.midRailPosition} castShadow receiveShadow>
+        <boxGeometry args={rail.midRailSize} />
+        <meshStandardMaterial color="#9b704e" roughness={0.86} />
+      </mesh>
+    </group>)}
     {rails.flatMap((rail) => rail.posts.map((position, index) => <mesh
       key={rail.key + "-post-" + index} position={position} castShadow receiveShadow>
       <boxGeometry args={[0.065, 0.82, 0.065]} />

@@ -2,9 +2,11 @@ import { HOUSE_LAYOUT, type Vector3Tuple } from "./rooms";
 
 export interface RoofHatchGuardRail {
   readonly key: string;
-  /** Top rail position/size in world coordinates. */
+  /** Top and middle rail positions/sizes in world coordinates. */
   readonly position: Vector3Tuple;
   readonly size: Vector3Tuple;
+  readonly midRailPosition: Vector3Tuple;
+  readonly midRailSize: Vector3Tuple;
   readonly posts: readonly Vector3Tuple[];
 }
 
@@ -31,6 +33,8 @@ export function getRoofHatchGuardRails(): RoofHatchGuardRail[] {
       key,
       position: [x, railY, (start + end) / 2],
       size: [0.075, 0.075, length + 0.075],
+      midRailPosition: [x, roofY + postHeight * 0.45, (start + end) / 2],
+      midRailSize: [0.075, 0.055, length + 0.075],
       posts: Array.from({ length: count + 1 }, (_, index) => [
         x, postY, start + length * index / count,
       ] as Vector3Tuple),
@@ -43,6 +47,8 @@ export function getRoofHatchGuardRails(): RoofHatchGuardRail[] {
       key,
       position: [(start + end) / 2, railY, z],
       size: [length + 0.075, 0.075, 0.075],
+      midRailPosition: [(start + end) / 2, roofY + postHeight * 0.45, z],
+      midRailSize: [length + 0.075, 0.055, 0.075],
       posts: Array.from({ length: count + 1 }, (_, index) => [
         start + length * index / count, postY, z,
       ] as Vector3Tuple),

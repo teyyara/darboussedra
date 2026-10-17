@@ -13,6 +13,9 @@ describe("roof hatch guardrails", () => {
     expect(rails.every((rail) => rail.size.every((dimension) => dimension > 0))).toBe(true);
     expect(rails.every((rail) => rail.position.every(Number.isFinite))).toBe(true);
     expect(rails.every((rail) => rail.posts.length >= 2)).toBe(true);
+    expect(rails.every((rail) => rail.midRailSize[1] > 0 && rail.midRailSize[1] < rail.size[1])).toBe(true);
+    expect(rails.every((rail) => rail.midRailPosition[1] > HOUSE_LAYOUT.roofY &&
+      rail.midRailPosition[1] < rail.position[1])).toBe(true);
   });
 
   it("keeps the rear-right corner clear for the side-step off the roof stair", () => {
@@ -22,8 +25,7 @@ describe("roof hatch guardrails", () => {
     const rightEdge = opening.centerX + opening.width / 2;
     const rightFrontRail = rails.find((rail) => rail.key === "right-front-hatch-rail")!;
     const minRailZ = rightFrontRail.position[2] - rightFrontRail.size[2] / 2;
-    expect(egressZ).toBeLessThan(minRailZ);
-    expect(rightEdge + 0.16).toBeGreaterThan(rightEdge);
+    expect(minRailZ - egressZ).toBeGreaterThan(0.75);
     const rearRail = rails.find((rail) => rail.key === "rear-left-hatch-rail")!;
     expect(rearRail.position[0] + rearRail.size[0] / 2).toBeLessThan(rightEdge);
   });
