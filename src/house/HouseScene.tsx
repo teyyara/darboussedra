@@ -4,7 +4,7 @@ import { ACESFilmicToneMapping, BackSide, Color, DoubleSide, Float32BufferAttrib
 import { makeCameraPath, type CameraPose } from "./cameraPath";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 import { getPropCornerRadius } from "./roundedProps";
-import { getInteriorRoofCeilingPanels } from "./interiorCeiling";
+import { getInteriorRoofCeilingPanels, getInteriorRoofHatchTrim } from "./interiorCeiling";
 import { getRoomCeilingBottomLocal } from "./roomDetails";
 import { getRoomWallDecor } from "./wallDecor";
 import { SKY_CLOUD_GROUPS, SKY_SUN_POSITION } from "./skyLayout";
@@ -988,6 +988,14 @@ function HouseArchitecture({ location, visualLocation, transitioning, exteriorSh
         position={[panel.x, HOUSE_LAYOUT.roofY - 0.09, panel.z]} receiveShadow>
         <boxGeometry args={[panel.width, 0.18, panel.depth]} />
         <meshStandardMaterial color="#e4d7c3" roughness={0.98} />
+      </mesh>
+    )}
+    {/* A timber reveal finishes the intentional stair hatch. All four strips sit on the solid-ceiling side of the opening, not over the walking clearance. */}
+    {cameraZone !== "outside" && cameraZone !== "roof" && getInteriorRoofHatchTrim().map((trim, index) =>
+      <mesh key={"interior-roof-hatch-trim-" + index}
+        position={[trim.x, HOUSE_LAYOUT.roofY - 0.2, trim.z]} receiveShadow>
+        <boxGeometry args={[trim.width, 0.055, trim.depth]} />
+        <meshStandardMaterial color="#9a704f" roughness={0.84} />
       </mesh>
     )}
     {visibility.showExteriorShell && <ExteriorShell location={location} onDoorActivate={onDoorActivate} reducedMotion={reducedMotion} />}
