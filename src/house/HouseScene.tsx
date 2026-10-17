@@ -456,8 +456,14 @@ function RoomFurnishings({ room }: { room: Room }) {
       <PropBox position={[width / 2 - 0.48, 0.74, -0.05]} size={[0.82, 0.09, 2.2]} color="#eee2cd" />
       {[-0.72, 0, 0.72].map((z) => <PropBox key={z} position={[width / 2 - 0.09, 0.36, z - 0.05]} size={[0.025, 0.49, 0.035]} color="#80624a" />)}
       <PropBox position={[width / 2 - 0.48, 0.81, -0.55]} size={[0.42, 0.025, 0.45]} color="#50524e" roughness={0.45} />
-      <PropBox position={[-width / 2 + 0.38, 0.88, -0.78]} size={[0.58, 1.7, 0.58]} color="#d9d5c9" />
-      <PropBox position={[-width / 2 + 0.38, 1.75, -0.78]} size={[0.61, 0.07, 0.61]} color="#aaa99f" />
+      {/* Tuck the appliance into the rear-left corner so it doesn't block the entry sightline. */}
+      <group position={[-width / 2 + 0.35, 0, -1.13]}>
+        <PropBox position={[0, 0.82, 0]} size={[0.52, 1.6, 0.49]} color="#aaa9a1" roughness={0.58} />
+        <PropBox position={[0, 0.82, 0.252]} size={[0.47, 1.32, 0.018]} color="#d1d0c8" roughness={0.46} />
+        <PropBox position={[0, 1.12, 0.265]} size={[0.465, 0.018, 0.022]} color="#85867f" roughness={0.62} />
+        <PropBox position={[0.18, 0.87, 0.273]} size={[0.025, 0.43, 0.035]} color="#777970" roughness={0.38} />
+        <PropBox position={[0, 1.64, 0]} size={[0.55, 0.045, 0.52]} color="#989a92" roughness={0.62} />
+      </group>
     </group>}
 
     {room.kind === "private" && <group>
