@@ -1,13 +1,13 @@
 # AEOS Status — Dar Boussedra
 
-**State:** LOOP 011 FIRST LANDING-TURN GAZE — SOURCE CHECKS PASS, BROWSER CAPTURE PENDING  
-**Active keyphrase:** DAR BOUSSEDRA — LOOP 011: KEEP STAIRWELL IN VIEW AT THE FIRST LATERAL TURN  
-**Run ID:** 20261017-darboussedra-aeos-v3-loop011  
-**Loop:** 011 · **Candidate:** dar-boussedra-first-turn-gaze-011  
+**State:** LOOP 012 SKY BACKDROP / NO-BLANK ENVIRONMENT — SOURCE CHECKS PASS, BROWSER REVIEW PENDING  
+**Active keyphrase:** DAR BOUSSEDRA — LOOP 012: ENSURE PERSISTENT SKY, SUN, AND NO BLANK BACKDROP  
+**Run ID:** 20261017-darboussedra-aeos-v3-loop012  
+**Loop:** 012 · **Candidate:** dar-boussedra-sky-backdrop-012  
 **Repository:** https://github.com/teyyara/darboussedra  
 **Branch:** fix/loop-004-architecture-coherence  
 **Base main:** 501cc6ccf3e6926504dfcd051ac98147360cd48a  
-**Latest source-code checkpoint commit:** fb5bbb57bf24032fc0dc687087c0631827952703  
+**Latest source-code checkpoint commit:** 000746089e11575f5b8d5d97800402e2b701a2c5  
 **Last updated:** 2026-10-17
 
 ## Loop 003 outcome
@@ -211,3 +211,19 @@ Inspect the new `14-upper-landing-turn.png`, `15a-upper-landing-to-stair.png`, a
 
 ### Next action
 Inspect `14-upper-landing-turn.png`, `15a-upper-landing-to-stair.png`, and `16-upper-bridge-after-ascent.png` from run 39053389810. The first frame must no longer show a tangent-facing direction during the lateral turn; if the open stairwell still isn't readable, review the physical wall/railing layout rather than layering on further heading patches.
+
+
+## Loop 012 — Persistent sky and non-blank environment
+
+**State:** Source typecheck, unit tests, and production build passed. Fresh browser screenshot capture is in progress, so the final visual result remains pending.
+
+- **Source commit:** [`0007460`](https://github.com/teyyara/darboussedra/commit/000746089e11575f5b8d5d97800402e2b701a2c5)
+- **CI run:** [Foundation checks #39056997214](https://github.com/teyyara/darboussedra/actions/runs/39056997214).
+- **Defect evidence:** the previous browser artifact from [run 39053389810](https://github.com/teyyara/darboussedra/actions/runs/39053389810), frame `01-exterior-desktop.png`, showed a cream/beige page background where the sky should be, despite an earlier sky-dome component. The screen lacked a visible sun or sky features. The camera frames during room/stair transitions also exposed large backdrop-colored openings where architectural surfaces were out of view.
+- **Change:** `SkyEnvironment` is now a camera-safe sky dome anchored to the camera's horizontal position, with a stronger blue-to-warm-horizon gradient. The WebGL scene background is explicitly set to blue as a fallback, so the page's cream background cannot show through a cleared canvas. Added a warm sun disk and soft halo plus two restrained distant cloud clusters. Reduced the desktop/mobile global wash to keep the scene colours from being flattened.
+- **Design intent:** actual near house geometry continues to draw over the far environment; the sky fills uncovered sightlines instead of a blank transparent/cream field. The source uses procedural geometry and local colour/materials only, no remote assets or paid dependencies.
+- **Validation:** [run 39056997214](https://github.com/teyyara/darboussedra/actions/runs/39056997214) passed `npm run typecheck`, `npm test`, and `npm run build`. Chromium installed successfully; `Capture exterior, walkthrough, floor/map and mobile views` was still in progress at checkpoint time. Do not claim sky visibility or in-motion surface coverage as visually verified until the artifact is inspected.
+- **Scope:** no room layout or navigation changes; no new dependencies. PR #5 remains draft/unmerged. No manual Vercel deployment.
+
+### Next action
+Inspect `01-exterior-desktop.png`, `08-exterior-mobile.png`, and the stair/landing frames from run 39056997214. Confirm the sky is visibly blue with a sun/cloud details at desktop and mobile widths, and that room transition gaps show a coherent environment without the sun/cloud layer drawing over nearby walls. If captures stall again, preserve this checkpoint and investigate the screenshot workflow separately from application behavior.

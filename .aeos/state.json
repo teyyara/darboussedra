@@ -1,61 +1,54 @@
 {
   "schema_version": "1.0",
-  "run_id": "20261017-darboussedra-aeos-v3-loop011",
-  "keyphrase": "DAR BOUSSEDRA — LOOP 011: keep stairwell in view at the first lateral turn",
+  "run_id": "20261017-darboussedra-aeos-v3-loop012",
+  "keyphrase": "DAR BOUSSEDRA — LOOP 012: ensure persistent sky, sun, and no blank backdrop",
   "rulebook_version": "AEOS v3",
   "repository": "teyyara/darboussedra",
   "branch": "fix/loop-004-architecture-coherence",
-  "loop": 11,
-  "candidate": "dar-boussedra-first-turn-gaze-011",
+  "loop": 12,
+  "candidate": "dar-boussedra-sky-backdrop-012",
   "state": "WAITING_FOR_CONTINUE",
-  "status": "FIRST_LANDING_TURN_GAZE_SOURCE_CHECKS_PASS_BROWSER_CAPTURE_IN_PROGRESS_PR5_DRAFT_NO_MERGE",
+  "status": "SKY_BACKDROP_IMPLEMENTED_SOURCE_CHECKS_PASS_BROWSER_CAPTURE_IN_PROGRESS_PR5_DRAFT_NO_MERGE",
   "latest_known_good_commit": "d237375a364f25b0e30dade08f9b02790396b966",
-  "latest_source_checkpoint_commit": "fb5bbb57bf24032fc0dc687087c0631827952703",
+  "latest_source_checkpoint_commit": "000746089e11575f5b8d5d97800402e2b701a2c5",
   "pull_request": "https://github.com/teyyara/darboussedra/pull/5",
   "validation": {
-    "loop10": {
-      "result": "CODE_AND_BROWSER_CHECKS_PASS_VISUAL_COMPOSITION_NOT_SOLVED",
-      "workflow_run": 39052970714,
+    "previous_browser_baseline": {
+      "result": "VISUAL_DEFECT_OBSERVED",
+      "workflow_run": 39053389810,
       "artifact": "darboussedra-visual-review",
-      "observed_frame": "14-upper-landing-turn.png",
-      "observed_camera_position": [
-        0.77,
-        4.65,
-        -4.019
-      ],
-      "observed_direction": [
-        0.004,
-        -0.028,
-        1
+      "frame": "01-exterior-desktop.png",
+      "observed": "Cream background instead of visible sky/sun; blank-looking openings in some transition views"
+    },
+    "source_checks": {
+      "result": "PASS",
+      "workflow_run": 39056997214,
+      "steps": [
+        "npm run typecheck",
+        "npm test",
+        "npm run build"
       ]
     },
-    "loop11": {
-      "commit": "fb5bbb57bf24032fc0dc687087c0631827952703",
-      "ci_run": 39053389810,
-      "code_checks": {
-        "result": "PASS",
-        "workflow_run": 39053389810,
-        "steps": [
-          "npm run typecheck",
-          "npm test",
-          "npm run build"
-        ]
-      },
-      "browser_capture": "IN_PROGRESS_AT_CAPTURE_STEP_NO_ARTIFACT_AS_OF_LAST_CHECK"
+    "current_browser_capture": {
+      "result": "IN_PROGRESS_AT_CHECKPOINT",
+      "workflow_run": 39056997214,
+      "step": "Capture exterior, walkthrough, floor/map and mobile views",
+      "artifact": "NOT_YET_PUBLISHED"
     },
-    "kitchen_render": {
-      "result": "PASS",
-      "workflow_run": 39052224425,
-      "artifact": "darboussedra-visual-review"
-    },
-    "interior_skirting": {
-      "result": "PASS",
-      "workflow_run": 39052442310,
-      "artifact": "darboussedra-visual-review"
+    "sky_implementation": {
+      "result": "COMMITTED_NOT_VISUALLY_VERIFIED",
+      "commit": "000746089e11575f5b8d5d97800402e2b701a2c5",
+      "features": [
+        "camera-safe gradient sky dome",
+        "explicit sky-blue scene background fallback",
+        "sun disk and halo",
+        "subtle distant cloud clusters",
+        "reduced overlay wash"
+      ]
     },
     "merge": "NOT_PERFORMED",
     "manual_vercel_deployment": "NOT_PERFORMED",
     "dependencies_added": 0
   },
-  "next_high_value_work": "Review Loop 011 browser frames. Confirm the first lateral turn gaze is inward. If the camera still sees a blank wall, inspect wall/railing geometry and stairwell visibility rather than continuing to patch headings blindly."
+  "next_high_value_work": "Inspect the fresh exterior/mobile and stair/landing screenshots from run 39056997214. Verify blue sky and sun/clouds are visible and transition gaps never show the cream page background. If screenshots remain pending, resume from this exact state rather than starting another unbounded wait."
 }
