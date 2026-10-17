@@ -68,22 +68,51 @@ async function saveScreenshot(page, filename) {
   }
 }
 
-async function arrivalStatus(page, slug, name, timeout = 45000) {
+async function arrivalStatus(page, slug, name, timeout = 12000) {
+  // The old label could still say YOU ARE HERE for the previous room, so it was
+  // possible to start opening the map while the new route was still in progress.
   await page.waitForFunction(
-    () => {
+    (expectedName) => {
       const label = document.querySelector(".room-welcome .eyebrow");
-      return Boolean(label?.textContent?.includes("YOU ARE HERE"));
+      const heading = document.querySelector("#room-title");
+      const primary = document.querySelector(".room-welcome .primary");
+      return Boolean(
+        label?.textContent?.includes("YOU ARE HERE") &&
+        heading?.textContent?.trim() === expectedName &&
+        primary instanceof HTMLButtonElement &&
+        !primary.disabled
+      );
     },
-    null,
+    name,
     { timeout },
   ).catch(() => undefined);
 
   const label = await page.locator(".room-welcome .eyebrow").textContent().catch(() => "");
   const heading = await page.locator("#room-title").textContent().catch(() => "");
-  const arrived = Boolean(label?.includes("YOU ARE HERE") && heading?.trim() === name);
+  const primaryEnabled = await page.locator(".room-welcome .primary").isEnabled().catch(() => false);
+  const arrived = Boolean(label?.includes("YOU ARE HERE") && heading?.trim() === name && primaryEnabled);
   report.roomArrivals.push({ slug, expected: name, actualHeading: heading?.trim() || null, label: label?.trim() || null, arrived });
   if (!arrived) report.notes.push("Arrival did not settle before the screenshot for " + slug + "; inspect this frame and arrival record.");
   return arrived;
+}
+
+async function captureStaticRoom(page, slug, name, filename) {
+  try {
+    // Deep-link the settled view. The map/route interaction is tested separately;
+    // static views should not chain multiple long walks through one mutable UI state.
+    await page.goto(new URL("/room/" + slug, baseUrl).toString(), {
+      waitUntil: "domcontentloaded",
+      timeout: 15000,
+    });
+    await waitForExperience(page);
+    await page.addStyleTag({ content: "footer small { display: none !important; }" });
+    await arrivalStatus(page, slug, name, 12000);
+    await saveScreenshot(page, filename);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    report.runtimeErrors.push({ view: filename, message: "Static room capture failed: " + message });
+    report.notes.push("Could not fully prepare " + filename + "; continuing to the next destination.");
+  }
 }
 
 async function openMap(page) {
@@ -127,7 +156,7 @@ async function waitForCameraPhase(page, destination, phase, timeout = 30000) {
   }, { expectedDestination: destination, expectedPhase: phase }, { timeout });
 }
 
-async function selectDirectoryRoom(page, name, slug, transitionCaptures = []) {
+async function selectDirectoryRoom(page, name, slug, transitionCaptures = [], arrivalTimeout = 12000) {
   const selector = page.locator(".map-directory").getByRole("button", { name, exact: true }).first();
   await selector.waitFor({ state: "visible", timeout: 12000 });
   await selector.click();
@@ -146,7 +175,7 @@ async function selectDirectoryRoom(page, name, slug, transitionCaptures = []) {
     }
     await saveScreenshot(page, capture.filename);
   }
-  await arrivalStatus(page, slug, name);
+  await arrivalStatus(page, slug, name, arrivalTimeout);
 }
 
 try {
@@ -184,37 +213,14 @@ await saveScreenshot(desktop, "03-house-map-desktop.png");
 await selectDirectoryRoom(desktop, "Family Table", "family-table");
 await saveScreenshot(desktop, "04-family-table-eye-level.png");
 
-await openMap(desktop);
-await selectDirectoryRoom(desktop, "Living Room", "living-room");
-await saveScreenshot(desktop, "05-living-room-eye-level.png");
-
-await openMap(desktop);
-await selectDirectoryRoom(desktop, "Kitchen", "kitchen");
-await saveScreenshot(desktop, "06-kitchen-eye-level.png");
-
-await openMap(desktop);
-await selectDirectoryRoom(desktop, "Library", "library");
-await saveScreenshot(desktop, "07-library-eye-level.png");
-
-await openMap(desktop);
-await selectDirectoryRoom(desktop, "Pets' Corner", "pets-corner");
-await saveScreenshot(desktop, "08-pets-corner-eye-level.png");
-
-await openMap(desktop);
-await selectDirectoryRoom(desktop, "Prayer Room / Musalla", "prayer-room");
-await saveScreenshot(desktop, "09-prayer-room-eye-level.png");
-
-await openMap(desktop);
-await selectDirectoryRoom(desktop, "Zineb's Private Room", "zineb-room");
-await saveScreenshot(desktop, "10-upper-floor-eye-level.png");
-
-await openMap(desktop);
-await selectDirectoryRoom(desktop, "Garden", "garden");
-await saveScreenshot(desktop, "11-garden-eye-level.png");
-
-await openMap(desktop);
-await selectDirectoryRoom(desktop, "Rooftop Terrace", "rooftop");
-await saveScreenshot(desktop, "12-rooftop-eye-level.png");
+await captureStaticRoom(desktop, "living-room", "Living Room", "05-living-room-eye-level.png");
+await captureStaticRoom(desktop, "kitchen", "Kitchen", "06-kitchen-eye-level.png");
+await captureStaticRoom(desktop, "library", "Library", "07-library-eye-level.png");
+await captureStaticRoom(desktop, "pets-corner", "Pets' Corner", "08-pets-corner-eye-level.png");
+await captureStaticRoom(desktop, "prayer-room", "Prayer Room / Musalla", "09-prayer-room-eye-level.png");
+await captureStaticRoom(desktop, "zineb-room", "Zineb's Private Room", "10-upper-floor-eye-level.png");
+await captureStaticRoom(desktop, "garden", "Garden", "11-garden-eye-level.png");
+await captureStaticRoom(desktop, "rooftop", "Rooftop Terrace", "12-rooftop-eye-level.png");
 
 const mobile = await browser.newPage({
   viewport: { width: 390, height: 844 },
@@ -265,13 +271,13 @@ await selectDirectoryRoom(motionProbe, "Rooftop Terrace", "rooftop", [
   { phase: "upper-side-landing", filename: "14-upper-landing-turn.png" },
   { phase: "roof-stair-flight", filename: "16-roof-stair-ascent.png" },
   { phase: "roof-hatch-clear", filename: "17-roof-hatch-exit.png" },
-]);
+], 45000);
 await saveScreenshot(motionProbe, "18-rooftop-motion-probe.png");
 
 await openMap(motionProbe);
 await selectDirectoryRoom(motionProbe, "Family Table", "family-table", [
   { phase: "lower-stair-flight", filename: "15-stair-descent-midflight.png" },
-]);
+], 45000);
 await motionProbe.close();
 
 const stairAscent = report.frameStates.find((frame) => frame.filename === "13-stair-ascent-midflight.png");
