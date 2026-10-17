@@ -6,10 +6,13 @@ on:
     branches: [main]
 permissions:
   contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 jobs:
   validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -19,3 +22,28 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
+      # Capture real browser frames; static/unit checks cannot prove that the 3D house reads coherently.
+      - name: Install Chromium for visual review
+        if: github.event_name == 'pull_request'
+        run: |
+          npm install --no-save --package-lock=false playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Capture exterior, walkthrough, floor/map and mobile views
+        if: github.event_name == 'pull_request'
+        run: |
+          npm run preview -- --host 127.0.0.1 > /tmp/darboussedra-preview.log 2>&1 &
+          echo $! > /tmp/darboussedra-preview.pid
+          for i in $(seq 1 45); do
+            if curl --fail --silent http://127.0.0.1:4173/ > /dev/null; then break; fi
+            sleep 1
+          done
+          curl --fail --silent http://127.0.0.1:4173/ > /dev/null
+          node scripts/capture-visual-review.mjs
+      - name: Upload visual review screenshots
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: darboussedra-visual-review
+          path: artifacts/house-visual-review/
+          if-no-files-found: warn
+          retention-days: 5

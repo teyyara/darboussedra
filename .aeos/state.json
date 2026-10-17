@@ -1,35 +1,408 @@
 {
   "schema_version": "1.0",
-  "run_id": "20261016-darboussedra-aeos-v3-loop003",
-  "keyphrase": "read DAR BOUSSEDRA Master Build Strategy — Initial 3D House and Website Foundation",
+  "run_id": "20261017-darboussedra-aeos-v3-loop050",
+  "keyphrase": "DAR BOUSSEDRA — LOOP 050: keep the garden path and both olives in view",
   "rulebook_version": "AEOS v3",
   "repository": "teyyara/darboussedra",
-  "branch": "main",
-  "loop": 3,
-  "candidate": "dar-boussedra-cutaway-performance-003",
-  "state": "WAITING_FOR_CONTINUE",
-  "status": "MERGED_TO_MAIN_CI_PASS_VERCEL_STATUS_SUCCESS_BROWSER_VISUAL_QA_PENDING",
+  "branch": "fix/loop-004-architecture-coherence",
+  "loop": 50,
+  "candidate": "dar-boussedra-garden-composition-050",
+  "state": "WAITING_FOR_VALIDATION",
+  "status": "LOOP050_COMMITTED_VALIDATION_QUEUED_VISUAL_ACCEPTANCE_PENDING_PR5_DRAFT_NO_MERGE",
   "latest_known_good_commit": "d237375a364f25b0e30dade08f9b02790396b966",
+  "latest_source_checkpoint_commit": "de1ffa3709f971114a591389062a24884200068d",
+  "pull_request": "https://github.com/teyyara/darboussedra/pull/5",
   "validation": {
-    "repository": "PASS",
-    "loop_1_ci_repair_pr": "PASS",
-    "loop_2_map_camera_pr": "PASS",
-    "loop_3_lazy_load_pr": "PASS",
-    "loop_3_architectural_pr_corrected": "PASS",
-    "main_after_architecture": "PASS",
-    "main_vercel_status": "SUCCESS_DEPLOYMENT_COMPLETED",
-    "local_install": "BLOCKED_NETWORK_DNS",
-    "local_typecheck": "NOT_RUN",
-    "local_tests": "NOT_RUN",
-    "local_build": "NOT_RUN",
-    "browser_visual_accessibility": "NOT_AVAILABLE",
-    "unit_tests_in_ci": "5_PASS",
-    "main_entry_bundle_minified_kb": 235.24,
-    "main_entry_bundle_gzip_kb": 73.54,
-    "house_scene_bundle_minified_kb": 890.96,
-    "house_scene_bundle_gzip_kb": 240.04,
-    "bundle_warning": "Vite warns about the deferred scene chunk exceeding 500 kB minified.",
-    "manual_deployment_by_agent": "NOT_PERFORMED"
+    "loop013_browser_review": {
+      "result": "PASS_WITH_FOLLOWUP",
+      "workflow_run": 39058157769,
+      "artifact_id": 12110771029,
+      "findings": [
+        "10/10 destination arrivals",
+        "no runtime errors or browser notes",
+        "correct ascent/descent camera pitch",
+        "13 directory rooms on desktop and mobile",
+        "390px mobile width without overflow",
+        "sun/cloud depth occlusion visually improved"
+      ],
+      "follow_up": "Sun is not clearly visible from the default exterior composition."
+    },
+    "loop013_source_checks": {
+      "result": "PASS",
+      "workflow_run": 39058157769,
+      "steps": [
+        "npm run typecheck",
+        "npm test",
+        "npm run build",
+        "Install Chromium for visual review"
+      ]
+    },
+    "loop014_source_change": {
+      "result": "COMMITTED_NOT_VISUALLY_VERIFIED",
+      "commit": "b14c7a3abf5168d210f65462a569d97092f04a2e",
+      "change": "Move sun disk and halo to [-28, 12, -60]; preserve depth testing for sky decorations."
+    },
+    "current_browser_review": {
+      "result": "PENDING",
+      "workflow_run": 39072824788,
+      "artifact": "NOT_YET_PUBLISHED"
+    },
+    "merge": "NOT_PERFORMED",
+    "manual_vercel_deployment": "NOT_PERFORMED",
+    "dependencies_added": 0,
+    "loop015_source_change": {
+      "result": "COMMITTED_SOURCE_CHECKS_PASS_VISUAL_REVIEW_PENDING",
+      "commit": "9722fee072544d9013e2fa6dff5ddf794f11304e",
+      "workflow_run": 39059712137,
+      "change": "Generate local procedural plaster, wood, stone and fabric albedo/bump maps; use a procedural equirectangular sky for environment reflections; improve facade glazing, daylight balance, sun framing and exterior colour."
+    },
+    "loop015_source_checks": {
+      "result": "PASS",
+      "workflow_run": 39059712137,
+      "steps": [
+        "npm run typecheck",
+        "npm test",
+        "npm run build"
+      ]
+    },
+    "loop016_source_change": {
+      "result": "COMMITTED_VALIDATION_QUEUED",
+      "commit": "42d6b5a5b7aaa4244261eb5e5cd8e1ccaf4b214b",
+      "workflow_run": 39059973378,
+      "change": "Replace furniture and prop box geometry with scale-aware RoundedBoxGeometry bevels and add four pure regression tests."
+    },
+    "loop016_source_checks": {
+      "result": "QUEUED",
+      "workflow_run": 39059973378
+    },
+    "loop017_source_change": {
+      "result": "COMMITTED_VALIDATION_RUNNING",
+      "commit": "776e92ac2f09df4bc34901863a9ce1c15ad13bc6",
+      "workflow_run": 39060417666,
+      "change": "Add a continuous underside ceiling over the upper house footprint using four panels around the registered stair hatch; remove per-upper-room ceiling caps to avoid duplicate geometry."
+    },
+    "loop017_source_checks": {
+      "result": "RUNNING",
+      "workflow_run": 39060417666
+    },
+    "loop018_source_change": {
+      "result": "COMMITTED_JSX_REPAIR_VALIDATION_RUNNING",
+      "commit": "0fef44087d026ff2440ec129e9bfb9cb743c596c",
+      "workflow_run": 39060937008,
+      "change": "Fix cornice JSX render syntax after first typecheck failure; retain room flush fixtures, active-room point light and door-aware cornice geometry."
+    },
+    "loop018_source_checks": {
+      "result": "PASS_SOURCE_CHECKS_BROWSER_CAPTURE_STALLED",
+      "workflow_run": 39060937008,
+      "steps": [
+        "npm run typecheck passed after JSX repair",
+        "npm test passed after JSX repair",
+        "npm run build passed after JSX repair",
+        "Browser screenshot capture remains in progress; no artifact published"
+      ]
+    },
+    "loop019_source_change": {
+      "result": "COMMITTED_VALIDATION_QUEUED_VISUAL_REVIEW_PENDING",
+      "commit": "61d00606d2bd3889fb4cdca583841541467be877",
+      "workflow_run": 39061389044,
+      "change": "Add camera-aware framed geometric accents to each enclosed room, positioned within uninterrupted door-free wall runs; exclude rear-window walls and outdoor/roof destinations; add two geometry regression tests."
+    },
+    "loop019_source_checks": {
+      "result": "PASS",
+      "workflow_run": 39061389044,
+      "steps": [
+        "npm run typecheck passed",
+        "npm test passed",
+        "npm run build passed",
+        "Browser capture remains in progress without an artifact"
+      ]
+    },
+    "loop019_browser_review": {
+      "result": "STALLED_NO_ARTIFACT",
+      "workflow_run": 39061389044,
+      "artifact": "NOT_YET_PUBLISHED"
+    },
+    "loop020_source_change": {
+      "result": "COMMITTED_VALIDATION_RUNNING",
+      "commit": "64b3297f57a201bcb5018da5f15b66b5303fbe9b",
+      "workflow_run": 39061538620,
+      "change": "Bound Playwright launch/navigation/arrival/camera/screenshot waits; continue after missed camera phase and write browser-review.json from a finally block to preserve partial review evidence."
+    },
+    "loop020_source_checks": {
+      "result": "PASS",
+      "workflow_run": 39061538620,
+      "steps": [
+        "TypeScript passed",
+        "Tests passed",
+        "Production build passed",
+        "Browser capture failed on screenshot timeout and premature map readiness; partial report uploaded"
+      ]
+    },
+    "loop020_browser_review": {
+      "result": "PARTIAL_CAPTURE_FAILED",
+      "workflow_run": 39061538620,
+      "artifact_id": 12111348841,
+      "findings": [
+        "Exterior and map frames captured",
+        "Multiple room screenshots timed out after 12 seconds",
+        "Arrival timeout caused the map control to remain unavailable before script stopped"
+      ]
+    },
+    "loop021_source_change": {
+      "result": "COMMITTED_VALIDATION_RUNNING",
+      "commit": "914b2c628a85a2818af8baad20bc4a377ae6a3c6",
+      "workflow_run": 39061980927,
+      "change": "Increase screenshot and scene readiness timeouts, allow CSS animations during screenshots, and give camera/arrival phases more time."
+    },
+    "loop021_source_checks": {
+      "result": "PASS_CAPTURE_RUNNING",
+      "workflow_run": 39061980927,
+      "steps": [
+        "TypeScript passed",
+        "Tests passed",
+        "Production build passed",
+        "Chromium install passed",
+        "Browser capture running, artifact not yet published"
+      ]
+    },
+    "loop022_source_change": {
+      "result": "COMMITTED_VALIDATION_RUNNING",
+      "commit": "c5b078b62271f45db23a5beb50a0e30f4624c84b",
+      "workflow_run": 39062169991,
+      "change": "Lower exterior sun/cloud positions into camera view, reframe second cloud cluster, add warm entrance sconces, reduce exterior wash and add sky placement tests."
+    },
+    "loop022_source_checks": {
+      "result": "PASS_CAPTURE_RUNNING",
+      "workflow_run": 39062169991,
+      "steps": [
+        "TypeScript passed",
+        "Tests passed",
+        "Production build passed",
+        "Chromium install passed",
+        "Browser capture running, artifact not yet published"
+      ]
+    },
+    "loop023_source_change": {
+      "result": "COMMITTED_VALIDATION_RUNNING",
+      "commit": "43d23f6cf0aa79ce7f71e315aeea0f6224f19a17",
+      "workflow_run": 39062350399,
+      "change": "Select wall art using camera-direction alignment and avoid kitchen appliance/back wall and full-height library shelf wall; add regression tests for reserved built-ins and living-room view direction."
+    },
+    "loop023_source_checks": {
+      "result": "RUNNING",
+      "workflow_run": 39062350399
+    },
+    "loop024_artwork_followup": {
+      "result": "SOURCE_CHECKS_PASS_PARTIAL_BROWSER_CAPTURE",
+      "commit": "3cebb5c82709da44965557d01dfc879a5cef2483",
+      "workflow_run": 39062513825,
+      "artifact_id": 12111769521,
+      "findings": [
+        "TypeScript/tests/build passed",
+        "Browser script stopped after a map-readiness timeout",
+        "Living-room artwork remains too near the edge and needs camera-framing refinement"
+      ]
+    },
+    "loop025_028_kitchen": {
+      "result": "SOURCE_CHECKS_PASS_BROWSER_CAPTURE_PENDING",
+      "commit": "ced4cd68d37e23b834b9a0245e38f2a42b43bdcb",
+      "workflow_run": 39062964881,
+      "steps": [
+        "Kitchen typecheck passed",
+        "Kitchen tests passed",
+        "Production build passed",
+        "Browser capture was still running at last check"
+      ],
+      "change": "Fitted cooktop with four burners/controls, inset sink and mixer tap, cabinet fronts/handles, and optional metallic finish support for rounded props."
+    },
+    "loop029_garden": {
+      "result": "SOURCE_CHECKS_FAILED_GARDEN_BOUNDS_TEST_CORRECTED",
+      "commit": "dc1c0ae0406799cba72cd6a83a6907b04590dbfa",
+      "workflow_run": 39063089164,
+      "change": "Replace conical trees with irregular olive-like crowns and in-bounds shrubs. A generic tree-depth bound was too conservative; corrected in Loop031 while detailed crown/shrub containment remains tested."
+    },
+    "loop030_workflow_concurrency": {
+      "result": "COMMITTED",
+      "commit": "f973a5d31294df8ccb7459a0f31c11be1262738c",
+      "change": "Add pull-request concurrency group and cancel superseded visual-validation workflows."
+    },
+    "loop031_source_checks": {
+      "result": "PASS",
+      "workflow_run": 39063164627,
+      "commit": "8b8c44db1ec20e29155275d81c0a4b322ebc50c4",
+      "steps": [
+        "TypeScript passed",
+        "Unit tests passed",
+        "Production build passed",
+        "Chromium setup passed",
+        "Browser capture cancelled after a newer source push; no artifact published"
+      ]
+    },
+    "loop032_source_change": {
+      "result": "COMMITTED_VALIDATION_RUNNING",
+      "commit": "9a71e8064a47c6d84e1b93f8b0f325a48c64941e",
+      "workflow_run": 39063399389,
+      "change": "Reduce living-room wall-art maximum width to 0.62 m to address actual screenshot crop at the left edge, with a regression test."
+    },
+    "loop032_source_checks": {
+      "result": "PENDING_CAPTURE_RUN",
+      "workflow_run": 39063399389,
+      "artifact": "NOT_YET_PUBLISHED"
+    },
+    "loop033_source_change": {
+      "result": "COMMITTED_VALIDATION_QUEUED",
+      "commit": "a53100dfd7c21439bcd7c5598e8349b8d28eb3d1",
+      "workflow_run": 39063511034,
+      "change": "Add a four-sided timber reveal outside the roof stair hatch's clear opening; test that trim does not overlap or narrow the hatch."
+    },
+    "loop033_source_checks": {
+      "result": "PASS_BROWSER_CAPTURE_RUNNING",
+      "workflow_run": 39063511034,
+      "steps": [
+        "npm run typecheck passed",
+        "npm test passed",
+        "npm run build passed",
+        "Chromium installation in progress",
+        "Browser screenshots not yet published"
+      ]
+    },
+    "loop034_kitchen_composition": {
+      "result": "CAMERA_TARGET_REFINED_AFTER_REGRESSION",
+      "initial_commit": "2f0ee6c2ee3e193e9ac8ce6ac1bea99db9eb5d4b",
+      "refined_commit": "68baa601ff4c0a7052e534f00b0fa2662d2ea904",
+      "workflow_run": 39070069994,
+      "change": "Aim the kitchen camera at the counter, sink and cooktop while keeping the destination view within eye-level guidance; add regression coverage."
+    },
+    "loop035_capture_refactor": {
+      "result": "COMMITTED_VALIDATION_RUNNING",
+      "commit": "cc221f772d1aed57153d857475fff9c5431faef5",
+      "workflow_run": 39070069994,
+      "change": "Capture static rooms with reduced motion to avoid incomplete route frames, then re-enable normal motion on a separate page to assess stair ascent, landing turn, roof flight, hatch exit and descent."
+    },
+    "loop036_source_checks": {
+      "result": "PASS_BROWSER_CAPTURE_RUNNING",
+      "commit": "68baa601ff4c0a7052e534f00b0fa2662d2ea904",
+      "workflow_run": 39070069994,
+      "steps": [
+        "npm run typecheck passed",
+        "npm test passed",
+        "npm run build passed",
+        "Chromium install passed",
+        "Browser screenshot capture running; artifact not published yet"
+      ]
+    },
+    "loop039_040_library": {
+      "result": "SOURCE_CHECKS_PASSED_VISUAL_STOCKING_IMPROVED",
+      "commits": [
+        "d42a4bd17086f16a1cb9ca2fe180c4be7f158040",
+        "9c3e6024693b6d7474ec03809b0fa231573c856e"
+      ],
+      "artifact_id": 12114724022,
+      "findings": [
+        "Books now appear on the camera-facing side of shelf backing",
+        "Loop 045 increases quantity to 27 to improve density"
+      ]
+    },
+    "loop041_042_garden_path": {
+      "result": "SOURCE_CHECKS_PASSED",
+      "commits": [
+        "66d7ae125724570f0feae82c9d44b575de5bce36",
+        "bf98c5c9af8254e9b924be82b618d9fffd37e9a4"
+      ],
+      "change": "Adds porch landing and six staggered stones; fixed a strict >0.4m test assertion to allow the authored 0.4m stone."
+    },
+    "loop043_044_kitchen_roof": {
+      "result": "SOURCE_CHECKS_PASSED_VISUAL_FOLLOWUP",
+      "commits": [
+        "9c8a6528d6ce32492b2440b04c4f5d1930203cb9",
+        "e0267c0148d4c730a939433c2380409f0f9f086d"
+      ],
+      "findings": [
+        "Rooftop rug and tea set are visible but pushed far left",
+        "Kitchen view is improved but still countertop-heavy"
+      ]
+    },
+    "loop045_046_capture": {
+      "result": "STATIC_ROOM_STILLS_CAPTURED_MOVEMENT_ARTIFACT_PARTIAL",
+      "commits": [
+        "992954f7809a075413b904b0705a32d47066f327",
+        "619e54590401923a3ec2c7a7575525c089e9d4d1"
+      ],
+      "workflow_run": 39071795119,
+      "artifact_id": 12115955169,
+      "findings": [
+        "Complete 12 room/exterior/mobile still set captured",
+        "Ascent, upper landing and roof-stair frames captured",
+        "Run was cancelled during movement probe before browser-review.json / remaining motion frames were uploaded"
+      ]
+    },
+    "loop047_source_checks": {
+      "result": "PASS_BROWSER_CAPTURE_RUNNING",
+      "commit": "fc2ddb1ca808d27ae05bcc38a2f5a507708e2b6d",
+      "workflow_run": 39072071748,
+      "steps": [
+        "TypeScript passed",
+        "Unit tests passed",
+        "Production build passed",
+        "Chromium installation passed",
+        "Browser screenshot capture still running"
+      ]
+    },
+    "loop048_phase_rules": {
+      "result": "SOURCE_CHECKS_PASS_CAPTURE_CANCELLED",
+      "commit": "f9bfeafc13158c620fb8eebe837e76c0e87e4fa3",
+      "workflow_run": 39072431412,
+      "artifact_id": 12115603048,
+      "findings": [
+        "Camera phase rules are shared/tested",
+        "Hatch rule no longer relies on restrictive X threshold",
+        "Rooftop arrival state guards the next map click"
+      ]
+    },
+    "loop049_source_checks": {
+      "result": "PASS_BROWSER_CAPTURE_RUNNING",
+      "commit": "bf40c6e12f4e16692b69122fccbfc416afd07a39",
+      "workflow_run": 39072491627,
+      "steps": [
+        "npm run typecheck passed",
+        "npm test passed",
+        "npm run build passed",
+        "Chromium installation passed",
+        "Browser screenshot capture in progress; artifact not published yet"
+      ]
+    },
+    "loop049_movement_followup": {
+      "result": "PENDING",
+      "workflow_run": 39072491627,
+      "changes": [
+        "Lower stair descent phase window now has a 90s timeout.",
+        "Hatch clearance rule is tested and no longer depends on a restrictive X threshold.",
+        "If rooftop arrival fails, record the failure and skip map interaction while walking."
+      ]
+    },
+    "loop049_movement_probe": {
+      "result": "SOURCE_CHECKS_PASS_BROWSER_CAPTURE_STILL_RUNNING",
+      "commit": "bf40c6e12f4e16692b69122fccbfc416afd07a39",
+      "workflow_run": 39072491627,
+      "steps": [
+        "TypeScript passed",
+        "Tests passed",
+        "Production build passed",
+        "Chromium installation passed",
+        "Browser capture active, artifact not published"
+      ]
+    },
+    "loop050_source_change": {
+      "result": "COMMITTED_VALIDATION_QUEUED",
+      "commit": "de1ffa3709f971114a591389062a24884200068d",
+      "workflow_run": 39072824788,
+      "change": "Lower the garden look target to y=0.9 and move olive trees inward to x=±1.95 so both trees flank a visible path. Added camera pitch and central walking-clearance tests."
+    },
+    "loop050_source_checks": {
+      "result": "QUEUED",
+      "workflow_run": 39072824788
+    }
   },
-  "next_high_value_work": "Visually verify the house cutaway and navigation in a browser, then refine proportions/circulation and measure performance."
+  "next_high_value_work": "Confirm Loop 050 checks and inspect fresh garden/roof images. The garden view should show visible pavers, both olives flanking the path, and central clearance. Then confirm Loop 049 movement report captures hatch exit and lower stair descent with a negative camera-direction Y.",
+  "current_browser_review_run": 39072824788
 }

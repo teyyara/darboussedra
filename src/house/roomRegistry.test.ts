@@ -7,7 +7,7 @@ describe("Dar Boussedra room registry",()=>{
   expect(new Set(rooms.map((room)=>room.id)).size).toBe(rooms.length);
   expect(new Set(rooms.map((room)=>room.slug)).size).toBe(rooms.length);
  });
- it("has valid camera, map, footprint and connection metadata",()=>expect(roomRegistryIssues()).toEqual([]));
+ it("has valid camera, footprint, enclosure and connection metadata",()=>expect(roomRegistryIssues()).toEqual([]));
  it("resolves valid rooms and rejects unknown/future-only slugs",()=>{
   expect(getRoomBySlug("entrance")?.name).toBe("Front Door & Entrance");
   expect(getRoomBySlug("unknown-room")).toBeUndefined();
