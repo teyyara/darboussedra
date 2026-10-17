@@ -2,6 +2,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { ACESFilmicToneMapping, BackSide, Color, DoubleSide, Float32BufferAttribute, PerspectiveCamera, Quaternion, SphereGeometry, Vector3, type Group } from "three";
 import { makeCameraPath, type CameraPose } from "./cameraPath";
+import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
+import { getPropCornerRadius } from "./roundedProps";
 import { RealisticMaterialPass } from "./realisticMaterials";
 import { getCameraZoneForPosition, getHouseSceneVisibility, type CameraZone } from "./sceneVisibility";
 import {
@@ -487,8 +489,13 @@ function DoorwayFrame({ room, opening, onSelect }: { room: Room; opening: RoomPo
 function PropBox({ position, size, color, roughness = 0.9 }: {
   position: Vector3Tuple; size: Vector3Tuple; color: string; roughness?: number;
 }) {
+  // Small, scale-aware bevels catch daylight and prevent furniture from reading as sharp CAD blocks.
+  const geometry = useMemo(() => new RoundedBoxGeometry(
+    size[0], size[1], size[2], getPropCornerRadius(size), 3,
+  ), [size[0], size[1], size[2]]);
+  useEffect(() => () => geometry.dispose(), [geometry]);
   return <mesh position={position} castShadow receiveShadow>
-    <boxGeometry args={size} />
+    <primitive object={geometry} attach="geometry" />
     <meshStandardMaterial color={color} roughness={roughness} />
   </mesh>;
 }
