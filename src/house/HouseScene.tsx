@@ -529,6 +529,25 @@ function RoomArea({ room, active, onSelect }: { room: Room; active?: Room; onSel
   const openings = getRoomPortalOpenings(room);
   const walls = (["front", "back", "left", "right"] as const).flatMap((side) =>
     roomWallSegments(room, side, openings).map((segment, index) => ({ ...segment, key: side + "-" + index })));
+  const baseboardColor = room.kind === "spiritual" ? "#b5b29d" : room.kind === "private" ? "#a77e5e" : "#b18a62";
+  const baseboards = (["front", "back", "left", "right"] as const).flatMap((side) =>
+    getRoomWallRuns(room, side, openings).map((run, index) => {
+      const along = (run.start + run.end) / 2;
+      const segmentLength = run.end - run.start;
+      const frontBack = side === "front" || side === "back";
+      const boundary = frontBack ? (side === "front" ? depth / 2 : -depth / 2)
+        : (side === "right" ? width / 2 : -width / 2);
+      const inward = boundary - Math.sign(boundary) * 0.035;
+      return {
+        key: side + "-skirting-" + index,
+        position: frontBack
+          ? [along, HOUSE_LAYOUT.floorThickness + 0.055, inward] as Vector3Tuple
+          : [inward, HOUSE_LAYOUT.floorThickness + 0.055, along] as Vector3Tuple,
+        size: frontBack
+          ? [segmentLength, 0.11, 0.08] as Vector3Tuple
+          : [0.08, 0.11, segmentLength] as Vector3Tuple,
+      };
+    }));
   const selected = active?.slug === room.slug;
   const hintX = Math.max(-width * 0.32, Math.min(width * 0.32, room.camera.position[0] - x));
   const hintZ = Math.max(-depth * 0.32, Math.min(depth * 0.32, room.camera.position[2] - z));
@@ -551,6 +570,10 @@ function RoomArea({ room, active, onSelect }: { room: Room; active?: Room; onSel
     </mesh>
     {walls.map((wall) => <mesh key={wall.key} position={wall.position} castShadow receiveShadow>
       <boxGeometry args={wall.size} /><meshStandardMaterial color={wallColor} roughness={0.97} />
+    </mesh>)}
+    {/* A quiet skirting strip grounds each wall without bridging real door openings. */}
+    {baseboards.map((board) => <mesh key={board.key} position={board.position} castShadow receiveShadow>
+      <boxGeometry args={board.size} /><meshStandardMaterial color={baseboardColor} roughness={0.86} />
     </mesh>)}
     <RoomFurnishings room={room} />
     {rearWindow && <group position={[0, 0, -depth / 2 + 0.035]}>
