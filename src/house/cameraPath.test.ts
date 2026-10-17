@@ -308,11 +308,28 @@ describe("3D camera paths", () => {
       Math.abs(pose.position[1] - upperEye) < 0.02 &&
       Math.abs(pose.position[0] - sideLaneX) < 0.02);
 
-    expect(turnViews).toHaveLength(2);
+    expect(turnViews.length).toBeGreaterThanOrEqual(6);
     for (const pose of turnViews) {
       expect(pose.position[0]).toBeGreaterThan(HOUSE_LAYOUT.stairs.openingWidth / 2 + 0.08);
       expect(pose.target[0]).toBeLessThan(pose.position[0] - 0.25);
       expect(pose.target[2]).toBeGreaterThan(pose.position[2] + 0.9);
+    }
+  });
+
+  it("keeps the stairwell in view while returning along the upper side lane", () => {
+    const path = makeCameraPath("rooftop", "prayer-room", poseFor("prayer-room"));
+    const upperEye = HOUSE_LAYOUT.upperY + 1.65;
+    const sideLaneX = HOUSE_LAYOUT.upperBridge.centerX + HOUSE_LAYOUT.stairs.openingWidth / 2 + 0.12;
+    const returnViews = path.filter((pose) =>
+      pose.preserveHeading &&
+      Math.abs(pose.position[1] - upperEye) < 0.02 &&
+      Math.abs(pose.position[0] - sideLaneX) < 0.02 &&
+      pose.position[2] > -3.0 && pose.position[2] < 0.3);
+
+    expect(returnViews.length).toBeGreaterThanOrEqual(4);
+    for (const pose of returnViews) {
+      expect(pose.target[0], "gaze remains inward toward the stair opening").toBeLessThan(pose.position[0] - 0.25);
+      expect(pose.target[2], "gaze still follows the descending route").toBeLessThan(pose.position[2] - 0.9);
     }
   });
 
