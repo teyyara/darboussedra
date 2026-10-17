@@ -14,10 +14,11 @@ export interface RoomWallDecor {
 
 const SIDES: readonly WallSide[] = ["front", "back", "left", "right"];
 
-// These walls contain tall fixtures that would partially hide framed art in first-person views.
-const BUILT_IN_WALLS: Readonly<Record<string, readonly WallSide[]>> = {
+// Reserve walls whose visible surface is occupied or visually dominated by other architecture.
+const RESERVED_WALLS_BY_ROOM: Readonly<Record<string, readonly WallSide[]>> = {
   kitchen: ["back"], // fridge and tall appliance cluster
   library: ["left"], // full-height shelving
+  "living-room": ["back"], // the shared library doorway makes this wall read as a corridor, cropping art at the frame edge
 };
 
 function wallPosition(room: Room, side: WallSide, along: number, y: number): Vector3Tuple {
@@ -64,7 +65,7 @@ export function getRoomWallDecor(room: Room): RoomWallDecor[] {
   if (room.level === "outdoor" || room.level === "roof") return [];
 
   const rearWindowWall = room.scenePosition[2] - room.footprint[1] / 2 <= -3.8;
-  const reservedWalls = BUILT_IN_WALLS[room.slug] ?? [];
+  const reservedWalls = RESERVED_WALLS_BY_ROOM[room.slug] ?? [];
   const y = HOUSE_LAYOUT.floorThickness + 1.36;
   const candidates = SIDES.flatMap((side) => {
     if ((rearWindowWall && side === "back") || reservedWalls.includes(side)) return [];
