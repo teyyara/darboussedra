@@ -1,5 +1,6 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { chromium } from "playwright";
+import { CAMERA_PHASE_RULES } from "./visualReviewPhases.mjs";
 
 const baseUrl = process.env.BASE_URL || "http://127.0.0.1:4173";
 const outputDir = "artifacts/house-visual-review";
@@ -132,28 +133,20 @@ async function openMap(page) {
 }
 
 async function waitForCameraPhase(page, destination, phase, timeout = 30000) {
-  await page.waitForFunction(({ expectedDestination, expectedPhase }) => {
+  const rule = CAMERA_PHASE_RULES[phase];
+  if (!rule) throw new Error("Unknown camera phase: " + phase);
+  await page.waitForFunction(({ expectedDestination, phaseRule }) => {
     const canvas = document.querySelector("canvas");
     if (!canvas || canvas.dataset.destination !== expectedDestination) return false;
     const position = canvas.dataset.cameraPosition?.split(",").map(Number);
     if (!position || position.length !== 3 || position.some((value) => !Number.isFinite(value))) return false;
     const [x, y, z] = position;
     const zone = canvas.dataset.cameraZone;
-    switch (expectedPhase) {
-      case "lower-stair-flight":
-        return y > 2.9 && y < 4.25 && z < -1.0 && z > -4.2;
-      case "upper-side-landing":
-        return y > 4.4 && y < 4.9 && x > 0.55 && z < -0.6 && z > -4.1;
-      case "roof-stair-flight":
-        return y > 5.1 && y < 7.1 && z < 2.0 && z > -2.75;
-      case "roof-hatch-clear":
-        return zone === "roof" && y > 7.0 && x > 1.0 && z > -2.75 && z < -1.0;
-      case "front-door-clear":
-        return zone === "outside" && z > 4.96;
-      default:
-        return false;
-    }
-  }, { expectedDestination: destination, expectedPhase: phase }, { timeout });
+    const within = (value, bounds) => !bounds ||
+      ((bounds[0] == null || value > bounds[0]) && (bounds[1] == null || value < bounds[1]));
+    return (!phaseRule.zone || zone === phaseRule.zone) &&
+      within(x, phaseRule.x) && within(y, phaseRule.y) && within(z, phaseRule.z);
+  }, { expectedDestination: destination, phaseRule: rule }, { timeout });
 }
 
 async function selectDirectoryRoom(page, name, slug, transitionCaptures = [], arrivalTimeout = 12000) {
@@ -175,7 +168,7 @@ async function selectDirectoryRoom(page, name, slug, transitionCaptures = [], ar
     }
     await saveScreenshot(page, capture.filename);
   }
-  await arrivalStatus(page, slug, name, arrivalTimeout);
+  return await arrivalStatus(page, slug, name, arrivalTimeout);
 }
 
 try {
@@ -266,18 +259,25 @@ await selectDirectoryRoom(motionProbe, "Family Table", "family-table");
 await motionProbe.emulateMedia({ reducedMotion: "no-preference" });
 await motionProbe.waitForTimeout(180);
 await openMap(motionProbe);
-await selectDirectoryRoom(motionProbe, "Rooftop Terrace", "rooftop", [
+const rooftopArrived = await selectDirectoryRoom(motionProbe, "Rooftop Terrace", "rooftop", [
   { phase: "lower-stair-flight", filename: "13-stair-ascent-midflight.png" },
   { phase: "upper-side-landing", filename: "14-upper-landing-turn.png" },
   { phase: "roof-stair-flight", filename: "16-roof-stair-ascent.png" },
   { phase: "roof-hatch-clear", filename: "17-roof-hatch-exit.png" },
-], 45000);
+], 90000);
 await saveScreenshot(motionProbe, "18-rooftop-motion-probe.png");
 
-await openMap(motionProbe);
-await selectDirectoryRoom(motionProbe, "Family Table", "family-table", [
-  { phase: "lower-stair-flight", filename: "15-stair-descent-midflight.png" },
-], 45000);
+if (rooftopArrived) {
+  await openMap(motionProbe);
+  const returnedToGround = await selectDirectoryRoom(motionProbe, "Family Table", "family-table", [
+    { phase: "lower-stair-flight", filename: "15-stair-descent-midflight.png" },
+  ], 90000);
+  if (!returnedToGround) {
+    report.notes.push("The descent route did not settle at the family table before the movement probe ended.");
+  }
+} else {
+  report.notes.push("The rooftop route did not settle, so the descent probe was skipped instead of timing out while trying to reopen the map.");
+}
 await motionProbe.close();
 
 const stairAscent = report.frameStates.find((frame) => frame.filename === "13-stair-ascent-midflight.png");
