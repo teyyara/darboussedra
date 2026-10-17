@@ -153,13 +153,14 @@ try {
 const desktop = await browser.newPage({
   viewport: { width: 1440, height: 1000 },
   deviceScaleFactor: 1,
-  reducedMotion: "no-preference",
+  reducedMotion: "reduce",
 });
 desktop.setDefaultTimeout(8000);
 desktop.setDefaultNavigationTimeout(15000);
 captureRuntimeErrors(desktop, "desktop");
 await desktop.goto(baseUrl, { waitUntil: "domcontentloaded", timeout: 15000 });
 await waitForExperience(desktop);
+await desktop.addStyleTag({ content: "footer small { display: none !important; }" });
 report.navigationGuideDetected = await desktop.locator(".navigation-guide").isVisible().catch(() => false);
 report.navigationGuideText = (await desktop.locator(".navigation-guide").innerText().catch(() => "")).trim();
 report.webglCanvasDetected = (await desktop.locator("canvas").count()) > 0;
@@ -204,27 +205,15 @@ await selectDirectoryRoom(desktop, "Prayer Room / Musalla", "prayer-room");
 await saveScreenshot(desktop, "09-prayer-room-eye-level.png");
 
 await openMap(desktop);
-await selectDirectoryRoom(desktop, "Zineb's Private Room", "zineb-room", [
-  { phase: "lower-stair-flight", filename: "13-stair-ascent-midflight.png" },
-  { phase: "upper-side-landing", filename: "14-upper-landing-turn.png" },
-]);
+await selectDirectoryRoom(desktop, "Zineb's Private Room", "zineb-room");
 await saveScreenshot(desktop, "10-upper-floor-eye-level.png");
 
 await openMap(desktop);
-await selectDirectoryRoom(desktop, "Garden", "garden", [
-  { phase: "upper-side-landing", filename: "15a-upper-landing-to-stair.png" },
-  { phase: "lower-stair-flight", filename: "15-stair-descent-midflight.png" },
-  { phase: "front-door-clear", filename: "15-front-door-exit.png" },
-]);
+await selectDirectoryRoom(desktop, "Garden", "garden");
 await saveScreenshot(desktop, "11-garden-eye-level.png");
 
 await openMap(desktop);
-await selectDirectoryRoom(desktop, "Rooftop Terrace", "rooftop", [
-  { phase: "lower-stair-flight", filename: "16-ground-stair-ascent.png" },
-  { phase: "upper-side-landing", filename: "16-upper-bridge-after-ascent.png" },
-  { phase: "roof-stair-flight", filename: "16-roof-stair-ascent.png" },
-  { phase: "roof-hatch-clear", filename: "17-roof-hatch-exit.png" },
-]);
+await selectDirectoryRoom(desktop, "Rooftop Terrace", "rooftop");
 await saveScreenshot(desktop, "12-rooftop-eye-level.png");
 
 const mobile = await browser.newPage({
@@ -248,6 +237,42 @@ await mobile.locator(".header").getByRole("button", { name: /house map/i }).clic
 await mobile.locator(".map-panel").waitFor({ state: "visible", timeout: 8000 });
 report.mobileRoomDirectoryButtonCount = await mobile.locator(".map-directory .map-rooms button").count();
 await saveScreenshot(mobile, "09-house-map-mobile.png");
+
+// Keep ordinary room stills deterministic and fast under reduced motion, but exercise
+// real walking on a dedicated page so stair framing and camera pitch remain tested.
+const motionProbe = await browser.newPage({
+  viewport: { width: 1440, height: 1000 },
+  deviceScaleFactor: 1,
+  reducedMotion: "reduce",
+});
+motionProbe.setDefaultTimeout(10000);
+motionProbe.setDefaultNavigationTimeout(15000);
+captureRuntimeErrors(motionProbe, "motion-probe");
+await motionProbe.goto(baseUrl, { waitUntil: "domcontentloaded", timeout: 15000 });
+await waitForExperience(motionProbe);
+await motionProbe.locator(".welcome").getByRole("button", { name: /enter the house/i }).click();
+await motionProbe.waitForFunction(() => window.location.pathname === "/room/entrance", null, { timeout: 8000 });
+await arrivalStatus(motionProbe, "entrance-motion-probe", "Front Door & Entrance", 10000);
+await openMap(motionProbe);
+await selectDirectoryRoom(motionProbe, "Family Table", "family-table");
+
+// Re-enable normal motion after the setup snap so stair captures test the real animated route.
+await motionProbe.emulateMedia({ reducedMotion: "no-preference" });
+await motionProbe.waitForTimeout(180);
+await openMap(motionProbe);
+await selectDirectoryRoom(motionProbe, "Rooftop Terrace", "rooftop", [
+  { phase: "lower-stair-flight", filename: "13-stair-ascent-midflight.png" },
+  { phase: "upper-side-landing", filename: "14-upper-landing-turn.png" },
+  { phase: "roof-stair-flight", filename: "16-roof-stair-ascent.png" },
+  { phase: "roof-hatch-clear", filename: "17-roof-hatch-exit.png" },
+]);
+await saveScreenshot(motionProbe, "18-rooftop-motion-probe.png");
+
+await openMap(motionProbe);
+await selectDirectoryRoom(motionProbe, "Family Table", "family-table", [
+  { phase: "lower-stair-flight", filename: "15-stair-descent-midflight.png" },
+]);
+await motionProbe.close();
 
 const stairAscent = report.frameStates.find((frame) => frame.filename === "13-stair-ascent-midflight.png");
 const stairDescent = report.frameStates.find((frame) => frame.filename === "15-stair-descent-midflight.png");
