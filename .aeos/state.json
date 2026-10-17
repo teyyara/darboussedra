@@ -1,16 +1,16 @@
 {
   "schema_version": "1.0",
-  "run_id": "20261017-darboussedra-aeos-v3-loop018",
-  "keyphrase": "DAR BOUSSEDRA — LOOP 018: warm room lighting, portal-aware cornices and ceiling continuity",
+  "run_id": "20261017-darboussedra-aeos-v3-loop019",
+  "keyphrase": "DAR BOUSSEDRA — LOOP 019: room-aware Moroccan wall accents",
   "rulebook_version": "AEOS v3",
   "repository": "teyyara/darboussedra",
   "branch": "fix/loop-004-architecture-coherence",
-  "loop": 18,
-  "candidate": "dar-boussedra-room-detail-lighting-018",
+  "loop": 19,
+  "candidate": "dar-boussedra-room-wall-accents-019",
   "state": "WAITING_FOR_VALIDATION",
-  "status": "LOOP018_JSX_REPAIR_COMMITTED_VALIDATION_RUNNING_VISUAL_ACCEPTANCE_PENDING_PR5_DRAFT_NO_MERGE",
+  "status": "LOOP019_WALL_ACCENTS_COMMITTED_VALIDATION_QUEUED_VISUAL_ACCEPTANCE_PENDING_PR5_DRAFT_NO_MERGE",
   "latest_known_good_commit": "d237375a364f25b0e30dade08f9b02790396b966",
-  "latest_source_checkpoint_commit": "0fef44087d026ff2440ec129e9bfb9cb743c596c",
+  "latest_source_checkpoint_commit": "61d00606d2bd3889fb4cdca583841541467be877",
   "pull_request": "https://github.com/teyyara/darboussedra/pull/5",
   "validation": {
     "loop013_browser_review": {
@@ -44,7 +44,7 @@
     },
     "current_browser_review": {
       "result": "PENDING",
-      "workflow_run": 39060937008,
+      "workflow_run": 39061389044,
       "artifact": "NOT_YET_PUBLISHED"
     },
     "merge": "NOT_PERFORMED",
@@ -92,10 +92,26 @@
       "change": "Fix cornice JSX render syntax after first typecheck failure; retain room flush fixtures, active-room point light and door-aware cornice geometry."
     },
     "loop018_source_checks": {
-      "result": "RUNNING",
-      "workflow_run": 39060937008
+      "result": "PASS_SOURCE_CHECKS_BROWSER_CAPTURE_STALLED",
+      "workflow_run": 39060937008,
+      "steps": [
+        "npm run typecheck passed after JSX repair",
+        "npm test passed after JSX repair",
+        "npm run build passed after JSX repair",
+        "Browser screenshot capture remains in progress; no artifact published"
+      ]
+    },
+    "loop019_source_change": {
+      "result": "COMMITTED_VALIDATION_QUEUED_VISUAL_REVIEW_PENDING",
+      "commit": "61d00606d2bd3889fb4cdca583841541467be877",
+      "workflow_run": 39061389044,
+      "change": "Add camera-aware framed geometric accents to each enclosed room, positioned within uninterrupted door-free wall runs; exclude rear-window walls and outdoor/roof destinations; add two geometry regression tests."
+    },
+    "loop019_source_checks": {
+      "result": "QUEUED",
+      "workflow_run": 39061389044
     }
   },
-  "next_high_value_work": "Inspect run 39060937008. Verify source checks first and render room/stair screenshot artifact if published; assess fixtures and cornices without assuming visual success.",
-  "current_browser_review_run": 39059712137
+  "next_high_value_work": "Confirm Loop 019 typecheck/tests/build in run 39061389044; inspect its fresh room/stair/exterior/mobile screenshots if a browser artifact publishes. Earlier run 39060937008 remains stuck on browser capture with no artifact, so do not claim visual acceptance.",
+  "current_browser_review_run": 39061389044
 }

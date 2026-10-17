@@ -1,13 +1,13 @@
 # AEOS Status — Dar Boussedra
 
-**State:** LOOP 018 ROOM DETAIL AND LIGHTING — JSX REPAIR COMMITTED, VALIDATION RUNNING  
-**Active keyphrase:** DAR BOUSSEDRA — LOOP 018: WARM ROOM LIGHTING, PORTAL-AWARE CORNICES AND CEILING CONTINUITY  
-**Run ID:** 20261017-darboussedra-aeos-v3-loop018  
-**Loop:** 018 · **Candidate:** dar-boussedra-room-detail-lighting-018  
+**State:** LOOP 019 ROOM WALL ACCENTS — IMPLEMENTED, VALIDATION QUEUED, VISUAL REVIEW PENDING  
+**Active keyphrase:** DAR BOUSSEDRA — LOOP 019: ROOM-AWARE MOROCCAN WALL ACCENTS  
+**Run ID:** 20261017-darboussedra-aeos-v3-loop019  
+**Loop:** 019 · **Candidate:** dar-boussedra-room-wall-accents-019  
 **Repository:** https://github.com/teyyara/darboussedra  
 **Branch:** fix/loop-004-architecture-coherence  
 **Base main:** 501cc6ccf3e6926504dfcd051ac98147360cd48a  
-**Latest source-code checkpoint commit:** 0fef44087d026ff2440ec129e9bfb9cb743c596c  
+**Latest source-code checkpoint commit:** 61d00606d2bd3889fb4cdca583841541467be877  
 **Last updated:** 2026-10-17
 
 ## Loop 003 outcome
@@ -334,3 +334,15 @@ Review new captures of Family Table, Kitchen, private bedrooms, upper landing/st
 
 ### Next action
 Confirm Loop 018 TypeScript/tests/build pass, then inspect a fresh screenshot artifact for ceiling, cornice, fixture placement, hatch clearance, empty wall views and mobile. If Chromium capture keeps stalling, report that limitation honestly and focus on a reproducible local check rather than claiming a visual pass.
+
+
+## Loop 019 — Room-aware Moroccan wall accents
+
+- Source commit [`61d0060`](https://github.com/teyyara/darboussedra/commit/61d00606d2bd3889fb4cdca583841541467be877) adds one framed geometric wall accent to each enclosed room. Wall selection follows the room's first-person viewing direction; placement uses `getRoomWallRuns` so frames stay inside uninterrupted wall segments. Rear-window walls, the garden and rooftop are excluded.
+- Added `wallDecor.test.ts` to check all 11 enclosed destinations, wall-run containment, vertical clearance and exclusion of outdoor scenes.
+- Fresh CI run [39061389044](https://github.com/teyyara/darboussedra/actions/runs/39061389044) is queued. No source checks are claimed for Loop 019 yet.
+- Earlier run [39060937008](https://github.com/teyyara/darboussedra/actions/runs/39060937008) remains stuck at browser capture and has no screenshot artifact. Source checks passed after the Loop 018 JSX repair, but the latest artwork and ceiling still need visual confirmation.
+- No paid asset/dependency, backend, data store, merge to `main`, or manual deployment was added/performed. PR #5 stays draft-only.
+
+### Next action
+Confirm Loop 019 typecheck, tests and production build. Review a fresh room-by-room screenshot artifact when the capture job is available; do not treat the older Loop 014 screenshots as proof of the new geometry.
