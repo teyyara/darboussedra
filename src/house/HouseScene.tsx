@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { DoubleSide, PerspectiveCamera, Quaternion, Vector3, type Group } from "three";
+import { ACESFilmicToneMapping, DoubleSide, PerspectiveCamera, Quaternion, Vector3, type Group } from "three";
 import { makeCameraPath, type CameraPose } from "./cameraPath";
 import { getCameraZoneForPosition, getHouseSceneVisibility, type CameraZone } from "./sceneVisibility";
 import {
@@ -619,12 +619,12 @@ function GardenArea({ onSelect }: { onSelect: () => void }) {
       <boxGeometry args={[1.55, 0.045, 2.1]} /><meshStandardMaterial color="#c8b89e" roughness={1} />
     </mesh>
     {[-width * 0.44, width * 0.44].map((treeX) => <group key={treeX} position={[treeX, 0, z - 1.25]}>
-      <mesh position={[0, 0.62, 0]} castShadow><cylinderGeometry args={[0.11, 0.16, 1.24, 7]} /><meshStandardMaterial color="#76563e" roughness={0.95} /></mesh>
-      <mesh position={[0, 1.5, 0]} castShadow><coneGeometry args={[0.82, 1.55, 7]} /><meshStandardMaterial color="#829071" roughness={1} /></mesh>
-      <mesh position={[0.12, 2.03, 0.08]} castShadow><coneGeometry args={[0.55, 1.1, 7]} /><meshStandardMaterial color="#a0a780" roughness={1} /></mesh>
+      <mesh position={[0, 0.62, 0]} castShadow><cylinderGeometry args={[0.11, 0.16, 1.24, 12]} /><meshStandardMaterial color="#76563e" roughness={0.95} /></mesh>
+      <mesh position={[0, 1.5, 0]} castShadow><coneGeometry args={[0.82, 1.55, 14]} /><meshStandardMaterial color="#829071" roughness={1} /></mesh>
+      <mesh position={[0.12, 2.03, 0.08]} castShadow><coneGeometry args={[0.55, 1.1, 14]} /><meshStandardMaterial color="#a0a780" roughness={1} /></mesh>
     </group>)}
     {[-width * 0.47, -width * 0.39, width * 0.39, width * 0.47].map((bushX) => <mesh key={bushX} position={[bushX, 0.22, z - 1.0]} castShadow>
-      <sphereGeometry args={[0.42, 10, 8]} /><meshStandardMaterial color="#899477" roughness={1} />
+      <sphereGeometry args={[0.42, 18, 12]} /><meshStandardMaterial color="#899477" roughness={1} />
     </mesh>)}
   </group>;
 }
@@ -684,11 +684,11 @@ function RoofDeck({ onSelect }: { onSelect: () => void }) {
           <meshStandardMaterial color="#ad8664" roughness={0.96} />
         </mesh>
         <mesh position={[0, 0.52, 0]} castShadow>
-          <sphereGeometry args={[0.28, 10, 8]} />
+          <sphereGeometry args={[0.28, 18, 12]} />
           <meshStandardMaterial color="#829176" roughness={1} />
         </mesh>
         <mesh position={[0.04, 0.66, 0.03]} castShadow>
-          <sphereGeometry args={[0.19, 9, 7]} />
+          <sphereGeometry args={[0.19, 16, 10]} />
           <meshStandardMaterial color="#9aa887" roughness={1} />
         </mesh>
       </group>)}
@@ -797,10 +797,20 @@ export function HouseScene({ location, settledLocation, reducedMotion, onArrive,
   const visualTransition = transitioning || settledLocation !== location;
   const sceneFov = location === "exterior" || location === "map" ? 58 : 66;
   return <Canvas camera={{ position: EXTERIOR_CAMERA.position, fov: sceneFov, near: 0.1, far: 120 }}
-    dpr={reducedMotion ? 1 : ([1, 1.4] as [number, number])} frameloop="demand" shadows>
-    <color attach="background" args={["#eee7da"]} /><fog attach="fog" args={["#eee7da", 22, 55]} />
-    <ambientLight intensity={1.1} /><hemisphereLight args={["#fff2db", "#8c9479", 1.1]} />
-    <directionalLight position={[8, 15, 9]} intensity={2.1} castShadow shadow-mapSize-width={1024} shadow-mapSize-height={1024} />
+    gl={{ antialias: true }} dpr={reducedMotion ? 1 : ([1, 1.4] as [number, number])}
+    frameloop="demand" shadows
+    onCreated={({ gl }) => {
+      // Filmic tone mapping protects plaster highlights while keeping wood and terracotta distinct.
+      gl.toneMapping = ACESFilmicToneMapping;
+      gl.toneMappingExposure = 1;
+    }}>
+    <color attach="background" args={["#eee7da"]} /><fog attach="fog" args={["#eee7da", 24, 58]} />
+    <ambientLight intensity={0.58} /><hemisphereLight args={["#fff2db", "#8c9479", 0.82]} />
+    <directionalLight position={[8, 15, 9]} intensity={2.15} castShadow
+      shadow-mapSize-width={2048} shadow-mapSize-height={2048}
+      shadow-camera-left={-14} shadow-camera-right={14} shadow-camera-top={14} shadow-camera-bottom={-14}
+      shadow-camera-near={0.1} shadow-camera-far={48}
+      shadow-bias={-0.00015} shadow-normalBias={0.02} />
     <CameraRig location={location} reducedMotion={reducedMotion} onArrive={onArrive}
       onTransitionChange={handleTransitionChange} onExteriorShellVisibilityChange={handleExteriorShellVisibilityChange}
       onCameraZoneChange={handleCameraZoneChange} />
