@@ -1,13 +1,13 @@
 # AEOS Status — Dar Boussedra
 
-**State:** LOOP 017 CONTINUOUS INTERIOR ROOF CEILING — SOURCE VALIDATION RUNNING, VISUAL REVIEW PENDING  
-**Active keyphrase:** DAR BOUSSEDRA — LOOP 017: CLOSE INTERIOR SKY GAPS WHILE KEEPING THE STAIR HATCH OPEN  
-**Run ID:** 20261017-darboussedra-aeos-v3-loop017  
-**Loop:** 017 · **Candidate:** dar-boussedra-continuous-interior-ceiling-017  
+**State:** LOOP 018 ROOM DETAIL AND LIGHTING — SOURCE CHECKS RUNNING, VISUAL REVIEW PENDING  
+**Active keyphrase:** DAR BOUSSEDRA — LOOP 018: ADD WARM ROOM LIGHTING AND BELIEVABLE CORNICE DETAILS  
+**Run ID:** 20261017-darboussedra-aeos-v3-loop018  
+**Loop:** 018 · **Candidate:** dar-boussedra-room-detail-lighting-018  
 **Repository:** https://github.com/teyyara/darboussedra  
 **Branch:** fix/loop-004-architecture-coherence  
 **Base main:** 501cc6ccf3e6926504dfcd051ac98147360cd48a  
-**Latest source-code checkpoint commit:** 776e92ac2f09df4bc34901863a9ce1c15ad13bc6  
+**Latest source-code checkpoint commit:** 3aea28fa6798c1fbbac8831bedac66be1afb872a  
 **Last updated:** 2026-10-17
 
 ## Loop 003 outcome
@@ -309,3 +309,16 @@ Inspect the fresh visual artifact after CI publishes it. Confirm the new bevels 
 
 ### Next action
 Inspect current CI and the newest exterior/upper landing/stair screenshots. Verify indoor camera frames show a continuous ceiling except the actual roof hatch and confirm the roof climb remains navigable, then inspect blank room framing/material behavior. Do not declare visual acceptance on source checks alone.
+
+
+## Loop 018 — Room ceiling fixtures and architectural cornices
+
+- Source commit [`3aea28f`](https://github.com/teyyara/darboussedra/commit/3aea28fa6798c1fbbac8831bedac66be1afb872a) adds a scaled warm flush-mount fixture to room ceilings and a subtle non-shadow-casting point light in the currently selected room.
+- Adds a continuous cornice to each owned wall run, using the same portal-aware wall intervals so trim never spans a real doorway. Replaces the back-wall-only top strip with consistent trim around rooms.
+- Adds three tests for ground and upper ceiling fixture height alignment and ceiling behavior for non-enclosed rooftop destinations.
+- CI run [39060862214](https://github.com/teyyara/darboussedra/actions/runs/39060862214) is running. Source validation and rendered review are pending until completion.
+- Latest available browser evidence still predates loops 015–018; visual fixes are not yet certified.
+- No dependencies or paid assets/services added. PR #5 stays open/draft; no merge to `main` or manual deployment.
+
+### Next action
+Review new captures of Family Table, Kitchen, private bedrooms, upper landing/stairs and rooftop. Check that lighting warms the active room without making it orange, cornices respect portal gaps, the continuous ceiling blocks unwanted sky sightlines while the roof hatch remains open, and no room is reduced to a blank wall. Do not call visual acceptance until screenshots are available.

@@ -1,16 +1,16 @@
 {
   "schema_version": "1.0",
-  "run_id": "20261017-darboussedra-aeos-v3-loop017",
-  "keyphrase": "DAR BOUSSEDRA — LOOP 017: close interior sky gaps while keeping the stair hatch open",
+  "run_id": "20261017-darboussedra-aeos-v3-loop018",
+  "keyphrase": "DAR BOUSSEDRA — LOOP 018: add warm room lighting and believable cornice details",
   "rulebook_version": "AEOS v3",
   "repository": "teyyara/darboussedra",
   "branch": "fix/loop-004-architecture-coherence",
-  "loop": 17,
-  "candidate": "dar-boussedra-continuous-interior-ceiling-017",
+  "loop": 18,
+  "candidate": "dar-boussedra-room-detail-lighting-018",
   "state": "WAITING_FOR_VALIDATION",
-  "status": "LOOP017_SOURCE_COMMITTED_VALIDATION_RUNNING_VISUAL_ACCEPTANCE_PENDING_PR5_DRAFT_NO_MERGE",
+  "status": "LOOP018_SOURCE_COMMITTED_CI_RUNNING_VISUAL_ACCEPTANCE_PENDING_PR5_DRAFT_NO_MERGE",
   "latest_known_good_commit": "d237375a364f25b0e30dade08f9b02790396b966",
-  "latest_source_checkpoint_commit": "776e92ac2f09df4bc34901863a9ce1c15ad13bc6",
+  "latest_source_checkpoint_commit": "3aea28fa6798c1fbbac8831bedac66be1afb872a",
   "pull_request": "https://github.com/teyyara/darboussedra/pull/5",
   "validation": {
     "loop013_browser_review": {
@@ -44,7 +44,7 @@
     },
     "current_browser_review": {
       "result": "PENDING",
-      "workflow_run": 39060417666,
+      "workflow_run": 39060862214,
       "artifact": "NOT_YET_PUBLISHED"
     },
     "merge": "NOT_PERFORMED",
@@ -84,8 +84,18 @@
     "loop017_source_checks": {
       "result": "RUNNING",
       "workflow_run": 39060417666
+    },
+    "loop018_source_change": {
+      "result": "COMMITTED_VALIDATION_RUNNING",
+      "commit": "3aea28fa6798c1fbbac8831bedac66be1afb872a",
+      "workflow_run": 39060862214,
+      "change": "Add warm ceiling fixtures to enclosed rooms, a point light for the active destination, and portal-aware continuous cornice trim."
+    },
+    "loop018_source_checks": {
+      "result": "RUNNING",
+      "workflow_run": 39060862214
     }
   },
-  "next_high_value_work": "Inspect artifact from run 39060417666. Check the upper landing roof underside closes stray sky sightlines while hatch remains clear, plus all route arrivals, mobile and plaster/wood/fabric/stone material appearance.",
+  "next_high_value_work": "Inspect run 39060862214 when the artifact becomes available. Review room lighting, cornice seams, blank wall sightlines, ceiling hatch, stairs and mobile.",
   "current_browser_review_run": 39059712137
 }
