@@ -15,7 +15,7 @@ import { getGardenPavers } from "./gardenPath";
 import { getExteriorFacadePanels, getInteriorPerimeterWallPanels } from "./perimeterWalls";
 import { ROOF_SEATING_RUG, ROOF_TEA_STOOLS, ROOF_TEA_TABLE } from "./roofTerraceProps";
 import { RealisticMaterialPass } from "./realisticMaterials";
-import { getCameraZoneForPosition, getHouseSceneVisibility, type CameraZone } from "./sceneVisibility";
+import { getCameraZoneForPosition, getHouseSceneVisibility, shouldRenderInteriorPerimeterShell, type CameraZone } from "./sceneVisibility";
 import {
   EXTERIOR_CAMERA, HOUSE_LAYOUT, getFrontDoorAction, getRoomBySlug, getRoomPortalOpenings, getRoomWallRuns, roomOwnsPortalFrame, rooms,
   type HouseLocation, type Room, type RoomSlug, type RoomPortalOpening, type Vector3Tuple,
@@ -1098,7 +1098,7 @@ function HouseArchitecture({ location, visualLocation, transitioning, exteriorSh
       </mesh>
     )}
     {visibility.showExteriorShell && <ExteriorShell location={location} onDoorActivate={onDoorActivate} reducedMotion={reducedMotion} />}
-    {!visibility.showExteriorShell && cameraZone !== "outside" && <InteriorPerimeterShell />}
+    {shouldRenderInteriorPerimeterShell(location, visibility.showExteriorShell, cameraZone, transitioning) && <InteriorPerimeterShell />}
     {rooms.filter((room) =>
       (room.level === "ground" && visibility.showGroundRooms) ||
       (room.level === "upper" && visibility.showUpperRooms)).map((room) =>

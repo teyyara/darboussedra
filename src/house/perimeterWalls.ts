@@ -65,7 +65,7 @@ export function getInteriorPerimeterWallPanels(): PerimeterWallPanel[] {
     {
       key: "left-side",
       position: [-halfWidth, wallHeight / 2, 0],
-      size: [wallThickness, wallHeight, depth],
+      size: [wallThickness + 0.18, wallHeight, depth],
     },
     {
       key: "right-side",

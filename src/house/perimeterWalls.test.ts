@@ -14,7 +14,10 @@ describe("interior perimeter walls", () => {
     for (const side of ["left-side", "right-side"] as const) {
       const wall = panels.find((panel) => panel.key === side);
       expect(wall).toBeDefined();
-      expect(wall!.size).toEqual([wallThickness, wallHeight, depth]);
+      expect(wall!.size).toEqual([wallThickness + 0.18, wallHeight, depth]);
+      // Extend past the room boundary so a sliver of sky cannot show through a seam.
+      const innerFace = Math.abs(wall!.position[0]) - wall!.size[0] / 2;
+      expect(innerFace).toBeLessThan(width / 2 - 0.15);
       expect(Math.abs(wall!.position[0])).toBeCloseTo(width / 2);
     }
 

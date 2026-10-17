@@ -133,3 +133,19 @@ export function getHouseSceneVisibility(
     showRoofDeck,
   };
 }
+
+
+/**
+ * Keep the indoor boundary present until its outdoor replacement is definitely
+ * visible. A room can mount before its camera-zone update, and door transitions
+ * intentionally hide the exterior shell briefly while crossing the threshold.
+ */
+export function shouldRenderInteriorPerimeterShell(
+  location: HouseLocation,
+  showExteriorShell: boolean,
+  cameraZone: CameraZone,
+  transitioning: boolean,
+): boolean {
+  const indoorDestination = location !== "exterior" && location !== "map" && location !== "garden";
+  return !showExteriorShell && (cameraZone !== "outside" || transitioning || indoorDestination);
+}

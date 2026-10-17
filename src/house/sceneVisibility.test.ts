@@ -1,8 +1,16 @@
 import {describe, expect, it} from "vitest";
-import {getCameraZoneForPosition, getHouseSceneVisibility} from "./sceneVisibility";
+import {getCameraZoneForPosition, getHouseSceneVisibility, shouldRenderInteriorPerimeterShell} from "./sceneVisibility";
 import {HOUSE_LAYOUT} from "./rooms";
 
 describe("level-aware house rendering", () => {
+  it("never drops the perimeter shell between indoor and outdoor rendering states", () => {
+    expect(shouldRenderInteriorPerimeterShell("family-table", false, "outside", false)).toBe(true);
+    expect(shouldRenderInteriorPerimeterShell("garden", false, "outside", true)).toBe(true);
+    expect(shouldRenderInteriorPerimeterShell("garden", true, "outside", true)).toBe(false);
+    expect(shouldRenderInteriorPerimeterShell("exterior", false, "outside", false)).toBe(false);
+    expect(shouldRenderInteriorPerimeterShell("family-table", false, "ground", false)).toBe(true);
+  });
+
   it("switches to the outdoor scene just after the camera clears the facade", () => {
     const frontZ = HOUSE_LAYOUT.exterior.depth / 2;
     const outsideFace = frontZ + HOUSE_LAYOUT.exterior.wallThickness / 2;
