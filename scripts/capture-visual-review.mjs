@@ -95,6 +95,31 @@ async function openMap(page) {
   await page.locator(".map-panel").waitFor({ state: "visible", timeout: 8000 });
 }
 
+async function waitForCameraPhase(page, destination, phase, timeout = 45000) {
+  await page.waitForFunction(({ expectedDestination, expectedPhase }) => {
+    const canvas = document.querySelector("canvas");
+    if (!canvas || canvas.dataset.destination !== expectedDestination) return false;
+    const position = canvas.dataset.cameraPosition?.split(",").map(Number);
+    if (!position || position.length !== 3 || position.some((value) => !Number.isFinite(value))) return false;
+    const [x, y, z] = position;
+    const zone = canvas.dataset.cameraZone;
+    switch (expectedPhase) {
+      case "lower-stair-flight":
+        return y > 2.9 && y < 4.25 && z < -1.0 && z > -4.2;
+      case "upper-side-landing":
+        return y > 4.4 && y < 4.9 && x > 0.55 && z < -0.6 && z > -4.1;
+      case "roof-stair-flight":
+        return y > 5.1 && y < 7.1 && z < 2.0 && z > -2.75;
+      case "roof-hatch-clear":
+        return zone === "roof" && y > 7.0 && x > 1.0 && z > -2.75 && z < -1.0;
+      case "front-door-clear":
+        return zone === "outside" && z > 4.96;
+      default:
+        return false;
+    }
+  }, { expectedDestination: destination, expectedPhase: phase }, { timeout });
+}
+
 async function selectDirectoryRoom(page, name, slug, transitionCaptures = []) {
   const selector = page.locator(".map-directory").getByRole("button", { name, exact: true }).first();
   await selector.waitFor({ state: "visible", timeout: 8000 });
@@ -102,8 +127,12 @@ async function selectDirectoryRoom(page, name, slug, transitionCaptures = []) {
   await page.waitForFunction((expected) => window.location.pathname === "/room/" + expected, slug, { timeout: 8000 });
   const transitionStarted = Date.now();
   for (const capture of transitionCaptures) {
-    const delay = Math.max(0, capture.afterMs - (Date.now() - transitionStarted));
-    if (delay > 0) await page.waitForTimeout(delay);
+    if (capture.phase) {
+      await waitForCameraPhase(page, slug, capture.phase, capture.timeout ?? 45000);
+    } else {
+      const delay = Math.max(0, capture.afterMs - (Date.now() - transitionStarted));
+      if (delay > 0) await page.waitForTimeout(delay);
+    }
     await saveScreenshot(page, capture.filename);
   }
   await arrivalStatus(page, slug, name);
@@ -162,25 +191,25 @@ await saveScreenshot(desktop, "09-prayer-room-eye-level.png");
 
 await openMap(desktop);
 await selectDirectoryRoom(desktop, "Zineb's Private Room", "zineb-room", [
-  { afterMs: 10500, filename: "13-stair-ascent-midflight.png" },
-  { afterMs: 14000, filename: "14-upper-landing-turn.png" },
+  { phase: "lower-stair-flight", filename: "13-stair-ascent-midflight.png" },
+  { phase: "upper-side-landing", filename: "14-upper-landing-turn.png" },
 ]);
 await saveScreenshot(desktop, "10-upper-floor-eye-level.png");
 
 await openMap(desktop);
 await selectDirectoryRoom(desktop, "Garden", "garden", [
-  { afterMs: 5500, filename: "15a-upper-landing-to-stair.png" },
-  { afterMs: 9000, filename: "15-stair-descent-midflight.png" },
-  { afterMs: 12000, filename: "15-stair-descent-ground-landing.png" },
+  { phase: "upper-side-landing", filename: "15a-upper-landing-to-stair.png" },
+  { phase: "lower-stair-flight", filename: "15-stair-descent-midflight.png" },
+  { phase: "front-door-clear", filename: "15-stair-descent-ground-landing.png" },
 ]);
 await saveScreenshot(desktop, "11-garden-eye-level.png");
 
 await openMap(desktop);
 await selectDirectoryRoom(desktop, "Rooftop Terrace", "rooftop", [
-  { afterMs: 13000, filename: "16-ground-stair-ascent.png" },
-  { afterMs: 17500, filename: "16-upper-bridge-after-ascent.png" },
-  { afterMs: 21500, filename: "16-roof-stair-ascent.png" },
-  { afterMs: 30000, filename: "17-roof-hatch-exit.png" },
+  { phase: "lower-stair-flight", filename: "16-ground-stair-ascent.png" },
+  { phase: "upper-side-landing", filename: "16-upper-bridge-after-ascent.png" },
+  { phase: "roof-stair-flight", filename: "16-roof-stair-ascent.png" },
+  { phase: "roof-hatch-clear", filename: "17-roof-hatch-exit.png" },
 ]);
 await saveScreenshot(desktop, "12-rooftop-eye-level.png");
 
