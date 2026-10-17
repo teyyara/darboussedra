@@ -9,6 +9,7 @@ import { getRoomCeilingBottomLocal } from "./roomDetails";
 import { getRoomWallDecor } from "./wallDecor";
 import { SKY_CLOUD_GROUPS, SKY_SUN_POSITION } from "./skyLayout";
 import { getKitchenFixtureLayout } from "./kitchenLayout";
+import { GARDEN_SHRUBS, GARDEN_TREES } from "./gardenPlants";
 import { RealisticMaterialPass } from "./realisticMaterials";
 import { getCameraZoneForPosition, getHouseSceneVisibility, type CameraZone } from "./sceneVisibility";
 import {
@@ -865,13 +866,28 @@ function GardenArea({ onSelect }: { onSelect: () => void }) {
     <mesh position={[x, 0.005, z - 0.1]} receiveShadow>
       <boxGeometry args={[1.55, 0.045, 2.1]} /><meshStandardMaterial color="#c8b89e" roughness={1} />
     </mesh>
-    {[-width * 0.44, width * 0.44].map((treeX) => <group key={treeX} position={[treeX, 0, z - 1.25]}>
-      <mesh position={[0, 0.62, 0]} castShadow><cylinderGeometry args={[0.11, 0.16, 1.24, 12]} /><meshStandardMaterial color="#76563e" roughness={0.95} /></mesh>
-      <mesh position={[0, 1.5, 0]} castShadow><coneGeometry args={[0.82, 1.55, 14]} /><meshStandardMaterial color="#829071" roughness={1} /></mesh>
-      <mesh position={[0.12, 2.03, 0.08]} castShadow><coneGeometry args={[0.55, 1.1, 14]} /><meshStandardMaterial color="#a0a780" roughness={1} /></mesh>
+    {/* Irregular olive trees use rounded, overlapping crowns instead of the old conical placeholder trees. */}
+    {GARDEN_TREES.map((tree) => <group key={tree.key} position={[tree.x, 0, z + tree.z]}>
+      <mesh position={[0, tree.trunkHeight / 2, 0]} castShadow receiveShadow>
+        <cylinderGeometry args={[0.075, 0.13, tree.trunkHeight, 12]} />
+        <meshStandardMaterial color="#76543b" roughness={0.98} />
+      </mesh>
+      {tree.branches.map((branch, index) => <mesh key={"branch-" + index}
+        position={branch.position} rotation={branch.rotation} castShadow receiveShadow>
+        <cylinderGeometry args={[0.027, 0.055, branch.length, 9]} />
+        <meshStandardMaterial color="#896548" roughness={0.98} />
+      </mesh>)}
+      {tree.crowns.map((crown, index) => <mesh key={"crown-" + index}
+        position={crown.position} scale={crown.scale} castShadow receiveShadow>
+        <sphereGeometry args={[1, 18, 12]} />
+        <meshStandardMaterial color={crown.color} roughness={1} />
+      </mesh>)}
     </group>)}
-    {[-width * 0.47, -width * 0.39, width * 0.39, width * 0.47].map((bushX) => <mesh key={bushX} position={[bushX, 0.22, z - 1.0]} castShadow>
-      <sphereGeometry args={[0.42, 18, 12]} /><meshStandardMaterial color="#899477" roughness={1} />
+    {GARDEN_SHRUBS.map((shrub) => <mesh key={shrub.key}
+      position={[shrub.x, shrub.scale[1] * 0.72, z + shrub.z]} scale={shrub.scale}
+      castShadow receiveShadow>
+      <sphereGeometry args={[1, 16, 10]} />
+      <meshStandardMaterial color={shrub.color} roughness={1} />
     </mesh>)}
   </group>;
 }
