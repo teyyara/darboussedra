@@ -1,13 +1,13 @@
 # AEOS Status — Dar Boussedra
 
-**State:** LOOP 005 SOURCE CHECKS PASS — BROWSER RE-CAPTURE PENDING  
-**Active keyphrase:** DAR BOUSSEDRA — LOOP 005: REPAIR THE UPPER-LANDING CAMERA TURN  
-**Run ID:** 20261017-darboussedra-aeos-v3-loop005  
-**Loop:** 005 · **Candidate:** dar-boussedra-stair-landing-camera-005  
+**State:** LOOP 006 SOURCE CHECKS PASS — BROWSER RE-CAPTURE PENDING  
+**Active keyphrase:** DAR BOUSSEDRA — LOOP 006: IMPROVE UPPER-LANDING CAMERA COMPOSITION  
+**Run ID:** 20261017-darboussedra-aeos-v3-loop006  
+**Loop:** 006 · **Candidate:** dar-boussedra-upper-landing-composition-006  
 **Repository:** https://github.com/teyyara/darboussedra  
 **Branch:** fix/loop-004-architecture-coherence  
 **Base main:** 501cc6ccf3e6926504dfcd051ac98147360cd48a  
-**Latest source-code correction commit:** 21cf57d44d53c1f6eefb46b4f9bbf2d802db56e1  
+**Latest source-code checkpoint commit:** e0c1bc60a744bf9f56b420f185fe3301583a9708  
 **Last updated:** 2026-10-17
 
 ## Loop 003 outcome
@@ -123,3 +123,15 @@ Inspect the latest frames at full size, especially Kitchen, Library, Pets’ Cor
 
 ### Next loop
 Verify the newly captured upper-landing and upper-bridge frames from the current source checkpoint. If the turn now clears the wall, continue with the remaining stair descent, roof-hatch and outdoor-route frames; record any remaining visible defect as a separate, bounded fix.
+
+
+## Loop 006 — Upper-landing camera composition
+
+**State:** Source typecheck, unit tests and production build passed. Fresh browser capture is still running at checkpoint creation; post-fix rendered acceptance is not yet verified.
+- **Source changes:** [`b83b838`](https://github.com/teyyara/darboussedra/commit/b83b8387dbfcfefe32bd74cc4c69b0c46edf69e0) preserves two intentionally inward-facing camera headings at the first upper-corridor waypoints; camera position remains on the guarded side lane. [`e0c1bc6`](https://github.com/teyyara/darboussedra/commit/e0c1bc60a744bf9f56b420f185fe3301583a9708) corrects the regression assertion to match the intentional inward view.
+- **Baseline evidence:** [CI artifact from run 39050232013](https://github.com/teyyara/darboussedra/actions/runs/39050232013) showed the upper landing frame still dominated by a close bedroom side wall.
+- **Validation:** [CI run 39051454455](https://github.com/teyyara/darboussedra/actions/runs/39051454455) reports typecheck, tests and production build passed. The Chromium capture step is still in progress; no post-change artifact was available at the moment this record was written.
+- **Scope:** PR #5 stays open/draft. No merge to `main` or manual production deployment. GitHub's configured Vercel integration may automatically publish a PR preview; no direct Vercel deploy/promotion command was invoked.
+
+### Next action
+Inspect the fresh `14-upper-landing-turn.png` and `16-upper-bridge-after-ascent.png` frames after run 39051454455 finishes. Verify that the central landing is more visible and the walking trajectory stays clear of the stair opening; if not, revisit the landing/bedroom corridor proportions rather than only adjusting yaw again.
