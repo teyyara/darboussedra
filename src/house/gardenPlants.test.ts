@@ -9,7 +9,8 @@ describe("garden planting bounds", () => {
     const halfDepth = garden.footprint[1] / 2;
 
     for (const tree of GARDEN_TREES) {
-      expect(Math.abs(tree.x)).toBeGreaterThan(2.5); // tree crowns frame the path from both sides
+      expect(Math.abs(tree.x)).toBeGreaterThan(1.8); // the crowns flank the path but remain visible in the garden view
+      expect(Math.abs(tree.x) - 0.9).toBeGreaterThan(0.7); // keep a clear central walking corridor
       expect(tree.z).toBeGreaterThan(0); // planting is forward of the façade, not hidden against the wall
       expect(Math.abs(tree.x) + 0.72).toBeLessThan(halfWidth);
       expect(Math.abs(tree.z) + 0.72).toBeLessThan(halfDepth);

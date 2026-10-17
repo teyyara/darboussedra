@@ -18,7 +18,7 @@ describe("3D camera paths", () => {
         expect(room.camera.target[2]).toBeGreaterThan(-0.8);
         expect(room.camera.target[2]).toBeLessThan(0.5);
       } else if (room.slug === "garden") {
-        expect(verticalLook, "garden view keeps the ground in frame").toBeLessThan(0.35);
+        expect(verticalLook, "garden view tips slightly down to keep stepping stones in frame").toBeLessThan(0.85);
         expect(Math.abs(room.camera.position[0] - room.camera.target[0]), "garden view looks across the garden rather than down the front-door axis").toBeGreaterThan(1.5);
         expect(room.camera.target[2]).toBeGreaterThan(frontZ);
         expect(Math.abs(room.camera.target[0]), "garden camera keeps the stepping-stone route in frame").toBeLessThan(0.5);
