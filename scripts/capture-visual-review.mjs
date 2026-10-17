@@ -56,6 +56,10 @@ async function saveScreenshot(page, filename) {
       cameraZone: data.cameraZone || null,
       destination: data.destination || null,
       routeProgress: data.routeProgress || null,
+      walkSpeed: data.walkSpeed == null ? null : Number(data.walkSpeed),
+      remainingPathDistance: data.remainingPathDistance == null ? null : Number(data.remainingPathDistance),
+      currentWaypointDistance: data.currentWaypointDistance == null ? null : Number(data.currentWaypointDistance),
+      nextWaypoint: data.nextWaypoint ? data.nextWaypoint.split(",").map(Number) : null,
     };
   }).catch(() => null);
   report.frameStates.push({ filename, ...frameState });
@@ -77,7 +81,13 @@ async function arrivalStatus(page, slug, name, timeout = 12000) {
       const label = document.querySelector(".room-welcome .eyebrow");
       const heading = document.querySelector("#room-title");
       const primary = document.querySelector(".room-welcome .primary");
+      const welcome = document.querySelector(".room-welcome");
+      const progress = document.querySelector("canvas")?.dataset.routeProgress?.split("/").map(Number);
+      const routeSettled = !welcome?.classList.contains("is-walking") &&
+        (!progress || progress.length !== 2 ||
+          (progress[1] === 0 && progress[0] === 0) || progress[0] >= progress[1]);
       return Boolean(
+        routeSettled &&
         label?.textContent?.includes("YOU ARE HERE") &&
         heading?.textContent?.trim() === expectedName &&
         primary instanceof HTMLButtonElement &&
@@ -91,8 +101,19 @@ async function arrivalStatus(page, slug, name, timeout = 12000) {
   const label = await page.locator(".room-welcome .eyebrow").textContent().catch(() => "");
   const heading = await page.locator("#room-title").textContent().catch(() => "");
   const primaryEnabled = await page.locator(".room-welcome .primary").isEnabled().catch(() => false);
-  const arrived = Boolean(label?.includes("YOU ARE HERE") && heading?.trim() === name && primaryEnabled);
-  report.roomArrivals.push({ slug, expected: name, actualHeading: heading?.trim() || null, label: label?.trim() || null, arrived });
+  const routeStatus = await page.locator("canvas").first().evaluate((canvas) => {
+    const progress = canvas.dataset.routeProgress?.split("/").map(Number);
+    return {
+      walking: Boolean(document.querySelector(".room-welcome")?.classList.contains("is-walking")),
+      progress: canvas.dataset.routeProgress || null,
+      settled: !document.querySelector(".room-welcome")?.classList.contains("is-walking") &&
+        (!progress || progress.length !== 2 ||
+          (progress[1] === 0 && progress[0] === 0) || progress[0] >= progress[1]),
+    };
+  }).catch(() => ({walking:true,progress:null,settled:false}));
+  const arrived = Boolean(routeStatus.settled && label?.includes("YOU ARE HERE") &&
+    heading?.trim() === name && primaryEnabled);
+  report.roomArrivals.push({ slug, expected: name, actualHeading: heading?.trim() || null, label: label?.trim() || null, arrived, walking: routeStatus.walking, routeProgress: routeStatus.progress });
   if (!arrived) report.notes.push("Arrival did not settle before the screenshot for " + slug + "; inspect this frame and arrival record.");
   return arrived;
 }
@@ -270,8 +291,8 @@ await saveScreenshot(motionProbe, "18-rooftop-motion-probe.png");
 if (rooftopArrived) {
   await openMap(motionProbe);
   const returnedToGround = await selectDirectoryRoom(motionProbe, "Family Table", "family-table", [
-    { phase: "lower-stair-flight", filename: "15-stair-descent-midflight.png", timeout: 90000 },
-  ], 90000);
+    { phase: "lower-stair-flight", filename: "15-stair-descent-midflight.png", timeout: 45000 },
+  ], 45000);
   if (!returnedToGround) {
     report.notes.push("The descent route did not settle at the family table before the movement probe ended.");
   }

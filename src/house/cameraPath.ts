@@ -41,13 +41,13 @@ function poseFacing(
 function reverseRoute(path: readonly CameraPose[]): CameraPose[] {
   return [...path].reverse().map((pose) => ({
     position: pose.position,
-    // On the stair-side bridge, keep glancing into the open stairwell while reversing
-    // travel direction. Mirroring the whole gaze would turn the view into the bedroom wall.
+    // The stair-side bridge gaze is an inward sightline, not a travel heading.
+    // Keep looking through the stairwell when reversing instead of flipping toward the bedroom wall.
     target: pose.preserveHeading
       ? [
           pose.position[0] + (pose.target[0] - pose.position[0]),
           pose.position[1] - 0.04,
-          pose.position[2] - (pose.target[2] - pose.position[2]),
+          pose.position[2] + (pose.target[2] - pose.position[2]),
         ]
       : [2 * pose.position[0] - pose.target[0], pose.position[1] - 0.04, 2 * pose.position[2] - pose.target[2]],
     ...(pose.preserveHeading ? { preserveHeading: true } : {}),

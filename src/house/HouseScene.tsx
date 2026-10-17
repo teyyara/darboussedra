@@ -239,6 +239,16 @@ function CameraRig({ location, reducedMotion, onArrive, onTransitionChange, onEx
     canvas.dataset.cameraZone = cameraZone.current;
     canvas.dataset.destination = location;
     canvas.dataset.routeProgress = `${Math.min(index.current, path.current.length)}/${path.current.length}`;
+    // Keep motion telemetry attached to the canvas so browser review can tell a
+    // completed route from a frozen waypoint without adding visible diagnostics.
+    canvas.dataset.walkSpeed = currentWalkSpeed.current.toFixed(3);
+    canvas.dataset.remainingPathDistance = remainingPathDistance.toFixed(3);
+    canvas.dataset.currentWaypointDistance = waypoint
+      ? camera.position.distanceTo(waypoint.position).toFixed(3)
+      : "0";
+    canvas.dataset.nextWaypoint = waypoint
+      ? waypoint.position.toArray().map((value) => value.toFixed(3)).join(",")
+      : "";
 
     const stillMoving = index.current < path.current.length ||
       camera.position.distanceToSquared(desired.position) > 0.0016 ||

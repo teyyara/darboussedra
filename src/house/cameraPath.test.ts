@@ -155,6 +155,24 @@ describe("3D camera paths", () => {
     expect(Math.max(...path.map((pose) => pose.position[1]))).toBeLessThanOrEqual(HOUSE_LAYOUT.roofY + 1.7);
   });
 
+  it("keeps the reverse upper-landing gaze aimed into the open stairwell", () => {
+    const path = makeCameraPath("rooftop", "family-table", poseFor("family-table"));
+    const landingGaze = path.find((pose) => pose.preserveHeading &&
+      pose.position[2] < -4.0 && pose.position[2] > -4.5);
+    expect(landingGaze).toBeDefined();
+    expect(landingGaze!.target[2]).toBeGreaterThan(landingGaze!.position[2]);
+  });
+
+  it("aims down the lower stair flight while returning from the roof", () => {
+    const path = makeCameraPath("rooftop", "family-table", poseFor("family-table"));
+    const descendingTreads = path.filter((pose) =>
+      !pose.preserveHeading &&
+      pose.position[1] > 2.2 && pose.position[1] < 4.45 &&
+      pose.position[2] < -1.0 && pose.position[2] > -4.3);
+    expect(descendingTreads.length).toBeGreaterThan(3);
+    expect(descendingTreads.some((pose) => pose.target[1] < pose.position[1] - 0.05)).toBe(true);
+  });
+
   it("walks through a curved outdoor approach instead of turning to the garden pose in empty space", () => {
     const path = makeCameraPath("entrance", "garden", poseFor("garden"));
     const frontZ = HOUSE_LAYOUT.exterior.depth / 2;
