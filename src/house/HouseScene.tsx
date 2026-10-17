@@ -15,6 +15,7 @@ import { getGardenPavers } from "./gardenPath";
 import { getExteriorFacadePanels, getInteriorPerimeterWallPanels } from "./perimeterWalls";
 import { ROOF_SEATING_RUG, ROOF_TEA_STOOLS, ROOF_TEA_TABLE } from "./roofTerraceProps";
 import { getRoofHatchGuardRails } from "./roofHatchRails";
+import { getCameraFrameDeltas } from "./cameraTiming";
 import { RealisticMaterialPass } from "./realisticMaterials";
 import { getCameraZoneForPosition, getHouseSceneVisibility, shouldRenderInteriorPerimeterShell, type CameraZone } from "./sceneVisibility";
 import {
@@ -169,7 +170,9 @@ function CameraRig({ location, reducedMotion, onArrive, onTransitionChange, onEx
   }, [camera, desired, invalidate, location, onArrive, onTransitionChange, onExteriorShellVisibilityChange, onCameraZoneChange, pose, reducedMotion]);
 
   useFrame((state, delta) => {
-    const frameDelta = Math.min(delta, 0.2);
+    // Keep travel in real time on slow software-rendered devices without
+    // allowing a large catch-up jump after a suspended tab.
+    const { movementDelta, rotationDelta } = getCameraFrameDeltas(delta);
     const distanceToTarget = camera.position.distanceTo(desired.position);
     let remainingPathDistance = 0;
     let segmentStart = camera.position;
@@ -181,9 +184,9 @@ function CameraRig({ location, reducedMotion, onArrive, onTransitionChange, onEx
     const targetSpeed = Math.min(WALK_SPEED, Math.sqrt(2 * WALK_DECELERATION * remainingPathDistance));
     const speedChange = (targetSpeed - currentWalkSpeed.current) *
       (targetSpeed < currentWalkSpeed.current ? WALK_DECELERATION : WALK_ACCELERATION);
-    currentWalkSpeed.current += Math.max(-WALK_DECELERATION * frameDelta,
-      Math.min(WALK_ACCELERATION * frameDelta, speedChange * frameDelta));
-    let travelRemaining = currentWalkSpeed.current * frameDelta;
+    currentWalkSpeed.current += Math.max(-WALK_DECELERATION * movementDelta,
+      Math.min(WALK_ACCELERATION * movementDelta, speedChange * movementDelta));
+    let travelRemaining = currentWalkSpeed.current * movementDelta;
     let waypoint = path.current[index.current];
 
     // Carry unused frame distance across waypoint boundaries. The 0.2s cap preserves
@@ -206,7 +209,7 @@ function CameraRig({ location, reducedMotion, onArrive, onTransitionChange, onEx
 
     const nextRotation = waypoint?.rotation ?? desired.rotation;
     // Quaternion blending avoids lookAt-target crossings that can flip the lens on landings.
-    camera.quaternion.slerp(nextRotation, 1 - Math.exp(-TURN_RESPONSE * frameDelta));
+    camera.quaternion.slerp(nextRotation, 1 - Math.exp(-TURN_RESPONSE * rotationDelta));
 
     const frontZ = HOUSE_LAYOUT.exterior.depth / 2;
     const nextCameraZone = getCameraZoneForPosition(camera.position);
