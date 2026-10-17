@@ -1,13 +1,13 @@
 # AEOS Status — Dar Boussedra
 
-**State:** LOOP 016 SOFT-EDGE FURNITURE GEOMETRY — SOURCE VALIDATION QUEUED, VISUAL ACCEPTANCE PENDING  
-**Active keyphrase:** DAR BOUSSEDRA — LOOP 016: SOFTEN FURNITURE AND PROP SILHOUETTES  
-**Run ID:** 20261017-darboussedra-aeos-v3-loop016  
-**Loop:** 016 · **Candidate:** dar-boussedra-soft-edge-props-016  
+**State:** LOOP 017 CONTINUOUS INTERIOR ROOF CEILING — SOURCE VALIDATION RUNNING, VISUAL REVIEW PENDING  
+**Active keyphrase:** DAR BOUSSEDRA — LOOP 017: CLOSE INTERIOR SKY GAPS WHILE KEEPING THE STAIR HATCH OPEN  
+**Run ID:** 20261017-darboussedra-aeos-v3-loop017  
+**Loop:** 017 · **Candidate:** dar-boussedra-continuous-interior-ceiling-017  
 **Repository:** https://github.com/teyyara/darboussedra  
 **Branch:** fix/loop-004-architecture-coherence  
 **Base main:** 501cc6ccf3e6926504dfcd051ac98147360cd48a  
-**Latest source-code checkpoint commit:** 42d6b5a5b7aaa4244261eb5e5cd8e1ccaf4b214b  
+**Latest source-code checkpoint commit:** 776e92ac2f09df4bc34901863a9ce1c15ad13bc6  
 **Last updated:** 2026-10-17
 
 ## Loop 003 outcome
@@ -296,3 +296,16 @@ Inspect the new exterior and representative room, landing/stair, rooftop and mob
 
 ### Next action
 Inspect the fresh visual artifact after CI publishes it. Confirm the new bevels soften furniture edges without altering proportions, then verify material patterns and reflections from Loop 015 under real screenshots. If Chromium capture stalls again, report that limitation clearly rather than claiming visual acceptance.
+
+
+## Loop 017 — Close interior sky gaps with a real ceiling
+
+- Source commit [`776e92a`](https://github.com/teyyara/darboussedra/commit/776e92ac2f09df4bc34901863a9ce1c15ad13bc6) adds a continuous roof-underside ceiling to indoor and stair-transition views. It is split into four panels around the registered rooftop stair hatch rather than filling the hatch itself.
+- The independent upper-room ceiling tiles have been removed in favour of the one continuous top plane; ground-floor room ceilings remain unchanged.
+- Added three geometry tests for coverage area, hatch clearance and bounds.
+- CI run [39060417666](https://github.com/teyyara/darboussedra/actions/runs/39060417666) was in progress after commit creation; validation outcome is pending.
+- Earlier screenshot evidence from the Loop 014 artifact showed blue sky above blank walls during upper landing-to-stair travel. Loop 017 targets this directly, but the fix is **not visually accepted** until a new artifact is captured and inspected.
+- No new dependency or paid asset/service added. PR #5 remains draft/unmerged. No manual deployment.
+
+### Next action
+Inspect current CI and the newest exterior/upper landing/stair screenshots. Verify indoor camera frames show a continuous ceiling except the actual roof hatch and confirm the roof climb remains navigable, then inspect blank room framing/material behavior. Do not declare visual acceptance on source checks alone.
