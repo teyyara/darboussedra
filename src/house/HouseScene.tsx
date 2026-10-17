@@ -11,6 +11,7 @@ import { SKY_CLOUD_GROUPS, SKY_SUN_POSITION } from "./skyLayout";
 import { getKitchenFixtureLayout } from "./kitchenLayout";
 import { getLibraryBookProps } from "./libraryShelving";
 import { GARDEN_SHRUBS, GARDEN_TREES } from "./gardenPlants";
+import { getGardenPavers } from "./gardenPath";
 import { RealisticMaterialPass } from "./realisticMaterials";
 import { getCameraZoneForPosition, getHouseSceneVisibility, type CameraZone } from "./sceneVisibility";
 import {
@@ -867,9 +868,13 @@ function GardenArea({ onSelect }: { onSelect: () => void }) {
       <boxGeometry args={[width, 0.08, depth]} /><meshStandardMaterial color={hovered ? "#b0b98f" : "#9ba27e"} roughness={1} />
     </mesh>
     <NavigationHotspot position={[x, 0.025, z]} onSelect={onSelect} />
-    <mesh position={[x, 0.005, z - 0.1]} receiveShadow>
-      <boxGeometry args={[1.55, 0.045, 2.1]} /><meshStandardMaterial color="#c8b89e" roughness={1} />
-    </mesh>
+    {/* A shallow stone threshold joins the front door to the first stepping stone. */}
+    <PropBox position={[x, 0.025, z - 1.92]} size={[1.65, 0.07, 0.78]} color="#c8b89e" />
+    {getGardenPavers().map((paver) => <group key={paver.key}
+      position={[x + paver.position[0], paver.position[1], z + paver.position[2]]}
+      rotation={[0, paver.rotationY, 0]}>
+      <PropBox position={[0, 0, 0]} size={paver.size} color={paver.color} roughness={0.98} />
+    </group>)}
     {/* Irregular olive trees use rounded, overlapping crowns instead of the old conical placeholder trees. */}
     {GARDEN_TREES.map((tree) => <group key={tree.key} position={[tree.x, 0, z + tree.z]}>
       <mesh position={[0, tree.trunkHeight / 2, 0]} castShadow receiveShadow>
