@@ -5,6 +5,7 @@ import { makeCameraPath, type CameraPose } from "./cameraPath";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 import { getPropCornerRadius } from "./roundedProps";
 import { getInteriorRoofCeilingPanels } from "./interiorCeiling";
+import { getRoomCeilingBottomLocal } from "./roomDetails";
 import { RealisticMaterialPass } from "./realisticMaterials";
 import { getCameraZoneForPosition, getHouseSceneVisibility, type CameraZone } from "./sceneVisibility";
 import {
@@ -607,6 +608,26 @@ function RoomFurnishings({ room }: { room: Room }) {
   </group>;
 }
 
+function RoomCeilingFixture({ room, active }: { room: Room; active: boolean }) {
+  const ceilingBottom = getRoomCeilingBottomLocal(room);
+  return <group>
+    <mesh position={[0, ceilingBottom - 0.035, 0]}>
+      <cylinderGeometry args={[0.14, 0.14, 0.028, 32]} />
+      <meshStandardMaterial color="#b58c59" metalness={0.48} roughness={0.42} />
+    </mesh>
+    <mesh position={[0, ceilingBottom - 0.055, 0]} rotation={[Math.PI / 2, 0, 0]}>
+      <torusGeometry args={[0.12, 0.012, 8, 28]} />
+      <meshStandardMaterial color="#d0ae78" metalness={0.62} roughness={0.32} />
+    </mesh>
+    <mesh position={[0, ceilingBottom - 0.12, 0]} scale={[1, 0.62, 1]}>
+      <sphereGeometry args={[0.1, 20, 14]} />
+      <meshStandardMaterial color="#fff0cf" emissive="#ffd38c" emissiveIntensity={active ? 1.05 : 0.18}
+        roughness={0.32} toneMapped={false} />
+    </mesh>
+    {active && <pointLight position={[0, ceilingBottom - 0.28, 0]} color="#ffdfad" intensity={0.7} distance={5.5} decay={2} />}
+  </group>;
+}
+
 function RoomArea({ room, active, onSelect, shellOnly = false }: { room: Room; active?: Room; onSelect: (slug: RoomSlug) => void; shellOnly?: boolean }) {
   const [x, y, z] = room.scenePosition, [width, depth] = room.footprint;
   const [hovered, setHovered] = useState(false);
@@ -636,6 +657,23 @@ function RoomArea({ room, active, onSelect, shellOnly = false }: { room: Room; a
           : [0.08, 0.11, segmentLength] as Vector3Tuple,
       };
     }));
+  const cornices = (["front", "back", "left", "right"] as const).flatMap((side) =>
+    getRoomWallRuns(room, side, openings).map((run, index) => {
+      const along = (run.start + run.end) / 2;
+      const segmentLength = run.end - run.start;
+      const frontBack = side === "front" || side === "back";
+      const boundary = frontBack ? (side === "front" ? depth / 2 : -depth / 2)
+        : (side === "right" ? width / 2 : -width / 2);
+      return {
+        key: side + "-cornice-" + index,
+        position: frontBack
+          ? [along, HOUSE_LAYOUT.floorThickness + HOUSE_LAYOUT.roomWallHeight - 0.025, boundary] as Vector3Tuple
+          : [boundary, HOUSE_LAYOUT.floorThickness + HOUSE_LAYOUT.roomWallHeight - 0.025, along] as Vector3Tuple,
+        size: frontBack
+          ? [segmentLength, 0.055, 0.16] as Vector3Tuple
+          : [0.16, 0.055, segmentLength] as Vector3Tuple,
+      };
+    }));
   const selected = !shellOnly && active?.slug === room.slug;
   const hintX = Math.max(-width * 0.32, Math.min(width * 0.32, room.camera.position[0] - x));
   const hintZ = Math.max(-depth * 0.32, Math.min(depth * 0.32, room.camera.position[2] - z));
@@ -663,6 +701,12 @@ function RoomArea({ room, active, onSelect, shellOnly = false }: { room: Room; a
     {baseboards.map((board) => <mesh key={board.key} position={board.position} castShadow receiveShadow>
       <boxGeometry args={board.size} /><meshStandardMaterial color={baseboardColor} roughness={0.86} />
     </mesh>)}
+    {/* Continuous cornices sharpen the ceiling line while using the same wall-run gaps as doors. */}
+    {cornices.map((board) => <mesh key={board.key} position={board.position} castShadow receiveShadow>
+      <boxGeometry args={board.size} /><meshStandardMaterial color="#d7c4a7" roughness={0.88} />
+    </mesh>);
+
+    {!shellOnly && <RoomCeilingFixture room={room} active={selected} />}
     {!shellOnly && <RoomFurnishings room={room} />}
     {rearWindow && <group position={[0, 0, -depth / 2 + 0.035]}>
       <mesh position={[0, rearWindowCenterY, 0]}>
@@ -684,11 +728,7 @@ function RoomArea({ room, active, onSelect, shellOnly = false }: { room: Room; a
     </group>}
     {openings.filter((opening) => roomOwnsPortalFrame(room, opening)).map((opening, index) => <DoorwayFrame key={(opening.targetSlug ?? opening.zone ?? "portal") + "-" + opening.side + "-" + index}
       room={room} opening={opening} onSelect={onSelect} />)}
-    {getRoomWallRuns(room, "back", openings).map((interval, index) => <mesh key={"back-trim-" + index}
-      position={[(interval.start + interval.end) / 2, HOUSE_LAYOUT.floorThickness + HOUSE_LAYOUT.roomWallHeight - 0.025, -depth / 2]}>
-      <boxGeometry args={[interval.end - interval.start, 0.05, 0.14]} />
-      <meshStandardMaterial color={room.kind === "private" ? "#a96d50" : "#b18a56"} roughness={0.82} />
-    </mesh>)}
+
     {selected && <mesh position={[0, HOUSE_LAYOUT.floorThickness + 0.015, 0]} rotation={[-Math.PI / 2, 0, 0]}>
       <ringGeometry args={[0.26, 0.32, 32]} /><meshStandardMaterial color="#94543d" roughness={0.5} />
     </mesh>}
