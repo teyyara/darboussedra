@@ -345,7 +345,7 @@ function ExteriorShell({ location, onDoorActivate, reducedMotion }: { location: 
       <group key={x + "-" + index} position={[x, y, frontZ + 0.03]}>
         <mesh>
           <boxGeometry args={[frontWindowWidth - 0.18, 1.0, 0.06]} />
-          <meshStandardMaterial color="#e5b973" emissive="#b88745" emissiveIntensity={0.13} roughness={0.32} metalness={0.08} />
+          <meshPhysicalMaterial color="#b6ced3" transparent opacity={0.68} roughness={0.16} metalness={0.12} clearcoat={1} clearcoatRoughness={0.08} envMapIntensity={0.75} />
         </mesh>
         <mesh><boxGeometry args={[0.055, 1.04, 0.08]} /><meshStandardMaterial color="#947052" roughness={0.7} /></mesh>
         <mesh><boxGeometry args={[frontWindowWidth - 0.14, 0.055, 0.08]} /><meshStandardMaterial color="#947052" roughness={0.7} /></mesh>
