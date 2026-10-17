@@ -91,11 +91,13 @@ function CameraRig({ location, reducedMotion, onArrive, onTransitionChange, onEx
   useFrame((_state, delta) => {
     const frameDelta = Math.min(delta, 0.2);
     const distanceToTarget = camera.position.distanceTo(desired.position);
-    let remainingPathDistance = distanceToTarget;
+    let remainingPathDistance = 0;
+    let segmentStart = camera.position;
     for (let waypointIndex = index.current; waypointIndex < path.current.length; waypointIndex += 1) {
-      const segmentStart = waypointIndex === index.current ? camera.position : path.current[waypointIndex - 1].position;
       remainingPathDistance += segmentStart.distanceTo(path.current[waypointIndex].position);
+      segmentStart = path.current[waypointIndex].position;
     }
+    if (index.current >= path.current.length) remainingPathDistance = distanceToTarget;
     const targetSpeed = Math.min(WALK_SPEED, Math.sqrt(2 * WALK_DECELERATION * remainingPathDistance));
     const speedChange = (targetSpeed - currentWalkSpeed.current) *
       (targetSpeed < currentWalkSpeed.current ? WALK_DECELERATION : WALK_ACCELERATION);
