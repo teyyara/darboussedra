@@ -169,16 +169,17 @@ await saveScreenshot(desktop, "10-upper-floor-eye-level.png");
 
 await openMap(desktop);
 await selectDirectoryRoom(desktop, "Garden", "garden", [
-  { afterMs: 5500, filename: "15a-garden-doorway-exit.png" },
-  { afterMs: 9000, filename: "15b-garden-approach-arc.png" },
-  { afterMs: 12000, filename: "15-stair-descent-midflight.png" },
+  { afterMs: 5500, filename: "15a-upper-landing-to-stair.png" },
+  { afterMs: 9000, filename: "15-stair-descent-midflight.png" },
+  { afterMs: 12000, filename: "15-stair-descent-ground-landing.png" },
 ]);
 await saveScreenshot(desktop, "11-garden-eye-level.png");
 
 await openMap(desktop);
 await selectDirectoryRoom(desktop, "Rooftop Terrace", "rooftop", [
-  { afterMs: 17500, filename: "16-ground-stair-ascent.png" },
-  { afterMs: 24500, filename: "16-roof-stair-ascent.png" },
+  { afterMs: 13000, filename: "16-ground-stair-ascent.png" },
+  { afterMs: 17500, filename: "16-upper-bridge-after-ascent.png" },
+  { afterMs: 21500, filename: "16-roof-stair-ascent.png" },
   { afterMs: 30000, filename: "17-roof-hatch-exit.png" },
 ]);
 await saveScreenshot(desktop, "12-rooftop-eye-level.png");
@@ -203,6 +204,21 @@ await mobile.locator(".map-panel").waitFor({ state: "visible", timeout: 8000 });
 report.mobileRoomDirectoryButtonCount = await mobile.locator(".map-directory .map-rooms button").count();
 await saveScreenshot(mobile, "09-house-map-mobile.png");
 
+const stairAscent = report.frameStates.find((frame) => frame.filename === "13-stair-ascent-midflight.png");
+const stairDescent = report.frameStates.find((frame) => frame.filename === "15-stair-descent-midflight.png");
+report.stairCameraAiming = {
+  ascentDirectionY: stairAscent?.cameraDirection?.[1] ?? null,
+  descentDirectionY: stairDescent?.cameraDirection?.[1] ?? null,
+  looksUpDuringAscent: typeof stairAscent?.cameraDirection?.[1] === "number" && stairAscent.cameraDirection[1] > 0.1,
+  looksDownDuringDescent: typeof stairDescent?.cameraDirection?.[1] === "number" && stairDescent.cameraDirection[1] < -0.1,
+};
+if (!report.stairCameraAiming.looksUpDuringAscent) {
+  report.notes.push("Camera should pitch upward while climbing the lower stair flight.");
+}
+if (!report.stairCameraAiming.looksDownDuringDescent) {
+  report.notes.push("Camera should pitch downward while descending the lower stair flight.");
+}
+
 await writeFile(outputDir + "/browser-review.json", JSON.stringify(report, null, 2) + "\n");
 await browser.close();
 
@@ -213,6 +229,8 @@ if (
   !report.navigationGuideDetected ||
   !report.mobileNavigationGuideVisible ||
   !report.walkingHudHiddenDuringStairCaptures ||
+  !report.stairCameraAiming.looksUpDuringAscent ||
+  !report.stairCameraAiming.looksDownDuringDescent ||
   report.mobileHasHorizontalDocumentOverflow ||
   report.roomDirectoryButtonCount !== 13 ||
   report.mobileRoomDirectoryButtonCount !== 13
