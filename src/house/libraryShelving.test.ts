@@ -7,7 +7,7 @@ describe("library shelf book layout", () => {
     const books = getLibraryBookProps(width);
     const shelfBoardCenterX = 0.04 - width / 2 + 0.23;
     const shelfFrontX = shelfBoardCenterX + 0.4 / 2;
-    expect(books).toHaveLength(18);
+    expect(books).toHaveLength(27);
 
     for (const book of books) {
       const rearEdge = book.position[0] - book.size[0] / 2;

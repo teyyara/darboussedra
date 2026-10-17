@@ -12,7 +12,7 @@ const SHELF_BOARD_X_OFFSET = 0.04;
 const SHELF_CENTER_X_OFFSET = 0.23;
 const SHELF_BOARD_WIDTH = 0.4;
 const BOOK_WIDTH = 0.24;
-const BOOK_DEPTH = 0.13;
+const BOOK_DEPTH = 0.15;
 const BOOK_ROWS = [
   { y: 0.46, height: 0.31 },
   { y: 0.88, height: 0.32 },
@@ -29,12 +29,12 @@ export function getLibraryBookProps(roomWidth: number): LibraryBookProp[] {
   const shelfFrontX = shelfBoardCenterX + SHELF_BOARD_WIDTH / 2;
   const bookCenterX = shelfFrontX + BOOK_WIDTH / 2 - 0.015;
   return BOOK_ROWS.flatMap((row, rowIndex) =>
-    Array.from({ length: 6 }, (_, column) => {
-      const index = rowIndex * 6 + column;
+    Array.from({ length: 9 }, (_, column) => {
+      const index = rowIndex * 9 + column;
       return {
         key: "library-book-" + index,
-        position: [bookCenterX, row.y, -1.06 + column * 0.36] as Vector3Tuple,
-        size: [BOOK_WIDTH, row.height + (column % 3) * 0.018, BOOK_DEPTH] as Vector3Tuple,
+        position: [bookCenterX, row.y, -1.04 + column * 0.22] as Vector3Tuple,
+        size: [BOOK_WIDTH, row.height + (column % 3) * 0.018, BOOK_DEPTH + (column % 3) * 0.008] as Vector3Tuple,
         color: BOOK_COLORS[index % BOOK_COLORS.length],
       };
     }),
