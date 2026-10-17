@@ -17,7 +17,7 @@ PR #5: https://github.com/teyyara/darboussedra/pull/5 (open, draft)
 ## Validation
 - Prior render polish [CI run 39051923842](https://github.com/teyyara/darboussedra/actions/runs/39051923842): complete/success; screenshots inspected.
 - Kitchen commit [CI run 39052224425](https://github.com/teyyara/darboussedra/actions/runs/39052224425): typecheck, unit tests and production build passed; browser capture still in progress at last check.
-- Latest baseboard commit [CI run 39052442310](https://github.com/teyyara/darboussedra/actions/runs/39052442310): dependency-install step was in progress when this note was written; no source check or screenshot verdict is claimed yet.
+- Latest baseboard commit [CI run 39052442310](https://github.com/teyyara/darboussedra/actions/runs/39052442310): typecheck, unit tests and production build passed; the browser capture step remains active and no post-fix artifact is available yet.
 
 ## Boundary
 - No new dependencies/assets/services; main unchanged; PR #5 stays draft.

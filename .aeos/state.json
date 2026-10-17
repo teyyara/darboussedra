@@ -8,7 +8,7 @@
   "loop": 9,
   "candidate": "dar-boussedra-interior-finish-009",
   "state": "WAITING_FOR_CONTINUE",
-  "status": "INTERIOR_SKIRTING_COMMITTED_CI_IN_PROGRESS_BROWSER_REVIEW_PENDING_PR5_DRAFT_NO_MERGE",
+  "status": "INTERIOR_SKIRTING_SOURCE_CHECKS_PASS_BROWSER_CAPTURE_IN_PROGRESS_PR5_DRAFT_NO_MERGE",
   "latest_known_good_commit": "d237375a364f25b0e30dade08f9b02790396b966",
   "latest_source_checkpoint_commit": "a74afe4e985bca0ce4fb75fc48b37f8ce02af21c",
   "pull_request": "https://github.com/teyyara/darboussedra/pull/5",
@@ -28,19 +28,24 @@
         "result": "PASS",
         "workflow_run": 39052224425
       },
-      "browser_capture": "STILL_IN_PROGRESS_AT_LAST_CHECK"
+      "browser_capture": "STILL_IN_PROGRESS_AT_LAST_CHECK_NO_ARTIFACT"
     },
     "interior_skirting": {
       "commit": "a74afe4e985bca0ce4fb75fc48b37f8ce02af21c",
       "code_checks": {
-        "result": "IN_PROGRESS",
-        "workflow_run": 39052442310
+        "result": "PASS",
+        "workflow_run": 39052442310,
+        "steps": [
+          "npm run typecheck",
+          "npm test",
+          "npm run build"
+        ]
       },
-      "browser_capture": "PENDING"
+      "browser_capture": "STILL_IN_PROGRESS_AT_LAST_CHECK_NO_ARTIFACT"
     },
     "merge": "NOT_PERFORMED",
     "manual_vercel_deployment": "NOT_PERFORMED",
     "dependencies_added": 0
   },
-  "next_high_value_work": "Check run 39052442310 and inspect current screenshots. Verify kitchen appliance readability and subtle wall-floor trim; if screenshots remain stalled, fix capture/performance before adding more geometry."
+  "next_high_value_work": "Inspect screenshots after runs 39052224425 and 39052442310 complete; verify fridge readability and subtle wall-floor trim. If captures remain stalled, investigate Playwright timing or software WebGL performance before adding geometry."
 }
