@@ -270,7 +270,7 @@ await saveScreenshot(motionProbe, "18-rooftop-motion-probe.png");
 if (rooftopArrived) {
   await openMap(motionProbe);
   const returnedToGround = await selectDirectoryRoom(motionProbe, "Family Table", "family-table", [
-    { phase: "lower-stair-flight", filename: "15-stair-descent-midflight.png" },
+    { phase: "lower-stair-flight", filename: "15-stair-descent-midflight.png", timeout: 90000 },
   ], 90000);
   if (!returnedToGround) {
     report.notes.push("The descent route did not settle at the family table before the movement probe ended.");
