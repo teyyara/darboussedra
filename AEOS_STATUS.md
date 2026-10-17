@@ -1,13 +1,13 @@
 # AEOS Status — Dar Boussedra
 
-**State:** LOOP 013 SKY DECORATION OCCLUSION — SOURCE CHECKS PASS, BROWSER REVIEW PENDING  
-**Active keyphrase:** DAR BOUSSEDRA — LOOP 013: ENSURE SKY DECORATIONS RESPECT WALL DEPTH  
-**Run ID:** 20261017-darboussedra-aeos-v3-loop013  
-**Loop:** 013 · **Candidate:** dar-boussedra-sky-occlusion-013  
+**State:** LOOP 014 SUN VISIBILITY — WALL OCCLUSION VISUALLY CONFIRMED, EXTERIOR SUN POSITION REVIEW PENDING  
+**Active keyphrase:** DAR BOUSSEDRA — LOOP 014: MAKE THE SUN CLEARLY VISIBLE ABOVE THE EXTERIOR ROOFLINE  
+**Run ID:** 20261017-darboussedra-aeos-v3-loop014  
+**Loop:** 014 · **Candidate:** dar-boussedra-sun-framing-014  
 **Repository:** https://github.com/teyyara/darboussedra  
 **Branch:** fix/loop-004-architecture-coherence  
 **Base main:** 501cc6ccf3e6926504dfcd051ac98147360cd48a  
-**Latest source-code checkpoint commit:** 34889caf7e4459655028d95f911c6904346b59ca  
+**Latest source-code checkpoint commit:** b14c7a3abf5168d210f65462a569d97092f04a2e  
 **Last updated:** 2026-10-17
 
 ## Loop 003 outcome
@@ -231,15 +231,32 @@ Inspect `01-exterior-desktop.png`, `08-exterior-mobile.png`, and the stair/landi
 
 ## Loop 013 — Sky decoration occlusion
 
-**State:** Source changes committed; TypeScript, tests, and production build pass. Browser capture is in progress; visual acceptance is not yet claimed.
+**State:** Source checks and fresh browser review passed. The wall-occlusion issue is visually improved; a distinct sun is still not readable in the default exterior frame and is handled as a focused follow-up in Loop 014.
 
 - **Source commit:** [`34889ca`](https://github.com/teyyara/darboussedra/commit/34889caf7e4459655028d95f911c6904346b59ca)
-- **CI run:** [Foundation checks #39058157769](https://github.com/teyyara/darboussedra/actions/runs/39058157769).
-- **Observed defect:** The fresh artifact from [run 39056997214](https://github.com/teyyara/darboussedra/actions/runs/39056997214) showed a blue sky, but the sun halo and cloud shapes appeared over nearby walls in stair/landing frames because their materials bypassed depth testing.
-- **Change:** The sky dome remains a persistent non-depth-writing backdrop. Sun/halo/cloud materials now use depth testing so intervening architecture can occlude them. The sun was raised to improve the chance of reading clearly against the exterior sky. No house layout, camera path, or room visibility rules changed.
-- **Validation:** In run 39058157769, `npm run typecheck`, `npm test`, `npm run build`, and Chromium setup passed. Screenshot capture is still active; the new artifact is not available yet, so wall occlusion, sun visibility, and the current transition frames remain unverified.
-- **Boundaries:** PR #5 remains open and draft. No merge to `main`, manual Vercel deploy, new dependencies, or remote assets.
+- **CI run:** [Foundation checks #39058157769](https://github.com/teyyara/darboussedra/actions/runs/39058157769), artifact [`darboussedra-visual-review`](https://github.com/teyyara/darboussedra/actions/runs/39058157769) (artifact ID `12110771029`).
+- **Visual finding:** In `15a-upper-landing-to-stair.png`, the sun disk is cut by the upper wall edge and no cloud appears painted across the nearby walls. The `14-upper-landing-turn.png` and `16-upper-bridge-after-ascent.png` frames show the exterior sky filling open sightlines without the earlier decoration overlay defect.
+- **Automated browser review:** 10/10 room arrivals succeeded; WebGL2 detected; runtime errors and review notes were empty; stair ascent/descent pitch checks passed; desktop and mobile each exposed all 13 room destinations; mobile document width equaled the 390 px viewport with no horizontal overflow; navigation hints were visible.
+- **Source checks:** `npm run typecheck`, `npm test`, `npm run build`, and Chromium setup passed.
+- **Remaining visual issue:** `01-exterior-desktop.png` shows only a faint edge/halo at the roofline, not a clearly visible sun disc. This is a separate composition issue from wall occlusion.
+- **Boundaries:** PR #5 remains draft/unmerged; no manual Vercel deployment or promotion; no external assets/dependencies added.
 
 ### Next action
 
-Inspect the artifact from run 39058157769 when available: `01-exterior-desktop.png`, `08-exterior-mobile.png`, `14-upper-landing-turn.png`, `15a-upper-landing-to-stair.png`, and `16-upper-bridge-after-ascent.png`. Confirm that sky decorations sit behind walls, the sun is visible in the open sky rather than clipped out or hidden by the house, and movement frames no longer show a misleading blank/transparent canvas. If the capture remains pending, resume from this exact commit and run without an unbounded wait.
+Review the sun framing after Loop 014 moves the disk/halo sideways relative to the exterior camera. Keep depth testing enabled so walls continue to occlude the sky decorations in movement frames.
+
+## Loop 014 — Make the sun visible above the exterior roofline
+
+**State:** Source change committed; source checks and screenshot capture are queued/in progress. The new sun position is not yet visually verified.
+
+- **Source commit:** [`b14c7a3`](https://github.com/teyyara/darboussedra/commit/b14c7a3abf5168d210f65462a569d97092f04a2e).
+- **CI run:** [Foundation checks #39058615280](https://github.com/teyyara/darboussedra/actions/runs/39058615280).
+- **Evidence motivating the change:** the Loop 013 exterior screenshot had a plausible warm-blue gradient and cloud, but the sun was hidden behind the house. The stair/landing images showed depth occlusion behaving as expected.
+- **Change:** Moves the sun disk and halo to local sky position `[-28, 12, -60]`, offset from the default exterior camera's view of the house so the sun can appear above/right of the roofline. Depth testing remains enabled for the disk, halo, and clouds.
+- **Validation:** The previous run [39058157769](https://github.com/teyyara/darboussedra/actions/runs/39058157769) passed typecheck, tests, build, and browser review. Run 39058615280 is currently queued, so Loop 014's own source and visual checks remain pending.
+- **Scope:** no camera path, room geometry, footprint, dependency, or asset change. PR #5 stays open/draft. No merge to `main` or manual Vercel deployment.
+
+### Next action
+
+Inspect `01-exterior-desktop.png`, `08-exterior-mobile.png`, `14-upper-landing-turn.png`, and `15a-upper-landing-to-stair.png` from run 39058615280. The sun should be clearly visible in open sky and still be hidden naturally by nearby walls.
+

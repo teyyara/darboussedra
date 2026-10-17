@@ -1,25 +1,33 @@
 {
   "schema_version": "1.0",
-  "run_id": "20261017-darboussedra-aeos-v3-loop013",
-  "keyphrase": "DAR BOUSSEDRA — LOOP 013: ensure sky decorations respect wall depth",
+  "run_id": "20261017-darboussedra-aeos-v3-loop014",
+  "keyphrase": "DAR BOUSSEDRA — LOOP 014: make the sun clearly visible above the exterior roofline",
   "rulebook_version": "AEOS v3",
   "repository": "teyyara/darboussedra",
   "branch": "fix/loop-004-architecture-coherence",
-  "loop": 13,
-  "candidate": "dar-boussedra-sky-occlusion-013",
+  "loop": 14,
+  "candidate": "dar-boussedra-sun-framing-014",
   "state": "WAITING_FOR_CONTINUE",
-  "status": "SKY_DECORATION_OCCLUSION_FIX_COMMITTED_SOURCE_CHECKS_PASS_BROWSER_CAPTURE_IN_PROGRESS_PR5_DRAFT_NO_MERGE",
+  "status": "LOOP013_VISUAL_REVIEW_PASS_WITH_SUN_VISIBILITY_FOLLOWUP_LOOP014_SOURCE_COMMITTED_CI_QUEUED_PR5_DRAFT_NO_MERGE",
   "latest_known_good_commit": "d237375a364f25b0e30dade08f9b02790396b966",
-  "latest_source_checkpoint_commit": "34889caf7e4459655028d95f911c6904346b59ca",
+  "latest_source_checkpoint_commit": "b14c7a3abf5168d210f65462a569d97092f04a2e",
   "pull_request": "https://github.com/teyyara/darboussedra/pull/5",
   "validation": {
-    "prior_render_review": {
-      "result": "VISUAL_DEFECT_OBSERVED",
-      "workflow_run": 39056997214,
-      "artifact": "darboussedra-visual-review",
-      "observed": "Sky is now visible but transparent sun halo/clouds render over nearby wall geometry because depth testing is disabled."
+    "loop013_browser_review": {
+      "result": "PASS_WITH_FOLLOWUP",
+      "workflow_run": 39058157769,
+      "artifact_id": 12110771029,
+      "findings": [
+        "10/10 destination arrivals",
+        "no runtime errors or browser notes",
+        "correct ascent/descent camera pitch",
+        "13 directory rooms on desktop and mobile",
+        "390px mobile width without overflow",
+        "sun/cloud depth occlusion visually improved"
+      ],
+      "follow_up": "Sun is not clearly visible from the default exterior composition."
     },
-    "source_checks": {
+    "loop013_source_checks": {
       "result": "PASS",
       "workflow_run": 39058157769,
       "steps": [
@@ -29,25 +37,20 @@
         "Install Chromium for visual review"
       ]
     },
-    "current_browser_capture": {
-      "result": "IN_PROGRESS_AT_CHECKPOINT",
-      "workflow_run": 39058157769,
-      "step": "Capture exterior, walkthrough, floor/map and mobile views",
-      "artifact": "NOT_YET_PUBLISHED"
-    },
-    "sky_occlusion_fix": {
+    "loop014_source_change": {
       "result": "COMMITTED_NOT_VISUALLY_VERIFIED",
-      "commit": "34889caf7e4459655028d95f911c6904346b59ca",
-      "features": [
-        "sun/halo/cloud depth testing enabled",
-        "sun raised against open sky",
-        "dome retained as persistent backdrop"
-      ]
+      "commit": "b14c7a3abf5168d210f65462a569d97092f04a2e",
+      "change": "Move sun disk and halo to [-28, 12, -60]; preserve depth testing for sky decorations."
+    },
+    "current_browser_review": {
+      "result": "QUEUED",
+      "workflow_run": 39058615280,
+      "artifact": "NOT_YET_PUBLISHED"
     },
     "merge": "NOT_PERFORMED",
     "manual_vercel_deployment": "NOT_PERFORMED",
     "dependencies_added": 0
   },
-  "next_high_value_work": "Inspect browser artifact from run 39058157769. Confirm the sun/cloud meshes are occluded by nearby walls while remaining visible in open sky and no blank/transparent transitions. Resume from exact source commit if artifact is still pending.",
-  "current_browser_review_run": 39058157769
+  "next_high_value_work": "Inspect artifact from run 39058615280. Confirm sun disk appears clearly above/right of exterior roofline while sky decorations remain occluded by nearby walls on the stair/landing frames.",
+  "current_browser_review_run": 39058615280
 }
