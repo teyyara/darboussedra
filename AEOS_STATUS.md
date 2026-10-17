@@ -1,13 +1,13 @@
 # AEOS Status — Dar Boussedra
 
-**State:** LOOP 010 UPPER-LANDING CAMERA COMPOSITION — SOURCE CHECKS PASS, BROWSER CAPTURE PENDING  
-**Active keyphrase:** DAR BOUSSEDRA — LOOP 010: KEEP STAIRWELL IN VIEW DURING UPPER-BRIDGE TRAVEL  
-**Run ID:** 20261017-darboussedra-aeos-v3-loop010  
-**Loop:** 010 · **Candidate:** dar-boussedra-upper-landing-camera-010  
+**State:** LOOP 011 FIRST LANDING-TURN GAZE — CI QUEUED, VISUAL REVIEW PENDING  
+**Active keyphrase:** DAR BOUSSEDRA — LOOP 011: KEEP STAIRWELL IN VIEW AT THE FIRST LATERAL TURN  
+**Run ID:** 20261017-darboussedra-aeos-v3-loop011  
+**Loop:** 011 · **Candidate:** dar-boussedra-first-turn-gaze-011  
 **Repository:** https://github.com/teyyara/darboussedra  
 **Branch:** fix/loop-004-architecture-coherence  
 **Base main:** 501cc6ccf3e6926504dfcd051ac98147360cd48a  
-**Latest source-code checkpoint commit:** 1b895480bc625763fdd9277aabf7767f30a7f4c9  
+**Latest source-code checkpoint commit:** fb5bbb57bf24032fc0dc687087c0631827952703  
 **Last updated:** 2026-10-17
 
 ## Loop 003 outcome
@@ -196,3 +196,18 @@ Check the newest CI run, then review the updated kitchen view plus a bedroom/lan
 
 ### Next action
 Inspect the new `14-upper-landing-turn.png`, `15a-upper-landing-to-stair.png`, and `16-upper-bridge-after-ascent.png` after run 39052970714 completes. Verify that camera glances into the stair opening during both ascent and return travel, while the direction of walking remains legible.
+
+
+## Loop 011 — First landing-turn gaze
+
+**State:** The screenshot review proved the prior Loop 010 gaze adjustment still left the first lateral turn looking into the rear bedroom wall. A focused fix and regression test are committed; new CI run is queued.
+- **Source commit:** [`fb5bbb5`](https://github.com/teyyara/darboussedra/commit/fb5bbb57bf24032fc0dc687087c0631827952703)
+- **CI run:** [Foundation checks #39053389810](https://github.com/teyyara/darboussedra/actions/runs/39053389810).
+- **Direct screenshot evidence:** [Loop 010 run 39052970714](https://github.com/teyyara/darboussedra/actions/runs/39052970714), artifact `darboussedra-visual-review`. Its `14-upper-landing-turn.png` frame recorded camera position `[0.77, 4.65, -4.019]` and direction nearly `[0, 0, 1]`: the camera faced directly forward along the rear bedroom-wall line during the lateral step onto the bridge. The `16-upper-bridge-after-ascent.png` image also showed the upper flight dominating the view rather than a clear open stairwell.
+- **Change:** the first side-lane pose in `groundStairWalkway()` is now explicitly aimed inward (`[-0.42, 0.91]`) and has `preserveHeading: true`, rather than allowing the path-tangent logic to orient it along the wall. Added a regression test for that exact lateral step and strengthened the count of intentional inward views.
+- **Previous Loop 010:** source checks and browser review passed, but visual composition did not meet the goal. This is a targeted follow-up, not a claim that the camera problem is solved.
+- **Validation for Loop 011:** CI run 39053389810 was queued at checkpoint creation; no checks or screenshots have yet been claimed.
+- **Scope:** same route positions and stair geometry; no dependencies or room-footprint changes. PR #5 remains draft and unmerged; no manual Vercel deployment.
+
+### Next action
+Inspect `14-upper-landing-turn.png`, `15a-upper-landing-to-stair.png`, and `16-upper-bridge-after-ascent.png` from run 39053389810. The first frame must no longer show a tangent-facing direction during the lateral turn; if the open stairwell still isn't readable, review the physical wall/railing layout rather than layering on further heading patches.
