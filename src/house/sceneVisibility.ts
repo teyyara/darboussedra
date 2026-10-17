@@ -20,9 +20,15 @@ export function getCameraZoneForPosition(position: { readonly x: number; readonl
   // Otherwise the interior can vanish behind the camera before the garden is drawn.
   if (position.z > exteriorFront + HOUSE_LAYOUT.exterior.wallThickness / 2 + 0.1) return "outside";
   const floorY = position.y - 1.65;
-  // Reveal the terrace while the camera is still on the final stair treads, before
-  // its viewpoint reaches rooftop eye height; the slab remains safely below the lens.
-  if (floorY >= HOUSE_LAYOUT.roofY - 0.5) return "roof";
+  const hatch = HOUSE_LAYOUT.stairs.roofOpening;
+  const hatchClearance = 0.12;
+  const stillOverHatch =
+    Math.abs(position.x - hatch.centerX) <= hatch.width / 2 + hatchClearance &&
+    Math.abs(position.z - hatch.centerZ) <= hatch.depth / 2 + hatchClearance;
+  // Do not swap to rooftop visibility solely because the camera's eye reaches roof height.
+  // It may still be physically inside the hatch, where removing the interior ceiling and
+  // upper shell exposes a sky-only frame. Switch only after the camera clears the opening.
+  if (floorY >= HOUSE_LAYOUT.roofY - 0.5 && !stillOverHatch) return "roof";
   if (floorY >= HOUSE_LAYOUT.upperY - 0.25) return "upper";
   return "ground";
 }

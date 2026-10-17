@@ -21,6 +21,24 @@ describe("level-aware house rendering", () => {
     expect(getCameraZoneForPosition({x: 0, y: HOUSE_LAYOUT.roofY + 0.95, z: 0})).toBe("upper");
   });
 
+  it("keeps the interior visible until the camera clears the roof hatch horizontally", () => {
+    const opening = HOUSE_LAYOUT.stairs.roofOpening;
+    const aboveHatch = {
+      x: opening.centerX,
+      y: HOUSE_LAYOUT.roofY + 1.215,
+      z: opening.centerZ,
+    };
+    expect(getCameraZoneForPosition(aboveHatch)).toBe("upper");
+
+    // The actual path steps sideways past the opening before switching to roof visibility.
+    const onDeckBesideHatch = {
+      x: opening.centerX + opening.width / 2 + 0.16,
+      y: HOUSE_LAYOUT.roofY + 1.65,
+      z: HOUSE_LAYOUT.stairs.roofFlight.to[2] + 0.05,
+    };
+    expect(getCameraZoneForPosition(onDeckBesideHatch)).toBe("roof");
+  });
+
   it("shows only the ground storey for a settled ground-floor room", () => {
     const visibility = getHouseSceneVisibility("family-table", "family-table", false);
     expect(visibility.showGroundRooms).toBe(true);
