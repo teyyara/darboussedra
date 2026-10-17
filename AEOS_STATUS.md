@@ -1,13 +1,13 @@
 # AEOS Status — Dar Boussedra
 
-**State:** LOOP 006 SOURCE CHECKS PASS — BROWSER RE-CAPTURE PENDING  
-**Active keyphrase:** DAR BOUSSEDRA — LOOP 006: IMPROVE UPPER-LANDING CAMERA COMPOSITION  
-**Run ID:** 20261017-darboussedra-aeos-v3-loop006  
-**Loop:** 006 · **Candidate:** dar-boussedra-upper-landing-composition-006  
+**State:** LOOP 007 RENDER-POLISH SOURCE CHECKS PASS — BROWSER REVIEW PENDING  
+**Active keyphrase:** DAR BOUSSEDRA — LOOP 007: IMPROVE 3D RENDERING FINISH  
+**Run ID:** 20261017-darboussedra-aeos-v3-loop007  
+**Loop:** 007 · **Candidate:** dar-boussedra-render-finish-007  
 **Repository:** https://github.com/teyyara/darboussedra  
 **Branch:** fix/loop-004-architecture-coherence  
 **Base main:** 501cc6ccf3e6926504dfcd051ac98147360cd48a  
-**Latest source-code checkpoint commit:** e0c1bc60a744bf9f56b420f185fe3301583a9708  
+**Latest source-code checkpoint commit:** 40dfb0ce8495fe42977072584d20876284c737d5  
 **Last updated:** 2026-10-17
 
 ## Loop 003 outcome
@@ -135,3 +135,18 @@ Verify the newly captured upper-landing and upper-bridge frames from the current
 
 ### Next action
 Inspect the fresh `14-upper-landing-turn.png` and `16-upper-bridge-after-ascent.png` frames after run 39051454455 finishes. Verify that the central landing is more visible and the walking trajectory stays clear of the stair opening; if not, revisit the landing/bedroom corridor proportions rather than only adjusting yaw again.
+
+
+## Loop 007 — Improve the 3D rendering finish
+
+**State:** Source typecheck, tests and production build passed. Current Chromium browser capture is still in setup; the rendered result of the latest lighting/material pass is pending.
+
+- **Source commit:** [`40dfb0c`](https://github.com/teyyara/darboussedra/commit/40dfb0ce8495fe42977072584d20876284c737d5)
+- **CI run:** [Foundation checks #39051923842](https://github.com/teyyara/darboussedra/actions/runs/39051923842).
+- **Rendering changes:** enabled WebGL antialiasing; applied ACES filmic tone mapping at neutral exposure to control bright plaster highlights; reduced ambient fill and slightly rebalanced hemisphere/key lighting so surfaces have more shape; tightened the directional-light shadow camera and increased the shadow map from 1024 to 2048; increased segment counts for garden foliage and rooftop planter leaves to reduce visibly faceted shapes.
+- **Rationale from browser screenshots:** prior exterior and interior renders appeared pale/flat, tree foliage was strongly polygonal, and shadow detail was weak over large scene regions. The changes aim to improve contrast, edges and depth without adding packages or external assets.
+- **Validation:** in CI run 39051923842, typecheck, unit tests and production build passed. Chromium install was the currently active workflow step at checkpoint time, so the effect of filmic tone mapping and updated shadow quality is not yet visually certified.
+- **Scope boundaries:** no new packages, paid dependencies, remote models or services; no changes to the room registry; no main merge or manual Vercel deployment.
+
+### Next action
+Inspect the new `01-exterior-desktop.png`, `05-living-room-eye-level.png`, `12-rooftop-eye-level.png`, and stair-landing frames from run 39051923842. Compare brightness, material separation, foliage faceting and shadow quality against the previous artifact. Keep PR #5 draft-only until visual QA of the actual result is complete.

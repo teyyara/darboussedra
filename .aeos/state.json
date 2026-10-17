@@ -1,49 +1,46 @@
 {
   "schema_version": "1.0",
-  "run_id": "20261017-darboussedra-aeos-v3-loop006",
-  "keyphrase": "DAR BOUSSEDRA — LOOP 006: improve upper-landing camera composition using browser review evidence",
+  "run_id": "20261017-darboussedra-aeos-v3-loop007",
+  "keyphrase": "DAR BOUSSEDRA — LOOP 007: improve 3D rendering finish using browser screenshot evidence",
   "rulebook_version": "AEOS v3",
   "repository": "teyyara/darboussedra",
   "branch": "fix/loop-004-architecture-coherence",
-  "loop": 6,
-  "candidate": "dar-boussedra-upper-landing-composition-006",
+  "loop": 7,
+  "candidate": "dar-boussedra-render-finish-007",
   "state": "WAITING_FOR_CONTINUE",
-  "status": "SOURCE_CHECKS_PASS_BROWSER_RECAPTURE_IN_PROGRESS_PR5_DRAFT_NO_MERGE",
+  "status": "RENDER_POLISH_SOURCE_CHECKS_PASS_BROWSER_CAPTURE_PENDING_PR5_DRAFT_NO_MERGE",
   "latest_known_good_commit": "d237375a364f25b0e30dade08f9b02790396b966",
-  "latest_source_checkpoint_commit": "e0c1bc60a744bf9f56b420f185fe3301583a9708",
+  "latest_source_checkpoint_commit": "40dfb0ce8495fe42977072584d20876284c737d5",
   "pull_request": "https://github.com/teyyara/darboussedra/pull/5",
   "validation": {
     "repository_access": "PASS",
     "branch_checkpoint": "PASS",
     "typecheck": {
       "result": "PASS",
-      "workflow_run": 39051454455
+      "workflow_run": 39051923842
     },
     "tests": {
       "result": "PASS",
-      "workflow_run": 39051454455
+      "workflow_run": 39051923842
     },
     "production_build": {
       "result": "PASS",
-      "workflow_run": 39051454455
+      "workflow_run": 39051923842
     },
-    "prior_visual_baseline": {
-      "result": "OBSERVED_DEFECT",
-      "workflow_run": 39050232013,
+    "prior_render_baseline": {
+      "result": "OBSERVED_RENDER_FINISH_ISSUES",
+      "workflow_run": 39051454455,
       "artifact": "darboussedra-visual-review",
-      "frame": "14-upper-landing-turn.png"
+      "examples": [
+        "01-exterior-desktop.png",
+        "05-living-room-eye-level.png",
+        "12-rooftop-eye-level.png"
+      ]
     },
-    "post_change_browser_capture": "IN_PROGRESS_AT_CHECKPOINT; run 39051454455 was in the capture step and no new artifact was available yet",
-    "prior_browser_checks": {
-      "tested_room_arrivals": "10_OF_10",
-      "runtime_errors": 0,
-      "room_directory_buttons": 13,
-      "mobile_width": 390,
-      "mobile_horizontal_overflow": false
-    },
+    "current_browser_capture": "PENDING; CI run 39051923842 currently at Chromium installation",
     "merge": "NOT_PERFORMED",
     "manual_vercel_deployment": "NOT_PERFORMED",
-    "vercel_pr_preview": "AUTOMATIC_INTEGRATION_STATUS_REPORTED"
+    "dependencies_added": 0
   },
-  "next_high_value_work": "Inspect post-change upper landing and upper bridge screenshots from run 39051454455; if still cramped, fix physical corridor geometry rather than only camera yaw."
+  "next_high_value_work": "Review current CI browser screenshots for tone-mapping, lighting/shadow quality and foliage smoothness; address any visible artifact with a focused source change."
 }
