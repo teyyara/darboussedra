@@ -59,13 +59,6 @@ export function getRoofDeckTileJoints(layout: RoofDeckTileLayout): RoofDeckTileJ
 
   // Horizontal grout joints are split into left and right runs whenever their
   // height overlaps the stair opening (including a small safety margin).
-  const maxXIndex = Math.floor(halfWidth / spacing);
-  for (let index = -maxXIndex; index <= maxXIndex; index += 1) {
-    const x = index * spacing;
-    if (Math.abs(x) < 0.05) continue;
-    // x-oriented lines use this value as their Z coordinate; the name is local to the grid.
-  }
-
   const maxZIndex = Math.floor(halfDepth / spacing);
   for (let index = -maxZIndex; index <= maxZIndex; index += 1) {
     const z = index * spacing;
