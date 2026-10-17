@@ -496,8 +496,8 @@ function DoorwayFrame({ room, opening, onSelect }: { room: Room; opening: RoomPo
 }
 
 
-function PropBox({ position, size, color, roughness = 0.9 }: {
-  position: Vector3Tuple; size: Vector3Tuple; color: string; roughness?: number;
+function PropBox({ position, size, color, roughness = 0.9, metalness = 0 }: {
+  position: Vector3Tuple; size: Vector3Tuple; color: string; roughness?: number; metalness?: number;
 }) {
   // Small, scale-aware bevels catch daylight and prevent furniture from reading as sharp CAD blocks.
   const geometry = useMemo(() => new RoundedBoxGeometry(
@@ -506,7 +506,7 @@ function PropBox({ position, size, color, roughness = 0.9 }: {
   useEffect(() => () => geometry.dispose(), [geometry]);
   return <mesh position={position} castShadow receiveShadow>
     <primitive object={geometry} attach="geometry" />
-    <meshStandardMaterial color={color} roughness={roughness} />
+    <meshStandardMaterial color={color} roughness={roughness} metalness={metalness} />
   </mesh>;
 }
 
