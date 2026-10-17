@@ -208,7 +208,7 @@ function applyProceduralMaterials(mesh: Mesh, maps: SurfaceMaps) {
   for (const candidate of materials) {
     if (!(candidate instanceof MeshStandardMaterial) || candidate.userData.darSurfaceKind) continue;
     const hsl = { h: 0, s: 0, l: 0 };
-    candidate.color.getHSL(hsl);
+    candidate.color.getHSL(hsl, SRGBColorSpace);
     const kind = inferSurfaceKind({
       hue: hsl.h,
       saturation: hsl.s,
