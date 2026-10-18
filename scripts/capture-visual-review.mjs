@@ -328,13 +328,13 @@ if (!report.upperLandingAiming.looksDownPastStairUnderside) {
 report.stairCameraAiming = {
   ascentDirectionY: stairAscent?.cameraDirection?.[1] ?? null,
   descentDirectionY: stairDescent?.cameraDirection?.[1] ?? null,
-  looksDownDuringAscent: typeof stairAscent?.cameraDirection?.[1] === "number" &&
-    stairAscent.cameraDirection[1] < -0.08 && stairAscent.cameraDirection[1] > -0.35,
+  clearsUpperLandingOnAscent: typeof stairAscent?.cameraDirection?.[1] === "number" &&
+    stairAscent.cameraDirection[1] > -0.06 && stairAscent.cameraDirection[1] < 0.12,
   looksDownDuringDescent: typeof stairDescent?.cameraDirection?.[1] === "number" &&
     stairDescent.cameraDirection[1] < -0.44 && stairDescent.cameraDirection[1] > -0.65,
 };
-if (!report.stairCameraAiming.looksDownDuringAscent) {
-  report.notes.push("Camera should pitch slightly down to keep the next stair treads visible while climbing.");
+if (!report.stairCameraAiming.clearsUpperLandingOnAscent) {
+  report.notes.push("As the eye reaches upper-floor level, the ascent camera should lift over the landing fascia and reveal the open upper bridge.");
 }
 if (!report.stairCameraAiming.looksDownDuringDescent) {
   report.notes.push("Camera should pitch downward while descending the lower stair flight.");
@@ -359,7 +359,7 @@ if (
   !report.navigationGuideDetected ||
   !report.mobileNavigationGuideVisible ||
   !report.walkingHudHiddenDuringStairCaptures ||
-  !report.stairCameraAiming.looksDownDuringAscent ||
+  !report.stairCameraAiming.clearsUpperLandingOnAscent ||
   !report.stairCameraAiming.looksDownDuringDescent ||
   !report.upperLandingAiming.looksDownPastStairUnderside ||
   report.mobileHasHorizontalDocumentOverflow ||

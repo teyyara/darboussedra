@@ -337,6 +337,20 @@ describe("3D camera paths", () => {
     }
   });
 
+  it("looks over the upper landing edge when the ascending eye reaches floor level", () => {
+    const flight = HOUSE_LAYOUT.stairs.groundFlight;
+    const upperFloor = HOUSE_LAYOUT.upperY + HOUSE_LAYOUT.floorThickness;
+    const climb = makeCameraPath("family-table", "rooftop", poseFor("rooftop"));
+    const landingClearanceViews = climb.filter((pose) =>
+      pose.position[1] >= upperFloor - 0.1 &&
+      pose.position[1] <= upperFloor + 0.28 &&
+      pose.position[2] < -0.5 &&
+      pose.position[2] > flight.to[2] + 0.2);
+    expect(landingClearanceViews.length).toBeGreaterThanOrEqual(1);
+    expect(landingClearanceViews.every((pose) =>
+      pose.target[1] >= pose.position[1] - 0.03)).toBe(true);
+  });
+
   it("uses spatial landing turns instead of duplicate-position heading reversals", () => {
     for (const [from, to] of [
       ["family-table", "rooftop"],

@@ -353,10 +353,17 @@ export function makeCameraPath(from: HouseLocation, to: HouseLocation, finalPose
       };
     }
 
-    // Keep the next treads in view instead of staring at the upper wall or landing
-    // fascia. Looking slightly down on ascent exposes upcoming step edges; a stronger
-    // down-slope gaze on descent keeps the steps readable before the lower floor.
-    const verticalAim = dy * (dy >= 0 ? -0.25 : 0.75);
+    // On the earlier ascent, look slightly down to expose upcoming tread edges.
+    // Once the eye reaches the upper-floor plane, lift the sightline over the landing
+    // fascia into the open bridge beyond. Keep the stronger downward look on descent.
+    const upperFloor = HOUSE_LAYOUT.upperY + HOUSE_LAYOUT.floorThickness;
+    const clearingUpperLanding = dy > 0 &&
+      pose.position[1] >= upperFloor - 0.1 &&
+      pose.position[1] <= upperFloor + 0.28 &&
+      pose.position[2] < -0.5;
+    const verticalAim = dy >= 0
+      ? dy * (clearingUpperLanding ? 0.04 : -0.25)
+      : dy * 0.75;
     const length = Math.hypot(dx, verticalAim, dz);
     return {
       position: pose.position,

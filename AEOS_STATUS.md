@@ -1,13 +1,13 @@
 # AEOS Status — Dar Boussedra
 
-**State:** LOOP 079 — KEEP THE MAT IN FRAME AND MOVE THE EXISTING ACCENT OFF THE ENTRY WALL — CHECKPOINT COMMITTED; CI PENDING  
-**Active keyphrase:** DAR BOUSSEDRA — LOOP 079: SHOW THE FULL MAT AND A READABLE EXISTING WALL ACCENT; NO NEW DECORATIONS  
-**Run ID:** 20261018-darboussedra-aeos-v3-loop079  
-**Loop:** 079 · **Candidate:** dar-boussedra-walkthrough-coherence-079  
+**State:** LOOP 080 — CLEAR THE UPPER LANDING FASCIA ON THE GROUND-STAIR ASCENT — CHECKPOINT COMMITTED; CI PENDING  
+**Active keyphrase:** DAR BOUSSEDRA — LOOP 080: KEEP EARLY TREADS VISIBLE, THEN LOOK OVER THE LANDING; NO NEW DECORATIONS  
+**Run ID:** 20261018-darboussedra-aeos-v3-loop080  
+**Loop:** 080 · **Candidate:** dar-boussedra-walkthrough-coherence-080  
 **Repository:** https://github.com/teyyara/darboussedra  
 **Branch:** fix/loop-064-moroccan-exterior-and-layout  
 **Base main:** e06af00a049eb72b173295438bbeb8e384c6fef5  
-**Latest source-code checkpoint commit:** see latest Loop 079 commit on the linked PR branch  
+**Latest source-code checkpoint commit:** see latest Loop 080 commit on the linked PR branch  
 **Last updated:** 2026-10-18
 
 ## Standing user priorities — keep active until explicitly cleared
@@ -718,7 +718,7 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 
 ## Loop 079 — Recover full mat framing and move the existing accent off the entry wall
 
-**State:** Camera/layout selection correction and regression updates committed; full CI and fresh Chromium review pending. PR #7 remains open and unmerged.
+**State:** Validated by the complete CI pipeline and fresh Chromium review in [run 39144271635](https://github.com/teyyara/darboussedra/actions/runs/39144271635). PR #7 remains open and unmerged.
 
 - **Loop 078 result:** Typecheck passed but unit tests exposed two real visual constraints: the raised Y=0.65 target cropped the near prayer-mat corner (projected Y=-1.070), and the existing art's front-wall placement lay almost directly beside the camera (projected X=-0.953).
 - **Camera:** Keep the prayer-room destination near the entry edge at Z=-0.45; shift X to 4.8 to increase distance from the near mat corner, and lower the target to Y=0.35 so the floor mat returns inside frame while maintaining a diagonal view.
@@ -733,3 +733,14 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 - The second CI attempt passed the full mat-corner test and the entry-wall exclusion/horizontal artwork checks. The only remaining failure was the top artwork corner at projected Y=0.963, just outside the 0.9 limit.
 - Lowered the **existing prayer-room wall accent only** by 0.15m (center height from floorThickness + 1.36 to floorThickness + 1.21). Other rooms' art heights are unchanged. The mat and art framing tests remain strict.
 - Full CI and fresh Chromium review pending on this follow-up. No new decor, assets, props, merge, or manual deployment.
+
+
+## Loop 080 — Clear the upper landing fascia during the ground-stair ascent
+
+**State:** Camera-path and browser-review gate update committed; CI and fresh Chromium screenshots pending. PR #7 remains open and unmerged.
+
+- **Problem confirmed from Loop 079 screenshots:** At camera position around Y=3.19, Z=-2.34, the eye is just above the upper-floor surface, but the interpolated gaze drops below the short head-landing edge. The landing's front fascia consequently fills a large part of the ascent view even though the central stairwell opening exists.
+- **Change:** Keep the physical steps, landing slab, bridge width, guardrails and room footprints unchanged. During the early ascent, the camera still looks slightly down at tread edges. Only as eye height crosses the upper-floor plane, the camera raises its gaze to clear the landing fascia and see the open bridge beyond. The descent route retains its stronger downward pitch.
+- **Regression coverage:** Add a route-level check for a landing-clearance view near upper-floor height. Update Chromium to assert that the actual ascent screenshot clears the landing edge, while retaining the descent pitch, WebGL, room-arrival, mobile-overflow and runtime-error gates.
+- **Scope:** No decorations, props, furniture, assets, dependencies or roof geometry changed. No main merge and no manual Vercel deployment.
+- **Next action:** Inspect the new ascent screenshot and confirm the upper bridge is visible beyond the landing while earlier treads remain readable.
