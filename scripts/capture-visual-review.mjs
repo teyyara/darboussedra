@@ -316,6 +316,15 @@ await motionProbe.close();
 
 const stairAscent = report.frameStates.find((frame) => frame.filename === "13-stair-ascent-midflight.png");
 const stairDescent = report.frameStates.find((frame) => frame.filename === "15-stair-descent-midflight.png");
+const upperLandingTurn = report.frameStates.find((frame) => frame.filename === "14-upper-landing-turn.png");
+report.upperLandingAiming = {
+  directionY: upperLandingTurn?.cameraDirection?.[1] ?? null,
+  looksDownPastStairUnderside: typeof upperLandingTurn?.cameraDirection?.[1] === "number" &&
+    upperLandingTurn.cameraDirection[1] < -0.14 && upperLandingTurn.cameraDirection[1] > -0.32,
+};
+if (!report.upperLandingAiming.looksDownPastStairUnderside) {
+  report.notes.push("The upper-landing turn should pitch modestly down toward the clear bridge floor rather than hold the horizon under the roof stair.");
+}
 report.stairCameraAiming = {
   ascentDirectionY: stairAscent?.cameraDirection?.[1] ?? null,
   descentDirectionY: stairDescent?.cameraDirection?.[1] ?? null,
@@ -352,6 +361,7 @@ if (
   !report.walkingHudHiddenDuringStairCaptures ||
   !report.stairCameraAiming.looksDownDuringAscent ||
   !report.stairCameraAiming.looksDownDuringDescent ||
+  !report.upperLandingAiming.looksDownPastStairUnderside ||
   report.mobileHasHorizontalDocumentOverflow ||
   report.roomDirectoryButtonCount !== 13 ||
   report.mobileRoomDirectoryButtonCount !== 13

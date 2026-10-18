@@ -1,13 +1,13 @@
 # AEOS Status — Dar Boussedra
 
-**State:** LOOP 070 — CENTER THE UPPER WALK LANE AND IMPROVE LANDING SIGHTLINE — CHECKPOINT COMMITTED; CI PENDING  
-**Active keyphrase:** DAR BOUSSEDRA — LOOP 070: KEEP THE UPPER WALK LANE CLEAR OF STAIR RAILS; NO NEW DECORATIONS  
-**Run ID:** 20261018-darboussedra-aeos-v3-loop070  
-**Loop:** 070 · **Candidate:** dar-boussedra-walkthrough-coherence-070  
+**State:** LOOP 071 — LOWER THE UPPER-BRIDGE SIGHTLINE AND PRESERVE RETURN GAZE — CHECKPOINT COMMITTED; CI PENDING  
+**Active keyphrase:** DAR BOUSSEDRA — LOOP 071: KEEP THE UPPER-BRIDGE FLOOR IN VIEW; NO NEW DECORATIONS  
+**Run ID:** 20261018-darboussedra-aeos-v3-loop071  
+**Loop:** 071 · **Candidate:** dar-boussedra-walkthrough-coherence-071  
 **Repository:** https://github.com/teyyara/darboussedra  
 **Branch:** fix/loop-064-moroccan-exterior-and-layout  
 **Base main:** e06af00a049eb72b173295438bbeb8e384c6fef5  
-**Latest source-code checkpoint commit:** see latest Loop 070 commit on the linked PR branch  
+**Latest source-code checkpoint commit:** see latest Loop 071 commit on the linked PR branch  
 **Last updated:** 2026-10-18
 
 ## Standing user priorities — keep active until explicitly cleared
@@ -628,10 +628,20 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 
 ## Loop 070 — Center the upper walking lane
 
-**State:** Small route geometry update committed; full CI and fresh Chromium capture pending. PR #7 remains open and unmerged.
+**State:** Validated by full CI and fresh Chromium review in [run 39135488044](https://github.com/teyyara/darboussedra/actions/runs/39135488044); PR #7 remains open and unmerged.
 
-- **Problem:** The upper-side route used x = openingWidth/2 + 0.12, leaving the camera almost touching the inner guardrail. The screenshot showed the staircase undersides dominating the upper-landing turn.
-- **Change:** Center the route camera on the physical bridge strip between the guardrail and the outer edge. The flight, floors, hatch, rail meshes, room objects, and decorations are unchanged. This is a position correction, not just another aim-angle change.
-- **Regression coverage:** Added an explicit test that the walking route's lane coordinate is equally spaced from the rail line and outer edge; existing route tests still verify turn gaze, clear bridge footprint, and stairwell visibility on the return route.
-- **Boundaries:** No furniture or decorations, no new assets, no dependency changes, no main merge or manual Vercel deployment.
-- **Next action:** Inspect a fresh upper-landing turn screenshot from the new commit and verify the centered path improves the sightline while remaining inside the bridge footprint.
+- **Change:** The camera is now centered at X=0.925 in the usable bridge strip, midway between the inner rail and outer edge; the room footprint, hatch and rail geometry are unchanged.
+- **Rendered result:** Typecheck, unit tests, production build and Chromium capture passed. Browser report contained 20 screenshots, no runtime errors or review notes, full room arrivals, no mobile overflow and correctly pitched ascent/descent frames. The upper-turn screenshot confirms the safe centered position, but its direction-Y was only -0.034, leaving the staircase underside visually dominant.
+- **Decision:** Keep the lane-position correction and add only a modest downward upper-bridge gaze. Do not move the staircase or reduce the visual QA bar to solve a framing problem.
+- **Boundaries:** No furniture/decorations, assets or dependencies; no main merge or manual Vercel deployment.
+
+
+## Loop 071 — Lower upper-bridge sightline without changing the stair geometry
+
+**State:** Camera-angle correction and rendered-angle regression committed; CI and fresh Chromium review pending. PR #7 remains open and unmerged.
+
+- **Problem confirmed from Loop 070:** The centered lane is safe, but the upper-landing frame is nearly level (direction-Y -0.034), making the nearby roof-stair underside dominate the view.
+- **Change:** Keep the corrected X=0.925 lane position, but pitch the stairwell glance 0.28m below eye level. The reverse route preserves the same gentle downward offset instead of snapping to a much lower fixed target. Stair, floor, hatch and room geometry are unchanged.
+- **Regression coverage:** Camera-path tests require forward and return side-lane sightlines to preserve the 0.28m gaze offset. The Chromium review requires the actual 14-upper-landing-turn frame to have direction-Y between -0.14 and -0.32, alongside the existing arrival, stair-gaze, WebGL, mobile and runtime-error checks.
+- **Scope:** No decorations or assets; no dependency changes, merge, or manual Vercel deployment.
+- **Next action:** Inspect the new upper-landing screenshot from the exact candidate revision. If the underside still dominates after the downward glance, review the stair rail sightline and landing width rather than moving the stair run again.
