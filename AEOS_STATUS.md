@@ -1,13 +1,13 @@
 # AEOS Status — Dar Boussedra
 
-**State:** LOOP 066 — WALKTHROUGH COMPOSITION, STAIR-DESCENT AIM, MOROCCAN SKY — CHECKPOINT COMMITTED; CI PENDING  
-**Active keyphrase:** DAR BOUSSEDRA — LOOP 066: FIX ROOM-SCALE FRAMING AND DESCENT GAZE; NO NEW DECORATIONS  
-**Run ID:** 20261018-darboussedra-aeos-v3-loop066  
-**Loop:** 066 · **Candidate:** dar-boussedra-walkthrough-coherence-066  
+**State:** LOOP 067 — STAIR-FLIGHT EYE-LINE CORRECTION — CHECKPOINT COMMITTED; CI PENDING  
+**Active keyphrase:** DAR BOUSSEDRA — LOOP 067: KEEP STAIR TREADS VISIBLE DURING ASCENT AND DESCENT; NO NEW DECORATIONS  
+**Run ID:** 20261018-darboussedra-aeos-v3-loop067  
+**Loop:** 067 · **Candidate:** dar-boussedra-walkthrough-coherence-067  
 **Repository:** https://github.com/teyyara/darboussedra  
 **Branch:** fix/loop-064-moroccan-exterior-and-layout  
 **Base main:** e06af00a049eb72b173295438bbeb8e384c6fef5  
-**Latest source-code checkpoint commit:** see latest Loop 066 commit on the linked PR branch  
+**Latest source-code checkpoint commit:** see latest Loop 067 commit on the linked PR branch  
 **Last updated:** 2026-10-18
 
 ## Standing user priorities — keep active until explicitly cleared
@@ -575,3 +575,14 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 - The first full CI run reported 116 passing unit tests and one genuine regression: the wider living-room camera move pushed the existing geometric wall art out of the first-person view cone. The stair-path and cloud tests passed.
 - Re-aimed the living-room view farther across the room to keep the existing feature within frame while leaving the furniture untouched. The next CI run must confirm both the original art-framing invariant and the more downward stair-descent invariant.
 - This was a camera correction prompted by the test failure, not a reason to loosen the visual assertion. No decorations were added.
+
+
+## Loop 067 — Stair-flight eye-line correction
+
+**State:** Bounded camera-path correction committed; CI and fresh Chromium screenshots pending. PR #7 remains open and unmerged.
+
+- **Problem confirmed from Loop 066 rendered evidence:** The mid-flight ascent view looked up into a large blank surface, while descent framed the upper landing/floor edge across much of the screen. The browser report showed upward ascent pitch (+0.17 Y) and a modest downward descent pitch (-0.364 Y); no WebGL runtime errors were reported.
+- **Change:** Intermediate camera waypoints now angle slightly downward while climbing and more decisively downward while descending, directing the view toward upcoming stair treads rather than the rear wall or landing fascia. The physical stair meshes, room footprints, registered routes, room objects and floor geometry are unchanged.
+- **Regression coverage:** Updated the route-level camera gaze assertions and Chromium visual-review gate to require slight downward ascent pitch and stronger downward descent pitch. The visual check still requires all expected arrivals, WebGL canvas detection, no runtime errors, no mobile horizontal overflow, and the full directory controls.
+- **Scope:** No new decorations or assets. No dependency changes. No main merge and no manual Vercel deployment.
+- **Next action:** Inspect the new ascent, upper landing and descent screenshots from the exact new commit. If the landing still occludes the view, continue with the actual stairwell/ceiling geometry instead of further pitch-only changes.

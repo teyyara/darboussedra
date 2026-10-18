@@ -316,13 +316,13 @@ const stairDescent = report.frameStates.find((frame) => frame.filename === "15-s
 report.stairCameraAiming = {
   ascentDirectionY: stairAscent?.cameraDirection?.[1] ?? null,
   descentDirectionY: stairDescent?.cameraDirection?.[1] ?? null,
-  looksUpDuringAscent: typeof stairAscent?.cameraDirection?.[1] === "number" &&
-    stairAscent.cameraDirection[1] > 0.1 && stairAscent.cameraDirection[1] < 0.45,
+  looksDownDuringAscent: typeof stairAscent?.cameraDirection?.[1] === "number" &&
+    stairAscent.cameraDirection[1] < -0.08 && stairAscent.cameraDirection[1] > -0.35,
   looksDownDuringDescent: typeof stairDescent?.cameraDirection?.[1] === "number" &&
-    stairDescent.cameraDirection[1] < -0.3 && stairDescent.cameraDirection[1] > -0.5,
+    stairDescent.cameraDirection[1] < -0.44 && stairDescent.cameraDirection[1] > -0.65,
 };
-if (!report.stairCameraAiming.looksUpDuringAscent) {
-  report.notes.push("Camera should pitch upward while climbing the lower stair flight.");
+if (!report.stairCameraAiming.looksDownDuringAscent) {
+  report.notes.push("Camera should pitch slightly down to keep the next stair treads visible while climbing.");
 }
 if (!report.stairCameraAiming.looksDownDuringDescent) {
   report.notes.push("Camera should pitch downward while descending the lower stair flight.");
@@ -347,7 +347,7 @@ if (
   !report.navigationGuideDetected ||
   !report.mobileNavigationGuideVisible ||
   !report.walkingHudHiddenDuringStairCaptures ||
-  !report.stairCameraAiming.looksUpDuringAscent ||
+  !report.stairCameraAiming.looksDownDuringAscent ||
   !report.stairCameraAiming.looksDownDuringDescent ||
   report.mobileHasHorizontalDocumentOverflow ||
   report.roomDirectoryButtonCount !== 13 ||

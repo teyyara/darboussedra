@@ -336,11 +336,10 @@ export function makeCameraPath(from: HouseLocation, to: HouseLocation, finalPose
       };
     }
 
-    // A literal stair-slope gaze (about 38° here) stares into the back wall on
-    // ascent. Let the eyes lead the path, but limit vertical pitch to a natural
-    // range: around 10° up while climbing and 20° down while descending.
-    // The stronger descent bias keeps the next treads visible instead of letting the landing dominate the frame.
-    const verticalAim = dy * (dy >= 0 ? 0.22 : 0.5);
+    // Keep the next treads in view instead of staring at the upper wall or landing
+    // fascia. Looking slightly down on ascent exposes upcoming step edges; a stronger
+    // down-slope gaze on descent keeps the steps readable before the lower floor.
+    const verticalAim = dy * (dy >= 0 ? -0.25 : 0.75);
     const length = Math.hypot(dx, verticalAim, dz);
     return {
       position: pose.position,

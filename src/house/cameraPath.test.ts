@@ -288,7 +288,7 @@ describe("3D camera paths", () => {
     expect(hatchCrossers.length).toBeLessThanOrEqual(1);
   });
 
-  it("looks up the slope while climbing and down the slope while descending stairs", () => {
+  it("keeps the next stair treads visible during both ascent and descent", () => {
     const lowerFlight = HOUSE_LAYOUT.stairs.groundFlight;
     const climb = makeCameraPath("family-table", "rooftop", poseFor("rooftop"));
     const ascentFrames = climb.filter((pose) =>
@@ -297,8 +297,8 @@ describe("3D camera paths", () => {
       pose.position[2] < lowerFlight.from[2] - 0.2 &&
       pose.position[2] > lowerFlight.to[2] + 0.2);
     expect(ascentFrames.some((pose) =>
-      pose.target[1] > pose.position[1] + 0.1 &&
-      pose.target[1] < pose.position[1] + 0.45)).toBe(true);
+      pose.target[1] < pose.position[1] - 0.12 &&
+      pose.target[1] > pose.position[1] - 0.38)).toBe(true);
 
     const descent = makeCameraPath("rooftop", "prayer-room", poseFor("prayer-room"));
     const descentFrames = descent.filter((pose) =>
@@ -307,8 +307,8 @@ describe("3D camera paths", () => {
       pose.position[2] < lowerFlight.from[2] - 0.2 &&
       pose.position[2] > lowerFlight.to[2] + 0.2);
     expect(descentFrames.some((pose) =>
-      pose.target[1] < pose.position[1] - 0.35 &&
-      pose.target[1] > pose.position[1] - 0.5)).toBe(true);
+      pose.target[1] < pose.position[1] - 0.5 &&
+      pose.target[1] > pose.position[1] - 0.75)).toBe(true);
   });
 
   it("uses the guarded side walkway to leave the lower stair opening", () => {
