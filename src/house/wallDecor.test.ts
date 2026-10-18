@@ -40,6 +40,44 @@ describe("room-specific wall accents", () => {
     expect(getRoomWallDecor(library)[0].side).not.toBe("left");
   });
 
+  it("keeps the full existing library wall accent inside the first-person frame", () => {
+    const library = rooms.find((room) => room.slug === "library")!;
+    const artwork = getRoomWallDecor(library)[0];
+    expect(artwork).toBeDefined();
+
+    const camera = new PerspectiveCamera(50, 1440 / 1000, 0.1, 100);
+    camera.position.set(...library.camera.position);
+    camera.lookAt(new Vector3(...library.camera.target));
+    camera.updateProjectionMatrix();
+    camera.updateMatrixWorld(true);
+
+    const center = new Vector3(
+      library.scenePosition[0] + artwork.position[0],
+      library.scenePosition[1] + artwork.position[1],
+      library.scenePosition[2] + artwork.position[2],
+    );
+    const horizontalHalf = artwork.width / 2;
+    const verticalHalf = artwork.height / 2;
+    const corners = [];
+    for (const horizontalSign of [-1, 1]) {
+      for (const verticalSign of [-1, 1]) {
+        const corner = center.clone();
+        if (artwork.side === "front" || artwork.side === "back") {
+          corner.x += horizontalSign * horizontalHalf;
+        } else {
+          corner.z += horizontalSign * horizontalHalf;
+        }
+        corner.y += verticalSign * verticalHalf;
+        corners.push(corner.project(camera));
+      }
+    }
+
+    expect(Math.min(...corners.map((point) => point.x))).toBeGreaterThan(-0.9);
+    expect(Math.max(...corners.map((point) => point.x))).toBeLessThan(0.9);
+    expect(Math.min(...corners.map((point) => point.y))).toBeGreaterThan(-0.85);
+    expect(Math.max(...corners.map((point) => point.y))).toBeLessThan(0.85);
+  });
+
   it("chooses a wall inside the named room's viewing direction rather than a side-on crop", () => {
     const livingRoom = rooms.find((room) => room.slug === "living-room")!;
     expect(getRoomWallDecor(livingRoom)[0].side).toBe("left");

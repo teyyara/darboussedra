@@ -1,13 +1,13 @@
 # AEOS Status — Dar Boussedra
 
-**State:** LOOP 073 — REBALANCE LIBRARY AND PETS' CORNER WIDTH — CHECKPOINT COMMITTED; CI PENDING  
-**Active keyphrase:** DAR BOUSSEDRA — LOOP 073: WIDEN PETS' CORNER WITHOUT ADDING DECORATIONS  
-**Run ID:** 20261018-darboussedra-aeos-v3-loop073  
-**Loop:** 073 · **Candidate:** dar-boussedra-walkthrough-coherence-073  
+**State:** LOOP 074 — FRAME THE EXISTING LIBRARY WALL ART WITHOUT LOSING THE BOOKSHELF — CHECKPOINT COMMITTED; CI PENDING  
+**Active keyphrase:** DAR BOUSSEDRA — LOOP 074: FRAME EXISTING LIBRARY CONTENTS; NO NEW DECORATIONS  
+**Run ID:** 20261018-darboussedra-aeos-v3-loop074  
+**Loop:** 074 · **Candidate:** dar-boussedra-walkthrough-coherence-074  
 **Repository:** https://github.com/teyyara/darboussedra  
 **Branch:** fix/loop-064-moroccan-exterior-and-layout  
 **Base main:** e06af00a049eb72b173295438bbeb8e384c6fef5  
-**Latest source-code checkpoint commit:** see latest Loop 073 commit on the linked PR branch  
+**Latest source-code checkpoint commit:** see latest Loop 074 commit on the linked PR branch  
 **Last updated:** 2026-10-18
 
 ## Standing user priorities — keep active until explicitly cleared
@@ -657,10 +657,19 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 
 ## Loop 073 — Rebalance library and Pets' Corner width
 
-**State:** Footprint/camera rebalance and targeted geometry regressions committed; CI and new Chromium review pending. PR #7 remains open and unmerged.
+**State:** Validated by full CI and fresh Chromium screenshots in [run 39137920514](https://github.com/teyyara/darboussedra/actions/runs/39137920514). PR #7 remains open and unmerged.
 
-- **Problem confirmed from Loop 072 screenshots:** Pets' Corner reads like a corridor because it is only 1.6m wide. The adjacent library has enough lateral allocation to share 0.4m of width while preserving their combined existing 4.2m span and the stair-shaft clearance at X=-1.2m.
-- **Geometry change:** Widen Pets' Corner from 1.6m to 2.0m and reduce the library from 2.6m to 2.2m. Shift their centers and first-person cameras with the adjoining boundary held at X=-3.2m. The rooms retain their Z footprints and all existing assets/props; the library shelf is re-anchored to the new room width.
-- **Regression coverage:** Verify the rooms still share a valid doorway, the overall two-room span remains 4.2m, both new widths are explicit, the bookshelf and spines remain inside the library, and all destination camera poses remain inside their room footprints.
-- **Scope:** No new decor, furniture, assets or dependencies; no main merge or manual Vercel deployment.
-- **Next action:** Inspect the fresh Pets' Corner and Library first-person screenshots. Ensure the pet room feels less corridor-like, the existing bookshelf stays readable, and adjacent doors/stair clearances remain intact.
+- **Rendered result:** All 20 screenshots captured, no runtime errors or browser review notes, full room arrivals passed, WebGL2 was detected, and mobile had no horizontal overflow. Pets' Corner is visibly wider; its existing feeding bowl and scratch post stay in bounds. The narrowed library keeps its full three-row shelf and 27 readable books.
+- **Visual follow-up:** The Library frame reveals only the edge of its existing wall accent at the right side. Loop 074 shifts only the destination aim toward the space between the shelf and that wall so the current room contents compose together.
+- **Boundaries:** No decorations, props, assets, dependencies, main merge or manual Vercel deployment.
+
+
+## Loop 074 — Frame the existing library contents
+
+**State:** Camera aim adjustment and a full-art projection regression committed; CI and fresh Chromium review pending. PR #7 remains open and unmerged.
+
+- **Problem confirmed from Loop 073 screenshots:** The rebalanced library keeps all existing books visible but clips most of its existing wall accent at the right edge. The shelf, wall art and room geometry are already present; this is a camera composition defect.
+- **Change:** Keep the library camera position and the new 2.2m/2.0m room allocation unchanged. Move the focus point from X=-5.02 to X=-3.95 to aim between the shelf on the left and the existing wall accent on the right. No furnishings, art or other decor are added or resized.
+- **Regression coverage:** A Three.js perspective-camera test projects all four corners of the existing library artwork and requires the whole piece to stay inside the frame; the existing bookshelf clearance, room camera bounds and visual route checks remain active.
+- **Scope:** No new decorations or assets; no dependency changes, no merge and no manual Vercel deployment.
+- **Next action:** Inspect the new Library screenshot and adjacent Pets' Corner screenshot after CI. If art and shelves now share the frame, leave room geometry unchanged.
