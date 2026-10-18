@@ -40,14 +40,15 @@ function poseFacing(
   };
 }
 
-function poseFacingIntoStairwell(
+function poseFacingAlongUpperBridge(
   position: Vector3Tuple,
   direction: readonly [number, number],
 ): CameraPose {
   const pose = poseFacing(position, direction, true);
   return {
     ...pose,
-    // Keep the bridge floor in frame instead of aiming level into the stair underside.
+    // Look along the side lane with a slight downward gaze. Keep the stair shaft
+    // to the side rather than pointing directly at the roof-stair underside.
     target: [pose.target[0], position[1] - 0.28, pose.target[2]],
   };
 }
@@ -139,14 +140,14 @@ function groundStairWalkway(): CameraPose[] {
     // The lateral step is the critical turn: a tangent-facing pose here looks
     // straight into the rear bedroom wall. Keep the camera on the protected lane
     // but start looking through the open stairwell before the forward walk begins.
-    poseFacingIntoStairwell([sideLaneX, upperEye, flight.to[2]], [-0.42, 0.91]),
+    poseFacingAlongUpperBridge([sideLaneX, upperEye, flight.to[2]], [0.12, 0.99]),
     // Continue the inward view along the upper bridge rather than tracking the wall.
-    poseFacingIntoStairwell([sideLaneX, upperEye, flight.to[2] + 0.2], [-0.42, 0.91]),
-    poseFacingIntoStairwell([sideLaneX, upperEye, flight.to[2] + 0.6], [-0.25, 0.97]),
+    poseFacingAlongUpperBridge([sideLaneX, upperEye, flight.to[2] + 0.2], [0.12, 0.99]),
+    poseFacingAlongUpperBridge([sideLaneX, upperEye, flight.to[2] + 0.6], [0.12, 0.99]),
     // The side lane is narrow and bordered by bedroom walls. Let the view glance
     // toward the open stair shaft as the camera walks forward, instead of staring
     // at an uninterrupted wall; reverseRoute mirrors travel but keeps this inward glance.
-    ...[-2.8, -1.8, -0.8, 0.2].map((z) => poseFacingIntoStairwell([sideLaneX, upperEye, z], [-0.34, 0.94])),
+    ...[-2.8, -1.8, -0.8, 0.2].map((z) => poseFacingAlongUpperBridge([sideLaneX, upperEye, z], [0.12, 0.99])),
     // Rejoin the full-width upper landing beyond the end of the open stair shaft.
     poseFacing([sideLaneX * 0.7, upperEye, 0.72], [0.2, 1]),
     poseFacing([0, upperEye, 1.05], [0, 1]),
@@ -367,7 +368,7 @@ export function makeCameraPath(from: HouseLocation, to: HouseLocation, finalPose
       : dy * 0.75;
     // Anticipate the turn onto the right-side landing lane while clearing the fascia.
     // Looking straight into the rear wall kept the slab edge central even with upward pitch.
-    const sightlineX = clearingUpperLanding ? Math.abs(dz) * 0.4 : dx;
+    const sightlineX = clearingUpperLanding ? Math.abs(dz) * 0.58 : dx;
     const length = Math.hypot(sightlineX, verticalAim, dz);
     return {
       position: pose.position,

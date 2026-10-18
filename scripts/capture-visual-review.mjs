@@ -318,12 +318,21 @@ const stairAscent = report.frameStates.find((frame) => frame.filename === "13-st
 const stairDescent = report.frameStates.find((frame) => frame.filename === "15-stair-descent-midflight.png");
 const upperLandingTurn = report.frameStates.find((frame) => frame.filename === "14-upper-landing-turn.png");
 report.upperLandingAiming = {
+  directionX: upperLandingTurn?.cameraDirection?.[0] ?? null,
   directionY: upperLandingTurn?.cameraDirection?.[1] ?? null,
+  directionZ: upperLandingTurn?.cameraDirection?.[2] ?? null,
   looksDownPastStairUnderside: typeof upperLandingTurn?.cameraDirection?.[1] === "number" &&
     upperLandingTurn.cameraDirection[1] < -0.14 && upperLandingTurn.cameraDirection[1] > -0.32,
+  looksAlongBridge: typeof upperLandingTurn?.cameraDirection?.[0] === "number" &&
+    upperLandingTurn.cameraDirection[0] > -0.15 && upperLandingTurn.cameraDirection[0] < 0.25 &&
+    typeof upperLandingTurn?.cameraDirection?.[2] === "number" &&
+    upperLandingTurn.cameraDirection[2] > 0.88,
 };
 if (!report.upperLandingAiming.looksDownPastStairUnderside) {
   report.notes.push("The upper-landing turn should pitch modestly down toward the clear bridge floor rather than hold the horizon under the roof stair.");
+}
+if (!report.upperLandingAiming.looksAlongBridge) {
+  report.notes.push("The upper-landing turn should look along the open side bridge, not left into the roof-stair underside.");
 }
 report.stairCameraAiming = {
   ascentDirectionX: stairAscent?.cameraDirection?.[0] ?? null,
@@ -369,6 +378,7 @@ if (
   !report.stairCameraAiming.anticipatesUpperLandingTurn ||
   !report.stairCameraAiming.looksDownDuringDescent ||
   !report.upperLandingAiming.looksDownPastStairUnderside ||
+  !report.upperLandingAiming.looksAlongBridge ||
   report.mobileHasHorizontalDocumentOverflow ||
   report.roomDirectoryButtonCount !== 13 ||
   report.mobileRoomDirectoryButtonCount !== 13

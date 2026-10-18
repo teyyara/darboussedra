@@ -1,13 +1,13 @@
 # AEOS Status — Dar Boussedra
 
-**State:** LOOP 084 — STRENGTHEN FINAL ASCENT GAZE ABOVE LANDING FASCIA — CHECKPOINT COMMITTED; CI PENDING  
-**Active keyphrase:** DAR BOUSSEDRA — LOOP 084: CLEAR THE LANDING FASCIA WITH UPWARD AND RIGHTWARD LOOK-AHEAD; NO NEW DECORATIONS  
-**Run ID:** 20261018-darboussedra-aeos-v3-loop084  
-**Loop:** 084 · **Candidate:** dar-boussedra-walkthrough-coherence-084  
+**State:** LOOP 085 — KEEP THE UPPER LANDING VIEW ALONG THE SIDE BRIDGE — CHECKPOINT COMMITTED; CI PENDING  
+**Active keyphrase:** DAR BOUSSEDRA — LOOP 085: LOOK ALONG THE OPEN BRIDGE INSTEAD OF INTO THE ROOF STAIR UNDERSIDE; NO NEW DECORATIONS  
+**Run ID:** 20261018-darboussedra-aeos-v3-loop085  
+**Loop:** 085 · **Candidate:** dar-boussedra-walkthrough-coherence-085  
 **Repository:** https://github.com/teyyara/darboussedra  
 **Branch:** fix/loop-064-moroccan-exterior-and-layout  
 **Base main:** e06af00a049eb72b173295438bbeb8e384c6fef5  
-**Latest source-code checkpoint commit:** see latest Loop 084 commit on the linked PR branch  
+**Latest source-code checkpoint commit:** see latest Loop 085 commit on the linked PR branch  
 **Last updated:** 2026-10-18
 
 ## Standing user priorities — keep active until explicitly cleared
@@ -792,3 +792,14 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 - **Regression coverage:** The browser still requires direction-Y above +0.10 and below +0.32 with direction-X between +0.2 and +0.5. Camera-path tests additionally require at least one clearance pose to target more than 0.12m above eye height.
 - **Scope:** No decorations, assets or physical geometry changes. No merge or manual Vercel deployment.
 - **Next:** Inspect a fresh ascent screenshot and confirm the fascia no longer blocks the side landing while tread edges stay visible.
+
+
+## Loop 085 — Keep the upper-landing view along the side bridge
+
+**State:** Camera-heading correction, stronger final-ascent look-ahead, and browser direction checks committed; CI and fresh Chromium review pending. PR #7 remains open and unmerged.
+
+- **Problem confirmed from Loop 084 frames:** Ascent passes its upward pitch gate (+0.140), but the upper-landing-turn screenshot still fills the center with the underside of the roof stair. The camera is on the side walkway yet looks sharply left into the shaft (direction-X -0.378), rather than along the open path.
+- **Change:** Keep the physical step-off and side bridge floors intact. Re-aim the bridge path along +Z with a small outer-side bias (+X), retaining modest downward pitch. Increase only the final-ascent rightward look-ahead coefficient from 0.4 to 0.58 so the opening and side lane become visible before the top tread.
+- **Regression coverage:** Unit tests assert forward and return upper-bridge poses look ahead along the bridge and do not aim sharply left into the shaft. Chromium checks the measured upper-landing direction in X, Y and Z: downward pitch remains -0.14 to -0.32, X stays between -0.15 and +0.25, and Z stays above +0.88.
+- **Scope:** No decorations, furniture, room/stair geometry, assets or dependencies. No merge and no manual Vercel deployment.
+- **Next action:** Inspect fresh ascent and upper-landing screenshots to confirm the side landing appears beyond the fascia and the roof staircase no longer dominates the bridge view.
