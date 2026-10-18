@@ -803,3 +803,10 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 - **Regression coverage:** Unit tests assert forward and return upper-bridge poses look ahead along the bridge and do not aim sharply left into the shaft. Chromium checks the measured upper-landing direction in X, Y and Z: downward pitch remains -0.14 to -0.32, X stays between -0.15 and +0.25, and Z stays above +0.88.
 - **Scope:** No decorations, furniture, room/stair geometry, assets or dependencies. No merge and no manual Vercel deployment.
 - **Next action:** Inspect fresh ascent and upper-landing screenshots to confirm the side landing appears beyond the fascia and the roof staircase no longer dominates the bridge view.
+
+
+### Loop 085 test follow-up
+
+- First CI attempt after changing the upper-bridge look direction failed four camera-path assertions that explicitly required the previous inward gaze (`target.x < camera.x - 0.25`). The camera change is intentional: the old gaze looked directly at the roof-stair underside and made the side walkway read as an obstruction.
+- Updated those four tests to assert the intended forward bridge gaze instead: the target stays near the lane's X coordinate and looks ahead along +Z. Protected-lane position bounds, descending pitch, the upper-landing heading limits, and the new browser direction gate remain active.
+- No camera or geometry changes in this follow-up commit.

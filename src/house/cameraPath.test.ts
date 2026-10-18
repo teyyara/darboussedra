@@ -471,7 +471,7 @@ describe("3D camera paths", () => {
         HOUSE_LAYOUT.upperBridge.width / 2)).toBe(true);
   });
 
-  it("turns onto the upper landing before looking along the bedroom wall", () => {
+  it("turns onto the upper landing and looks along the open bridge", () => {
     const path = makeCameraPath("family-table", "rooftop", poseFor("rooftop"));
     const upperEye = HOUSE_LAYOUT.upperY + 1.65;
     const flightEndZ = HOUSE_LAYOUT.stairs.groundFlight.to[2];
@@ -484,10 +484,11 @@ describe("3D camera paths", () => {
     expect(laneEntry, "the route reaches the side lane after clearing the stair edge").toBeDefined();
     expect(laneEntry!.position[2], "the turn remains behind the rear bedroom-wall line").toBeLessThan(-3.95);
     expect(laneEntry!.target[2] - laneEntry!.position[2]).toBeGreaterThan(1.0);
-    expect(laneEntry!.target[0], "the authored view looks inward toward the central landing").toBeLessThan(laneEntry!.position[0] - 0.25);
+    expect(laneEntry!.target[0], "the authored view stays beside the lane rather than turning sharply into the stair shaft").toBeGreaterThan(laneEntry!.position[0] - 0.05);
+    expect(laneEntry!.target[0]).toBeLessThan(laneEntry!.position[0] + 0.25);
   });
 
-  it("aims inward from the upper landing while keeping the camera on the protected side lane", () => {
+  it("looks along the upper bridge while keeping the camera on the protected side lane", () => {
     const path = makeCameraPath("family-table", "rooftop", poseFor("rooftop"));
     const upperEye = HOUSE_LAYOUT.upperY + 1.65;
     const sideLaneX = upperBridgeSideLaneX;
@@ -499,12 +500,13 @@ describe("3D camera paths", () => {
     expect(turnViews.length).toBeGreaterThanOrEqual(7);
     for (const pose of turnViews) {
       expect(pose.position[0]).toBeGreaterThan(HOUSE_LAYOUT.stairs.openingWidth / 2 + 0.08);
-      expect(pose.target[0]).toBeLessThan(pose.position[0] - 0.25);
+      expect(pose.target[0]).toBeGreaterThan(pose.position[0] - 0.05);
+      expect(pose.target[0]).toBeLessThan(pose.position[0] + 0.25);
       expect(pose.target[2]).toBeGreaterThan(pose.position[2] + 0.9);
     }
   });
 
-  it("looks into the stairwell at the first lateral step off the lower flight", () => {
+  it("looks along the bridge at the first lateral step off the lower flight", () => {
     const path = makeCameraPath("family-table", "rooftop", poseFor("rooftop"));
     const flightEndZ = HOUSE_LAYOUT.stairs.groundFlight.to[2];
     const upperEye = HOUSE_LAYOUT.upperY + 1.65;
@@ -515,12 +517,13 @@ describe("3D camera paths", () => {
       Math.abs(pose.position[0] - sideLaneX) < 0.02 &&
       Math.abs(pose.position[2] - flightEndZ) < 0.02);
 
-    expect(turn, "the lateral turn uses an authored inward gaze").toBeDefined();
-    expect(turn!.target[0]).toBeLessThan(turn!.position[0] - 0.25);
+    expect(turn, "the lateral turn uses an authored bridge gaze").toBeDefined();
+    expect(turn!.target[0]).toBeGreaterThan(turn!.position[0] - 0.05);
+    expect(turn!.target[0]).toBeLessThan(turn!.position[0] + 0.25);
     expect(turn!.target[2]).toBeGreaterThan(turn!.position[2] + 0.9);
   });
 
-  it("keeps the stairwell in view while returning along the upper side lane", () => {
+  it("keeps the upper bridge walk in view while returning along the side lane", () => {
     const path = makeCameraPath("rooftop", "prayer-room", poseFor("prayer-room"));
     const upperEye = HOUSE_LAYOUT.upperY + 1.65;
     const sideLaneX = upperBridgeSideLaneX;
@@ -532,9 +535,10 @@ describe("3D camera paths", () => {
 
     expect(returnViews.length).toBeGreaterThanOrEqual(4);
     for (const pose of returnViews) {
-      expect(pose.target[0], "gaze remains inward toward the stair opening").toBeLessThan(pose.position[0] - 0.25);
-      expect(pose.target[2], "gaze is anchored over the stairwell, regardless of travel direction")
-        .toBeCloseTo(HOUSE_LAYOUT.upperBridge.centerZ, 2);
+      expect(pose.target[0], "gaze remains aligned to the side bridge").toBeGreaterThan(pose.position[0] - 0.05);
+      expect(pose.target[0]).toBeLessThan(pose.position[0] + 0.25);
+      expect(pose.target[2], "gaze stays ahead along the bridge, regardless of travel direction")
+        .toBeGreaterThan(pose.position[2]);
       expect(pose.target[1], "return view looks down into the stairwell")
         .toBeLessThan(pose.position[1] - 0.5);
     }
