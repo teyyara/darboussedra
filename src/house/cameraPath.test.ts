@@ -5,8 +5,18 @@ import {makeCameraPath} from "./cameraPath";
 const frontZ = HOUSE_LAYOUT.exterior.depth / 2;
 const doorHeight = HOUSE_LAYOUT.entrance.doorHeight;
 const poseFor = (slug: string) => getRoomBySlug(slug)!.camera;
+const upperBridgeSideLaneX = HOUSE_LAYOUT.upperBridge.centerX +
+  HOUSE_LAYOUT.stairs.openingWidth / 2 +
+  (HOUSE_LAYOUT.upperBridge.width - HOUSE_LAYOUT.stairs.openingWidth) / 4;
 
 describe("3D camera paths", () => {
+  it("centers the upper walking lane between the stairwell rail and outer bridge edge", () => {
+    const openingRightEdge = HOUSE_LAYOUT.upperBridge.centerX + HOUSE_LAYOUT.stairs.openingWidth / 2;
+    const outerEdge = HOUSE_LAYOUT.upperBridge.centerX + HOUSE_LAYOUT.upperBridge.width / 2;
+    expect(upperBridgeSideLaneX - openingRightEdge).toBeCloseTo(outerEdge - upperBridgeSideLaneX);
+    expect(upperBridgeSideLaneX).toBeLessThan(outerEdge);
+  });
+
   it("uses standing eye-height, forward-facing views for every destination", () => {
     for (const room of rooms) {
       expect(room.camera.position[1], room.slug + " eye height").toBeCloseTo(room.scenePosition[1] + 1.65);
@@ -349,7 +359,7 @@ describe("3D camera paths", () => {
     const path = makeCameraPath("family-table", "rooftop", poseFor("rooftop"));
     const upperEye = HOUSE_LAYOUT.upperY + 1.65;
     const flightEndZ = HOUSE_LAYOUT.stairs.groundFlight.to[2];
-    const sideLaneX = HOUSE_LAYOUT.upperBridge.centerX + HOUSE_LAYOUT.stairs.openingWidth / 2 + 0.12;
+    const sideLaneX = upperBridgeSideLaneX;
     const laneEntry = path.find((pose) =>
       Math.abs(pose.position[1] - upperEye) < 0.02 &&
       Math.abs(pose.position[0] - sideLaneX) < 0.02 &&
@@ -364,7 +374,7 @@ describe("3D camera paths", () => {
   it("aims inward from the upper landing while keeping the camera on the protected side lane", () => {
     const path = makeCameraPath("family-table", "rooftop", poseFor("rooftop"));
     const upperEye = HOUSE_LAYOUT.upperY + 1.65;
-    const sideLaneX = HOUSE_LAYOUT.upperBridge.centerX + HOUSE_LAYOUT.stairs.openingWidth / 2 + 0.12;
+    const sideLaneX = upperBridgeSideLaneX;
     const turnViews = path.filter((pose) =>
       pose.preserveHeading &&
       Math.abs(pose.position[1] - upperEye) < 0.02 &&
@@ -382,7 +392,7 @@ describe("3D camera paths", () => {
     const path = makeCameraPath("family-table", "rooftop", poseFor("rooftop"));
     const flightEndZ = HOUSE_LAYOUT.stairs.groundFlight.to[2];
     const upperEye = HOUSE_LAYOUT.upperY + 1.65;
-    const sideLaneX = HOUSE_LAYOUT.upperBridge.centerX + HOUSE_LAYOUT.stairs.openingWidth / 2 + 0.12;
+    const sideLaneX = upperBridgeSideLaneX;
     const turn = path.find((pose) =>
       pose.preserveHeading &&
       Math.abs(pose.position[1] - upperEye) < 0.02 &&
@@ -397,7 +407,7 @@ describe("3D camera paths", () => {
   it("keeps the stairwell in view while returning along the upper side lane", () => {
     const path = makeCameraPath("rooftop", "prayer-room", poseFor("prayer-room"));
     const upperEye = HOUSE_LAYOUT.upperY + 1.65;
-    const sideLaneX = HOUSE_LAYOUT.upperBridge.centerX + HOUSE_LAYOUT.stairs.openingWidth / 2 + 0.12;
+    const sideLaneX = upperBridgeSideLaneX;
     const returnViews = path.filter((pose) =>
       pose.preserveHeading &&
       Math.abs(pose.position[1] - upperEye) < 0.02 &&

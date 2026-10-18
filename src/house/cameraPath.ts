@@ -114,7 +114,10 @@ function groundStairWalkway(): CameraPose[] {
   const flight = HOUSE_LAYOUT.stairs.groundFlight;
   const upperEye = HOUSE_LAYOUT.upperY + HEAD_HEIGHT;
   const top: Vector3Tuple = [flight.to[0], flight.to[1] + STAIR_HEAD_HEIGHT, flight.to[2]];
-  const sideLaneX = HOUSE_LAYOUT.upperBridge.centerX + HOUSE_LAYOUT.stairs.openingWidth / 2 + 0.12;
+  // Center the camera in the clear bridge strip, between the stair rail and outer edge.
+  // The old 12cm offset left the camera almost rubbing the rail while facing the stairs.
+  const sideWalkwayWidth = (HOUSE_LAYOUT.upperBridge.width - HOUSE_LAYOUT.stairs.openingWidth) / 2;
+  const sideLaneX = HOUSE_LAYOUT.upperBridge.centerX + HOUSE_LAYOUT.stairs.openingWidth / 2 + sideWalkwayWidth / 2;
   return [
     ...sampledStairWaypoints(flight),
     poseFacing(top, [0, -1]),

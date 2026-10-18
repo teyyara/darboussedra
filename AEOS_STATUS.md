@@ -1,13 +1,13 @@
 # AEOS Status — Dar Boussedra
 
-**State:** LOOP 069 — ROOF-STAIR CLEARANCE WITHOUT OVERHANGING THE UPPER CORRIDOR — CHECKPOINT COMMITTED; CI PENDING  
-**Active keyphrase:** DAR BOUSSEDRA — LOOP 069: CLEAR HATCH HEADROOM AND PRESERVE UPPER CORRIDOR; NO NEW DECORATIONS  
-**Run ID:** 20261018-darboussedra-aeos-v3-loop069  
-**Loop:** 069 · **Candidate:** dar-boussedra-walkthrough-coherence-069  
+**State:** LOOP 070 — CENTER THE UPPER WALK LANE AND IMPROVE LANDING SIGHTLINE — CHECKPOINT COMMITTED; CI PENDING  
+**Active keyphrase:** DAR BOUSSEDRA — LOOP 070: KEEP THE UPPER WALK LANE CLEAR OF STAIR RAILS; NO NEW DECORATIONS  
+**Run ID:** 20261018-darboussedra-aeos-v3-loop070  
+**Loop:** 070 · **Candidate:** dar-boussedra-walkthrough-coherence-070  
 **Repository:** https://github.com/teyyara/darboussedra  
 **Branch:** fix/loop-064-moroccan-exterior-and-layout  
 **Base main:** e06af00a049eb72b173295438bbeb8e384c6fef5  
-**Latest source-code checkpoint commit:** see latest Loop 069 commit on the linked PR branch  
+**Latest source-code checkpoint commit:** see latest Loop 070 commit on the linked PR branch  
 **Last updated:** 2026-10-18
 
 ## Standing user priorities — keep active until explicitly cleared
@@ -607,14 +607,15 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 
 ## Loop 069 — Preserve upper-corridor headroom and capture descent reliably
 
-**State:** Geometry correction and bounded screenshot timeout update committed; CI and fresh Chromium review pending. PR #7 remains open and unmerged.
+**State:** Reviewed from exact commit [168a4e8](https://github.com/teyyara/darboussedra/commit/168a4e836c66f38f9485cd3cecda3787917141dc), with all CI checks passing. PR #7 remains open and unmerged.
 
 - **Geometry:** Restore the roof-flight start/end to Z=2.05 and Z=-2.68, preserving the upper corridor clear of the flight's underside. Extend the roof opening to Z=-3.15..1.45 so the near-roof camera samples stay above the opening; the top stair exit retains about 0.47m of rear clearance.
 - **Guardrails:** Keep three-sided timber protection and the right-side rail exit gap; update the required clear offset to match the restored stair-end coordinate. The egress point remains clear of the rail in X as well as Z.
 - **Screenshot capture:** Increase only stair/landing screenshot timeout from 30 to 45 seconds. The capture remains mandatory and the visual gate still fails if it cannot be captured; this does not skip or weaken any review.
 - **Regression coverage:** Check the restored flight-end against the landing edge, camera eye-height positions inside the enlarged hatch, roof-camera-zone boundary outside the opening, and the right-side guardrail egress gap.
 - **Boundaries:** No decorations, furniture, assets, dependencies, main merge or manual Vercel deployment.
-- **Next action:** Inspect fresh roof-stair, upper-landing, exit and descent images from the exact new commit. Do not merge until typecheck, unit tests, production build and Chromium review all pass.
+- **Rendered review:** [CI run 39134710065](https://github.com/teyyara/darboussedra/actions/runs/39134710065) passed typecheck, the full unit suite, build, Chromium review and artifact upload. Browser report has 20 screenshots, no runtime errors or review notes, rooftop route reached 56/56, descent frame captured successfully, mobile width 390/390 with no overflow. Descent gaze-Y was -0.486 and ascent gaze-Y -0.192.
+- **Next visual issue:** The upper-landing turn image still frames too much of the roof-stair underside. Inspection of geometry showed the scripted side-lane camera at x=0.77, only 0.12m from the inner guardrail, despite the usable bridge strip being about 0.55m wide.
 
 
 ### Loop 069 validation follow-up
@@ -623,3 +624,14 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 - Shifted the hatch forward to Z=1.45 while retaining its rear edge at Z=-3.15. The top stair ends at Z=-2.68 and its egress point remains outside the rail in X with about 0.48m Z offset.
 - Re-routed the final roof waypoint along the right-hand deck to a point beyond the hatch front edge before heading toward the terrace. The hatch-crossing assertion stays strict (no more than the single final stair point is over the opening at roof eye height).
 - The stair/landing screenshot budget is now 45 seconds, still a hard fail if the image cannot be captured. Full CI rerun pending; no merge or manual deployment.
+
+
+## Loop 070 — Center the upper walking lane
+
+**State:** Small route geometry update committed; full CI and fresh Chromium capture pending. PR #7 remains open and unmerged.
+
+- **Problem:** The upper-side route used x = openingWidth/2 + 0.12, leaving the camera almost touching the inner guardrail. The screenshot showed the staircase undersides dominating the upper-landing turn.
+- **Change:** Center the route camera on the physical bridge strip between the guardrail and the outer edge. The flight, floors, hatch, rail meshes, room objects, and decorations are unchanged. This is a position correction, not just another aim-angle change.
+- **Regression coverage:** Added an explicit test that the walking route's lane coordinate is equally spaced from the rail line and outer edge; existing route tests still verify turn gaze, clear bridge footprint, and stairwell visibility on the return route.
+- **Boundaries:** No furniture or decorations, no new assets, no dependency changes, no main merge or manual Vercel deployment.
+- **Next action:** Inspect a fresh upper-landing turn screenshot from the new commit and verify the centered path improves the sightline while remaining inside the bridge footprint.
