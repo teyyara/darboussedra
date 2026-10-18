@@ -1,4 +1,4 @@
-import { EXTERIOR_CAMERA, HOUSE_LAYOUT, getRoomBySlug, roomBounds, type Vector3Tuple } from "./rooms";
+import { EXTERIOR_CAMERA, HOUSE_LAYOUT, getRoomBySlug, roomBounds } from "./rooms";
 
 export interface MoroccanNeighborBuilding {
   readonly id: string;
@@ -73,7 +73,6 @@ export function neighborhoodLayoutIssues(): string[] {
   const garden = getRoomBySlug("garden");
   if (garden) {
     const gardenBounds = roomBounds(garden);
-    const sidewalkMin = MOROCCAN_STREET.sidewalk.centerZ - MOROCCAN_STREET.sidewalk.depth / 2;
     const sidewalkMax = MOROCCAN_STREET.sidewalk.centerZ + MOROCCAN_STREET.sidewalk.depth / 2;
     const roadMin = MOROCCAN_STREET.road.centerZ - MOROCCAN_STREET.road.depth / 2;
     const roadMax = MOROCCAN_STREET.road.centerZ + MOROCCAN_STREET.road.depth / 2;
