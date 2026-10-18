@@ -61,7 +61,7 @@ const roomDefinitions = [
     scenePosition: [-2.2, HOUSE_LAYOUT.groundY, -2.49], camera: { position: [-2.2, 1.65, -0.65], target: [-1.85, 1.05, -3.1] },
     footprint: [2.0, 4.18], connectedTo: ["library"] },
   { id: "prayer-room", slug: "prayer-room", name: "Prayer Room / Musalla", kind: "spiritual", level: "ground",
-    scenePosition: [3.3, HOUSE_LAYOUT.groundY, -2.49], camera: { position: [4.5, 1.65, -0.45], target: [2.8, 0.65, -3.1] },
+    scenePosition: [3.3, HOUSE_LAYOUT.groundY, -2.49], camera: { position: [4.8, 1.65, -0.45], target: [2.8, 0.35, -3.1] },
     footprint: [4.2, 4.18], connectedTo: ["kitchen"] },
   { id: "zakariae-room", slug: "zakariae-room", name: "Zakariae's Private Room", kind: "private", level: "upper",
     scenePosition: [-4.25, HOUSE_LAYOUT.upperY, -1.75], camera: { position: [-4.75, HOUSE_LAYOUT.upperY + 1.65, 0.1], target: [-3.8, HOUSE_LAYOUT.upperY + 1.35, -1.9] },

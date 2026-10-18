@@ -1,13 +1,13 @@
 # AEOS Status — Dar Boussedra
 
-**State:** LOOP 078 — BALANCE PRAYER MAT, WINDOW AND EXISTING WALL ART IN THE ENTRY VIEW — CHECKPOINT COMMITTED; CI PENDING  
-**Active keyphrase:** DAR BOUSSEDRA — LOOP 078: SHOW THE FULL PRAYER MAT AND ROOM CONTEXT; NO NEW DECORATIONS  
-**Run ID:** 20261018-darboussedra-aeos-v3-loop078  
-**Loop:** 078 · **Candidate:** dar-boussedra-walkthrough-coherence-078  
+**State:** LOOP 079 — KEEP THE MAT IN FRAME AND MOVE THE EXISTING ACCENT OFF THE ENTRY WALL — CHECKPOINT COMMITTED; CI PENDING  
+**Active keyphrase:** DAR BOUSSEDRA — LOOP 079: SHOW THE FULL MAT AND A READABLE EXISTING WALL ACCENT; NO NEW DECORATIONS  
+**Run ID:** 20261018-darboussedra-aeos-v3-loop079  
+**Loop:** 079 · **Candidate:** dar-boussedra-walkthrough-coherence-079  
 **Repository:** https://github.com/teyyara/darboussedra  
 **Branch:** fix/loop-064-moroccan-exterior-and-layout  
 **Base main:** e06af00a049eb72b173295438bbeb8e384c6fef5  
-**Latest source-code checkpoint commit:** see latest Loop 078 commit on the linked PR branch  
+**Latest source-code checkpoint commit:** see latest Loop 079 commit on the linked PR branch  
 **Last updated:** 2026-10-18
 
 ## Standing user priorities — keep active until explicitly cleared
@@ -707,10 +707,22 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 
 ## Loop 078 — Balance the prayer mat with the window and existing wall accent
 
-**State:** Camera rebalance and wall-art projection regression committed; full CI and fresh Chromium screenshot review pending. PR #7 remains open and unmerged.
+**State:** Superseded: first CI run found the raised gaze cropped a mat corner and the art still on the entry wall; see Loop 079 correction.
 
 - **Problem confirmed from Loop 077 screenshot:** All four mat corners are technically in-frame, but the mat dominates the lower half. The high window is clipped at the top, and the existing wall accent is cut to a thin edge at the left.
 - **Change:** Move the camera 0.55m toward the entry edge (Z=-0.45), shift it slightly to the right side (X=4.5), raise the target from Y=0.25 to Y=0.65, and aim farther across the room to X=2.8. Room footprint, windows, mat, art, doors, walls, and lighting are unchanged.
 - **Regression coverage:** Keep the four corners of the existing 1.05m × 1.75m mat in the viewport. Add a projection test for all four corners of the existing prayer-room wall accent and assert a minimum wall-facing angle. Existing room-bounds and route checks remain active.
 - **Scope:** No new decorations, assets, furniture or prop changes, dependencies, merge, or manual Vercel deployment.
 - **Next action:** Inspect the new prayer-room screenshot; confirm floor space around the mat, the window, and the whole wall accent are visible together.
+
+
+## Loop 079 — Recover full mat framing and move the existing accent off the entry wall
+
+**State:** Camera/layout selection correction and regression updates committed; full CI and fresh Chromium review pending. PR #7 remains open and unmerged.
+
+- **Loop 078 result:** Typecheck passed but unit tests exposed two real visual constraints: the raised Y=0.65 target cropped the near prayer-mat corner (projected Y=-1.070), and the existing art's front-wall placement lay almost directly beside the camera (projected X=-0.953).
+- **Camera:** Keep the prayer-room destination near the entry edge at Z=-0.45; shift X to 4.8 to increase distance from the near mat corner, and lower the target to Y=0.35 so the floor mat returns inside frame while maintaining a diagonal view.
+- **Wall accent placement:** Reserve the existing front/entry wall for the doorway so the unchanged wall-art accent is selected from an available side-wall run and is no longer immediately beside the destination camera.
+- **Regression coverage:** Keep the four-corner mat projection test. Keep the four-corner artwork projection and wall-facing-angle assertions, and explicitly require the selected wall accent not to use the entry wall. No visual assertion is relaxed.
+- **Boundaries:** No new decorations, furniture, props or assets; no dependency changes, merge or manual Vercel deployment.
+- **Next action:** Inspect new prayer-room and neighboring kitchen screenshots. Confirm mat, window and whole existing wall accent read coherently without an entry-wall obstruction.

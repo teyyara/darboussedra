@@ -19,6 +19,7 @@ const RESERVED_WALLS_BY_ROOM: Readonly<Record<string, readonly WallSide[]>> = {
   kitchen: ["back"], // fridge and tall appliance cluster
   library: ["left"], // full-height shelving
   "living-room": ["back"], // the shared library doorway makes this wall read as a corridor, cropping art at the frame edge
+  "prayer-room": ["front"], // keep the entry opening clear and avoid placing art beside the destination camera
 };
 
 function wallPosition(room: Room, side: WallSide, along: number, y: number): Vector3Tuple {
