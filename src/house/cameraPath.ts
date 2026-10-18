@@ -75,10 +75,10 @@ function reverseRoute(path: readonly CameraPose[]): CameraPose[] {
     target: pose.preserveHeading
       ? [
           // Keep the side-of-stairwell view tied to the opening itself, not to
-          // the direction of travel. This lets the return route look into the
-          // opening from either end of the upper bridge instead of at a wall.
+          // the direction of travel. On return, look farther down into the shaft
+          // while keeping the camera pitch relative to the current eye height.
           pose.position[0] + (pose.target[0] - pose.position[0]),
-          pose.target[1],
+          pose.position[1] - 0.65,
           HOUSE_LAYOUT.upperBridge.centerZ,
         ]
       : pose.preserveTarget

@@ -206,7 +206,7 @@ describe("3D camera paths", () => {
       pose.position[2] < -4.0 && pose.position[2] > -4.5);
     expect(landingGaze).toBeDefined();
     expect(landingGaze!.target[2]).toBeGreaterThan(landingGaze!.position[2]);
-    expect(landingGaze!.target[1]).toBeCloseTo(landingGaze!.position[1] - 0.28);
+    expect(landingGaze!.target[1]).toBeCloseTo(landingGaze!.position[1] - 0.65);
   });
 
   it("keeps the upper bridge stairwell glance below the horizon in both travel directions", () => {
@@ -227,7 +227,7 @@ describe("3D camera paths", () => {
       pose.position[2] > -4.0 && pose.position[2] < -2.6);
     expect(reverseGlances.length).toBeGreaterThanOrEqual(2);
     expect(reverseGlances.every((pose) =>
-      Math.abs(pose.target[1] - (pose.position[1] - 0.28)) < 0.001)).toBe(true);
+      Math.abs(pose.target[1] - (pose.position[1] - 0.65)) < 0.001)).toBe(true);
   });
 
   it("aims down the lower stair flight while returning from the roof", () => {
