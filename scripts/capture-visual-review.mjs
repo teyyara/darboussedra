@@ -212,8 +212,18 @@ report.webgl2ContextAvailable = await desktop.locator("canvas").first().evaluate
 }).catch(() => false);
 await saveScreenshot(desktop, "01-exterior-desktop.png");
 
-// Click the gold in-scene doorway marker to verify that visual navigation is genuinely interactive.
-await desktop.locator("canvas").click({ position: { x: 665, y: 449 } });
+// Click the gold in-scene doorway marker to verify visual navigation. Its projected height
+// depends on the current first-person camera pose, so target the centered marker relative
+// to the live canvas rather than a stale absolute coordinate.
+const exteriorCanvas = desktop.locator("canvas");
+const exteriorCanvasBox = await exteriorCanvas.boundingBox();
+if (!exteriorCanvasBox) throw new Error("The exterior canvas has no measurable bounds.");
+await exteriorCanvas.click({
+  position: {
+    x: exteriorCanvasBox.width / 2,
+    y: exteriorCanvasBox.height * 0.515,
+  },
+});
 await desktop.waitForFunction(() => window.location.pathname === "/room/entrance", null, { timeout: 8000 });
 await arrivalStatus(desktop, "entrance", "Front Door & Entrance", 45000);
 await saveScreenshot(desktop, "02-entrance-eye-level.png");

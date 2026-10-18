@@ -13,12 +13,12 @@ export interface SkyCloudGroup {
 }
 
 /** The sun is one clean disc; avoid translucent oversized layers that look like rings. */
-export const SKY_SUN_POSITION: Vector3Tuple = [-28, 12, -60];
+export const SKY_SUN_POSITION: Vector3Tuple = [-28, 34, -60];
 
 /** Ellipsoid lobes overlap to read as soft, rounded clouds instead of flat white streaks. */
 export const SKY_CLOUD_GROUPS: readonly SkyCloudGroup[] = [
   {
-    position: [-18, 12, -72],
+    position: [-18, 31, -72],
     clouds: [
       { position: [0, 0, 0], size: [2.85, 0.78, 0.58], opacity: 0.78 },
       { position: [-1.55, -0.08, 0.03], size: [1.55, 0.72, 0.55], opacity: 0.78 },
@@ -29,7 +29,7 @@ export const SKY_CLOUD_GROUPS: readonly SkyCloudGroup[] = [
     ],
   },
   {
-    position: [-5, 12, -78],
+    position: [-5, 32.5, -78],
     clouds: [
       { position: [0, 0, 0], size: [2.35, 0.65, 0.5], opacity: 0.7 },
       { position: [-1.12, 0.04, 0.02], size: [1.28, 0.57, 0.47], opacity: 0.7 },
