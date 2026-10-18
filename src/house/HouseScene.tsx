@@ -241,6 +241,17 @@ function CameraRig({ location, reducedMotion, onArrive, onTransitionChange, onEx
   }, [camera, desired, invalidate, location, onArrive, onTransitionChange, onExteriorShellVisibilityChange, onCameraZoneChange, pose, reducedMotion]);
 
   useFrame((state, delta) => {
+    // The browser visual-review harness may pin the camera at a matched route
+    // phase while it records that exact frame. This flag is undefined during
+    // normal play and has no effect on user movement.
+    const visualReviewHold = typeof window !== "undefined" &&
+      (window as Window & { __darBoussedraVisualReviewHoldCamera?: boolean })
+        .__darBoussedraVisualReviewHoldCamera === true;
+    if (visualReviewHold) {
+      invalidate();
+      return;
+    }
+
     // Keep travel in real time on slow software-rendered devices without
     // allowing a large catch-up jump after a suspended tab.
     const { movementDelta, rotationDelta } = getCameraFrameDeltas(delta);

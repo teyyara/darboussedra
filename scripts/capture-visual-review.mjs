@@ -168,8 +168,13 @@ async function waitForCameraPhase(page, destination, phase, timeout = 30000) {
     const zone = canvas.dataset.cameraZone;
     const within = (value, bounds) => !bounds ||
       ((bounds[0] == null || value > bounds[0]) && (bounds[1] == null || value < bounds[1]));
-    return (!phaseRule.zone || zone === phaseRule.zone) &&
+    const matches = (!phaseRule.zone || zone === phaseRule.zone) &&
       within(x, phaseRule.x) && within(y, phaseRule.y) && within(z, phaseRule.z);
+    // Pin the route synchronously in the same browser evaluation that observes
+    // the camera-phase match. This closes the race between the matching dataset
+    // sample and the Node-side screenshot request.
+    if (matches) window.__darBoussedraVisualReviewHoldCamera = true;
+    return matches;
   }, { expectedDestination: destination, phaseRule: rule }, { timeout });
 }
 
@@ -186,15 +191,24 @@ async function selectDirectoryRoom(page, name, slug, transitionCaptures = [], ar
     if (!capture.phase) continue;
     const timeout = capture.timeout ?? 90000;
     const task = (async () => {
+      let matched = false;
       try {
         await waitForCameraPhase(page, slug, capture.phase, timeout);
+        matched = true;
       } catch {
         report.notes.push("Timed out waiting for camera phase " + capture.phase + " on route " + slug + "; capturing the current frame instead.");
       }
-      // Screenshot requests are launched by the matching watcher, not serialized
-      // behind previous phases; Playwright/browser capture remains responsible for
-      // the underlying compositor work.
-      await saveScreenshot(page, capture.filename);
+      try {
+        // A matched phase owns the camera until its still is recorded. Other
+        // phase watchers remain armed, then proceed once the hold is released.
+        await saveScreenshot(page, capture.filename);
+      } finally {
+        if (matched) {
+          await page.evaluate(() => {
+            window.__darBoussedraVisualReviewHoldCamera = false;
+          }).catch(() => {});
+        }
+      }
     })();
     phaseTasks.set(capture, task);
   }

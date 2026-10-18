@@ -1,13 +1,13 @@
 # AEOS Status — Dar Boussedra
 
-**State:** LOOP 088 — PRESERVE THE CAMERA FRAME WHEN STAIR PHASES MATCH — CHECKPOINT COMMITTED; CI PENDING  
-**Active keyphrase:** DAR BOUSSEDRA — LOOP 088: CAPTURE MATCHED STAIR PHASES WITHOUT SERIAL QUEUE DELAY; NO NEW DECORATIONS  
-**Run ID:** 20261018-darboussedra-aeos-v3-loop088  
-**Loop:** 088 · **Candidate:** dar-boussedra-walkthrough-coherence-088  
+**State:** LOOP 089 — PIN CAMERA DURING PHASE CAPTURE AND SEPARATE LANDING WINDOWS — CHECKPOINT COMMITTED; CI PENDING  
+**Active keyphrase:** DAR BOUSSEDRA — LOOP 089: HOLD THE MATCHED CAMERA POSE UNTIL ITS STILL IS SAVED; NO NEW DECORATIONS  
+**Run ID:** 20261018-darboussedra-aeos-v3-loop089  
+**Loop:** 089 · **Candidate:** dar-boussedra-walkthrough-coherence-089  
 **Repository:** https://github.com/teyyara/darboussedra  
 **Branch:** fix/loop-064-moroccan-exterior-and-layout  
 **Base main:** e06af00a049eb72b173295438bbeb8e384c6fef5  
-**Latest source-code checkpoint commit:** see latest Loop 088 commit on the linked PR branch  
+**Latest source-code checkpoint commit:** see latest Loop 089 commit on the linked PR branch  
 **Last updated:** 2026-10-18
 
 ## Standing user priorities — keep active until explicitly cleared
@@ -849,3 +849,15 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 - **QA integrity:** The route still records each camera position and direction at screenshot time, and all required direction/arrival/mobile/runtime assertions remain active. A missing phase still produces a review note and fails the visual gate; no assertions are removed or relaxed.
 - **Scope:** No camera path, room footprint, stair geometry, props, or decoration changes. No dependencies, main merge, or manual Vercel deployment.
 - **Next action:** Confirm that `13b-stair-ascent-landing-clearance.png`, `14-upper-landing-turn.png`, `16-roof-stair-ascent.png`, and `17-roof-hatch-exit.png` show distinct, correctly aimed positions in the latest screenshot artifact.
+
+
+## Loop 089 — Freeze the matched camera pose while recording stair stills
+
+**State:** Visual-review synchronization and phase-window correction committed; CI and fresh Chromium review pending. PR #7 remains open and unmerged.
+
+- **Loop 088 evidence:** The capture recorded `13b-stair-ascent-landing-clearance.png` at X=0.925, Y=4.65, Z=-3.84 with direction-Y -0.227, although the clearance phase rule requires X≈0 and the browser gate requires upward/rightward direction. `14-upper-landing-turn.png` reused the same position, proving the two phase windows overlapped and the image was not recorded at the matched pose. `17-roof-hatch-exit.png` eventually landed in the hatch-clear coordinate window but the watcher had timed out, another sign of a race between phase matching, camera motion, and screenshot capture.
+- **Change:** Add a browser-review-only camera hold flag. The phase watcher sets it synchronously inside the same page evaluation that confirms a match; the camera rig skips movement updates while held, and the capture helper releases the hold only after the screenshot has been written. Normal user movement is unchanged unless the test harness sets this flag.
+- **Phase separation:** Narrow the upper-side-landing Z band to the actual upper-bridge waypoint near Z=-2.8 so it cannot fire at the final stair tread. Add unit tests that top-tread clearance and upper-landing windows are mutually exclusive and that roof-flight and hatch-clear phases remain distinct.
+- **QA integrity:** Keep the existing 90-second phase limits, route-arrival conditions, direction-Y / direction-X gates, runtime-error requirements, room-arrival checks, WebGL detection and mobile overflow checks. A missing phase still fails review; no visual assertion is removed or weakened.
+- **Scope:** No stair or room geometry, no prop or decoration changes, no dependencies, no main merge and no manual Vercel deployment.
+- **Next action:** Inspect the newly captured clearance, landing, roof-flight and hatch-exit images from the exact revision before continuing architectural changes.
