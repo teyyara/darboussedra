@@ -326,8 +326,11 @@ if (!report.upperLandingAiming.looksDownPastStairUnderside) {
   report.notes.push("The upper-landing turn should pitch modestly down toward the clear bridge floor rather than hold the horizon under the roof stair.");
 }
 report.stairCameraAiming = {
+  ascentDirectionX: stairAscent?.cameraDirection?.[0] ?? null,
   ascentDirectionY: stairAscent?.cameraDirection?.[1] ?? null,
   descentDirectionY: stairDescent?.cameraDirection?.[1] ?? null,
+  anticipatesUpperLandingTurn: typeof stairAscent?.cameraDirection?.[0] === "number" &&
+    stairAscent.cameraDirection[0] > 0.2 && stairAscent.cameraDirection[0] < 0.5,
   clearsUpperLandingOnAscent: typeof stairAscent?.cameraDirection?.[1] === "number" &&
     stairAscent.cameraDirection[1] > 0.10 && stairAscent.cameraDirection[1] < 0.32,
   looksDownDuringDescent: typeof stairDescent?.cameraDirection?.[1] === "number" &&
@@ -335,6 +338,9 @@ report.stairCameraAiming = {
 };
 if (!report.stairCameraAiming.clearsUpperLandingOnAscent) {
   report.notes.push("As the eye reaches upper-floor level, the ascent camera must pitch upward enough to see over the landing fascia into the open upper bridge.");
+}
+if (!report.stairCameraAiming.anticipatesUpperLandingTurn) {
+  report.notes.push("The ascent camera should turn toward the side landing lane while clearing the rear fascia, rather than keep looking straight into the rear wall.");
 }
 if (!report.stairCameraAiming.looksDownDuringDescent) {
   report.notes.push("Camera should pitch downward while descending the lower stair flight.");
@@ -360,6 +366,7 @@ if (
   !report.mobileNavigationGuideVisible ||
   !report.walkingHudHiddenDuringStairCaptures ||
   !report.stairCameraAiming.clearsUpperLandingOnAscent ||
+  !report.stairCameraAiming.anticipatesUpperLandingTurn ||
   !report.stairCameraAiming.looksDownDuringDescent ||
   !report.upperLandingAiming.looksDownPastStairUnderside ||
   report.mobileHasHorizontalDocumentOverflow ||

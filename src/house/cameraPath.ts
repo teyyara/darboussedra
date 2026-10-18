@@ -365,11 +365,14 @@ export function makeCameraPath(from: HouseLocation, to: HouseLocation, finalPose
     const verticalAim = dy >= 0
       ? dy * (clearingUpperLanding ? 0.25 : -0.25)
       : dy * 0.75;
-    const length = Math.hypot(dx, verticalAim, dz);
+    // Anticipate the turn onto the right-side landing lane while clearing the fascia.
+    // Looking straight into the rear wall kept the slab edge central even with upward pitch.
+    const sightlineX = clearingUpperLanding ? Math.abs(dz) * 0.4 : dx;
+    const length = Math.hypot(sightlineX, verticalAim, dz);
     return {
       position: pose.position,
       target: [
-        pose.position[0] + dx / length * lookAhead,
+        pose.position[0] + sightlineX / length * lookAhead,
         pose.position[1] + verticalAim / length * lookAhead,
         pose.position[2] + dz / length * lookAhead,
       ],
