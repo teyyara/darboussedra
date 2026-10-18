@@ -1,13 +1,13 @@
 # AEOS Status — Dar Boussedra
 
-**State:** LOOP 068 — ROOF-STAIR HEADROOM AND HATCH ALIGNMENT — CHECKPOINT COMMITTED; CI PENDING  
-**Active keyphrase:** DAR BOUSSEDRA — LOOP 068: ALIGN ROOF STAIR FLIGHT WITH HATCH HEADROOM; NO NEW DECORATIONS  
-**Run ID:** 20261018-darboussedra-aeos-v3-loop068  
-**Loop:** 068 · **Candidate:** dar-boussedra-walkthrough-coherence-068  
+**State:** LOOP 069 — ROOF-STAIR CLEARANCE WITHOUT OVERHANGING THE UPPER CORRIDOR — CHECKPOINT COMMITTED; CI PENDING  
+**Active keyphrase:** DAR BOUSSEDRA — LOOP 069: CLEAR HATCH HEADROOM AND PRESERVE UPPER CORRIDOR; NO NEW DECORATIONS  
+**Run ID:** 20261018-darboussedra-aeos-v3-loop069  
+**Loop:** 069 · **Candidate:** dar-boussedra-walkthrough-coherence-069  
 **Repository:** https://github.com/teyyara/darboussedra  
 **Branch:** fix/loop-064-moroccan-exterior-and-layout  
 **Base main:** e06af00a049eb72b173295438bbeb8e384c6fef5  
-**Latest source-code checkpoint commit:** see latest Loop 068 commit on the linked PR branch  
+**Latest source-code checkpoint commit:** see latest Loop 069 commit on the linked PR branch  
 **Last updated:** 2026-10-18
 
 ## Standing user priorities — keep active until explicitly cleared
@@ -589,10 +589,10 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 
 ## Loop 068 — Roof-stair headroom and hatch alignment
 
-**State:** Geometry and regression update committed; CI and fresh Chromium visual review pending. PR #7 remains open and unmerged.
+**State:** Superseded after fresh Chromium review exposed an upper-corridor overlap and descent screenshot timeout. PR #7 remains open and unmerged.
 
 - **Problem confirmed from Loop 067 screenshots:** The lower stair eye-line correction works and brings the treads into view. The roof stair still passes beneath the hatch's front reveal while the eye is already at near-roof height, creating a horizontal bar directly across the first-person climb.
-- **Change:** Move the roof flight back onto the central stairwell axis, keeping approximately the same run length and slope, and lengthen the narrow hatch opening to span the upper flight's head-clearance path. Extend the right-side guardrail along the new opening, while preserving the rear-right step-off gap onto solid roof deck.
+- **Outcome:** The flight/opening arrangement in commit [14f3a51](https://github.com/teyyara/darboussedra/commit/14f3a5114a1f8dc858e0e4eff9bc087088467369) cleared the hatch at roof height but ran directly over the upper corridor. Loop 069 restores the prior flight endpoint and adjusts the opening instead.
 - **Regression coverage:** Assert that camera waypoints near roof height lie inside the opening. Update guardrail coverage tests to check the right-side rail reaches the front edge yet leaves a safe exit gap at the rear.
 - **Boundaries:** No decorations, room-object changes, assets, dependencies, main merge or manual Vercel deployment.
 - **Next action:** Inspect fresh roof-stair, hatch-clearance, and descent screenshots from the exact current commit; if the new opening looks too large or leaks into bedroom views, adjust it based on those captures.
@@ -602,4 +602,16 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 
 - The first CI run for [29b705a](https://github.com/teyyara/darboussedra/commit/29b705a95c12381384fd4a49f541d1777fd2fc0e) correctly found stale layout assertions: they required the roof flight to start exactly at the far edge of the upper landing, instead of anywhere safely inside its footprint, and treated z=0 as beyond the hatch even though the new opening extends there.
 - The roof-opening headroom regression, camera route suite, interior ceiling panel test, hatch rail tests, and roof deck grout tests passed on that run. Updated the layout validator and assertions to express the new landing connection and hatch boundary rather than remove validation.
-- Waiting for the full rerun; no merge or manual deployment.
+- No merge or manual deployment.
+
+
+## Loop 069 — Preserve upper-corridor headroom and capture descent reliably
+
+**State:** Geometry correction and bounded screenshot timeout update committed; CI and fresh Chromium review pending. PR #7 remains open and unmerged.
+
+- **Geometry:** Restore the roof-flight start/end to Z=2.05 and Z=-2.68, preserving the upper corridor clear of the flight's underside. Extend the roof opening to Z=-3.25..0.65 so the camera position measured in the last review (Y=5.245, Z=-0.097) is over the opening, while the top stair exit still has over half a metre of rear clearance.
+- **Guardrails:** Keep three-sided timber protection and the right-side rail exit gap; update the required clear offset to match the restored stair-end coordinate. The egress point remains clear of the rail in X as well as Z.
+- **Screenshot capture:** Increase only stair/landing screenshot timeout from 30 to 45 seconds. The capture remains mandatory and the visual gate still fails if it cannot be captured; this does not skip or weaken any review.
+- **Regression coverage:** Check the restored flight-end against the landing edge, camera eye-height positions inside the enlarged hatch, roof-camera-zone boundary outside the opening, and the right-side guardrail egress gap.
+- **Boundaries:** No decorations, furniture, assets, dependencies, main merge or manual Vercel deployment.
+- **Next action:** Inspect fresh roof-stair, upper-landing, exit and descent images from the exact new commit. Do not merge until typecheck, unit tests, production build and Chromium review all pass.

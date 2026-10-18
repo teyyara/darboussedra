@@ -18,7 +18,7 @@ describe("level-aware house rendering", () => {
     expect(getCameraZoneForPosition({x: 0, y: 1.65, z: frontZ - 0.2})).toBe("ground");
     expect(getCameraZoneForPosition({x: 0, y: HOUSE_LAYOUT.upperY + 1.65, z: 0})).toBe("upper");
     // At z=0 the camera is still above the extended hatch; this point clears its front edge.
-    expect(getCameraZoneForPosition({x: 0, y: HOUSE_LAYOUT.roofY + 1.2, z: 0.6})).toBe("roof");
+    expect(getCameraZoneForPosition({x: 0, y: HOUSE_LAYOUT.roofY + 1.2, z: 0.9})).toBe("roof");
     expect(getCameraZoneForPosition({x: 0, y: HOUSE_LAYOUT.roofY + 0.95, z: 0})).toBe("upper");
   });
 

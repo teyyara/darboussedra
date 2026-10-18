@@ -64,7 +64,10 @@ async function saveScreenshot(page, filename) {
   }).catch(() => null);
   report.frameStates.push({ filename, ...frameState });
   try {
-    await page.screenshot({ path: filepath, animations: "allow", timeout: 30000 });
+    // Animated stair-transition frames can be heavier than settled room stills.
+    // Keep the capture mandatory but allow them 15 more seconds before a hard failure.
+    const screenshotTimeout = /stair|landing-turn/i.test(filename) ? 45000 : 30000;
+    await page.screenshot({ path: filepath, animations: "allow", timeout: screenshotTimeout });
     report.screenshots.push(filename);
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);

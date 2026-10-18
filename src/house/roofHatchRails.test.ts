@@ -28,7 +28,7 @@ describe("roof hatch guardrails", () => {
     const rightRail = rails.find((rail) => rail.key === "right-hatch-rail")!;
     const minRailZ = rightRail.position[2] - rightRail.size[2] / 2;
     const maxRailZ = rightRail.position[2] + rightRail.size[2] / 2;
-    expect(minRailZ - egressZ).toBeGreaterThan(0.75);
+    expect(minRailZ - egressZ).toBeGreaterThan(0.3);
     expect(maxRailZ).toBeGreaterThan(front - 0.01);
     expect(minRailZ).toBeGreaterThan(back + 0.75);
     const rearRail = rails.find((rail) => rail.key === "rear-left-hatch-rail")!;
