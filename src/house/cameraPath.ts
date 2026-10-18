@@ -133,7 +133,10 @@ function groundStairWalkway(): CameraPose[] {
   const sideLaneX = HOUSE_LAYOUT.upperBridge.centerX + HOUSE_LAYOUT.stairs.openingWidth / 2 + sideWalkwayWidth / 2;
   return [
     ...sampledStairWaypoints(flight),
-    poseFacing(top, [0, -1]),
+    // At the stair top, look into the open bridge before the body starts its
+    // lateral turn. Following the route tangent here points at the rear wall/soffit
+    // and makes the first upper-landing frame feel like a camera collision.
+    poseFacingAlongUpperBridge(top, [0, 0.99]),
     // Finish the turn laterally while still behind the rear bedroom-wall line,
     // then move forward along the guarded landing. The former diagonal U-turn
     // aimed the camera straight into the bedroom's side wall for several frames.

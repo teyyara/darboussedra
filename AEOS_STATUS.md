@@ -1,13 +1,13 @@
 # AEOS Status — Dar Boussedra
 
-**State:** LOOP 092 — CLEAR THE UPPER STAIR VIEW WITH TREAD-AWARE VISIBILITY AND A SAFE SIGHTLINE — CHECKPOINT COMMITTED; CI PENDING  
-**Active keyphrase:** DAR BOUSSEDRA — LOOP 092: KEEP THE ASCENT GAZE INSIDE THE STAIR OPENING UNTIL THE SIDE LANE; NO NEW DECORATIONS  
-**Run ID:** 20261018-darboussedra-aeos-v3-loop092  
-**Loop:** 092 · **Candidate:** dar-boussedra-stair-visibility-height-092  
-**Repository:** https://github.com/teyyara/darboussedra  
-**Branch:** fix/loop-064-moroccan-exterior-and-layout  
-**Base main:** e06af00a049eb72b173295438bbeb8e384c6fef5  
-**Latest source-code checkpoint commit:** this Loop 092 checkpoint on the linked PR branch  
+**State:** LOOP 093 — FORWARD, DOWNWARD GAZE THROUGH THE LOWER STAIR LANDING — SOURCE CHECKPOINT COMMITTED; CI PENDING
+**Active keyphrase:** DAR BOUSSEDRA — LOOP 093: LOOK INTO THE OPEN UPPER BRIDGE FROM THE STAIR TOP; NO NEW DECORATIONS
+**Run ID:** 20261018-darboussedra-aeos-v3-loop093
+**Loop:** 093 · **Candidate:** dar-boussedra-stair-top-forward-gaze-093
+**Repository:** https://github.com/teyyara/darboussedra
+**Branch:** fix/loop-064-moroccan-exterior-and-layout
+**Base main:** e06af00a049eb72b173295438bbeb8e384c6fef5
+**Latest source-code checkpoint commit:** Loop 093 source checkpoint on the linked PR branch
 **Last updated:** 2026-10-18
 
 ## Standing user priorities — keep active until explicitly cleared
@@ -901,3 +901,12 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 - **Change:** estimate camera floor height from the actual authored stair flight only when X/Z position and expected stair elevation match that flight. Use the stair's 1.51m eye offset there, retaining the normal 1.65m offset in rooms/halls. Apply to both stair flights so level visibility switches at the true tread height while preserving the roof-hatch safety guard.
 - **Regression test:** top approach to the lower stair must switch to the upper visibility zone while mid-flight remains ground-level.
 - **Guardrails:** no room dimensions, wall geometry, stair path, furnishings, decorations, assets, or dependencies changed. No merge to `main` or manual Vercel deployment.
+
+
+## Loop 093 — Look into the upper landing at the top of the lower stairs
+
+- **State:** source checkpoint committed; CI and fresh rendered review pending.
+- **Evidence:** The available Loop 091 capture (13b-stair-ascent-landing-clearance.png) shows the camera facing a large opaque ceiling/wall surface during the ascent. The following camera waypoint at the exact stair endpoint previously derived its heading from the lateral turn, causing the camera to look sideways/back into the rear landing boundary instead of toward the open bridge.
+- **Change:** At the exact top-of-stair pose, explicitly face along the open bridge (+Z) with a shallow downward gaze. Keep this heading while the camera steps off the final tread and begins the lateral turn; the reverse route retains its dedicated downward stairwell gaze.
+- **Regression test:** Assert that the route to an upper private room reaches the exact lower-stair landing and that the view points forward into the bridge, slightly downward, without a lateral wall-facing target.
+- **Scope and guardrails:** No room footprint, wall or stair geometry, furnishings, decorations, assets or dependencies changed. Main remains untouched; no manual Vercel deployment. A fresh browser artifact is required before calling the visual issue resolved.

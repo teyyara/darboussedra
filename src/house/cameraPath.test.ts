@@ -217,6 +217,21 @@ describe("3D camera paths", () => {
     expect(Math.max(...path.map((pose) => pose.position[1]))).toBeLessThan(5.2);
   });
 
+  it("looks into the open upper bridge as the lower stair finishes", () => {
+    const flight = HOUSE_LAYOUT.stairs.groundFlight;
+    const landingEyeY = flight.to[1] + 1.51;
+    const path = makeCameraPath("family-table", "zineb-room", poseFor("zineb-room"));
+    const landing = path.find((pose) =>
+      Math.abs(pose.position[0] - flight.to[0]) < 0.02 &&
+      Math.abs(pose.position[1] - landingEyeY) < 0.02 &&
+      Math.abs(pose.position[2] - flight.to[2]) < 0.02);
+
+    expect(landing, "the route must explicitly reach the lower stair's upper landing").toBeDefined();
+    expect(landing!.target[2], "the first landing view should look into the bridge, not back into the rear wall").toBeGreaterThan(landing!.position[2] + 1);
+    expect(landing!.target[1], "keep the ceiling out of the centre of the landing view").toBeLessThan(landing!.position[1] - 0.2);
+    expect(Math.abs(landing!.target[0] - landing!.position[0])).toBeLessThan(0.05);
+  });
+
   it("climbs to the rooftop through the roof stair and hatch instead of an overhead camera jump", () => {
     const path = makeCameraPath("family-table", "rooftop", poseFor("rooftop"));
     expect(path.some((pose) => pose.position[1] > HOUSE_LAYOUT.upperY + 1.5 && pose.position[1] < HOUSE_LAYOUT.roofY + 0.5)).toBe(true);
