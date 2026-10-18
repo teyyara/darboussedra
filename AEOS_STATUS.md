@@ -1,13 +1,13 @@
 # AEOS Status — Dar Boussedra
 
-**State:** LOOP 091 — AIM THE FINAL STAIR ASCENT ACROSS THE OPEN UPPER LANDING — CHECKPOINT COMMITTED; CI PENDING  
-**Active keyphrase:** DAR BOUSSEDRA — LOOP 091: TURN THE LATE ASCENT VIEW TOWARD THE OPEN BRIDGE; NO NEW DECORATIONS  
-**Run ID:** 20261018-darboussedra-aeos-v3-loop091  
-**Loop:** 091 · **Candidate:** dar-boussedra-late-stair-sightline-091  
+**State:** LOOP 092 — CLASSIFY STAIR CAMERAS BY TREAD HEIGHT TO PREVENT LATE WALL OCCLUSION — CHECKPOINT COMMITTED; CI PENDING  
+**Active keyphrase:** DAR BOUSSEDRA — LOOP 092: USE TRUE STAIR FOOT HEIGHT FOR LEVEL VISIBILITY; NO NEW DECORATIONS  
+**Run ID:** 20261018-darboussedra-aeos-v3-loop092  
+**Loop:** 092 · **Candidate:** dar-boussedra-stair-visibility-height-092  
 **Repository:** https://github.com/teyyara/darboussedra  
 **Branch:** fix/loop-064-moroccan-exterior-and-layout  
 **Base main:** e06af00a049eb72b173295438bbeb8e384c6fef5  
-**Latest source-code checkpoint commit:** this Loop 091 checkpoint on the linked PR branch  
+**Latest source-code checkpoint commit:** this Loop 092 checkpoint on the linked PR branch  
 **Last updated:** 2026-10-18
 
 ## Standing user priorities — keep active until explicitly cleared
@@ -887,3 +887,17 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 - **Change:** during only the last-tread clearance band, redirect the gaze horizontally toward the right-hand bridge and positive-Z open landing, with a slightly stronger upward aim. The physical stair route, room footprints, props, and all layout dimensions stay unchanged.
 - **Regression test:** require every sampled late-ascent clearance pose to aim into positive Z, across the open landing rather than back along the opaque fascia.
 - **User constraints:** no new decorations, paid dependencies, assets, manual Vercel deployment, or merge to `main`.
+
+
+## Loop 091 — Late-ascent sightline follow-up
+
+- Source commit `a0c617a1834b591878b73eb91bb3a4f30338129c` redirected the final-tread camera vector toward the open bridge and added a regression invariant for the positive-Z landing sightline.
+- TypeScript, unit tests, and production build passed. The PR visual-review run [39167374123](https://github.com/teyyara/darboussedra/actions/runs/39167374123) remained in progress with no new artifact available when the next root-cause inspection began. The earlier Loop 090 screenshot is still evidence of the original wall obstruction, not proof of the new gaze.
+- Root-cause inspection found that stair waypoints use a 1.51m camera offset for head clearance, while camera-zone classification always subtracted 1.65m. This underestimates the tread/floor height by 14cm and keeps the lower-storey rendering active one tread too long.
+
+## Loop 092 — Use actual stair camera height for level visibility
+
+- **State:** source checkpoint committed; CI pending.
+- **Change:** estimate camera floor height from the actual authored stair flight only when X/Z position and expected stair elevation match that flight. Use the stair's 1.51m eye offset there, retaining the normal 1.65m offset in rooms/halls. Apply to both stair flights so level visibility switches at the true tread height while preserving the roof-hatch safety guard.
+- **Regression test:** top approach to the lower stair must switch to the upper visibility zone while mid-flight remains ground-level.
+- **Guardrails:** no room dimensions, wall geometry, stair path, furnishings, decorations, assets, or dependencies changed. No merge to `main` or manual Vercel deployment.

@@ -14,12 +14,39 @@ export interface HouseSceneVisibility {
   readonly showRoofDeck: boolean;
 }
 
+const STAIR_CAMERA_HEIGHT = 1.51;
+const NORMAL_CAMERA_HEIGHT = 1.65;
+
+/**
+ * The stair camera deliberately runs 14cm lower than a normal standing camera to
+ * preserve head clearance. Estimate its floor from the authored flight when the
+ * camera is actually on that flight, rather than switching levels one tread late.
+ */
+function cameraFloorY(position: { readonly x: number; readonly y: number; readonly z: number }): number {
+  const flights = [HOUSE_LAYOUT.stairs.groundFlight, HOUSE_LAYOUT.stairs.roofFlight];
+  for (const flight of flights) {
+    const minZ = Math.min(flight.from[2], flight.to[2]) - 0.12;
+    const maxZ = Math.max(flight.from[2], flight.to[2]) + 0.12;
+    if (Math.abs(position.x - flight.from[0]) > HOUSE_LAYOUT.stairs.width / 2 + 0.12 ||
+        position.z < minZ || position.z > maxZ) continue;
+    const progress = (position.z - flight.from[2]) / (flight.to[2] - flight.from[2]);
+    const floorAtZ = flight.from[1] + (flight.to[1] - flight.from[1]) * progress;
+    const expectedEyeY = floorAtZ + STAIR_CAMERA_HEIGHT;
+    // Only use the stair offset when both horizontal position and expected stair
+    // elevation agree. Nearby room/hall cameras retain their normal standing height.
+    if (Math.abs(position.y - expectedEyeY) <= 0.24) {
+      return position.y - STAIR_CAMERA_HEIGHT;
+    }
+  }
+  return position.y - NORMAL_CAMERA_HEIGHT;
+}
+
 export function getCameraZoneForPosition(position: { readonly x: number; readonly y: number; readonly z: number }): CameraZone {
   const exteriorFront = HOUSE_LAYOUT.exterior.depth / 2;
   // Switch outside as soon as the camera clears the façade, not a full metre later.
   // Otherwise the interior can vanish behind the camera before the garden is drawn.
   if (position.z > exteriorFront + HOUSE_LAYOUT.exterior.wallThickness / 2 + 0.1) return "outside";
-  const floorY = position.y - 1.65;
+  const floorY = cameraFloorY(position);
   const hatch = HOUSE_LAYOUT.stairs.roofOpening;
   const hatchClearance = 0.12;
   const stillOverHatch =

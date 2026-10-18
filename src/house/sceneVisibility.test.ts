@@ -22,6 +22,29 @@ describe("level-aware house rendering", () => {
     expect(getCameraZoneForPosition({x: 0, y: HOUSE_LAYOUT.roofY + 0.95, z: 0})).toBe("upper");
   });
 
+  it("classifies the upper end of the lower stair flight from the actual tread height", () => {
+    const flight = HOUSE_LAYOUT.stairs.groundFlight;
+    const index = 13;
+    const stepY = (flight.to[1] - flight.from[1]) / flight.steps;
+    const stepZ = (flight.to[2] - flight.from[2]) / flight.steps;
+    const onUpperApproach = {
+      x: flight.from[0],
+      y: flight.from[1] + stepY * (index + 1) + 1.51,
+      z: flight.from[2] + stepZ * (index + 0.5),
+    };
+    const onMidFlight = {
+      x: flight.from[0],
+      y: flight.from[1] + stepY * 9 + 1.51,
+      z: flight.from[2] + stepZ * 8.5,
+    };
+
+    // A normal 1.65m offset underestimates the floor at the top treads by 14cm.
+    // The camera should switch to the upper visibility zone on the actual upper approach.
+    expect(onUpperApproach.y - 1.65).toBeLessThan(HOUSE_LAYOUT.upperY - 0.25);
+    expect(getCameraZoneForPosition(onUpperApproach)).toBe("upper");
+    expect(getCameraZoneForPosition(onMidFlight)).toBe("ground");
+  });
+
   it("keeps the interior visible until the camera clears the roof hatch horizontally", () => {
     const opening = HOUSE_LAYOUT.stairs.roofOpening;
     const aboveHatch = {
