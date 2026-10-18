@@ -40,12 +40,12 @@ describe("3D camera paths", () => {
     }
     expect(EXTERIOR_CAMERA.position[1], "the street view uses standing eye height").toBeCloseTo(1.65);
     expect(EXTERIOR_CAMERA.position[1]).toBeLessThan(HOUSE_LAYOUT.exterior.wallHeight);
-    expect(EXTERIOR_CAMERA.target[1]).toBeGreaterThan(1.2);
+    expect(EXTERIOR_CAMERA.target[1], "street view angles slightly upward to reveal the roofline and sky").toBeGreaterThan(EXTERIOR_CAMERA.position[1] + 1.0);
     expect(Math.abs(EXTERIOR_CAMERA.position[0]), "the street view is centered on the front entrance").toBeLessThan(0.1);
     expect(EXTERIOR_CAMERA.position[2]).toBeGreaterThan(frontZ);
     expect(Math.abs(EXTERIOR_CAMERA.target[0])).toBeLessThan(1);
     expect(EXTERIOR_CAMERA.target[2]).toBeLessThan(frontZ);
-    expect(EXTERIOR_CAMERA.target[1]).toBeLessThan(EXTERIOR_CAMERA.position[1]);
+    expect(EXTERIOR_CAMERA.target[1]).toBeGreaterThan(EXTERIOR_CAMERA.position[1]);
   });
 
   it("keeps the entrance view aligned with the passage and family-table view across the shared room", () => {

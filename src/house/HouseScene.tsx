@@ -1295,7 +1295,7 @@ export function HouseScene({ location, settledLocation, reducedMotion, onArrive,
     setCameraZone(zone);
   }, []);
   const visualTransition = transitioning || settledLocation !== location;
-  const sceneFov = location === "exterior" || location === "map" ? 58 : 66;
+  const sceneFov = 66;
   return <Canvas camera={{ position: EXTERIOR_CAMERA.position, fov: sceneFov, near: 0.1, far: 120 }}
     gl={{ antialias: true, powerPreference: "high-performance" }} dpr={reducedMotion ? 1 : ([1, 1.6] as [number, number])}
     frameloop="demand" shadows

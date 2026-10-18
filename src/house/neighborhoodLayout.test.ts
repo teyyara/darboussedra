@@ -21,6 +21,7 @@ describe("Moroccan exterior context", () => {
     expect(Math.abs(sidewalkMax - roadMin)).toBeLessThanOrEqual(0.025);
     expect(EXTERIOR_CAMERA.position[2]).toBeGreaterThan(roadMin);
     expect(EXTERIOR_CAMERA.position[2]).toBeLessThan(roadMax);
+    expect(EXTERIOR_CAMERA.position[2]).toBeLessThan(roadMax);
     expect(neighborhoodLayoutIssues()).toEqual([]);
   });
 });

@@ -49,7 +49,7 @@ export const MOROCCAN_STREET: Readonly<{
   road: StreetSurface;
 }> = {
   sidewalk: { width: 44, depth: 1.0, centerZ: 9.95, centerY: -0.03, height: 0.08 },
-  road: { width: 44, depth: 5.1, centerZ: 13.0, centerY: -0.075, height: 0.08 },
+  road: { width: 44, depth: 6.9, centerZ: 13.9, centerY: -0.075, height: 0.08 },
 };
 
 /** Basic geometric checks for the procedural exterior context. */
