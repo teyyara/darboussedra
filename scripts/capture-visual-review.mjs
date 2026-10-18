@@ -176,21 +176,47 @@ async function waitForCameraPhase(page, destination, phase, timeout = 30000) {
 async function selectDirectoryRoom(page, name, slug, transitionCaptures = [], arrivalTimeout = 12000) {
   const selector = page.locator(".map-directory").getByRole("button", { name, exact: true }).first();
   await selector.waitFor({ state: "visible", timeout: 12000 });
+
+  // Arm every route-phase watcher before clicking the destination. Capturing one
+  // stair still can take long enough for the next few treads to pass; sequential
+  // waits would then miss the narrow top-tread and landing poses and save only the
+  // settled rooftop frame. Observe phases concurrently, and serialize only the
+  // screenshots themselves so Playwright never snapshots the same page twice at once.
+  let screenshotQueue = Promise.resolve();
+  const enqueueScreenshot = (filename) => {
+    const queued = screenshotQueue.then(() => saveScreenshot(page, filename));
+    screenshotQueue = queued.catch(() => {});
+    return queued;
+  };
+  const phaseTasks = new Map();
+  for (const capture of transitionCaptures) {
+    if (!capture.phase) continue;
+    const timeout = capture.timeout ?? 45000;
+    const task = (async () => {
+      let matched = false;
+      try {
+        await waitForCameraPhase(page, slug, capture.phase, timeout);
+        matched = true;
+      } catch {
+        report.notes.push("Timed out waiting for camera phase " + capture.phase + " on route " + slug + "; capturing the current frame instead.");
+      }
+      await enqueueScreenshot(capture.filename);
+      return matched;
+    })();
+    phaseTasks.set(capture, task);
+  }
+
   await selector.click();
   await page.waitForFunction((expected) => window.location.pathname === "/room/" + expected, slug, { timeout: 12000 });
   const transitionStarted = Date.now();
   for (const capture of transitionCaptures) {
     if (capture.phase) {
-      try {
-        await waitForCameraPhase(page, slug, capture.phase, capture.timeout ?? 30000);
-      } catch {
-        report.notes.push("Timed out waiting for camera phase " + capture.phase + " on route " + slug + "; capturing the current frame instead.");
-      }
+      await phaseTasks.get(capture);
     } else {
       const delay = Math.max(0, capture.afterMs - (Date.now() - transitionStarted));
       if (delay > 0) await page.waitForTimeout(delay);
+      await saveScreenshot(page, capture.filename);
     }
-    await saveScreenshot(page, capture.filename);
   }
   return await arrivalStatus(page, slug, name, arrivalTimeout);
 }

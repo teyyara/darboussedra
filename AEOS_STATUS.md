@@ -1,13 +1,13 @@
 # AEOS Status — Dar Boussedra
 
-**State:** LOOP 086 — ONLY CLEAR THE LANDING WHEN THE CAMERA REACHES THE TOP TREAD — CHECKPOINT COMMITTED; CI PENDING  
-**Active keyphrase:** DAR BOUSSEDRA — LOOP 086: KEEP MID-FLIGHT GAZE ON TREADS; TURN UP ONLY AT TOP-TREAD CLEARANCE; NO NEW DECORATIONS  
-**Run ID:** 20261018-darboussedra-aeos-v3-loop086  
-**Loop:** 086 · **Candidate:** dar-boussedra-walkthrough-coherence-086  
+**State:** LOOP 087 — CAPTURE STAIR PHASES IN PARALLEL SO TOP-TREAD FRAMES ARE NOT MISSED — CHECKPOINT COMMITTED; CI PENDING  
+**Active keyphrase:** DAR BOUSSEDRA — LOOP 087: ARM WALKTHROUGH PHASE WATCHERS BEFORE MOVEMENT; NO NEW DECORATIONS  
+**Run ID:** 20261018-darboussedra-aeos-v3-loop087  
+**Loop:** 087 · **Candidate:** dar-boussedra-walkthrough-coherence-087  
 **Repository:** https://github.com/teyyara/darboussedra  
 **Branch:** fix/loop-064-moroccan-exterior-and-layout  
 **Base main:** e06af00a049eb72b173295438bbeb8e384c6fef5  
-**Latest source-code checkpoint commit:** see latest Loop 086 commit on the linked PR branch  
+**Latest source-code checkpoint commit:** see latest Loop 087 commit on the linked PR branch  
 **Last updated:** 2026-10-18
 
 ## Standing user priorities — keep active until explicitly cleared
@@ -827,3 +827,14 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 - **Browser review:** Keep the mid-flight still and add a distinct top-tread clearance still. The first must show slight downward pitch; the second must show upward/rightward look-ahead. Upper-landing heading, descent pitch, room-arrival, runtime, WebGL, and mobile-overflow checks remain active.
 - **Scope:** No wall/stair/floor mesh, furniture, or decoration changes. No assets or dependencies, no main merge, and no manual Vercel deployment.
 - **CI follow-up:** Camera unit tests and build passed, and the mid-flight screenshot now looks downward at the treads. The browser run still failed because the upward/rightward gaze occupied only the final ~0.2m/one tread and the screenshot wait missed that transient window; downstream frames then timed out and captured the rooftop endpoint. Widen the gaze to the final three moving treads (about the last 0.9m) and expand only the clearance phase's measured camera-position window. The mid-flight band and its downward-pitch assertion remain separate, so the old halfway-up false positive stays blocked.
+
+
+## Loop 087 — Capture transient stair phases before they pass
+
+**State:** Browser-capture synchronization fix committed; full CI and new Chromium screenshots pending. PR #7 remains open and unmerged.
+
+- **Failure confirmed from Loop 086 run 39160014080:** TypeScript, all 123 unit tests, and production build passed, but Chromium timed out on `lower-stair-clearance`, `upper-side-landing`, `roof-stair-flight`, and `roof-hatch-clear`. Since the capture helper waited for these phases one at a time, the route was already at its rooftop endpoint when later waits started. The saved landing frame therefore showed the final camera aimed left into the roof-stair railing (direction X=-0.975), not the intended bridge gaze.
+- **Change:** Arm the phase watchers before clicking the destination room, so all transient camera windows are observed concurrently. Save screenshots through a small queue to avoid overlapping Playwright screenshots on the same page. A missing phase remains a hard review note; the 45-second watcher timeout is still bounded and does not relax any camera-direction assertion.
+- **Camera design remains unchanged:** The mid-flight view stays on upcoming treads, the final tread-clearance poses look up/right only in the upper-height band, and the upper-bridge gaze keeps the floor in frame. No stair geometry, room footprint, furniture, or decor changes.
+- **Next action:** Inspect fresh `13b-stair-ascent-landing-clearance.png`, `14-upper-landing-turn.png`, `16-roof-stair-ascent.png`, and `17-roof-hatch-exit.png`. Confirm those images capture distinct phases at the intended coordinates and that route assertions pass before continuing.
+- **Scope:** No new decorations, assets or dependencies; no merge and no manual Vercel deployment.
