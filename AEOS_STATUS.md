@@ -1,13 +1,13 @@
 # AEOS Status — Dar Boussedra
 
-**State:** LOOP 076 — CENTER PETS' CORNER VIEW ON EXISTING BED AND SCRATCH POST — CHECKPOINT COMMITTED; CI PENDING  
-**Active keyphrase:** DAR BOUSSEDRA — LOOP 076: REDUCE DOORWAY DOMINANCE IN PETS' CORNER; NO NEW DECORATIONS  
-**Run ID:** 20261018-darboussedra-aeos-v3-loop076  
-**Loop:** 076 · **Candidate:** dar-boussedra-walkthrough-coherence-076  
+**State:** LOOP 077 — FRAME THE COMPLETE EXISTING PRAYER MAT FROM THE ENTRY SIDE — CHECKPOINT COMMITTED; CI PENDING  
+**Active keyphrase:** DAR BOUSSEDRA — LOOP 077: KEEP THE FULL EXISTING PRAYER MAT VISIBLE; NO NEW DECORATIONS  
+**Run ID:** 20261018-darboussedra-aeos-v3-loop077  
+**Loop:** 077 · **Candidate:** dar-boussedra-walkthrough-coherence-077  
 **Repository:** https://github.com/teyyara/darboussedra  
 **Branch:** fix/loop-064-moroccan-exterior-and-layout  
 **Base main:** e06af00a049eb72b173295438bbeb8e384c6fef5  
-**Latest source-code checkpoint commit:** see latest Loop 076 commit on the linked PR branch  
+**Latest source-code checkpoint commit:** see latest Loop 077 commit on the linked PR branch  
 **Last updated:** 2026-10-18
 
 ## Standing user priorities — keep active until explicitly cleared
@@ -685,10 +685,21 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 
 ## Loop 076 — Center Pets' Corner framing around the existing bed and scratch post
 
-**State:** Camera-only change and representative prop-projection test committed; full CI and fresh Chromium review pending. PR #7 remains open and unmerged.
+**State:** Validated by full CI and Chromium review in [run 39140563309](https://github.com/teyyara/darboussedra/actions/runs/39140563309). PR #7 remains open and unmerged.
 
 - **Problem confirmed from Loop 075 screenshot:** The wider Pets' Corner still feels like a corridor because the camera stands left of centre, letting the library doorway/frame dominate the foreground while the bed is pushed to one side and the scratch post becomes the main focal object.
 - **Change:** Move the camera to the room centre X=-2.2 and narrow the rightward gaze to X=-1.85. Aim between the existing bed and scratch post; all room dimensions, wall art, floor marker, pet props, doors and shelving stay unchanged.
 - **Regression coverage:** A Three.js perspective camera projects the existing bed centre and scratch-post centre into the first-person frame. It also asserts a centred camera and modest horizontal offset, while the existing room footprint, target-in-room, vertical framing and camera-path checks remain active.
 - **Scope:** No new decorations, furniture, props, assets or dependencies; no main merge and no manual Vercel deployment.
-- **Next action:** Inspect the fresh Pets' Corner frame. The doorway should take less of the foreground and the bed/post should both read as the room's purpose without moving any objects.
+- **Rendered result:** The bed and scratch post share the first-person view and the library doorway takes less of the foreground than before. No browser errors or review notes were reported.
+
+
+## Loop 077 — Frame the full existing prayer mat from the entry side
+
+**State:** Camera framing correction and four-corner projection regression committed; full CI and fresh Chromium review pending. PR #7 remains open and unmerged.
+
+- **Problem confirmed from Loop 076 screenshot:** The prayer-room destination shot crops the near edge of the existing mat so heavily that the mat dominates the bottom of the screen; the room reads as an extreme close-up rather than a visitor standing near the entry and looking toward the mat.
+- **Change:** Move the camera back from Z=-1.8 to Z=-1.0 and lower its gaze from Y=1.0 to Y=0.25, keeping the same room, target X/Z, mat, window, walls, and all other existing geometry.
+- **Regression coverage:** A perspective-camera test projects all four outer corners of the existing 1.05m by 1.75m mat and requires them to remain in the viewport. Existing room bounds, diagonal framing, and room-specific gaze checks remain active.
+- **Scope:** No added decorations, furniture, props, assets, or dependencies; no merge and no manual Vercel deployment.
+- **Next action:** Inspect the fresh prayer-room eye-level frame. Verify the complete mat reads clearly with some floor space around it while the window and surrounding wall remain visible.

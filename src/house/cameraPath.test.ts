@@ -45,8 +45,8 @@ describe("3D camera paths", () => {
         expect(verticalLook, "library view tilts down enough to keep the lower shelf in frame").toBeGreaterThan(0.2);
         expect(verticalLook).toBeLessThan(0.55);
       } else if (room.slug === "prayer-room") {
-        expect(verticalLook, "prayer room camera must include the floor mat").toBeGreaterThan(0.6);
-        expect(verticalLook).toBeLessThan(0.75);
+        expect(verticalLook, "prayer room camera lowers its gaze to keep the full floor mat in frame").toBeGreaterThan(1.3);
+        expect(verticalLook).toBeLessThan(1.5);
       } else {
         expect(verticalLook, room.slug + " slight downward room framing").toBeGreaterThan(0.2);
         expect(verticalLook, room.slug + " remains an eye-level view").toBeLessThan(0.45);
@@ -77,6 +77,36 @@ describe("3D camera paths", () => {
     for (const room of rooms.filter((item) => item.kind === "interior" || item.kind === "private" || item.kind === "spiritual")) {
       expect(Math.abs(room.camera.position[0] - room.camera.target[0]), room.slug + " cross-room X view").toBeGreaterThan(0.3);
       expect(Math.abs(room.camera.position[2] - room.camera.target[2]), room.slug + " cross-room Z view").toBeGreaterThan(0.3);
+    }
+  });
+
+  it("keeps the entire existing prayer mat in frame from the entry-side viewpoint", () => {
+    const prayerRoom = getRoomBySlug("prayer-room")!;
+    const prayer = prayerRoom.camera;
+    expect(prayer.position[2]).toBeGreaterThan(-1.2); // remain near the entry half of the room
+
+    const camera = new PerspectiveCamera(50, 1440 / 1000, 0.1, 100);
+    camera.position.set(...prayer.position);
+    camera.lookAt(new Vector3(...prayer.target));
+    camera.updateProjectionMatrix();
+    camera.updateMatrixWorld(true);
+
+    const matCenter = new Vector3(
+      prayerRoom.scenePosition[0] + 0.45,
+      prayerRoom.scenePosition[1] + 0.05,
+      prayerRoom.scenePosition[2] - 0.65,
+    );
+    for (const xSign of [-1, 1]) {
+      for (const zSign of [-1, 1]) {
+        const corner = matCenter.clone();
+        corner.x += xSign * 1.05 / 2;
+        corner.z += zSign * 1.75 / 2;
+        corner.project(camera);
+        expect(corner.x, "outer mat stays inside the horizontal frame").toBeGreaterThan(-0.85);
+        expect(corner.x, "outer mat stays inside the horizontal frame").toBeLessThan(0.85);
+        expect(corner.y, "near mat edge is not cropped below the frame").toBeGreaterThan(-0.85);
+        expect(corner.y, "far mat edge is not cropped above the frame").toBeLessThan(0.85);
+      }
     }
   });
 
