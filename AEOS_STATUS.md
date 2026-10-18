@@ -1,13 +1,13 @@
 # AEOS Status — Dar Boussedra
 
-**State:** LOOP 087 — CAPTURE STAIR PHASES IN PARALLEL SO TOP-TREAD FRAMES ARE NOT MISSED — CHECKPOINT COMMITTED; CI PENDING  
-**Active keyphrase:** DAR BOUSSEDRA — LOOP 087: ARM WALKTHROUGH PHASE WATCHERS BEFORE MOVEMENT; NO NEW DECORATIONS  
-**Run ID:** 20261018-darboussedra-aeos-v3-loop087  
-**Loop:** 087 · **Candidate:** dar-boussedra-walkthrough-coherence-087  
+**State:** LOOP 088 — PRESERVE THE CAMERA FRAME WHEN STAIR PHASES MATCH — CHECKPOINT COMMITTED; CI PENDING  
+**Active keyphrase:** DAR BOUSSEDRA — LOOP 088: CAPTURE MATCHED STAIR PHASES WITHOUT SERIAL QUEUE DELAY; NO NEW DECORATIONS  
+**Run ID:** 20261018-darboussedra-aeos-v3-loop088  
+**Loop:** 088 · **Candidate:** dar-boussedra-walkthrough-coherence-088  
 **Repository:** https://github.com/teyyara/darboussedra  
 **Branch:** fix/loop-064-moroccan-exterior-and-layout  
 **Base main:** e06af00a049eb72b173295438bbeb8e384c6fef5  
-**Latest source-code checkpoint commit:** see latest Loop 087 commit on the linked PR branch  
+**Latest source-code checkpoint commit:** see latest Loop 088 commit on the linked PR branch  
 **Last updated:** 2026-10-18
 
 ## Standing user priorities — keep active until explicitly cleared
@@ -838,3 +838,14 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 - **Camera design remains unchanged:** The mid-flight view stays on upcoming treads, the final tread-clearance poses look up/right only in the upper-height band, and the upper-bridge gaze keeps the floor in frame. No stair geometry, room footprint, furniture, or decor changes.
 - **Next action:** Inspect fresh `13b-stair-ascent-landing-clearance.png`, `14-upper-landing-turn.png`, `16-roof-stair-ascent.png`, and `17-roof-hatch-exit.png`. Confirm those images capture distinct phases at the intended coordinates and that route assertions pass before continuing.
 - **Scope:** No new decorations, assets or dependencies; no merge and no manual Vercel deployment.
+
+
+## Loop 088 — Save phase screenshots at the matched camera frame
+
+**State:** Capture-timing follow-up committed; full CI and new Chromium review pending. PR #7 remains open and unmerged.
+
+- **Loop 087 outcome:** The pre-armed watchers now found the lower-stair clearance phase (its state was recorded around route progress 22/56), but the saved image had already advanced to the side bridge. The upper-side-landing watcher also matched but saved at the beginning of the roof-flight turn. Roof-flight and hatch-clear watchers timed out at 45 seconds and captured late frames.
+- **Change:** Keep concurrent pre-armed watchers, remove the extra screenshot queue that allowed matched phases to become stale, and request each phase screenshot directly from its watcher. Give each watcher up to 90 seconds, matching the overall stair-route arrival limit, so the roof-flight and hatch-clear phases are not timed out merely because they occur late in the route.
+- **QA integrity:** The route still records each camera position and direction at screenshot time, and all required direction/arrival/mobile/runtime assertions remain active. A missing phase still produces a review note and fails the visual gate; no assertions are removed or relaxed.
+- **Scope:** No camera path, room footprint, stair geometry, props, or decoration changes. No dependencies, main merge, or manual Vercel deployment.
+- **Next action:** Confirm that `13b-stair-ascent-landing-clearance.png`, `14-upper-landing-turn.png`, `16-roof-stair-ascent.png`, and `17-roof-hatch-exit.png` show distinct, correctly aimed positions in the latest screenshot artifact.

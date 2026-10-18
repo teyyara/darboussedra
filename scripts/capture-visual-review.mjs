@@ -177,31 +177,24 @@ async function selectDirectoryRoom(page, name, slug, transitionCaptures = [], ar
   const selector = page.locator(".map-directory").getByRole("button", { name, exact: true }).first();
   await selector.waitFor({ state: "visible", timeout: 12000 });
 
-  // Arm every route-phase watcher before clicking the destination. Capturing one
-  // stair still can take long enough for the next few treads to pass; sequential
-  // waits would then miss the narrow top-tread and landing poses and save only the
-  // settled rooftop frame. Observe phases concurrently, and serialize only the
-  // screenshots themselves so Playwright never snapshots the same page twice at once.
-  let screenshotQueue = Promise.resolve();
-  const enqueueScreenshot = (filename) => {
-    const queued = screenshotQueue.then(() => saveScreenshot(page, filename));
-    screenshotQueue = queued.catch(() => {});
-    return queued;
-  };
+  // Arm every route-phase watcher before clicking the destination so fast camera
+  // windows are observed even while another screenshot is being written. Start the
+  // screenshot immediately when a phase matches; a second script-level queue made
+  // the camera travel several waypoints before the queued image was captured.
   const phaseTasks = new Map();
   for (const capture of transitionCaptures) {
     if (!capture.phase) continue;
-    const timeout = capture.timeout ?? 45000;
+    const timeout = capture.timeout ?? 90000;
     const task = (async () => {
-      let matched = false;
       try {
         await waitForCameraPhase(page, slug, capture.phase, timeout);
-        matched = true;
       } catch {
         report.notes.push("Timed out waiting for camera phase " + capture.phase + " on route " + slug + "; capturing the current frame instead.");
       }
-      await enqueueScreenshot(capture.filename);
-      return matched;
+      // Screenshot requests are launched by the matching watcher, not serialized
+      // behind previous phases; Playwright/browser capture remains responsible for
+      // the underlying compositor work.
+      await saveScreenshot(page, capture.filename);
     })();
     phaseTasks.set(capture, task);
   }
