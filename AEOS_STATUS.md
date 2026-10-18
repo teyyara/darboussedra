@@ -1,13 +1,13 @@
 # AEOS Status — Dar Boussedra
 
-**State:** LOOP 074 — FRAME THE EXISTING LIBRARY WALL ART WITHOUT LOSING THE BOOKSHELF — CHECKPOINT COMMITTED; CI PENDING  
-**Active keyphrase:** DAR BOUSSEDRA — LOOP 074: FRAME EXISTING LIBRARY CONTENTS; NO NEW DECORATIONS  
-**Run ID:** 20261018-darboussedra-aeos-v3-loop074  
-**Loop:** 074 · **Candidate:** dar-boussedra-walkthrough-coherence-074  
+**State:** LOOP 075 — SHOW EXISTING LIBRARY ART FACE-ON WHILE KEEPING BOOK SPINES VISIBLE — CHECKPOINT COMMITTED; CI PENDING  
+**Active keyphrase:** DAR BOUSSEDRA — LOOP 075: IMPROVE LIBRARY VIEW ANGLE; NO NEW DECORATIONS  
+**Run ID:** 20261018-darboussedra-aeos-v3-loop075  
+**Loop:** 075 · **Candidate:** dar-boussedra-walkthrough-coherence-075  
 **Repository:** https://github.com/teyyara/darboussedra  
 **Branch:** fix/loop-064-moroccan-exterior-and-layout  
 **Base main:** e06af00a049eb72b173295438bbeb8e384c6fef5  
-**Latest source-code checkpoint commit:** see latest Loop 074 commit on the linked PR branch  
+**Latest source-code checkpoint commit:** see latest Loop 075 commit on the linked PR branch  
 **Last updated:** 2026-10-18
 
 ## Standing user priorities — keep active until explicitly cleared
@@ -666,10 +666,20 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 
 ## Loop 074 — Frame the existing library contents
 
-**State:** Camera aim adjustment and a full-art projection regression committed; CI and fresh Chromium review pending. PR #7 remains open and unmerged.
+**State:** Validated by TypeScript, unit tests, production build, and fresh Chromium review in [run 39138693955](https://github.com/teyyara/darboussedra/actions/runs/39138693955). PR #7 remains open and unmerged.
 
-- **Problem confirmed from Loop 073 screenshots:** The rebalanced library keeps all existing books visible but clips most of its existing wall accent at the right edge. The shelf, wall art and room geometry are already present; this is a camera composition defect.
-- **Change:** Keep the library camera position and the new 2.2m/2.0m room allocation unchanged. Move the focus point from X=-5.02 to X=-3.95 to aim between the shelf on the left and the existing wall accent on the right. No furnishings, art or other decor are added or resized.
-- **Regression coverage:** A Three.js perspective-camera test projects all four corners of the existing library artwork and requires the whole piece to stay inside the frame; the existing bookshelf clearance, room camera bounds and visual route checks remain active.
-- **Scope:** No new decorations or assets; no dependency changes, no merge and no manual Vercel deployment.
-- **Next action:** Inspect the new Library screenshot and adjacent Pets' Corner screenshot after CI. If art and shelves now share the frame, leave room geometry unchanged.
+- **Rendered result:** All 20 screenshots captured, no browser runtime errors or review notes, and the route, WebGL and mobile checks passed. The library bookshelf remains visible, but the artwork still appears as a thin edge-on sliver on the right wall.
+- **Finding:** The prior assertion checked the artwork's projected corners, not whether its wall-facing surface had a useful viewing angle. The camera was almost parallel to the right wall, so an in-frame bounding box did not equal a readable artwork face.
+- **Decision:** Keep the 2.2m library / 2.0m Pets' Corner reallocation and preserve the bookshelf; change the camera position and heading rather than moving or adding artwork.
+- **Scope:** No props, decor, assets, dependencies, main merge or manual Vercel deployment.
+
+
+## Loop 075 — Correct library wall-facing angle without sacrificing the bookshelf
+
+**State:** Camera position/heading and two-sided visual regression committed; full CI and fresh Chromium screenshots pending. PR #7 remains open and unmerged.
+
+- **Problem confirmed from Loop 074 screenshot:** The artwork's projected bounding-box assertion passed while the rendered accent still appeared as a thin edge-on strip. The camera was too close to the right wall and looked almost parallel to its face.
+- **Change:** Move the library destination camera toward the room's left-center and make a modest diagonal gaze toward the existing right-wall accent. The 2.2m library and 2.0m Pets' Corner footprints, shelf geometry, wall accent, doors, and other props remain unchanged.
+- **Regression coverage:** Preserve the full existing art inside the frame; require a minimum wall-facing cosine so the camera cannot look nearly parallel to the wall; project representative spines from all three existing book rows and keep them within the first-person frame. Camera-path tests also assert the diagonal viewpoint while retaining the near-doorway depth constraint.
+- **Scope:** No new decorations, furniture, wall art, or assets; no dependency changes, merge, or manual Vercel deployment.
+- **Next action:** Inspect the new library eye-level screenshot. Confirm that the art face is readable while the three shelf rows remain apparent; if this compromise still fails, relocate or suppress this single existing accent rather than sacrificing the bookshelf view.

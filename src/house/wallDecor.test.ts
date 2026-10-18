@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { PerspectiveCamera, Vector3 } from "three";
 import { getRoomWallDecor } from "./wallDecor";
+import { getLibraryBookProps } from "./libraryShelving";
 import { HOUSE_LAYOUT, getRoomWallRuns, rooms } from "./rooms";
 
 const enclosedRooms = rooms.filter((room) => room.level === "ground" || room.level === "upper");
@@ -58,6 +59,27 @@ describe("room-specific wall accents", () => {
     );
     const horizontalHalf = artwork.width / 2;
     const verticalHalf = artwork.height / 2;
+    const viewToArtX = center.x - camera.position.x;
+    const viewToArtZ = center.z - camera.position.z;
+    // The right-wall interior face points toward -X. A near-zero X component
+    // means the camera sees only the frame edge while walking parallel to that wall.
+    const wallFacingCosine = viewToArtX / Math.hypot(viewToArtX, viewToArtZ);
+    expect(wallFacingCosine).toBeGreaterThan(0.5);
+
+    const books = getLibraryBookProps(library.footprint[0]);
+    const representativeBooks = [books[4], books[13], books[22]];
+    for (const book of representativeBooks) {
+      const spine = new Vector3(
+        library.scenePosition[0] + book.position[0],
+        library.scenePosition[1] + book.position[1],
+        library.scenePosition[2] + book.position[2],
+      ).project(camera);
+      expect(spine.x, "representative shelf spines stay horizontally visible").toBeGreaterThan(-0.9);
+      expect(spine.x, "representative shelf spines stay horizontally visible").toBeLessThan(0.9);
+      expect(spine.y, "representative shelf spines stay vertically visible").toBeGreaterThan(-0.85);
+      expect(spine.y, "representative shelf spines stay vertically visible").toBeLessThan(0.85);
+    }
+
     const corners = [];
     for (const horizontalSign of [-1, 1]) {
       for (const verticalSign of [-1, 1]) {

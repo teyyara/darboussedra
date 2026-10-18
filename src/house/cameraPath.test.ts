@@ -85,8 +85,9 @@ describe("3D camera paths", () => {
     expect(living.target[2]).toBeLessThan(living.position[2]); // sofa sits toward the back of the living room
     expect(kitchen.target[0]).toBeGreaterThan(kitchen.position[0]); // frame the fitted hob and sink from inside the kitchen
     expect(kitchen.target[2]).toBeLessThan(kitchen.position[2]);
-    expect(library.target[0]).toBeLessThan(library.position[0]); // shelves run along the left wall
-    expect(library.position[2]).toBeGreaterThan(-1.0); // keep the viewpoint near the doorway to avoid a shelf close-up
+    expect(library.position[0]).toBeLessThan(library.scenePosition[0]); // leave the camera off the right wall
+    expect(library.target[0]).toBeGreaterThan(library.position[0]); // look diagonally toward the opposite wall
+    expect(library.position[2]).toBeGreaterThan(-1.0); // stay near the doorway with clearance from both side walls
     expect(pets.target[0]).toBeGreaterThan(pets.position[0]);
     expect(pets.target[2]).toBeLessThan(pets.position[2]); // cat bed and scratch post are toward the rear
     expect(pets.target[0]).toBeGreaterThan(-2.2); // frame the bed and post together, not just the post
