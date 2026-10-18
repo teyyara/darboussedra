@@ -609,9 +609,17 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 
 **State:** Geometry correction and bounded screenshot timeout update committed; CI and fresh Chromium review pending. PR #7 remains open and unmerged.
 
-- **Geometry:** Restore the roof-flight start/end to Z=2.05 and Z=-2.68, preserving the upper corridor clear of the flight's underside. Extend the roof opening to Z=-3.25..0.65 so the camera position measured in the last review (Y=5.245, Z=-0.097) is over the opening, while the top stair exit still has over half a metre of rear clearance.
+- **Geometry:** Restore the roof-flight start/end to Z=2.05 and Z=-2.68, preserving the upper corridor clear of the flight's underside. Extend the roof opening to Z=-3.15..1.45 so the near-roof camera samples stay above the opening; the top stair exit retains about 0.47m of rear clearance.
 - **Guardrails:** Keep three-sided timber protection and the right-side rail exit gap; update the required clear offset to match the restored stair-end coordinate. The egress point remains clear of the rail in X as well as Z.
 - **Screenshot capture:** Increase only stair/landing screenshot timeout from 30 to 45 seconds. The capture remains mandatory and the visual gate still fails if it cannot be captured; this does not skip or weaken any review.
 - **Regression coverage:** Check the restored flight-end against the landing edge, camera eye-height positions inside the enlarged hatch, roof-camera-zone boundary outside the opening, and the right-side guardrail egress gap.
 - **Boundaries:** No decorations, furniture, assets, dependencies, main merge or manual Vercel deployment.
 - **Next action:** Inspect fresh roof-stair, upper-landing, exit and descent images from the exact new commit. Do not merge until typecheck, unit tests, production build and Chromium review all pass.
+
+
+### Loop 069 validation follow-up
+
+- The CI run for [10ec23c](https://github.com/teyyara/darboussedra/commit/10ec23cc30eec55ed5a229ecfed73f5941109c0e) passed typecheck but correctly rejected two geometry invariants: early near-roof camera poses extended beyond the opening's forward edge, and the last roof walkway waypoint returned over the hatch after reaching solid deck.
+- Shifted the hatch forward to Z=1.45 while retaining its rear edge at Z=-3.15. The top stair ends at Z=-2.68 and its egress point remains outside the rail in X with about 0.48m Z offset.
+- Re-routed the final roof waypoint along the right-hand deck to a point beyond the hatch front edge before heading toward the terrace. The hatch-crossing assertion stays strict (no more than the single final stair point is over the opening at roof eye height).
+- The stair/landing screenshot budget is now 45 seconds, still a hard fail if the image cannot be captured. Full CI rerun pending; no merge or manual deployment.

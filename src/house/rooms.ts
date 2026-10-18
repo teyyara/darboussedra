@@ -37,7 +37,7 @@ export const HOUSE_LAYOUT = {
     roofFlight: { from: [0, 3.14, 2.05] as Vector3Tuple, to: [0, 5.55, -2.68] as Vector3Tuple, steps: 14 },
     // Extend the roof void across the eye-height portion of the flight while leaving
     // the upstairs corridor beyond the last tread covered by a full roof/ceiling.
-    roofOpening: { centerX: 0, centerZ: -1.3, width: 1.65, depth: 3.9 },
+    roofOpening: { centerX: 0, centerZ: -0.85, width: 1.65, depth: 4.6 },
   },
 } as const;
 

@@ -162,7 +162,9 @@ function roofStairWalkway(): CameraPose[] {
     poseFacingDown([1.65, roofEye, -1.55], [0, 1]),
     poseFacing([1.85, roofEye, -0.55], [0.3, 1]),
     poseFacing([1.9, roofEye, 0.1], [0.7, 0.7]),
-    poseFacing([0, roofEye, 0.6], [0, 1]),
+    // Stay on solid deck on the outside of the guardrail until beyond the hatch's
+    // front edge; only then turn inward toward the terrace, never crossing the void.
+    poseFacing([openingRightEdge + 1.05, roofEye, opening.centerZ + opening.depth / 2 + 0.25], [0, 1]),
   ];
 }
 
