@@ -307,7 +307,7 @@ describe("3D camera paths", () => {
       pose.position[2] < lowerFlight.from[2] - 0.2 &&
       pose.position[2] > lowerFlight.to[2] + 0.2);
     expect(descentFrames.some((pose) =>
-      pose.target[1] < pose.position[1] - 0.1 &&
+      pose.target[1] < pose.position[1] - 0.35 &&
       pose.target[1] > pose.position[1] - 0.5)).toBe(true);
   });
 

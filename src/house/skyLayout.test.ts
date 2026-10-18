@@ -33,7 +33,7 @@ describe("exterior sky framing", () => {
   it("uses several soft rounded lobes per cloud group rather than flat halo-like streaks", () => {
     expect(SKY_CLOUD_GROUPS.every((group) => group.clouds.length >= 5)).toBe(true);
     expect(SKY_CLOUD_GROUPS.flatMap((group) => group.clouds).every((cloud) =>
-      cloud.size[1] > 0.4 && cloud.size[0] / cloud.size[1] < 5,
+      cloud.size[1] > 0.8 && cloud.size[2] > 0.6 && cloud.size[0] / cloud.size[1] < 4.5,
     )).toBe(true);
   });
 

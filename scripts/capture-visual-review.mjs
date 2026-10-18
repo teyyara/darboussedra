@@ -319,7 +319,7 @@ report.stairCameraAiming = {
   looksUpDuringAscent: typeof stairAscent?.cameraDirection?.[1] === "number" &&
     stairAscent.cameraDirection[1] > 0.1 && stairAscent.cameraDirection[1] < 0.45,
   looksDownDuringDescent: typeof stairDescent?.cameraDirection?.[1] === "number" &&
-    stairDescent.cameraDirection[1] < -0.1 && stairDescent.cameraDirection[1] > -0.45,
+    stairDescent.cameraDirection[1] < -0.3 && stairDescent.cameraDirection[1] > -0.5,
 };
 if (!report.stairCameraAiming.looksUpDuringAscent) {
   report.notes.push("Camera should pitch upward while climbing the lower stair flight.");

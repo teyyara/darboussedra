@@ -1,14 +1,24 @@
 # AEOS Status — Dar Boussedra
 
-**State:** LOOP 065 — SKY READABILITY, OUTDOOR DRAW SCOPE, WALKTHROUGH QA — CHECKPOINT COMMITTED; CI PENDING  
-**Active keyphrase:** DAR BOUSSEDRA — LOOP 065: IMPROVE CLOUD READABILITY AND VALIDATE DESCENT CAPTURE  
-**Run ID:** 20261018-darboussedra-aeos-v3-loop065  
-**Loop:** 065 · **Candidate:** dar-boussedra-sky-and-render-scope-065  
+**State:** LOOP 066 — WALKTHROUGH COMPOSITION, STAIR-DESCENT AIM, MOROCCAN SKY — CHECKPOINT COMMITTED; CI PENDING  
+**Active keyphrase:** DAR BOUSSEDRA — LOOP 066: FIX ROOM-SCALE FRAMING AND DESCENT GAZE; NO NEW DECORATIONS  
+**Run ID:** 20261018-darboussedra-aeos-v3-loop066  
+**Loop:** 066 · **Candidate:** dar-boussedra-walkthrough-coherence-066  
 **Repository:** https://github.com/teyyara/darboussedra  
 **Branch:** fix/loop-064-moroccan-exterior-and-layout  
 **Base main:** e06af00a049eb72b173295438bbeb8e384c6fef5  
-**Latest source-code checkpoint commit:** this loop's branch HEAD (verify with `git rev-parse HEAD`)  
+**Latest source-code checkpoint commit:** see latest Loop 066 commit on the linked PR branch  
 **Last updated:** 2026-10-18
+
+## Standing user priorities — keep active until explicitly cleared
+
+- [ ] **NO NEW DECORATIONS.** Do not add furniture, wall art, rugs, garden/rooftop props, ornaments, or decorative set-dressing until the user explicitly says to resume. This includes “Moroccan-themed” decoration work. Current loops should focus on architecture, materials already present, navigation, and tests only.
+- [ ] **Make the house spatially coherent.** Audit real room footprints, wall ownership, door openings, hall/landing continuity, stair clearances, floor/roof alignment, and camera sightlines. Do not treat a passing unit test as proof that the plan looks like a real home.
+- [ ] **Improve the first-person walkthrough.** Keep human eye height, walkable room-to-room routes, natural turning, step-aware stair ascent/descent, and useful views without blank walls, ceiling slabs, or furniture filling the whole frame.
+- [ ] **Keep a real neighborhood outside.** Neighboring Moroccan homes, street, and sidewalk must prevent the scene from reading as an empty void; keep them spatially connected and avoid rendering them over indoor views.
+- [ ] **Fix the sun-side circles and use soft clouds.** Keep the sun as a clean disc without halo/ring artifacts; clouds should read as rounded puffs rather than tiny flat circles.
+- [ ] **Moroccan visual identity.** When decorations are later approved, use believable Moroccan materials, joinery, proportions, and objects rather than generic staged props.
+
 
 ## Loop 003 outcome
 - Lazy-loaded the 3D house scene so the initial navigation UI is not coupled to the full Three.js scene bundle.
@@ -548,3 +558,13 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 - **Validation status:** CI for this checkpoint must re-run before any merge decision. The earlier failure is not counted as a passing browser test. The Vercel checks for the prior revision reported a build-rate limit; no manual Vercel deployment was issued.
 - **Checkpoint:** This status and the source changes are committed together on the current work branch. The exact commit SHA is the verified branch HEAD.
 - **Next:** Inspect the new GitHub Actions results and visual-review artifact. Merge only if the capture completes and the actual descent view passes; otherwise repair the camera route rather than relaxing the assertion.
+
+
+## Loop 066 — Room-scale composition and more reliable stair gaze
+
+- **No-new-decoration constraint retained:** this loop adds no furniture, wall art, rugs, garden items, rooftop objects, assets, or dependencies.
+- **Living Room arrival:** move the existing camera pose farther from the sofa and aim across the room at a more useful angle. The sofa/furniture set itself is unchanged; the goal is to stop the current viewpoint making the sofa dominate most of the frame while leaving a large empty wall.
+- **Lower stair descent:** increase the downward bias of intermediate camera poses from the existing mild angle to a more useful approximately 20-degree descent gaze. Tighten the unit regression and Chromium screenshot threshold so the actual captured descent must pitch down between 0.3 and 0.5 in normalized direction-Y. The 90-second phase window stays; the test does not accept a stale landing capture.
+- **Clouds:** enlarge the vertical/depth profile of the already-requested cloud lobes so they read as fuller cumulus puffs. The single sun disc remains unlayered; no new sky props are introduced.
+- **Scope boundary:** the room registry already derives same-level portals and checks room footprints and stair clearances. This loop does not invent a new family floor plan; it improves the confirmed camera-framing fault and retains the architectural geometry audit for the next pass.
+- **Validation:** require a new full GitHub run of typecheck, tests, production build, and Chromium captures. Do not merge this revision unless the actual stair descent view passes. Never run a manual Vercel deployment.
