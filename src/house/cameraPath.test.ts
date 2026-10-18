@@ -40,6 +40,9 @@ describe("3D camera paths", () => {
       } else if (room.slug === "family-table" || room.slug === "pets-corner") {
         expect(verticalLook, room.slug + " looks down enough to frame its furniture").toBeGreaterThan(0.3);
         expect(verticalLook).toBeLessThan(0.65);
+      } else if (room.slug === "library") {
+        expect(verticalLook, "library view tilts down enough to keep the lower shelf in frame").toBeGreaterThan(0.2);
+        expect(verticalLook).toBeLessThan(0.55);
       } else if (room.slug === "prayer-room") {
         expect(verticalLook, "prayer room camera must include the floor mat").toBeGreaterThan(0.6);
         expect(verticalLook).toBeLessThan(0.75);

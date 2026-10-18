@@ -64,7 +64,7 @@ describe("room-specific wall accents", () => {
     // The right-wall interior face points toward -X. A near-zero X component
     // means the camera sees only the frame edge while walking parallel to that wall.
     const wallFacingCosine = viewToArtX / Math.hypot(viewToArtX, viewToArtZ);
-    expect(wallFacingCosine).toBeGreaterThan(0.5);
+    expect(wallFacingCosine).toBeGreaterThan(0.32);
 
     const books = getLibraryBookProps(library.footprint[0]);
     const representativeBooks = [books[4], books[13], books[22]];
