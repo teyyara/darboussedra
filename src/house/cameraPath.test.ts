@@ -54,7 +54,7 @@ describe("3D camera paths", () => {
     expect(entrance.position[2]).toBeGreaterThan(entrance.target[2]);
     const family = poseFor("family-table");
     expect(family.position[0]).toBeGreaterThan(0.8);
-    expect(family.target[0]).toBeLessThan(-0.8);
+    expect(Math.abs(family.target[0]), "family-table view centers the stair-hall doorway").toBeLessThan(0.15);
     expect(family.position[2]).toBeGreaterThan(family.target[2]);
     expect(family.position[2] - family.target[2], "table is framed across the room, not from beside it").toBeGreaterThan(2.0);
   });

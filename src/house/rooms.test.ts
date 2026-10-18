@@ -121,6 +121,7 @@ describe("authoritative room and architectural layout", () => {
     expect(targetZ).toBeGreaterThan(bounds.minZ);
     expect(targetZ).toBeLessThan(bounds.maxZ);
     expect(targetZ).toBeLessThan(positionZ - 1);
+    expect(Math.abs(targetX)).toBeLessThan(HOUSE_LAYOUT.stairs.groundDoorwayWidth / 2 - 0.1);
     expect(positionX).toBeGreaterThan(bounds.minX + 0.25);
     expect(positionX).toBeLessThan(bounds.maxX - 0.25);
     expect(positionZ).toBeLessThan(bounds.maxZ - 0.25);
