@@ -930,3 +930,9 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 - Purpose: close the uncovered ground-level stair/circulation footprint so the floor cannot appear to end abruptly or expose the outdoor ground plane through a registry gap.
 - Scope remains architecture only; no decorative props or new dependencies.
 - Validation: source checkpoint created; typecheck, tests, build, and fresh browser screenshots must pass before visual acceptance.
+
+
+## Loop 096 — Upper-floor structural substrate
+- Added a structural substrate beneath upper-level finish tiles to bridge unassigned perimeter strips while leaving the central stairwell opening empty.
+- Geometry is split into four panels around the opening; the substrate sits below room finish floors to avoid z-fighting.
+- Validation remains pending: unit tests, typecheck, build, and fresh screenshots must confirm the opening/landing is correct. No decorative additions, merge, or deployment.

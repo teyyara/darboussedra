@@ -16,6 +16,7 @@ import { getGardenPavers } from "./gardenPath";
 import { getExteriorFacadePanels, getInteriorPerimeterWallPanels } from "./perimeterWalls";
 import { ROOF_SEATING_RUG, ROOF_TEA_STOOLS, ROOF_TEA_TABLE } from "./roofTerraceProps";
 import { getRoofDeckTileJoints } from "./roofDeckTiles";
+import { getStructuralFloorPanels } from "./structuralFloors";
 import { getRoofHatchGuardRails } from "./roofHatchRails";
 import { getCameraFrameDeltas } from "./cameraTiming";
 import { RealisticMaterialPass } from "./realisticMaterials";
@@ -38,6 +39,8 @@ const WALK_SPEED = 1.35;
 const WALK_ACCELERATION = 3.6;
 const WALK_DECELERATION = 3.2;
 const TURN_RESPONSE = 7.2;
+
+const STRUCTURAL_FLOOR_PANELS = [...getStructuralFloorPanels("ground"), ...getStructuralFloorPanels("upper")];
 
 function poseFor(location: HouseLocation): CameraPose {
   if (location === "exterior" || location === "map") return EXTERIOR_CAMERA;
@@ -1219,6 +1222,18 @@ function HouseArchitecture({ location, visualLocation, transitioning, exteriorSh
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.205, 0]} receiveShadow>
       <planeGeometry args={[220, 220]} /><meshStandardMaterial color="#d6d5c0" roughness={1} />
     </mesh>
+    {/* Structural substrate sits just below finish floors to bridge registry seams without z-fighting. */}
+    {STRUCTURAL_FLOOR_PANELS.map((floorPanel) => {
+      const visible = floorPanel.key.startsWith("ground-")
+        ? visibility.showGroundRooms && cameraZone !== "outside" && cameraZone !== "roof"
+        : visibility.showUpperRooms || visibility.showUpperCirculation;
+      return visible ? <mesh key={"structural-floor-" + floorPanel.key}
+        position={floorPanel.position} receiveShadow>
+        <boxGeometry args={floorPanel.size} />
+        <meshStandardMaterial color="#d9cbb6" roughness={0.98} />
+      </mesh> : null;
+    })}
+
     {/* Continuous structural ground slab: room finish tiles sit above it, so unassigned
         circulation areas and the lower stair never reveal the outdoor ground plane. */}
     {visibility.showGroundRooms && cameraZone !== "outside" && cameraZone !== "roof" && <mesh
