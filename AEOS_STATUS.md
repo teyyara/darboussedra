@@ -1,15 +1,15 @@
 # AEOS Status — Dar Boussedra
 
-**State:** LOOP 093 — FORWARD, DOWNWARD GAZE THROUGH THE LOWER STAIR LANDING — SOURCE CHECKPOINT COMMITTED; CI PENDING
-**Active keyphrase:** DAR BOUSSEDRA — LOOP 093: LOOK INTO THE OPEN UPPER BRIDGE FROM THE STAIR TOP; NO NEW DECORATIONS
-**Run ID:** 20261018-darboussedra-aeos-v3-loop093
-**Loop:** 093 · **Candidate:** dar-boussedra-stair-top-forward-gaze-093
+**State:** LOOP 094 — ARCHITECTURE/RENDERING TODO ROADMAP RECORDED; NEXT PHYSICAL-FLOOR PASS NOT YET IMPLEMENTED
+**Active keyphrase:** DAR BOUSSEDRA — LOOP 094: LOG FLOOR GAPS, TUNNEL-LIKE ENTRY, FALL HAZARDS, AND RENDER POP-IN AS ORDERED TODOs
+**Run ID:** 20261018-darboussedra-aeos-v3-loop094
+**Loop:** 094 · **Candidate:** dar-boussedra-architecture-rendering-roadmap-094
 **Repository:** https://github.com/teyyara/darboussedra
 **Branch:** fix/loop-064-moroccan-exterior-and-layout
 **Base main:** e06af00a049eb72b173295438bbeb8e384c6fef5
-**Latest source-code checkpoint commit:** Loop 093 source checkpoint on the linked PR branch
+**Latest source-code checkpoint commit:** 51a7c4d26ae4a7e7e88063679ffeff74373eceaf (Loop 093; visual review failed)
+**Roadmap:** docs/architecture-and-rendering-repair-roadmap.md
 **Last updated:** 2026-10-18
-
 ## Standing user priorities — keep active until explicitly cleared
 
 - [ ] **NO NEW DECORATIONS.** Do not add furniture, wall art, rugs, garden/rooftop props, ornaments, or decorative set-dressing until the user explicitly says to resume. This includes “Moroccan-themed” decoration work. Current loops should focus on architecture, materials already present, navigation, and tests only.
@@ -910,3 +910,16 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 - **Change:** At the exact top-of-stair pose, explicitly face along the open bridge (+Z) with a shallow downward gaze. Keep this heading while the camera steps off the final tread and begins the lateral turn; the reverse route retains its dedicated downward stairwell gaze.
 - **Regression test:** Assert that the route to an upper private room reaches the exact lower-stair landing and that the view points forward into the bridge, slightly downward, without a lateral wall-facing target.
 - **Scope and guardrails:** No room footprint, wall or stair geometry, furnishings, decorations, assets or dependencies changed. Main remains untouched; no manual Vercel deployment. A fresh browser artifact is required before calling the visual issue resolved.
+
+
+## Loop 093 — Validation outcome
+- Run 39168325383 completed with failure. Typecheck, unit tests, and production build passed, but the Chromium visual-review gate failed.
+- The late-ascent capture measured camera direction X=0.808 / Y=0.098, outside the intended camera-direction gate, and remained dominated by stair fascia/wall. Roof-stair captures timed out; upper-landing and roof-flight capture windows overlapped.
+- Do not describe the stair-top visual fix as accepted. The next source loop must change geometry/camera based on new visual evidence and produce fresh screenshots.
+- Run: https://github.com/teyyara/darboussedra/actions/runs/39168325383
+
+## Loop 094 — Persistent architecture/rendering roadmap
+- Added `docs/architecture-and-rendering-repair-roadmap.md` with ordered P0 physical architecture, P1 no-pop-in rendering, and P2 Moroccan visual realism tasks.
+- The roadmap explicitly prioritizes continuous floors, guarded drops, removing the tunnel-like entrance sightline, checking wall/room/ceiling coherence, believable stairs/landings, and scene/shader prewarming.
+- No decoration, merge to main, or manual deployment was performed.
+- This loop records the work as TODOs; it does not claim that the architectural defects are already fixed.
