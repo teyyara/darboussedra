@@ -1,13 +1,13 @@
 # AEOS Status — Dar Boussedra
 
-**State:** LOOP 071 — LOWER THE UPPER-BRIDGE SIGHTLINE AND PRESERVE RETURN GAZE — CHECKPOINT COMMITTED; CI PENDING  
-**Active keyphrase:** DAR BOUSSEDRA — LOOP 071: KEEP THE UPPER-BRIDGE FLOOR IN VIEW; NO NEW DECORATIONS  
-**Run ID:** 20261018-darboussedra-aeos-v3-loop071  
-**Loop:** 071 · **Candidate:** dar-boussedra-walkthrough-coherence-071  
+**State:** LOOP 072 — SHOW THE REAL STAIR THROUGH THE FAMILY-TABLE PORTAL — CHECKPOINT COMMITTED; CI PENDING  
+**Active keyphrase:** DAR BOUSSEDRA — LOOP 072: REMOVE THE BLANK STAIR-HALL VIEW WITHOUT EXTRA SET-DRESSING  
+**Run ID:** 20261018-darboussedra-aeos-v3-loop072  
+**Loop:** 072 · **Candidate:** dar-boussedra-walkthrough-coherence-072  
 **Repository:** https://github.com/teyyara/darboussedra  
 **Branch:** fix/loop-064-moroccan-exterior-and-layout  
 **Base main:** e06af00a049eb72b173295438bbeb8e384c6fef5  
-**Latest source-code checkpoint commit:** see latest Loop 071 commit on the linked PR branch  
+**Latest source-code checkpoint commit:** see latest Loop 072 commit on the linked PR branch  
 **Last updated:** 2026-10-18
 
 ## Standing user priorities — keep active until explicitly cleared
@@ -638,10 +638,20 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 
 ## Loop 071 — Lower upper-bridge sightline without changing the stair geometry
 
-**State:** Camera-angle correction and rendered-angle regression committed; CI and fresh Chromium review pending. PR #7 remains open and unmerged.
+**State:** Validated by full CI and fresh Chromium screenshots in [run 39136250094](https://github.com/teyyara/darboussedra/actions/runs/39136250094). PR #7 remains open and unmerged.
 
-- **Problem confirmed from Loop 070:** The centered lane is safe, but the upper-landing frame is nearly level (direction-Y -0.034), making the nearby roof-stair underside dominate the view.
-- **Change:** Keep the corrected X=0.925 lane position and pitch the forward stairwell glance 0.28m below eye level. On the return, preserve a stronger 0.65m downward glance into the opening to retain the existing safety sightline without snapping to a fixed world-height target. Stair, floor, hatch and room geometry are unchanged.
-- **Regression coverage:** Camera-path tests require the forward side-lane gaze to stay 0.28m below eye level and the return gaze to remain 0.65m below eye level. The Chromium review requires the actual 14-upper-landing-turn frame to have direction-Y between -0.14 and -0.32, alongside existing arrival, stair-gaze, WebGL, mobile and runtime-error checks.
-- **Scope:** No decorations or assets; no dependency changes, merge, or manual Vercel deployment.
-- **Next action:** Inspect the new upper-landing screenshot from the exact candidate revision. If the underside still dominates after the downward glance, review the stair rail sightline and landing width rather than moving the stair run again.
+- **Rendered report:** All 20 screenshots captured, no browser runtime errors or notes, every expected room arrival succeeded, WebGL2 is available, and the mobile document is exactly 390px wide with no overflow. The upper-landing frame direction-Y is -0.227; stair ascent is -0.193 and descent is -0.505.
+- **Visual finding for next loop:** The upper-turn view is less sky/ceiling dominated, but the family-table doorway still reveals a blank-looking stair hall in its settled view. The source shows the stair flight and upper circulation are intentionally hidden whenever the camera is not transitioning between storeys.
+- **Change:** Loop 072 selectively reveals the ground flight and its head landing only when settled in Family Table, the room whose back portal opens directly into the stair hall. Other ground-floor views continue to hide the stairs, and all upstairs private-room walls/objects remain hidden from ground views.
+- **Scope:** No decorations, assets or dependencies. PR #7 remains open; no main merge or manual Vercel deployment.
+
+
+## Loop 072 — Show the real staircase from the family-table doorway
+
+**State:** Visibility change and targeted regression coverage committed; CI and fresh Chromium review pending. PR #7 remains open and unmerged.
+
+- **Problem confirmed from Loop 071 rendered evidence:** In the settled Family Table screenshot, the back doorway opens onto a long, empty-looking passage. The room has the only ground-floor stair-hall portal, but scene-visibility rules hide both the ground stair flight and upper head landing outside an active floor transition.
+- **Change:** While settled in Family Table only, reveal the ground stair flight and the upper landing/bridge circulation geometry visible through that doorway. Keep the upper bedrooms, their objects, roof stairs, and roof deck hidden. Other settled ground-floor rooms keep the stairs and upper circulation hidden.
+- **Regression coverage:** A test asserts Family Table exposes the physical flight and landing while keeping the upper rooms/roof hidden; a companion test asserts the entrance, living room, kitchen, library, pets corner and prayer room do not expose stairwell geometry. Existing traversal and outside-visibility checks remain unchanged.
+- **Boundaries:** No decor, furniture, wall-art, new assets or dependencies; no main merge and no manual Vercel deployment.
+- **Next action:** Inspect fresh family-table and stair-ascent screenshots from the exact candidate revision. Confirm the visible stairs join the upper landing cleanly and do not leak into unrelated rooms.

@@ -40,13 +40,23 @@ describe("level-aware house rendering", () => {
     expect(getCameraZoneForPosition(onDeckBesideHatch)).toBe("roof");
   });
 
-  it("shows only the ground storey for a settled ground-floor room", () => {
+  it("shows the stair flight and head landing from the family-table stair-hall doorway only", () => {
     const visibility = getHouseSceneVisibility("family-table", "family-table", false);
     expect(visibility.showGroundRooms).toBe(true);
     expect(visibility.showUpperRooms).toBe(false);
-    expect(visibility.showUpperCirculation).toBe(false);
+    expect(visibility.showUpperCirculation).toBe(true);
+    expect(visibility.showGroundStairs).toBe(true);
+    expect(visibility.showRoofStairs).toBe(false);
     expect(visibility.showRoofDeck).toBe(false);
     expect(visibility.showGarden).toBe(false);
+  });
+
+  it("does not reveal stairwell geometry in settled ground rooms without a stair-hall opening", () => {
+    for (const slug of ["entrance", "living-room", "kitchen", "library", "pets-corner", "prayer-room"] as const) {
+      const visibility = getHouseSceneVisibility(slug, slug, false);
+      expect(visibility.showGroundStairs, slug + " should not reveal the ground stairs").toBe(false);
+      expect(visibility.showUpperCirculation, slug + " should not reveal upper circulation").toBe(false);
+    }
   });
 
   it("keeps the upper landing visible without exposing stair flights inside a private-room view", () => {

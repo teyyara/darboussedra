@@ -110,6 +110,11 @@ export function getHouseSceneVisibility(
     };
   }
 
+  // The family-table doorway opens directly onto the stair hall. Keep that stair
+  // and its upper landing visible in a settled view so the doorway does not reveal
+  // an empty corridor; other ground-floor rooms keep the upstairs circulation hidden.
+  const settledAtStairHall = !transitioning &&
+    location === "family-table" && settledLocation === "family-table";
   const showGroundRooms = destinationLevel === "ground" ||
     (transitioning && sourceLevel === "ground") || crossingHouseBoundary;
   const showUpperRooms = destinationLevel === "upper" ||
@@ -117,9 +122,11 @@ export function getHouseSceneVisibility(
     (crossingHouseBoundary && (usesUpperStorey(sourceLevel) || usesUpperStorey(destinationLevel)));
   const showUpperCirculation = usesUpperStorey(destinationLevel) ||
     (transitioning && usesUpperStorey(sourceLevel)) ||
-    (crossingHouseBoundary && (usesUpperStorey(sourceLevel) || usesUpperStorey(destinationLevel)));
+    (crossingHouseBoundary && (usesUpperStorey(sourceLevel) || usesUpperStorey(destinationLevel))) ||
+    settledAtStairHall;
   const showGroundStairs = (movingBetweenStoreys && (sourceLevel === "ground" || destinationLevel === "ground")) ||
-    (crossingHouseBoundary && (usesUpperStorey(sourceLevel) || usesUpperStorey(destinationLevel)));
+    (crossingHouseBoundary && (usesUpperStorey(sourceLevel) || usesUpperStorey(destinationLevel)) ||
+    settledAtStairHall);
   const showRoofStairs = (!transitioning && destinationLevel === "roof") ||
     (transitioning && (sourceLevel === "roof" || destinationLevel === "roof"));
 
