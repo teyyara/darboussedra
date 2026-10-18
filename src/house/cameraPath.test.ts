@@ -346,15 +346,29 @@ describe("3D camera paths", () => {
     }
   });
 
-  it("looks over the upper landing edge when the ascending eye reaches floor level", () => {
+  it("keeps the mid-flight ascent gaze on upcoming treads rather than the landing wall", () => {
     const flight = HOUSE_LAYOUT.stairs.groundFlight;
-    const upperFloor = HOUSE_LAYOUT.upperY + HOUSE_LAYOUT.floorThickness;
+    const prematureFloorEyeBand = HOUSE_LAYOUT.upperY + HOUSE_LAYOUT.floorThickness;
+    const climb = makeCameraPath("family-table", "rooftop", poseFor("rooftop"));
+    const midFlightViews = climb.filter((pose) =>
+      pose.position[1] >= prematureFloorEyeBand - 0.1 &&
+      pose.position[1] <= prematureFloorEyeBand + 0.28 &&
+      pose.position[2] < flight.from[2] - 1.1 &&
+      pose.position[2] > flight.to[2] + 1.1);
+    expect(midFlightViews.length).toBeGreaterThanOrEqual(1);
+    expect(midFlightViews.every((pose) =>
+      pose.target[1] < pose.position[1] - 0.03)).toBe(true);
+  });
+
+  it("looks over the upper landing edge only at the top-tread eye height", () => {
+    const flight = HOUSE_LAYOUT.stairs.groundFlight;
+    const upperEye = HOUSE_LAYOUT.upperY + 1.65;
     const climb = makeCameraPath("family-table", "rooftop", poseFor("rooftop"));
     const landingClearanceViews = climb.filter((pose) =>
-      pose.position[1] >= upperFloor - 0.1 &&
-      pose.position[1] <= upperFloor + 0.28 &&
-      pose.position[2] < -0.5 &&
-      pose.position[2] > flight.to[2] + 0.2);
+      pose.position[1] >= upperEye - 0.1 &&
+      pose.position[1] <= upperEye + 0.28 &&
+      pose.position[2] > flight.to[2] - 0.05 &&
+      pose.position[2] < flight.to[2] + 0.4);
     expect(landingClearanceViews.length).toBeGreaterThanOrEqual(1);
     expect(landingClearanceViews.every((pose) =>
       pose.target[1] > pose.position[1] + 0.05)).toBe(true);

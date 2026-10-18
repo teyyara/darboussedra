@@ -294,7 +294,8 @@ await motionProbe.emulateMedia({ reducedMotion: "no-preference" });
 await motionProbe.waitForTimeout(180);
 await openMap(motionProbe);
 const rooftopArrived = await selectDirectoryRoom(motionProbe, "Rooftop Terrace", "rooftop", [
-  { phase: "lower-stair-clearance", filename: "13-stair-ascent-midflight.png" },
+  { phase: "lower-stair-midflight", filename: "13-stair-ascent-midflight.png" },
+  { phase: "lower-stair-clearance", filename: "13b-stair-ascent-landing-clearance.png" },
   { phase: "upper-side-landing", filename: "14-upper-landing-turn.png" },
   { phase: "roof-stair-flight", filename: "16-roof-stair-ascent.png" },
   { phase: "roof-hatch-clear", filename: "17-roof-hatch-exit.png" },
@@ -315,6 +316,7 @@ if (rooftopArrived) {
 await motionProbe.close();
 
 const stairAscent = report.frameStates.find((frame) => frame.filename === "13-stair-ascent-midflight.png");
+const stairClearance = report.frameStates.find((frame) => frame.filename === "13b-stair-ascent-landing-clearance.png");
 const stairDescent = report.frameStates.find((frame) => frame.filename === "15-stair-descent-midflight.png");
 const upperLandingTurn = report.frameStates.find((frame) => frame.filename === "14-upper-landing-turn.png");
 report.upperLandingAiming = {
@@ -337,19 +339,26 @@ if (!report.upperLandingAiming.looksAlongBridge) {
 report.stairCameraAiming = {
   ascentDirectionX: stairAscent?.cameraDirection?.[0] ?? null,
   ascentDirectionY: stairAscent?.cameraDirection?.[1] ?? null,
+  landingClearanceDirectionX: stairClearance?.cameraDirection?.[0] ?? null,
+  landingClearanceDirectionY: stairClearance?.cameraDirection?.[1] ?? null,
   descentDirectionY: stairDescent?.cameraDirection?.[1] ?? null,
-  anticipatesUpperLandingTurn: typeof stairAscent?.cameraDirection?.[0] === "number" &&
-    stairAscent.cameraDirection[0] > 0.2 && stairAscent.cameraDirection[0] < 0.5,
-  clearsUpperLandingOnAscent: typeof stairAscent?.cameraDirection?.[1] === "number" &&
-    stairAscent.cameraDirection[1] > 0.10 && stairAscent.cameraDirection[1] < 0.32,
+  looksDownDuringMidflight: typeof stairAscent?.cameraDirection?.[1] === "number" &&
+    stairAscent.cameraDirection[1] < -0.08 && stairAscent.cameraDirection[1] > -0.35,
+  anticipatesUpperLandingTurn: typeof stairClearance?.cameraDirection?.[0] === "number" &&
+    stairClearance.cameraDirection[0] > 0.2 && stairClearance.cameraDirection[0] < 0.6,
+  clearsUpperLandingOnAscent: typeof stairClearance?.cameraDirection?.[1] === "number" &&
+    stairClearance.cameraDirection[1] > 0.10 && stairClearance.cameraDirection[1] < 0.32,
   looksDownDuringDescent: typeof stairDescent?.cameraDirection?.[1] === "number" &&
     stairDescent.cameraDirection[1] < -0.44 && stairDescent.cameraDirection[1] > -0.65,
 };
+if (!report.stairCameraAiming.looksDownDuringMidflight) {
+  report.notes.push("Mid-flight ascent must look slightly down at the next tread edges; upward look-ahead should not activate before the top-tread clearance band.");
+}
 if (!report.stairCameraAiming.clearsUpperLandingOnAscent) {
-  report.notes.push("As the eye reaches upper-floor level, the ascent camera must pitch upward enough to see over the landing fascia into the open upper bridge.");
+  report.notes.push("At the actual top-tread eye height, the ascent camera must pitch upward enough to see over the landing fascia into the open upper bridge.");
 }
 if (!report.stairCameraAiming.anticipatesUpperLandingTurn) {
-  report.notes.push("The ascent camera should turn toward the side landing lane while clearing the rear fascia, rather than keep looking straight into the rear wall.");
+  report.notes.push("At the top tread, the ascent camera should look toward the side landing lane rather than into the rear wall.");
 }
 if (!report.stairCameraAiming.looksDownDuringDescent) {
   report.notes.push("Camera should pitch downward while descending the lower stair flight.");
@@ -374,6 +383,7 @@ if (
   !report.navigationGuideDetected ||
   !report.mobileNavigationGuideVisible ||
   !report.walkingHudHiddenDuringStairCaptures ||
+  !report.stairCameraAiming.looksDownDuringMidflight ||
   !report.stairCameraAiming.clearsUpperLandingOnAscent ||
   !report.stairCameraAiming.anticipatesUpperLandingTurn ||
   !report.stairCameraAiming.looksDownDuringDescent ||
