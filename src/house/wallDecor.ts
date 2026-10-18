@@ -67,7 +67,7 @@ export function getRoomWallDecor(room: Room): RoomWallDecor[] {
 
   const rearWindowWall = room.scenePosition[2] - room.footprint[1] / 2 <= -3.8;
   const reservedWalls = RESERVED_WALLS_BY_ROOM[room.slug] ?? [];
-  const y = HOUSE_LAYOUT.floorThickness + 1.36;
+  const y = HOUSE_LAYOUT.floorThickness + (room.slug === "prayer-room" ? 1.21 : 1.36);
   const candidates = SIDES.flatMap((side) => {
     if ((rearWindowWall && side === "back") || reservedWalls.includes(side)) return [];
     return getRoomWallRuns(room, side)

@@ -723,6 +723,13 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 - **Loop 078 result:** Typecheck passed but unit tests exposed two real visual constraints: the raised Y=0.65 target cropped the near prayer-mat corner (projected Y=-1.070), and the existing art's front-wall placement lay almost directly beside the camera (projected X=-0.953).
 - **Camera:** Keep the prayer-room destination near the entry edge at Z=-0.45; shift X to 4.8 to increase distance from the near mat corner, and lower the target to Y=0.35 so the floor mat returns inside frame while maintaining a diagonal view.
 - **Wall accent placement:** Reserve the existing front/entry wall for the doorway so the unchanged wall-art accent is selected from an available side-wall run and is no longer immediately beside the destination camera.
-- **Regression coverage:** Keep the four-corner mat projection test. Keep the four-corner artwork projection and wall-facing-angle assertions, and explicitly require the selected wall accent not to use the entry wall. No visual assertion is relaxed.
+- **Regression coverage:** Keep the four-corner mat projection test. Keep the four-corner artwork projection and wall-facing-angle assertions, and explicitly require the selected wall accent not to use the entry wall. CI confirms the mat now passes but the wall accent top corner projects to Y=0.963; Loop 079 follow-up moves only that existing accent down 0.15m and locks its resulting height, preserving the 0.9 viewport limit.
 - **Boundaries:** No new decorations, furniture, props or assets; no dependency changes, merge or manual Vercel deployment.
 - **Next action:** Inspect new prayer-room and neighboring kitchen screenshots. Confirm mat, window and whole existing wall accent read coherently without an entry-wall obstruction.
+
+
+### Loop 079 follow-up — Adjust the existing prayer-room accent height
+
+- The second CI attempt passed the full mat-corner test and the entry-wall exclusion/horizontal artwork checks. The only remaining failure was the top artwork corner at projected Y=0.963, just outside the 0.9 limit.
+- Lowered the **existing prayer-room wall accent only** by 0.15m (center height from floorThickness + 1.36 to floorThickness + 1.21). Other rooms' art heights are unchanged. The mat and art framing tests remain strict.
+- Full CI and fresh Chromium review pending on this follow-up. No new decor, assets, props, merge, or manual deployment.

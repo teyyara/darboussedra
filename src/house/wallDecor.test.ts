@@ -110,6 +110,7 @@ describe("room-specific wall accents", () => {
     const artwork = getRoomWallDecor(prayerRoom)[0];
     expect(artwork).toBeDefined();
     expect(artwork.side).not.toBe("front"); // don't mount the existing accent immediately behind the entry camera
+    expect(artwork.position[1]).toBeCloseTo(HOUSE_LAYOUT.floorThickness + 1.21);
 
     const camera = new PerspectiveCamera(50, 1440 / 1000, 0.1, 100);
     camera.position.set(...prayerRoom.camera.position);
