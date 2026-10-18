@@ -810,3 +810,9 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 - First CI attempt after changing the upper-bridge look direction failed four camera-path assertions that explicitly required the previous inward gaze (`target.x < camera.x - 0.25`). The camera change is intentional: the old gaze looked directly at the roof-stair underside and made the side walkway read as an obstruction.
 - Updated those four tests to assert the intended forward bridge gaze instead: the target stays near the lane's X coordinate and looks ahead along +Z. Protected-lane position bounds, descending pitch, the upper-landing heading limits, and the new browser direction gate remain active.
 - No camera or geometry changes in this follow-up commit.
+
+
+### Loop 085 reverse-route test follow-up
+
+- The first test correction passed the three forward-entry heading checks but over-constrained the reverse route to always target +Z. The existing reverseRoute intentionally anchors its view to the stairwell centre at Z=upperBridge.centerZ, which can be slightly behind the camera near the front of the bridge.
+- Restored that spatial anchor assertion while retaining the new check that the camera does not pan sharply left into the stair underside. No route poses or production camera code changed in this test-only follow-up.
