@@ -206,6 +206,28 @@ describe("3D camera paths", () => {
       pose.position[2] < -4.0 && pose.position[2] > -4.5);
     expect(landingGaze).toBeDefined();
     expect(landingGaze!.target[2]).toBeGreaterThan(landingGaze!.position[2]);
+    expect(landingGaze!.target[1]).toBeCloseTo(landingGaze!.position[1] - 0.28);
+  });
+
+  it("keeps the upper bridge stairwell glance below the horizon in both travel directions", () => {
+    const upperEye = HOUSE_LAYOUT.upperY + 1.65;
+    const climb = makeCameraPath("family-table", "rooftop", poseFor("rooftop"));
+    const forwardGlances = climb.filter((pose) =>
+      pose.preserveHeading &&
+      Math.abs(pose.position[1] - upperEye) < 0.02 &&
+      pose.position[2] > -4.0 && pose.position[2] < -2.6);
+    expect(forwardGlances.length).toBeGreaterThanOrEqual(2);
+    expect(forwardGlances.every((pose) =>
+      Math.abs(pose.target[1] - (pose.position[1] - 0.28)) < 0.001)).toBe(true);
+
+    const returning = makeCameraPath("rooftop", "family-table", poseFor("family-table"));
+    const reverseGlances = returning.filter((pose) =>
+      pose.preserveHeading &&
+      Math.abs(pose.position[1] - upperEye) < 0.02 &&
+      pose.position[2] > -4.0 && pose.position[2] < -2.6);
+    expect(reverseGlances.length).toBeGreaterThanOrEqual(2);
+    expect(reverseGlances.every((pose) =>
+      Math.abs(pose.target[1] - (pose.position[1] - 0.28)) < 0.001)).toBe(true);
   });
 
   it("aims down the lower stair flight while returning from the roof", () => {

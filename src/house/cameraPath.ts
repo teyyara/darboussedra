@@ -40,6 +40,18 @@ function poseFacing(
   };
 }
 
+function poseFacingIntoStairwell(
+  position: Vector3Tuple,
+  direction: readonly [number, number],
+): CameraPose {
+  const pose = poseFacing(position, direction, true);
+  return {
+    ...pose,
+    // Keep the bridge floor in frame instead of aiming level into the stair underside.
+    target: [pose.target[0], position[1] - 0.28, pose.target[2]],
+  };
+}
+
 function poseFacingDown(
   position: Vector3Tuple,
   direction: readonly [number, number],
@@ -66,7 +78,7 @@ function reverseRoute(path: readonly CameraPose[]): CameraPose[] {
           // the direction of travel. This lets the return route look into the
           // opening from either end of the upper bridge instead of at a wall.
           pose.position[0] + (pose.target[0] - pose.position[0]),
-          HOUSE_LAYOUT.upperY + 0.8,
+          pose.target[1],
           HOUSE_LAYOUT.upperBridge.centerZ,
         ]
       : pose.preserveTarget
@@ -127,14 +139,14 @@ function groundStairWalkway(): CameraPose[] {
     // The lateral step is the critical turn: a tangent-facing pose here looks
     // straight into the rear bedroom wall. Keep the camera on the protected lane
     // but start looking through the open stairwell before the forward walk begins.
-    poseFacing([sideLaneX, upperEye, flight.to[2]], [-0.42, 0.91], true),
+    poseFacingIntoStairwell([sideLaneX, upperEye, flight.to[2]], [-0.42, 0.91]),
     // Continue the inward view along the upper bridge rather than tracking the wall.
-    poseFacing([sideLaneX, upperEye, flight.to[2] + 0.2], [-0.42, 0.91], true),
-    poseFacing([sideLaneX, upperEye, flight.to[2] + 0.6], [-0.25, 0.97], true),
+    poseFacingIntoStairwell([sideLaneX, upperEye, flight.to[2] + 0.2], [-0.42, 0.91]),
+    poseFacingIntoStairwell([sideLaneX, upperEye, flight.to[2] + 0.6], [-0.25, 0.97]),
     // The side lane is narrow and bordered by bedroom walls. Let the view glance
     // toward the open stair shaft as the camera walks forward, instead of staring
     // at an uninterrupted wall; reverseRoute mirrors travel but keeps this inward glance.
-    ...[-2.8, -1.8, -0.8, 0.2].map((z) => poseFacing([sideLaneX, upperEye, z], [-0.34, 0.94], true)),
+    ...[-2.8, -1.8, -0.8, 0.2].map((z) => poseFacingIntoStairwell([sideLaneX, upperEye, z], [-0.34, 0.94])),
     // Rejoin the full-width upper landing beyond the end of the open stair shaft.
     poseFacing([sideLaneX * 0.7, upperEye, 0.72], [0.2, 1]),
     poseFacing([0, upperEye, 1.05], [0, 1]),
