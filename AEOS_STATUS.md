@@ -568,3 +568,10 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 - **Clouds:** enlarge the vertical/depth profile of the already-requested cloud lobes so they read as fuller cumulus puffs. The single sun disc remains unlayered; no new sky props are introduced.
 - **Scope boundary:** the room registry already derives same-level portals and checks room footprints and stair clearances. This loop does not invent a new family floor plan; it improves the confirmed camera-framing fault and retains the architectural geometry audit for the next pass.
 - **Validation:** require a new full GitHub run of typecheck, tests, production build, and Chromium captures. Do not merge this revision unless the actual stair descent view passes. Never run a manual Vercel deployment.
+
+
+### Loop 066 camera-framing follow-up
+
+- The first full CI run reported 116 passing unit tests and one genuine regression: the wider living-room camera move pushed the existing geometric wall art out of the first-person view cone. The stair-path and cloud tests passed.
+- Re-aimed the living-room view farther across the room to keep the existing feature within frame while leaving the furniture untouched. The next CI run must confirm both the original art-framing invariant and the more downward stair-descent invariant.
+- This was a camera correction prompted by the test failure, not a reason to loosen the visual assertion. No decorations were added.
