@@ -16,7 +16,8 @@ Loop 091 commit `a0c617a` also re-aims the late-ascent sightline across the open
 - Add a guarded estimate that recognizes positions on the authored ground or roof stair only when lateral position, Z span and expected eye elevation agree.
 - Use the stair camera's 1.51m offset for those points; keep 1.65m for ordinary room/corridor positions.
 - Preserve the existing hatch-boundary rule so eye height alone cannot expose a sky-only frame.
-- Add a regression test that checks the late lower flight advances to upper visibility at the actual tread height while a mid-flight camera remains in the ground zone.
+- On the final-tread clearance band, turn gently toward positive Z while keeping the sightline inside the central 1.3m opening; avoid looking diagonally into the bridge soffit before reaching the side lane.
+- Add regression tests for tread-height zone classification, a ground-zone mid-flight point, positive-Z landing gaze, horizontal opening clearance and shallow upward pitch.
 
 ## Scope
 
