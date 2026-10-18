@@ -147,15 +147,33 @@ describe("3D camera paths", () => {
     expect(Math.max(...path.map((pose) => pose.position[1]))).toBeLessThanOrEqual(HOUSE_LAYOUT.roofY + 1.7);
   });
 
+  it("keeps the roof-flight eye path inside the hatch before reaching roof height", () => {
+    const path = makeCameraPath("family-table", "rooftop", poseFor("rooftop"));
+    const flight = HOUSE_LAYOUT.stairs.roofFlight;
+    const opening = HOUSE_LAYOUT.stairs.roofOpening;
+    const back = opening.centerZ - opening.depth / 2;
+    const front = opening.centerZ + opening.depth / 2;
+    const nearRoof = path.filter((pose) =>
+      pose.position[1] >= HOUSE_LAYOUT.roofY - 0.4 &&
+      pose.position[1] <= HOUSE_LAYOUT.roofY + 0.1 &&
+      pose.position[2] < flight.from[2] &&
+      pose.position[2] > flight.to[2] + 0.2);
+
+    expect(nearRoof.length).toBeGreaterThanOrEqual(3);
+    expect(nearRoof.every((pose) =>
+      pose.position[2] > back + 0.04 && pose.position[2] < front - 0.04)).toBe(true);
+  });
+
   it("looks down to the roof deck immediately after clearing the hatch", () => {
     const path = makeCameraPath("family-table", "rooftop", poseFor("rooftop"));
     const opening = HOUSE_LAYOUT.stairs.roofOpening;
+    const roofFlight = HOUSE_LAYOUT.stairs.roofFlight;
     const roofEye = HOUSE_LAYOUT.roofY + 1.65;
     const clearDeckViews = path.filter((pose) =>
       pose.preserveTarget &&
       Math.abs(pose.position[1] - roofEye) < 0.02 &&
       pose.position[0] > opening.centerX + opening.width / 2 &&
-      pose.position[2] > -2.8 && pose.position[2] < -1.0);
+      pose.position[2] > roofFlight.to[2] - 0.1 && pose.position[2] < -1.0);
 
     expect(clearDeckViews.length).toBeGreaterThanOrEqual(3);
     expect(clearDeckViews.every((pose) => pose.target[1] < pose.position[1] - 0.6)).toBe(true);

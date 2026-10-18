@@ -1,13 +1,13 @@
 # AEOS Status — Dar Boussedra
 
-**State:** LOOP 067 — STAIR-FLIGHT EYE-LINE CORRECTION — CHECKPOINT COMMITTED; CI PENDING  
-**Active keyphrase:** DAR BOUSSEDRA — LOOP 067: KEEP STAIR TREADS VISIBLE DURING ASCENT AND DESCENT; NO NEW DECORATIONS  
-**Run ID:** 20261018-darboussedra-aeos-v3-loop067  
-**Loop:** 067 · **Candidate:** dar-boussedra-walkthrough-coherence-067  
+**State:** LOOP 068 — ROOF-STAIR HEADROOM AND HATCH ALIGNMENT — CHECKPOINT COMMITTED; CI PENDING  
+**Active keyphrase:** DAR BOUSSEDRA — LOOP 068: ALIGN ROOF STAIR FLIGHT WITH HATCH HEADROOM; NO NEW DECORATIONS  
+**Run ID:** 20261018-darboussedra-aeos-v3-loop068  
+**Loop:** 068 · **Candidate:** dar-boussedra-walkthrough-coherence-068  
 **Repository:** https://github.com/teyyara/darboussedra  
 **Branch:** fix/loop-064-moroccan-exterior-and-layout  
 **Base main:** e06af00a049eb72b173295438bbeb8e384c6fef5  
-**Latest source-code checkpoint commit:** see latest Loop 067 commit on the linked PR branch  
+**Latest source-code checkpoint commit:** see latest Loop 068 commit on the linked PR branch  
 **Last updated:** 2026-10-18
 
 ## Standing user priorities — keep active until explicitly cleared
@@ -579,10 +579,20 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 
 ## Loop 067 — Stair-flight eye-line correction
 
-**State:** Bounded camera-path correction committed; CI and fresh Chromium screenshots pending. PR #7 remains open and unmerged.
+**State:** Validated by GitHub Actions and reviewed from the fresh Chromium screenshots for commit [192e70c](https://github.com/teyyara/darboussedra/commit/192e70cfb1b981237a91ca3d18d1cf4594fa714c). PR #7 remains open and unmerged.
 
-- **Problem confirmed from Loop 066 rendered evidence:** The mid-flight ascent view looked up into a large blank surface, while descent framed the upper landing/floor edge across much of the screen. The browser report showed upward ascent pitch (+0.17 Y) and a modest downward descent pitch (-0.364 Y); no WebGL runtime errors were reported.
-- **Change:** Intermediate camera waypoints now angle slightly downward while climbing and more decisively downward while descending, directing the view toward upcoming stair treads rather than the rear wall or landing fascia. The physical stair meshes, room footprints, registered routes, room objects and floor geometry are unchanged.
-- **Regression coverage:** Updated the route-level camera gaze assertions and Chromium visual-review gate to require slight downward ascent pitch and stronger downward descent pitch. The visual check still requires all expected arrivals, WebGL canvas detection, no runtime errors, no mobile horizontal overflow, and the full directory controls.
+- **CI run:** [39132738897](https://github.com/teyyara/darboussedra/actions/runs/39132738897) passed typecheck, the full unit suite, production build, Chromium visual capture, and screenshot upload.
+- **Rendered confirmation:** Browser report recorded no runtime errors or review notes, all expected room arrivals, no mobile horizontal overflow, ascent direction-Y -0.192, and descent direction-Y -0.489. The fresh ascent and descent views now show individual stair treads clearly; the upper flight still shows the hatch reveal/edge crossing the climb path.
+- **Next issue:** The roof flight runs from Z=2.05 to Z=-2.68, but the hatch only spans Z=-2.725 to Z=-0.875. The camera eye reaches roof level before entering the hatch, so the underside trim crosses the view near eye height. Fix the actual flight/opening alignment rather than increasing camera pitch further.
 - **Scope:** No new decorations or assets. No dependency changes. No main merge and no manual Vercel deployment.
-- **Next action:** Inspect the new ascent, upper landing and descent screenshots from the exact new commit. If the landing still occludes the view, continue with the actual stairwell/ceiling geometry instead of further pitch-only changes.
+
+
+## Loop 068 — Roof-stair headroom and hatch alignment
+
+**State:** Geometry and regression update committed; CI and fresh Chromium visual review pending. PR #7 remains open and unmerged.
+
+- **Problem confirmed from Loop 067 screenshots:** The lower stair eye-line correction works and brings the treads into view. The roof stair still passes beneath the hatch's front reveal while the eye is already at near-roof height, creating a horizontal bar directly across the first-person climb.
+- **Change:** Move the roof flight back onto the central stairwell axis, keeping approximately the same run length and slope, and lengthen the narrow hatch opening to span the upper flight's head-clearance path. Extend the right-side guardrail along the new opening, while preserving the rear-right step-off gap onto solid roof deck.
+- **Regression coverage:** Assert that camera waypoints near roof height lie inside the opening. Update guardrail coverage tests to check the right-side rail reaches the front edge yet leaves a safe exit gap at the rear.
+- **Boundaries:** No decorations, room-object changes, assets, dependencies, main merge or manual Vercel deployment.
+- **Next action:** Inspect fresh roof-stair, hatch-clearance, and descent screenshots from the exact current commit; if the new opening looks too large or leaks into bedroom views, adjust it based on those captures.

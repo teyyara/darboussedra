@@ -8,7 +8,7 @@ describe("roof hatch guardrails", () => {
     expect(rails.map((rail) => rail.key)).toEqual([
       "left-hatch-rail",
       "rear-left-hatch-rail",
-      "right-front-hatch-rail",
+      "right-hatch-rail",
     ]);
     expect(rails.every((rail) => rail.size.every((dimension) => dimension > 0))).toBe(true);
     expect(rails.every((rail) => rail.position.every(Number.isFinite))).toBe(true);
@@ -18,14 +18,19 @@ describe("roof hatch guardrails", () => {
       rail.midRailPosition[1] < rail.position[1])).toBe(true);
   });
 
-  it("keeps the rear-right corner clear for the side-step off the roof stair", () => {
+  it("keeps the rear-right step-off gap clear while guarding the rest of the right edge", () => {
     const opening = HOUSE_LAYOUT.stairs.roofOpening;
     const rails = getRoofHatchGuardRails();
     const egressZ = HOUSE_LAYOUT.stairs.roofFlight.to[2] + 0.05;
+    const back = opening.centerZ - opening.depth / 2;
+    const front = opening.centerZ + opening.depth / 2;
     const rightEdge = opening.centerX + opening.width / 2;
-    const rightFrontRail = rails.find((rail) => rail.key === "right-front-hatch-rail")!;
-    const minRailZ = rightFrontRail.position[2] - rightFrontRail.size[2] / 2;
+    const rightRail = rails.find((rail) => rail.key === "right-hatch-rail")!;
+    const minRailZ = rightRail.position[2] - rightRail.size[2] / 2;
+    const maxRailZ = rightRail.position[2] + rightRail.size[2] / 2;
     expect(minRailZ - egressZ).toBeGreaterThan(0.75);
+    expect(maxRailZ).toBeGreaterThan(front - 0.01);
+    expect(minRailZ).toBeGreaterThan(back + 0.75);
     const rearRail = rails.find((rail) => rail.key === "rear-left-hatch-rail")!;
     expect(rearRail.position[0] + rearRail.size[0] / 2).toBeLessThan(rightEdge);
   });

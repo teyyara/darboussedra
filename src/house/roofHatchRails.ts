@@ -55,11 +55,11 @@ export function getRoofHatchGuardRails(): RoofHatchGuardRail[] {
     };
   };
 
-  // Full left side, a rear-left return, and a short right-front rail make an
-  // unmistakable hatch edge while keeping the rear-right egress corner clear.
+  // Guard the full left and right edges plus the rear-left return. Stop the right
+  // rail one metre short of the rear edge so the camera can step sideways onto deck.
   return [
     alongZ("left-hatch-rail", left - 0.04, back - 0.02, front + 0.02),
     alongX("rear-left-hatch-rail", back - 0.04, left - 0.02, opening.centerX + 0.08),
-    alongZ("right-front-hatch-rail", right + 0.04, front - 0.68, front + 0.02),
+    alongZ("right-hatch-rail", right + 0.04, back + 1.0, front + 0.02),
   ];
 }

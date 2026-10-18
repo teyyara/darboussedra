@@ -32,8 +32,11 @@ export const HOUSE_LAYOUT = {
     width: 1, shaftWidth: 2.4, openingWidth: 1.3, groundDoorwayWidth: 1.2,
     // The stair begins just beyond the family-table portal and climbs toward the rear landing.
     groundFlight: { from: [0, 0.14, -0.5] as Vector3Tuple, to: [0, 3.14, -4.32] as Vector3Tuple, steps: 16 },
-    roofFlight: { from: [0, 3.14, 2.05] as Vector3Tuple, to: [0, 5.55, -2.68] as Vector3Tuple, steps: 14 },
-    roofOpening: { centerX: 0, centerZ: -1.8, width: 1.65, depth: 1.85 },
+    // Shift the roof flight into the stairwell shaft so head-height travel clears
+    // the ceiling before the camera reaches the roof-level treads.
+    roofFlight: { from: [0, 3.14, 0.9] as Vector3Tuple, to: [0, 5.55, -3.82] as Vector3Tuple, steps: 14 },
+    // The long, narrow opening follows the upper flight rather than only its top tread.
+    roofOpening: { centerX: 0, centerZ: -1.8, width: 1.65, depth: 4.3 },
   },
 } as const;
 
