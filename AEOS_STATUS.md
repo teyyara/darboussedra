@@ -1,6 +1,6 @@
 # AEOS Status — Dar Boussedra
 
-**State:** LOOP 083 — LOOK INTO THE SIDE LANDING AS THE STAIR CLEARS THE FASCIA — CHECKPOINT COMMITTED; CI PENDING  
+**State:** LOOP 083 — LOOK INTO THE SIDE LANDING AS THE STAIR CLEARS THE FASCIA — CHECKPOINT COMMITTED; REGRESSION FOLLOW-UP  
 **Active keyphrase:** DAR BOUSSEDRA — LOOP 083: TURN TOWARD THE OPEN SIDE LANE AT THE UPPER LANDING; NO NEW DECORATIONS  
 **Run ID:** 20261018-darboussedra-aeos-v3-loop083  
 **Loop:** 083 · **Candidate:** dar-boussedra-walkthrough-coherence-083  
@@ -771,6 +771,13 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 
 - **Problem confirmed from Loop 082 screenshot:** With the capture now correctly at Y=3.089 / Z=-2.213, the ascent gaze pitches upward (+0.102) but keeps pointing straight along -Z. The remaining center slab is the rear landing fascia/wall; the side landing lane only comes into the route after the top tread.
 - **Change:** During the narrow upper-floor clearance segment only, bias the gaze approximately 0.4 units toward +X per unit of remaining stair run while retaining the 0.25 upward-pitch coefficient. This anticipates the turn into the existing right-side bridge lane. Earlier treads keep their down-gaze and reverse/descent retains the stronger downward angle.
-- **Regression coverage:** Camera path tests now require both target Y above eye level and target X ahead toward the side lane for clearance poses. Chromium checks the actual screenshot vector has positive X direction between 0.2 and 0.5 and Y direction between 0.10 and 0.32. Existing route, WebGL, mobile, runtime-error, descent and room-directory gates remain mandatory.
+- **Regression coverage:** Camera path tests require target Y above eye level and target X ahead toward the side lane for clearance poses. Chromium checks the actual screenshot vector has positive X direction between 0.2 and 0.5 and Y direction between 0.10 and 0.32. The first CI attempt found that the general tangent-alignment test also checked this intentional final-ascent look-ahead; the follow-up narrowly exempts poses that meet the authored clearance band and positive-X/positive-Y gaze conditions. Ordinary route headings remain subject to the existing strict alignment assertion.
 - **Scope:** No decor, props, furniture, assets, dependencies, room dimensions or physical stair geometry changed. No merge or manual deployment.
 - **Next action:** Inspect the new ascent screenshot for a visible right-hand bridge/landing beyond the fascia, without losing stair treads or introducing a wall-aim snap.
+
+
+### Loop 083 test follow-up
+
+- The first CI attempt after introducing the rightward landing look-ahead failed the general intermediate-heading alignment test at garden-to-rooftop waypoint 19 (alignment 0.928, expected above 0.98). That waypoint is the intentional clearance sightline: it is upward and rightward to see the side landing before arrival, not a travel-tangent view.
+- Added a narrow condition to skip tangent alignment only when the waypoint is within the stair landing-clearance height/Z band and its actual target is both above eye level and to the right. Dedicated landing-gaze tests plus the Chromium X/Y direction gate remain in force; all other headings still require >0.98 alignment.
+- No route positions, geometry, decorations, props, assets, or dependencies changed.

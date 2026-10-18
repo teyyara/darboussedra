@@ -539,7 +539,19 @@ describe("3D camera paths", () => {
       const path = makeCameraPath(from, to, poseFor(to));
       const positions = [source.position, ...path.map((pose) => pose.position)];
       for (let index = 0; index < path.length - 1; index += 1) {
-        if (path[index].preserveHeading) continue;
+        const pose = path[index];
+        // During the final ascent clearance segment the camera deliberately looks
+        // toward the side landing before the feet reach it, rather than straight
+        // along the rearward stair tangent. The camera's dedicated test asserts
+        // that this look-ahead remains upward and rightward.
+        const upperFloor = HOUSE_LAYOUT.upperY + HOUSE_LAYOUT.floorThickness;
+        const anticipatesLanding = pose.position[1] >= upperFloor - 0.1 &&
+          pose.position[1] <= upperFloor + 0.28 &&
+          pose.position[2] < -0.5 &&
+          pose.position[2] > HOUSE_LAYOUT.stairs.groundFlight.to[2] + 0.2 &&
+          pose.target[0] > pose.position[0] + 0.1 &&
+          pose.target[1] > pose.position[1] + 0.05;
+        if (pose.preserveHeading || anticipatesLanding) continue;
         const previous = positions[index];
         const next = positions[index + 2];
         const dx = next[0] - previous[0];
