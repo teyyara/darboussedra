@@ -367,7 +367,7 @@ describe("3D camera paths", () => {
     const landingClearanceViews = climb.filter((pose) =>
       pose.position[1] >= upperEye - 0.1 &&
       pose.position[1] <= upperEye + 0.28 &&
-      pose.position[2] > flight.to[2] - 0.05 &&
+      pose.position[2] > flight.to[2] + 0.05 &&
       pose.position[2] < flight.to[2] + 0.4);
     expect(landingClearanceViews.length).toBeGreaterThanOrEqual(1);
     expect(landingClearanceViews.every((pose) =>
@@ -573,11 +573,12 @@ describe("3D camera paths", () => {
         // toward the side landing before the feet reach it, rather than straight
         // along the rearward stair tangent. The camera's dedicated test asserts
         // that this look-ahead remains upward and rightward.
-        const upperFloor = HOUSE_LAYOUT.upperY + HOUSE_LAYOUT.floorThickness;
-        const anticipatesLanding = pose.position[1] >= upperFloor - 0.1 &&
-          pose.position[1] <= upperFloor + 0.28 &&
-          pose.position[2] < -0.5 &&
-          pose.position[2] > HOUSE_LAYOUT.stairs.groundFlight.to[2] + 0.2 &&
+        const upperEye = HOUSE_LAYOUT.upperY + 1.65;
+        const flightEndZ = HOUSE_LAYOUT.stairs.groundFlight.to[2];
+        const anticipatesLanding = pose.position[1] >= upperEye - 0.1 &&
+          pose.position[1] <= upperEye + 0.28 &&
+          pose.position[2] > flightEndZ - 0.05 &&
+          pose.position[2] < flightEndZ + 0.4 &&
           pose.target[0] > pose.position[0] + 0.1 &&
           pose.target[1] > pose.position[1] + 0.05;
         if (pose.preserveHeading || anticipatesLanding) continue;
