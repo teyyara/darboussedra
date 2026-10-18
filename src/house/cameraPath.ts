@@ -356,16 +356,17 @@ export function makeCameraPath(from: HouseLocation, to: HouseLocation, finalPose
 
     // Keep the mid-flight gaze on the next treads. The camera eye passes the
     // floor's absolute Y level halfway up the incline, so that level cannot identify
-    // landing clearance. Only switch to the upward/rightward look when the eye is
-    // at upper-storey standing height and the camera is near the top tread.
+    // landing clearance. Begin the upward/rightward look only on the final three treads,
+    // near upper-storey standing eye height, so the camera clears the fascia before
+    // reaching the last tread without turning upward halfway up the flight.
     // Keep the stronger downward look on descent.
     const upperEye = HOUSE_LAYOUT.upperY + HEAD_HEIGHT;
     const flightEndZ = HOUSE_LAYOUT.stairs.groundFlight.to[2];
     const clearingUpperLanding = dy > 0 &&
-      pose.position[1] >= upperEye - 0.1 &&
+      pose.position[1] >= upperEye - 0.45 &&
       pose.position[1] <= upperEye + 0.28 &&
       pose.position[2] > flightEndZ - 0.05 &&
-      pose.position[2] < flightEndZ + 0.4;
+      pose.position[2] < flightEndZ + 1.0;
     const verticalAim = dy >= 0
       ? dy * (clearingUpperLanding ? 0.34 : -0.25)
       : dy * 0.75;

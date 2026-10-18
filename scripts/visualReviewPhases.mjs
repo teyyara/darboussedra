@@ -1,7 +1,7 @@
 export const CAMERA_PHASE_RULES = {
-  // Keep a true mid-flight capture separate from the final eye-height clearance at the top tread.
+  // Capture the upward/rightward look while the camera moves across the last three treads.
   "lower-stair-midflight": { x: [-0.2, 0.2], y: [3.04, 3.42], z: [-2.7, -2.1] },
-  "lower-stair-clearance": { x: [-0.2, 0.2], y: [4.52, 4.93], z: [-4.38, -3.9] },
+  "lower-stair-clearance": { x: [-0.2, 0.2], y: [4.1, 4.93], z: [-4.38, -3.3] },
   "lower-stair-flight": { y: [2.9, 4.25], z: [-4.2, -1.0] },
   "upper-side-landing": { x: [0.55, null], y: [4.4, 4.9], z: [-4.1, -0.6] },
   "roof-stair-flight": { y: [5.1, 7.1], z: [-2.75, 2.0] },

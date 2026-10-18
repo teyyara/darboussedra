@@ -360,17 +360,17 @@ describe("3D camera paths", () => {
       pose.target[1] < pose.position[1] - 0.03)).toBe(true);
   });
 
-  it("looks over the upper landing edge only at the top-tread eye height", () => {
+  it("aims up and toward the side exit across the final stair treads only", () => {
     const flight = HOUSE_LAYOUT.stairs.groundFlight;
     const upperEye = HOUSE_LAYOUT.upperY + 1.65;
     const climb = makeCameraPath("family-table", "rooftop", poseFor("rooftop"));
     const landingClearanceViews = climb.filter((pose) =>
       Math.abs(pose.position[0] - flight.to[0]) < 0.02 &&
-      pose.position[1] >= upperEye - 0.1 &&
+      pose.position[1] >= upperEye - 0.45 &&
       pose.position[1] <= upperEye + 0.28 &&
       pose.position[2] > flight.to[2] + 0.05 &&
-      pose.position[2] < flight.to[2] + 0.4);
-    expect(landingClearanceViews.length).toBeGreaterThanOrEqual(1);
+      pose.position[2] < flight.to[2] + 1.0);
+    expect(landingClearanceViews.length).toBeGreaterThanOrEqual(2);
     expect(landingClearanceViews.every((pose) =>
       pose.target[1] > pose.position[1] + 0.05)).toBe(true);
     expect(landingClearanceViews.some((pose) =>
@@ -576,10 +576,10 @@ describe("3D camera paths", () => {
         // that this look-ahead remains upward and rightward.
         const upperEye = HOUSE_LAYOUT.upperY + 1.65;
         const flightEndZ = HOUSE_LAYOUT.stairs.groundFlight.to[2];
-        const anticipatesLanding = pose.position[1] >= upperEye - 0.1 &&
+        const anticipatesLanding = pose.position[1] >= upperEye - 0.45 &&
           pose.position[1] <= upperEye + 0.28 &&
           pose.position[2] > flightEndZ - 0.05 &&
-          pose.position[2] < flightEndZ + 0.4 &&
+          pose.position[2] < flightEndZ + 1.0 &&
           pose.target[0] > pose.position[0] + 0.1 &&
           pose.target[1] > pose.position[1] + 0.05;
         if (pose.preserveHeading || anticipatesLanding) continue;

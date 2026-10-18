@@ -24,7 +24,7 @@ describe("browser-review stair camera phases", () => {
     })).toBe(false);
   });
 
-  it("distinguishes the mid-flight tread view from actual top-tread clearance", () => {
+  it("separates the mid-flight view from the final-three-treads clearance band", () => {
     expect(isCameraPhaseMatch("lower-stair-midflight", {
       position: [0, 3.2, -2.36], zone: "ground",
     })).toBe(true);
@@ -39,9 +39,12 @@ describe("browser-review stair camera phases", () => {
     })).toBe(true);
     expect(isCameraPhaseMatch("lower-stair-clearance", {
       position: [0, 4.35, -4.2], zone: "upper",
+    })).toBe(true);
+    expect(isCameraPhaseMatch("lower-stair-clearance", {
+      position: [0, 4.0, -4.2], zone: "upper",
     })).toBe(false);
     expect(isCameraPhaseMatch("lower-stair-clearance", {
-      position: [0, 4.65, -3.72], zone: "upper",
+      position: [0, 4.65, -3.2], zone: "upper",
     })).toBe(false);
     expect(isCameraPhaseMatch("lower-stair-flight", {
       position: [0, 3.5, -2.6], zone: "ground",
