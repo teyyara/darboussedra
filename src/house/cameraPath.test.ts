@@ -45,8 +45,8 @@ describe("3D camera paths", () => {
         expect(verticalLook, "library view tilts down enough to keep the lower shelf in frame").toBeGreaterThan(0.2);
         expect(verticalLook).toBeLessThan(0.55);
       } else if (room.slug === "prayer-room") {
-        expect(verticalLook, "prayer room camera lowers its gaze to keep the full floor mat in frame").toBeGreaterThan(1.3);
-        expect(verticalLook).toBeLessThan(1.5);
+        expect(verticalLook, "prayer room gaze frames the mat while leaving the window and wall visible").toBeGreaterThan(0.9);
+        expect(verticalLook).toBeLessThan(1.15);
       } else {
         expect(verticalLook, room.slug + " slight downward room framing").toBeGreaterThan(0.2);
         expect(verticalLook, room.slug + " remains an eye-level view").toBeLessThan(0.45);

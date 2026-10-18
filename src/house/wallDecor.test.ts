@@ -105,6 +105,45 @@ describe("room-specific wall accents", () => {
     expect(getRoomWallDecor(livingRoom)[0].side).toBe("left");
   });
 
+  it("keeps the existing prayer-room wall accent face-on and fully inside the entry view", () => {
+    const prayerRoom = rooms.find((room) => room.slug === "prayer-room")!;
+    const artwork = getRoomWallDecor(prayerRoom)[0];
+    expect(artwork).toBeDefined();
+
+    const camera = new PerspectiveCamera(50, 1440 / 1000, 0.1, 100);
+    camera.position.set(...prayerRoom.camera.position);
+    camera.lookAt(new Vector3(...prayerRoom.camera.target));
+    camera.updateProjectionMatrix();
+    camera.updateMatrixWorld(true);
+
+    const center = new Vector3(
+      prayerRoom.scenePosition[0] + artwork.position[0],
+      prayerRoom.scenePosition[1] + artwork.position[1],
+      prayerRoom.scenePosition[2] + artwork.position[2],
+    );
+    const viewToArtX = center.x - camera.position.x;
+    const viewToArtZ = center.z - camera.position.z;
+    const wallFacingCosine = Math.abs(viewToArtX) / Math.hypot(viewToArtX, viewToArtZ);
+    expect(wallFacingCosine).toBeGreaterThan(0.75);
+
+    for (const xSign of [-1, 1]) {
+      for (const ySign of [-1, 1]) {
+        const corner = center.clone();
+        if (artwork.side === "front" || artwork.side === "back") {
+          corner.x += xSign * artwork.width / 2;
+        } else {
+          corner.z += xSign * artwork.width / 2;
+        }
+        corner.y += ySign * artwork.height / 2;
+        corner.project(camera);
+        expect(corner.x, "prayer-room wall art stays horizontally visible").toBeGreaterThan(-0.95);
+        expect(corner.x, "prayer-room wall art stays horizontally visible").toBeLessThan(0.95);
+        expect(corner.y, "prayer-room wall art stays vertically visible").toBeGreaterThan(-0.9);
+        expect(corner.y, "prayer-room wall art stays vertically visible").toBeLessThan(0.9);
+      }
+    }
+  });
+
   it("keeps living-room art small enough to avoid the camera-edge crop", () => {
     const livingRoom = rooms.find((room) => room.slug === "living-room")!;
     const art = getRoomWallDecor(livingRoom);
