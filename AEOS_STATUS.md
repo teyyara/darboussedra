@@ -923,3 +923,10 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 - The roadmap explicitly prioritizes continuous floors, guarded drops, removing the tunnel-like entrance sightline, checking wall/room/ceiling coherence, believable stairs/landings, and scene/shader prewarming.
 - No decoration, merge to main, or manual deployment was performed.
 - This loop records the work as TODOs; it does not claim that the architectural defects are already fixed.
+
+
+## Loop 095 — Continuous ground-floor substrate
+- Added a structural slab beneath the room-specific finish floors, spanning the interior footprint. It remains below the finish tiles and is rendered only while the ground-floor interior is visible.
+- Purpose: close the uncovered ground-level stair/circulation footprint so the floor cannot appear to end abruptly or expose the outdoor ground plane through a registry gap.
+- Scope remains architecture only; no decorative props or new dependencies.
+- Validation: source checkpoint created; typecheck, tests, build, and fresh browser screenshots must pass before visual acceptance.

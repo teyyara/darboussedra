@@ -1219,6 +1219,15 @@ function HouseArchitecture({ location, visualLocation, transitioning, exteriorSh
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.205, 0]} receiveShadow>
       <planeGeometry args={[220, 220]} /><meshStandardMaterial color="#d6d5c0" roughness={1} />
     </mesh>
+    {/* Continuous structural ground slab: room finish tiles sit above it, so unassigned
+        circulation areas and the lower stair never reveal the outdoor ground plane. */}
+    {visibility.showGroundRooms && cameraZone !== "outside" && cameraZone !== "roof" && <mesh
+      position={[0, -0.051, 0]} receiveShadow>
+      <boxGeometry args={[HOUSE_LAYOUT.exterior.width - HOUSE_LAYOUT.exterior.wallThickness * 2,
+        0.098, HOUSE_LAYOUT.exterior.depth - HOUSE_LAYOUT.exterior.wallThickness * 2]} />
+      <meshStandardMaterial color="#d9cbb6" roughness={0.98} />
+    </mesh>}
+
     {/* Continuous underside over the upper circulation. The real stair hatch remains open,
         but interior walks no longer look through the house into the exterior sky. */}
     {cameraZone !== "outside" && cameraZone !== "roof" && getInteriorRoofCeilingPanels().map((panel, index) =>
