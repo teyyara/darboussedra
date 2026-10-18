@@ -343,8 +343,16 @@ export function roomRegistryIssues(): string[] {
   const opening = HOUSE_LAYOUT.stairs.roofOpening;
   if (opening.width < HOUSE_LAYOUT.stairs.width + 0.2 || Math.abs(roof.to[0] - opening.centerX) > opening.width / 2 ||
       Math.abs(roof.to[2] - opening.centerZ) > opening.depth / 2) issues.push("Rooftop stair exit does not fit inside the roof opening.");
+  const upperLanding = HOUSE_LAYOUT.upperLanding;
+  const landingMinZ = upperLanding.centerZ - upperLanding.depth / 2;
+  const landingMaxZ = upperLanding.centerZ + upperLanding.depth / 2;
+  const roofStartInsideLanding =
+    Math.abs(roof.from[0] - upperLanding.centerX) <
+      upperLanding.width / 2 - HOUSE_LAYOUT.stairs.width / 2 &&
+    roof.from[2] > landingMinZ + EPSILON &&
+    roof.from[2] < landingMaxZ - EPSILON;
   if (Math.abs(ground.to[2] - (HOUSE_LAYOUT.upperBridge.centerZ - HOUSE_LAYOUT.upperBridge.depth / 2)) > EPSILON ||
-      Math.abs(roof.from[2] - (HOUSE_LAYOUT.upperLanding.centerZ + HOUSE_LAYOUT.upperLanding.depth / 2)) > EPSILON) {
+      !roofStartInsideLanding) {
     issues.push("Stair flights are disconnected from their landings.");
   }
   return issues;

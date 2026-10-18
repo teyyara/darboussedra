@@ -175,7 +175,11 @@ describe("authoritative room and architectural layout", () => {
     expect(stairs.roofFlight.from[1]).toBe(upperSurface);
     expect(stairs.roofFlight.to[1]).toBe(HOUSE_LAYOUT.roofY);
     expect(stairs.groundFlight.to[2]).toBe(HOUSE_LAYOUT.upperBridge.centerZ - HOUSE_LAYOUT.upperBridge.depth / 2);
-    expect(stairs.roofFlight.from[2]).toBe(HOUSE_LAYOUT.upperLanding.centerZ + HOUSE_LAYOUT.upperLanding.depth / 2);
+    const upperLanding = HOUSE_LAYOUT.upperLanding;
+    expect(stairs.roofFlight.from[2]).toBeGreaterThan(upperLanding.centerZ - upperLanding.depth / 2);
+    expect(stairs.roofFlight.from[2]).toBeLessThan(upperLanding.centerZ + upperLanding.depth / 2);
+    expect(Math.abs(stairs.roofFlight.from[0] - upperLanding.centerX))
+      .toBeLessThan(upperLanding.width / 2 - stairs.width / 2);
     expect(Math.abs(stairs.roofFlight.to[2] - stairs.roofOpening.centerZ)).toBeLessThan(stairs.roofOpening.depth / 2);
     expect(stairs.roofOpening.width).toBeGreaterThan(stairs.width);
   });

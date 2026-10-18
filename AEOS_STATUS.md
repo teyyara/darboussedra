@@ -596,3 +596,10 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 - **Regression coverage:** Assert that camera waypoints near roof height lie inside the opening. Update guardrail coverage tests to check the right-side rail reaches the front edge yet leaves a safe exit gap at the rear.
 - **Boundaries:** No decorations, room-object changes, assets, dependencies, main merge or manual Vercel deployment.
 - **Next action:** Inspect fresh roof-stair, hatch-clearance, and descent screenshots from the exact current commit; if the new opening looks too large or leaks into bedroom views, adjust it based on those captures.
+
+
+### Loop 068 validation follow-up
+
+- The first CI run for [29b705a](https://github.com/teyyara/darboussedra/commit/29b705a95c12381384fd4a49f541d1777fd2fc0e) correctly found stale layout assertions: they required the roof flight to start exactly at the far edge of the upper landing, instead of anywhere safely inside its footprint, and treated z=0 as beyond the hatch even though the new opening extends there.
+- The roof-opening headroom regression, camera route suite, interior ceiling panel test, hatch rail tests, and roof deck grout tests passed on that run. Updated the layout validator and assertions to express the new landing connection and hatch boundary rather than remove validation.
+- Waiting for the full rerun; no merge or manual deployment.
