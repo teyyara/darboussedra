@@ -329,12 +329,12 @@ report.stairCameraAiming = {
   ascentDirectionY: stairAscent?.cameraDirection?.[1] ?? null,
   descentDirectionY: stairDescent?.cameraDirection?.[1] ?? null,
   clearsUpperLandingOnAscent: typeof stairAscent?.cameraDirection?.[1] === "number" &&
-    stairAscent.cameraDirection[1] > -0.06 && stairAscent.cameraDirection[1] < 0.12,
+    stairAscent.cameraDirection[1] > 0.10 && stairAscent.cameraDirection[1] < 0.32,
   looksDownDuringDescent: typeof stairDescent?.cameraDirection?.[1] === "number" &&
     stairDescent.cameraDirection[1] < -0.44 && stairDescent.cameraDirection[1] > -0.65,
 };
 if (!report.stairCameraAiming.clearsUpperLandingOnAscent) {
-  report.notes.push("As the eye reaches upper-floor level, the ascent camera should lift over the landing fascia and reveal the open upper bridge.");
+  report.notes.push("As the eye reaches upper-floor level, the ascent camera must pitch upward enough to see over the landing fascia into the open upper bridge.");
 }
 if (!report.stairCameraAiming.looksDownDuringDescent) {
   report.notes.push("Camera should pitch downward while descending the lower stair flight.");

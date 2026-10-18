@@ -1,13 +1,13 @@
 # AEOS Status — Dar Boussedra
 
-**State:** LOOP 080 — CLEAR THE UPPER LANDING FASCIA ON THE GROUND-STAIR ASCENT — CHECKPOINT COMMITTED; CI PENDING  
-**Active keyphrase:** DAR BOUSSEDRA — LOOP 080: KEEP EARLY TREADS VISIBLE, THEN LOOK OVER THE LANDING; NO NEW DECORATIONS  
-**Run ID:** 20261018-darboussedra-aeos-v3-loop080  
-**Loop:** 080 · **Candidate:** dar-boussedra-walkthrough-coherence-080  
+**State:** LOOP 081 — REQUIRE A POSITIVE CLEARANCE ANGLE OVER THE UPPER LANDING — CHECKPOINT COMMITTED; CI PENDING  
+**Active keyphrase:** DAR BOUSSEDRA — LOOP 081: SHOW THE OPEN BRIDGE OVER THE LANDING EDGE; NO NEW DECORATIONS  
+**Run ID:** 20261018-darboussedra-aeos-v3-loop081  
+**Loop:** 081 · **Candidate:** dar-boussedra-walkthrough-coherence-081  
 **Repository:** https://github.com/teyyara/darboussedra  
 **Branch:** fix/loop-064-moroccan-exterior-and-layout  
 **Base main:** e06af00a049eb72b173295438bbeb8e384c6fef5  
-**Latest source-code checkpoint commit:** see latest Loop 080 commit on the linked PR branch  
+**Latest source-code checkpoint commit:** see latest Loop 081 commit on the linked PR branch  
 **Last updated:** 2026-10-18
 
 ## Standing user priorities — keep active until explicitly cleared
@@ -737,10 +737,20 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 
 ## Loop 080 — Clear the upper landing fascia during the ground-stair ascent
 
-**State:** Camera-path and browser-review gate update committed; CI and fresh Chromium screenshots pending. PR #7 remains open and unmerged.
+**State:** TypeScript, unit tests, production build, Chromium walkthrough, and screenshot upload passed in [run 39147313124](https://github.com/teyyara/darboussedra/actions/runs/39147313124). PR #7 remains open and unmerged.
 
-- **Problem confirmed from Loop 079 screenshots:** At camera position around Y=3.19, Z=-2.34, the eye is just above the upper-floor surface, but the interpolated gaze drops below the short head-landing edge. The landing's front fascia consequently fills a large part of the ascent view even though the central stairwell opening exists.
-- **Change:** Keep the physical steps, landing slab, bridge width, guardrails and room footprints unchanged. During the early ascent, the camera still looks slightly down at tread edges. Only as eye height crosses the upper-floor plane, the camera raises its gaze to clear the landing fascia and see the open bridge beyond. The descent route retains its stronger downward pitch.
-- **Regression coverage:** Add a route-level check for a landing-clearance view near upper-floor height. Update Chromium to assert that the actual ascent screenshot clears the landing edge, while retaining the descent pitch, WebGL, room-arrival, mobile-overflow and runtime-error gates.
-- **Scope:** No decorations, props, furniture, assets, dependencies or roof geometry changed. No main merge and no manual Vercel deployment.
-- **Next action:** Inspect the new ascent screenshot and confirm the upper bridge is visible beyond the landing while earlier treads remain readable.
+- **Rendered result:** All route arrivals, WebGL2, runtime-error, and mobile overflow checks passed. The lower stair treads remain individually readable early in the climb.
+- **Visual defect still present:** The ascent screenshot at camera position Y=3.206 / Z=-2.362 has direction-Y -0.022. A broad fascia still crosses the central view. The prior browser gate allowed a near-level gaze, so it was not strict enough to guarantee actual visual clearance.
+- **Decision:** Keep the physical landing, stairs, bridge width and rails unchanged. In Loop 081, increase only the upward pitch used while the eye crosses upper-floor height; earlier stair treads continue to use the slight downward gaze, and descent continues to look firmly downward.
+- **Boundaries:** No decorations, room props, assets or dependencies changed; no main merge or manual Vercel deployment.
+
+
+## Loop 081 — Require a positive clearance angle over the upper landing
+
+**State:** Camera route, unit assertion and Chromium capture gate updated; full CI and fresh screenshots pending. PR #7 remains open and unmerged.
+
+- **Problem confirmed from Loop 080 screenshot:** The measured ascent camera direction-Y of -0.022 still looks into the landing fascia. A test that only required the target to be no more than 3cm below the camera, and a browser gate that accepted direction-Y above -0.06, both allowed the defect.
+- **Change:** While the ascending eye is at upper-floor height near the landing, change the vertical gaze coefficient from 0.04 to 0.25. Earlier treads retain a slight downward glance; only the landing-clearance segment pitches upward. The reverse/descending route retains the stronger downward gaze. Physical stairs, landing slab, rails and room footprints remain unchanged.
+- **Regression coverage:** Route unit tests require landing-clearance targets to be at least 5cm above eye level. Chromium now requires the actual ascent frame's direction-Y to be between 0.10 and 0.32, instead of accepting an almost level/negative view. All existing arrival, WebGL, mobile, descent and runtime-error checks remain enabled.
+- **Scope:** No decorations, furniture, props, assets or dependencies; no merge and no manual Vercel deployment.
+- **Next action:** Inspect the new ascent image for a clear view above the fascia, with individual treads visible earlier in the climb.

@@ -348,7 +348,7 @@ describe("3D camera paths", () => {
       pose.position[2] > flight.to[2] + 0.2);
     expect(landingClearanceViews.length).toBeGreaterThanOrEqual(1);
     expect(landingClearanceViews.every((pose) =>
-      pose.target[1] >= pose.position[1] - 0.03)).toBe(true);
+      pose.target[1] > pose.position[1] + 0.05)).toBe(true);
   });
 
   it("uses spatial landing turns instead of duplicate-position heading reversals", () => {

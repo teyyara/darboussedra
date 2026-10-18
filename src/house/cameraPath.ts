@@ -354,15 +354,16 @@ export function makeCameraPath(from: HouseLocation, to: HouseLocation, finalPose
     }
 
     // On the earlier ascent, look slightly down to expose upcoming tread edges.
-    // Once the eye reaches the upper-floor plane, lift the sightline over the landing
-    // fascia into the open bridge beyond. Keep the stronger downward look on descent.
+    // Once the eye reaches the upper-floor plane, pitch upward enough to clear the
+    // landing fascia in the actual first-person view (a near-level gaze still collides).
+    // Keep the stronger downward look on descent.
     const upperFloor = HOUSE_LAYOUT.upperY + HOUSE_LAYOUT.floorThickness;
     const clearingUpperLanding = dy > 0 &&
       pose.position[1] >= upperFloor - 0.1 &&
       pose.position[1] <= upperFloor + 0.28 &&
       pose.position[2] < -0.5;
     const verticalAim = dy >= 0
-      ? dy * (clearingUpperLanding ? 0.04 : -0.25)
+      ? dy * (clearingUpperLanding ? 0.25 : -0.25)
       : dy * 0.75;
     const length = Math.hypot(dx, verticalAim, dz);
     return {
