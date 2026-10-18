@@ -936,3 +936,9 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 - Added a structural substrate beneath upper-level finish tiles to bridge unassigned perimeter strips while leaving the central stairwell opening empty.
 - Geometry is split into four panels around the opening; the substrate sits below room finish floors to avoid z-fighting.
 - Validation remains pending: unit tests, typecheck, build, and fresh screenshots must confirm the opening/landing is correct. No decorative additions, merge, or deployment.
+
+
+## Loop 097 — Align upper-floor opening with stair passage
+- Corrected the upper substrate opening to derive its Z bounds from the actual ground staircase flight, with a small clearance at each end, instead of borrowing the roof hatch bounds.
+- Updated geometry tests to assert the opening tracks the staircase path.
+- This is a source-level geometry correction; visual validation remains pending. No decorations, merge, or deployment.

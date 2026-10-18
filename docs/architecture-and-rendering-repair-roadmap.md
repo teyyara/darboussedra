@@ -29,4 +29,5 @@
 - **093:** Typecheck/tests/build passed, visual review failed. Late ascent camera direction was X=0.808 / Y=0.098, still wall/soffit-dominated; two roof-stair captures timed out.
 - **094:** Added persistent roadmap documenting the user's architecture and pop-in defects.
 - **095:** Added continuous ground-floor structural slab under room finish floors; visual validation pending.
-- **096:** Add structural substrate beneath the upper-floor room tiles and perimeter strips while preserving the deliberate stairwell void; verify with coverage tests and fresh browser screenshots.
+- **096:** Added structural substrates beneath ground and upper finish floors, with four upper panels around a stairwell opening; typecheck, tests and build passed, but visual review was still running.
+- **097:** Corrected the upper opening to follow the actual ground-flight Z span rather than the separate roof-hatch span; rerun CI and inspect screenshots before visual acceptance.
