@@ -14,7 +14,6 @@ describe("Moroccan exterior context", () => {
   });
 
   it("places the exterior view beside a connected sidewalk and residential road", () => {
-    const sidewalkMin = MOROCCAN_STREET.sidewalk.centerZ - MOROCCAN_STREET.sidewalk.depth / 2;
     const sidewalkMax = MOROCCAN_STREET.sidewalk.centerZ + MOROCCAN_STREET.sidewalk.depth / 2;
     const roadMin = MOROCCAN_STREET.road.centerZ - MOROCCAN_STREET.road.depth / 2;
     const roadMax = MOROCCAN_STREET.road.centerZ + MOROCCAN_STREET.road.depth / 2;
