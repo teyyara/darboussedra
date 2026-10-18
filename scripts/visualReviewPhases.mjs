@@ -1,11 +1,11 @@
 export const CAMERA_PHASE_RULES = {
   // Capture the upward/rightward look while the camera moves across the last three treads.
   "lower-stair-midflight": { x: [-0.2, 0.2], y: [3.04, 3.42], z: [-2.7, -2.1] },
-  "lower-stair-clearance": { x: [-0.2, 0.2], y: [4.1, 4.93], z: [-4.38, -3.3] },
+  "lower-stair-clearance": { x: [-0.2, 0.2], y: [4.25, 4.93], z: [-4.38, -3.3] },
   "lower-stair-flight": { y: [2.9, 4.25], z: [-4.2, -1.0] },
   // Capture farther along the bridge, not at the same top-tread pose as the clearance still.
-  "upper-side-landing": { x: [0.55, null], y: [4.4, 4.9], z: [-3.05, -2.55] },
-  "roof-stair-flight": { y: [5.1, 7.1], z: [-2.75, 2.0] },
+  "upper-side-landing": { x: [0.55, null], y: [4.4, 4.9], z: [-3.2, -2.4] },
+  "roof-stair-flight": { y: [4.65, 6.6], z: [-2.75, 2.0] },
   // This capture is after the camera steps sideways out of the hatch, not while
   // the camera is still rising through the opening and seeing only sky.
   "roof-hatch-clear": { zone: "roof", x: [0.9, null], y: [6.7, null], z: [-3.1, -0.7] },

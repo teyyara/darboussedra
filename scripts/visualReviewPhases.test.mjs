@@ -20,8 +20,10 @@ describe("visual review camera phase windows", () => {
 
   it("keeps the roof hatch-clear phase distinct from the earlier roof stair flight", () => {
     const roofFlight = { position: [0, 5.9, -1.0], zone: "upper" };
+    const firstRoofTreads = { position: [0, 4.82, 1.88], zone: "upper" };
     const clearRoofDeck = { position: [1.25, 7.2, -2.35], zone: "roof" };
 
+    expect(isCameraPhaseMatch("roof-stair-flight", firstRoofTreads)).toBe(true);
     expect(isCameraPhaseMatch("roof-stair-flight", roofFlight)).toBe(true);
     expect(isCameraPhaseMatch("roof-hatch-clear", roofFlight)).toBe(false);
     expect(isCameraPhaseMatch("roof-hatch-clear", clearRoofDeck)).toBe(true);

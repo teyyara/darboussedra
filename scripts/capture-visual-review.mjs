@@ -156,10 +156,10 @@ async function openMap(page) {
   await page.locator(".map-panel").waitFor({ state: "visible", timeout: 15000 });
 }
 
-async function waitForCameraPhase(page, destination, phase, timeout = 30000) {
+async function waitForCameraPhase(page, destination, phase, holdToken, timeout = 30000) {
   const rule = CAMERA_PHASE_RULES[phase];
   if (!rule) throw new Error("Unknown camera phase: " + phase);
-  await page.waitForFunction(({ expectedDestination, phaseRule }) => {
+  await page.waitForFunction(({ expectedDestination, phaseRule, holdToken }) => {
     const canvas = document.querySelector("canvas");
     if (!canvas || canvas.dataset.destination !== expectedDestination) return false;
     const position = canvas.dataset.cameraPosition?.split(",").map(Number);
@@ -173,9 +173,19 @@ async function waitForCameraPhase(page, destination, phase, timeout = 30000) {
     // Pin the route synchronously in the same browser evaluation that observes
     // the camera-phase match. This closes the race between the matching dataset
     // sample and the Node-side screenshot request.
-    if (matches) window.__darBoussedraVisualReviewHoldCamera = true;
+    if (matches) {
+      // Several phase watchers run concurrently. Hold tokens prevent one
+      // screenshot's cleanup from releasing another screenshot's camera hold.
+      const reviewWindow = window;
+      const tokens = Array.isArray(reviewWindow.__darBoussedraVisualReviewHoldTokens)
+        ? reviewWindow.__darBoussedraVisualReviewHoldTokens
+        : [];
+      if (!tokens.includes(holdToken)) tokens.push(holdToken);
+      reviewWindow.__darBoussedraVisualReviewHoldTokens = tokens;
+      reviewWindow.__darBoussedraVisualReviewHoldCamera = tokens.length > 0;
+    }
     return matches;
-  }, { expectedDestination: destination, phaseRule: rule }, { timeout });
+  }, { expectedDestination: destination, phaseRule: rule, holdToken }, { timeout });
 }
 
 async function selectDirectoryRoom(page, name, slug, transitionCaptures = [], arrivalTimeout = 12000) {
@@ -193,7 +203,7 @@ async function selectDirectoryRoom(page, name, slug, transitionCaptures = [], ar
     const task = (async () => {
       let matched = false;
       try {
-        await waitForCameraPhase(page, slug, capture.phase, timeout);
+        await waitForCameraPhase(page, slug, capture.phase, capture.filename, timeout);
         matched = true;
       } catch {
         report.notes.push("Timed out waiting for camera phase " + capture.phase + " on route " + slug + "; capturing the current frame instead.");
@@ -203,11 +213,17 @@ async function selectDirectoryRoom(page, name, slug, transitionCaptures = [], ar
         // phase watchers remain armed, then proceed once the hold is released.
         await saveScreenshot(page, capture.filename);
       } finally {
-        if (matched) {
-          await page.evaluate(() => {
-            window.__darBoussedraVisualReviewHoldCamera = false;
-          }).catch(() => {});
-        }
+        // Always release this capture's own token, even after a timeout. Never
+        // clear a different phase's hold while its screenshot is being saved.
+        await page.evaluate((holdToken) => {
+          const reviewWindow = window;
+          const tokens = Array.isArray(reviewWindow.__darBoussedraVisualReviewHoldTokens)
+            ? reviewWindow.__darBoussedraVisualReviewHoldTokens
+            : [];
+          reviewWindow.__darBoussedraVisualReviewHoldTokens = tokens.filter((token) => token !== holdToken);
+          reviewWindow.__darBoussedraVisualReviewHoldCamera =
+            reviewWindow.__darBoussedraVisualReviewHoldTokens.length > 0;
+        }, capture.filename).catch(() => {});
       }
     })();
     phaseTasks.set(capture, task);

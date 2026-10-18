@@ -244,9 +244,16 @@ function CameraRig({ location, reducedMotion, onArrive, onTransitionChange, onEx
     // The browser visual-review harness may pin the camera at a matched route
     // phase while it records that exact frame. This flag is undefined during
     // normal play and has no effect on user movement.
-    const visualReviewHold = typeof window !== "undefined" &&
-      (window as Window & { __darBoussedraVisualReviewHoldCamera?: boolean })
-        .__darBoussedraVisualReviewHoldCamera === true;
+    const reviewWindow = typeof window !== "undefined"
+      ? window as Window & {
+          __darBoussedraVisualReviewHoldCamera?: boolean;
+          __darBoussedraVisualReviewHoldTokens?: string[];
+        }
+      : undefined;
+    const visualReviewHold = Boolean(reviewWindow && (
+      (reviewWindow.__darBoussedraVisualReviewHoldTokens?.length ?? 0) > 0 ||
+      reviewWindow.__darBoussedraVisualReviewHoldCamera === true
+    ));
     if (visualReviewHold) {
       invalidate();
       return;

@@ -41,6 +41,9 @@ describe("browser-review stair camera phases", () => {
       position: [0, 4.35, -4.2], zone: "upper",
     })).toBe(true);
     expect(isCameraPhaseMatch("lower-stair-clearance", {
+      position: [0, 4.139, -3.55], zone: "ground",
+    })).toBe(false);
+    expect(isCameraPhaseMatch("lower-stair-clearance", {
       position: [0, 4.0, -4.2], zone: "upper",
     })).toBe(false);
     expect(isCameraPhaseMatch("lower-stair-clearance", {
@@ -53,10 +56,11 @@ describe("browser-review stair camera phases", () => {
 
   it("keeps the upper landing windows distinct", () => {
     expect(isCameraPhaseMatch("upper-side-landing", {
-      position: [0.8, 4.65, -1.8], zone: "upper",
+      // Real right-side bridge-lane pose from the shared house layout.
+      position: [0.925, 4.65, -2.8], zone: "upper",
     })).toBe(true);
     expect(isCameraPhaseMatch("upper-side-landing", {
-      position: [0.2, 4.65, -1.8], zone: "upper",
+      position: [0.2, 4.65, -2.8], zone: "upper",
     })).toBe(false);
   });
 });

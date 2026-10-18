@@ -1,13 +1,13 @@
 # AEOS Status — Dar Boussedra
 
-**State:** LOOP 089 — PIN CAMERA DURING PHASE CAPTURE AND SEPARATE LANDING WINDOWS — CHECKPOINT COMMITTED; CI PENDING  
-**Active keyphrase:** DAR BOUSSEDRA — LOOP 089: HOLD THE MATCHED CAMERA POSE UNTIL ITS STILL IS SAVED; NO NEW DECORATIONS  
-**Run ID:** 20261018-darboussedra-aeos-v3-loop089  
-**Loop:** 089 · **Candidate:** dar-boussedra-walkthrough-coherence-089  
+**State:** LOOP 090 — SERIALIZE CAMERA PHASE HOLDS AND CAPTURE TRUE STAIR/LANDING FRAMES — CHECKPOINT COMMITTED; CI PENDING  
+**Active keyphrase:** DAR BOUSSEDRA — LOOP 090: FIX THE SHARED CAMERA-PHASE HOLD RACE; NO NEW DECORATIONS  
+**Run ID:** 20261018-darboussedra-aeos-v3-loop090  
+**Loop:** 090 · **Candidate:** dar-boussedra-camera-phase-capture-090  
 **Repository:** https://github.com/teyyara/darboussedra  
 **Branch:** fix/loop-064-moroccan-exterior-and-layout  
 **Base main:** e06af00a049eb72b173295438bbeb8e384c6fef5  
-**Latest source-code checkpoint commit:** see latest Loop 089 commit on the linked PR branch  
+**Latest source-code checkpoint commit:** this Loop 090 checkpoint on the linked PR branch  
 **Last updated:** 2026-10-18
 
 ## Standing user priorities — keep active until explicitly cleared
@@ -861,3 +861,13 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 - **QA integrity:** Keep the existing 90-second phase limits, route-arrival conditions, direction-Y / direction-X gates, runtime-error requirements, room-arrival checks, WebGL detection and mobile overflow checks. A missing phase still fails review; no visual assertion is removed or weakened.
 - **Scope:** No stair or room geometry, no prop or decoration changes, no dependencies, no main merge and no manual Vercel deployment.
 - **Next action:** Inspect the newly captured clearance, landing, roof-flight and hatch-exit images from the exact revision before continuing architectural changes.
+
+
+## Loop 090 — Stable camera-phase capture and accurate stair frames
+
+- **State:** Source checkpoint committed; CI/visual capture pending.
+- **Scope:** Fix the Playwright visual-review harness's shared boolean camera hold. Phase screenshots are concurrent, so a single capture releasing a boolean could resume the camera while another still is being recorded. Each capture now owns a unique hold token; the camera remains pinned until every active token is released, including timeout cleanup.
+- **Phase windows:** Move the lower-stair clearance still later into the final treads so it can actually test the upward look-ahead; match the upper landing at the right-side bridge's real coordinates; start the roof-flight window at the first visible treads and end it before the hatch-clear window.
+- **Regression coverage:** Added checks for the real upper-bridge coordinate, an early lower-stair frame that must not count as clearance, and the initial roof treads.
+- **User boundaries:** No new furniture, wall art, rugs, garden/rooftop props, ornaments, paid assets, or dependencies. Neighborhood and cloud changes remain architectural/sky context only. No manual Vercel deployment.
+- **Validation evidence:** Prior commit `528b8f2` passed typecheck, unit tests and production build but the Chromium visual review failed because three transition phases timed out and reused the same frozen frame. The new commit must pass a fresh Foundation checks run before this repair is treated as validated.
