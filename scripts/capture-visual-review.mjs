@@ -294,7 +294,7 @@ await motionProbe.emulateMedia({ reducedMotion: "no-preference" });
 await motionProbe.waitForTimeout(180);
 await openMap(motionProbe);
 const rooftopArrived = await selectDirectoryRoom(motionProbe, "Rooftop Terrace", "rooftop", [
-  { phase: "lower-stair-flight", filename: "13-stair-ascent-midflight.png" },
+  { phase: "lower-stair-clearance", filename: "13-stair-ascent-midflight.png" },
   { phase: "upper-side-landing", filename: "14-upper-landing-turn.png" },
   { phase: "roof-stair-flight", filename: "16-roof-stair-ascent.png" },
   { phase: "roof-hatch-clear", filename: "17-roof-hatch-exit.png" },

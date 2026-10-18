@@ -1,13 +1,13 @@
 # AEOS Status — Dar Boussedra
 
-**State:** LOOP 081 — REQUIRE A POSITIVE CLEARANCE ANGLE OVER THE UPPER LANDING — CHECKPOINT COMMITTED; CI PENDING  
-**Active keyphrase:** DAR BOUSSEDRA — LOOP 081: SHOW THE OPEN BRIDGE OVER THE LANDING EDGE; NO NEW DECORATIONS  
-**Run ID:** 20261018-darboussedra-aeos-v3-loop081  
-**Loop:** 081 · **Candidate:** dar-boussedra-walkthrough-coherence-081  
+**State:** LOOP 082 — CAPTURE THE ACTUAL LANDING-CLEARANCE SEGMENT — CHECKPOINT COMMITTED; CI PENDING  
+**Active keyphrase:** DAR BOUSSEDRA — LOOP 082: VALIDATE THE UPWARD GAZE AT THE RIGHT ASCENT PHASE; NO NEW DECORATIONS  
+**Run ID:** 20261018-darboussedra-aeos-v3-loop082  
+**Loop:** 082 · **Candidate:** dar-boussedra-walkthrough-coherence-082  
 **Repository:** https://github.com/teyyara/darboussedra  
 **Branch:** fix/loop-064-moroccan-exterior-and-layout  
 **Base main:** e06af00a049eb72b173295438bbeb8e384c6fef5  
-**Latest source-code checkpoint commit:** see latest Loop 081 commit on the linked PR branch  
+**Latest source-code checkpoint commit:** see latest Loop 082 commit on the linked PR branch  
 **Last updated:** 2026-10-18
 
 ## Standing user priorities — keep active until explicitly cleared
@@ -747,10 +747,20 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 
 ## Loop 081 — Require a positive clearance angle over the upper landing
 
-**State:** Camera route, unit assertion and Chromium capture gate updated; full CI and fresh screenshots pending. PR #7 remains open and unmerged.
+**State:** Source checks passed, but the full Chromium run failed on the stricter gate in [run 39150511314](https://github.com/teyyara/darboussedra/actions/runs/39150511314). PR #7 remains open and unmerged.
 
-- **Problem confirmed from Loop 080 screenshot:** The measured ascent camera direction-Y of -0.022 still looks into the landing fascia. A test that only required the target to be no more than 3cm below the camera, and a browser gate that accepted direction-Y above -0.06, both allowed the defect.
-- **Change:** While the ascending eye is at upper-floor height near the landing, change the vertical gaze coefficient from 0.04 to 0.25. Earlier treads retain a slight downward glance; only the landing-clearance segment pitches upward. The reverse/descending route retains the stronger downward gaze. Physical stairs, landing slab, rails and room footprints remain unchanged.
-- **Regression coverage:** Route unit tests require landing-clearance targets to be at least 5cm above eye level. Chromium now requires the actual ascent frame's direction-Y to be between 0.10 and 0.32, instead of accepting an almost level/negative view. All existing arrival, WebGL, mobile, descent and runtime-error checks remain enabled.
-- **Scope:** No decorations, furniture, props, assets or dependencies; no merge and no manual Vercel deployment.
-- **Next action:** Inspect the new ascent image for a clear view above the fascia, with individual treads visible earlier in the climb.
+- **Camera result:** The 0.25 late-ascent coefficient is active and the route-level target-height test passed. The browser frame still measured direction-Y -0.192 because it was captured at Y=2.914, Z=-1.991, before the eye reached the landing-clearance band around Y=3.04–3.42, Z=-2.7 to -2.1.
+- **Root cause:** The broad lower-stair-flight phase allowed any Y from 2.9 to 4.25 and Z from -4.2 to -1.0, so it selected an earlier tread pose instead of the eye-height transition. The stricter camera gate correctly failed this capture.
+- **Change for Loop 082:** Add a dedicated narrow lower-stair-clearance phase for the ascent screenshot only. Keep the broad lower-stair-flight phase for descent, where the camera must continue looking down the lower treads.
+- **Scope:** No new decorations, furniture, props, assets, dependencies, main merge or manual Vercel deployment.
+
+
+## Loop 082 — Capture the actual landing-clearance segment
+
+**State:** Visual-review phase matcher and regression test committed; full CI and fresh Chromium screenshots pending. PR #7 remains open and unmerged.
+
+- **Problem:** The broad lower-stair phase matcher triggered at the earlier upward-walk position (Y=2.914, Z=-1.991), before the camera's vertical gaze switches upward; the strict browser check therefore correctly failed.
+- **Change:** Add a dedicated lower-stair-clearance phase with a narrow position band (X=-0.2..0.2, Y=3.04..3.42, Z=-2.7..-2.1). The ascent screenshot waits for this phase. The descent capture continues to use the broader lower-stair-flight phase, preserving its strong downward view.
+- **Regression coverage:** Phase tests require the new phase to match the eye-height clearance pose and reject the previous early capture and positions later than the clearance window. Existing route and browser angle checks stay strict.
+- **Scope:** No decor, assets, props, geometry or dependencies added or changed; no merge and no manual Vercel deployment.
+- **Next action:** Review the fresh ascent screenshot and its direction-Y. Confirm the fascia is clear without losing the individual tread view earlier in the route.

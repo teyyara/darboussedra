@@ -24,10 +24,22 @@ describe("browser-review stair camera phases", () => {
     })).toBe(false);
   });
 
-  it("keeps the lower stair and upper landing windows distinct", () => {
+  it("waits for the late-ascent clearance band instead of capturing an earlier tread", () => {
+    expect(isCameraPhaseMatch("lower-stair-clearance", {
+      position: [0, 3.2, -2.36], zone: "ground",
+    })).toBe(true);
+    expect(isCameraPhaseMatch("lower-stair-clearance", {
+      position: [0, 2.914, -1.991], zone: "ground",
+    })).toBe(false);
+    expect(isCameraPhaseMatch("lower-stair-clearance", {
+      position: [0, 3.5, -2.6], zone: "ground",
+    })).toBe(false);
     expect(isCameraPhaseMatch("lower-stair-flight", {
       position: [0, 3.5, -2.6], zone: "ground",
     })).toBe(true);
+  });
+
+  it("keeps the upper landing windows distinct", () => {
     expect(isCameraPhaseMatch("upper-side-landing", {
       position: [0.8, 4.65, -1.8], zone: "upper",
     })).toBe(true);
