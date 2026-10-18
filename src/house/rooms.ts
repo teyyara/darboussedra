@@ -58,7 +58,7 @@ const roomDefinitions = [
     scenePosition: [-4.3, HOUSE_LAYOUT.groundY, -2.49], camera: { position: [-4.5, 1.65, -0.7], target: [-3.9, 1.18, -2.6] },
     footprint: [2.2, 4.18], connectedTo: ["living-room", "pets-corner"] },
   { id: "pets-corner", slug: "pets-corner", name: "Pets' Corner", kind: "interior", level: "ground",
-    scenePosition: [-2.2, HOUSE_LAYOUT.groundY, -2.49], camera: { position: [-2.7, 1.65, -0.65], target: [-1.8, 1.05, -3.1] },
+    scenePosition: [-2.2, HOUSE_LAYOUT.groundY, -2.49], camera: { position: [-2.2, 1.65, -0.65], target: [-1.85, 1.05, -3.1] },
     footprint: [2.0, 4.18], connectedTo: ["library"] },
   { id: "prayer-room", slug: "prayer-room", name: "Prayer Room / Musalla", kind: "spiritual", level: "ground",
     scenePosition: [3.3, HOUSE_LAYOUT.groundY, -2.49], camera: { position: [4.45, 1.65, -1.8], target: [3.75, 1.0, -3.14] },

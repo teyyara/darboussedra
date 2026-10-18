@@ -1,4 +1,5 @@
 import {describe, expect, it} from "vitest";
+import {PerspectiveCamera, Vector3} from "three";
 import {EXTERIOR_CAMERA, HOUSE_LAYOUT, getRoomBySlug, roomBounds, rooms} from "./rooms";
 import {makeCameraPath} from "./cameraPath";
 
@@ -76,6 +77,38 @@ describe("3D camera paths", () => {
     for (const room of rooms.filter((item) => item.kind === "interior" || item.kind === "private" || item.kind === "spiritual")) {
       expect(Math.abs(room.camera.position[0] - room.camera.target[0]), room.slug + " cross-room X view").toBeGreaterThan(0.3);
       expect(Math.abs(room.camera.position[2] - room.camera.target[2]), room.slug + " cross-room Z view").toBeGreaterThan(0.3);
+    }
+  });
+
+  it("frames the existing pet bed and scratch post together instead of the doorway", () => {
+    const petsRoom = getRoomBySlug("pets-corner")!;
+    const pets = petsRoom.camera;
+    expect(pets.position[0]).toBeCloseTo(petsRoom.scenePosition[0]); // stand near the centre of the wider 2m room
+    expect(pets.target[0]).toBeGreaterThan(pets.position[0]);
+    expect(pets.target[0] - pets.position[0]).toBeLessThan(0.4);
+
+    const camera = new PerspectiveCamera(50, 1440 / 1000, 0.1, 100);
+    camera.position.set(...pets.position);
+    camera.lookAt(new Vector3(...pets.target));
+    camera.updateProjectionMatrix();
+    camera.updateMatrixWorld(true);
+
+    const bed = new Vector3(
+      petsRoom.scenePosition[0] - 0.15,
+      petsRoom.scenePosition[1] + 0.23,
+      petsRoom.scenePosition[2] - 0.82,
+    ).project(camera);
+    const scratchPost = new Vector3(
+      petsRoom.scenePosition[0] + 0.48,
+      petsRoom.scenePosition[1] + 0.52,
+      petsRoom.scenePosition[2] - 1.15,
+    ).project(camera);
+
+    for (const [label, point] of [["pet bed", bed], ["scratch post", scratchPost]] as const) {
+      expect(point.x, label + " remains inside the first-person horizontal frame").toBeGreaterThan(-0.8);
+      expect(point.x, label + " remains inside the first-person horizontal frame").toBeLessThan(0.8);
+      expect(point.y, label + " remains inside the first-person vertical frame").toBeGreaterThan(-0.8);
+      expect(point.y, label + " remains inside the first-person vertical frame").toBeLessThan(0.4);
     }
   });
 
