@@ -33,13 +33,14 @@ export function getStructuralFloorPanels(level: StructuralFloorLevel): Structura
   const hw = halfWidth(), hd = halfDepth();
   if (level === "ground") return [makePanel("ground-continuous", y, 0, 0, hw * 2, hd * 2)];
 
+  // The upper-storey opening must track the ground flight that passes through this
+  // floor, not the separate roof-flight hatch. Add a modest clearance at both ends.
+  const flight = HOUSE_LAYOUT.stairs.groundFlight;
   const openingWidth = HOUSE_LAYOUT.stairs.openingWidth;
-  const openingDepth = HOUSE_LAYOUT.stairs.roofOpening.depth;
-  const openingCenterZ = HOUSE_LAYOUT.stairs.roofOpening.centerZ;
   const left = HOUSE_LAYOUT.upperBridge.centerX - openingWidth / 2;
   const right = HOUSE_LAYOUT.upperBridge.centerX + openingWidth / 2;
-  const back = openingCenterZ - openingDepth / 2;
-  const front = openingCenterZ + openingDepth / 2;
+  const back = Math.min(flight.from[2], flight.to[2]) - 0.12;
+  const front = Math.max(flight.from[2], flight.to[2]) + 0.12;
   return [
     makePanel("upper-left-wing", y, (-hw + left) / 2, 0, hw + left, hd * 2),
     makePanel("upper-right-wing", y, (right + hw) / 2, 0, hw - right, hd * 2),

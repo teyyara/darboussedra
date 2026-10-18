@@ -24,11 +24,11 @@ describe("structural floor substrate", () => {
     const hw = (HOUSE_LAYOUT.exterior.width - HOUSE_LAYOUT.exterior.wallThickness * 2) / 2;
     const hd = (HOUSE_LAYOUT.exterior.depth - HOUSE_LAYOUT.exterior.wallThickness * 2) / 2;
     const openingWidth = HOUSE_LAYOUT.stairs.openingWidth;
-    const openingDepth = HOUSE_LAYOUT.stairs.roofOpening.depth;
+    const flight = HOUSE_LAYOUT.stairs.groundFlight;
     const left = HOUSE_LAYOUT.upperBridge.centerX - openingWidth / 2;
     const right = HOUSE_LAYOUT.upperBridge.centerX + openingWidth / 2;
-    const back = HOUSE_LAYOUT.stairs.roofOpening.centerZ - openingDepth / 2;
-    const front = HOUSE_LAYOUT.stairs.roofOpening.centerZ + openingDepth / 2;
+    const back = Math.min(flight.from[2], flight.to[2]) - 0.12;
+    const front = Math.max(flight.from[2], flight.to[2]) + 0.12;
     const byKey = new Map(panels.map(p => [p.key, p]));
     expect(byKey.get("upper-left-wing")!.position[0] + byKey.get("upper-left-wing")!.size[0] / 2).toBeCloseTo(left);
     expect(byKey.get("upper-right-wing")!.position[0] - byKey.get("upper-right-wing")!.size[0] / 2).toBeCloseTo(right);
