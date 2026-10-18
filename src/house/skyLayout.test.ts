@@ -30,6 +30,13 @@ describe("exterior sky framing", () => {
     expect(ndc.y).toBeLessThan(0.9);
   });
 
+  it("uses several soft rounded lobes per cloud group rather than flat halo-like streaks", () => {
+    expect(SKY_CLOUD_GROUPS.every((group) => group.clouds.length >= 5)).toBe(true);
+    expect(SKY_CLOUD_GROUPS.flatMap((group) => group.clouds).every((cloud) =>
+      cloud.size[1] > 0.4 && cloud.size[0] / cloud.size[1] < 5,
+    )).toBe(true);
+  });
+
   it("keeps at least one cloud cluster comfortably inside the desktop frame", () => {
     const centers = SKY_CLOUD_GROUPS.map((group) => projectedExteriorFeature(group.position));
     expect(centers.some((point) =>

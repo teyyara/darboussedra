@@ -12,26 +12,30 @@ export interface SkyCloudGroup {
   readonly clouds: readonly SkyCloud[];
 }
 
-/** Sun and halo are separate meshes at the same camera-relative position. */
+/** The sun is one clean disc; avoid translucent oversized layers that look like rings. */
 export const SKY_SUN_POSITION: Vector3Tuple = [-28, 12, -60];
 
+/** Ellipsoid lobes overlap to read as soft, rounded clouds instead of flat white streaks. */
 export const SKY_CLOUD_GROUPS: readonly SkyCloudGroup[] = [
   {
     position: [-18, 12, -72],
     clouds: [
-      { position: [0, 0, 0], size: [4.5, 1.25, 0.5], opacity: 0.58 },
-      { position: [-2.3, -0.25, 0.05], size: [2.7, 1.0, 0.45], opacity: 0.58 },
-      { position: [2.2, -0.18, -0.08], size: [2.9, 0.92, 0.45], opacity: 0.58 },
+      { position: [0, 0, 0], size: [2.85, 0.78, 0.58], opacity: 0.78 },
+      { position: [-1.55, -0.08, 0.03], size: [1.55, 0.72, 0.55], opacity: 0.78 },
+      { position: [1.5, -0.05, -0.02], size: [1.65, 0.7, 0.56], opacity: 0.78 },
+      { position: [-0.58, 0.42, -0.08], size: [1.55, 0.72, 0.54], opacity: 0.78 },
+      { position: [0.82, 0.34, 0.02], size: [1.18, 0.58, 0.5], opacity: 0.78 },
+      { position: [-2.05, -0.22, -0.04], size: [0.92, 0.46, 0.43], opacity: 0.78 },
     ],
   },
   {
-    // This second, smaller cluster stays within the broad desktop view rather than
-    // being placed so far to the side that it can never be seen.
     position: [-5, 12, -78],
     clouds: [
-      { position: [0, 0, 0], size: [3.5, 0.96, 0.45], opacity: 0.48 },
-      { position: [-1.9, -0.18, 0], size: [2.1, 0.72, 0.4], opacity: 0.48 },
-      { position: [1.7, -0.1, 0.04], size: [2.2, 0.75, 0.42], opacity: 0.48 },
+      { position: [0, 0, 0], size: [2.35, 0.65, 0.5], opacity: 0.7 },
+      { position: [-1.12, 0.04, 0.02], size: [1.28, 0.57, 0.47], opacity: 0.7 },
+      { position: [1.12, 0.02, -0.02], size: [1.3, 0.55, 0.46], opacity: 0.7 },
+      { position: [-0.2, 0.36, -0.06], size: [1.24, 0.52, 0.44], opacity: 0.7 },
+      { position: [1.72, -0.1, 0.04], size: [0.77, 0.42, 0.4], opacity: 0.7 },
     ],
   },
 ];

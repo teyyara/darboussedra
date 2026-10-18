@@ -111,6 +111,18 @@ describe("authoritative room and architectural layout", () => {
     const rearInteriorFaceZ = -HOUSE_LAYOUT.exterior.depth / 2 + HOUSE_LAYOUT.exterior.wallThickness / 2;
     expect(lastTreadMinZ).toBeGreaterThanOrEqual(rearInteriorFaceZ + 0.05);
   });
+  it("frames the family room toward the rear circulation rather than looking diagonally across the table", () => {
+    const family = getRoomBySlug("family-table")!;
+    const [positionX, , positionZ] = family.camera.position;
+    const [targetX, , targetZ] = family.camera.target;
+    expect(Math.abs(targetX - positionX)).toBeLessThan(1);
+    expect(targetZ - positionZ).toBeLessThan(-2);
+    const bounds = roomBounds(family);
+    expect(positionX).toBeGreaterThan(bounds.minX + 0.25);
+    expect(positionX).toBeLessThan(bounds.maxX - 0.25);
+    expect(positionZ).toBeLessThan(bounds.maxZ - 0.25);
+  });
+
   it("frames the kitchen counter, rather than the refrigerator, in its first-person destination view", () => {
     const kitchen = getRoomBySlug("kitchen")!;
     const counterCenter = [

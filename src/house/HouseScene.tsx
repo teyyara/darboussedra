@@ -8,6 +8,7 @@ import { getInteriorRoofCeilingPanels, getInteriorRoofHatchTrim } from "./interi
 import { getRoomCeilingBottomLocal } from "./roomDetails";
 import { getRoomWallDecor } from "./wallDecor";
 import { SKY_CLOUD_GROUPS, SKY_SUN_POSITION } from "./skyLayout";
+import { MOROCCAN_NEIGHBORHOOD, MOROCCAN_STREET } from "./neighborhoodLayout";
 import { getKitchenFixtureLayout } from "./kitchenLayout";
 import { getLibraryBookProps } from "./libraryShelving";
 import { GARDEN_SHRUBS, GARDEN_TREES } from "./gardenPlants";
@@ -90,11 +91,6 @@ function SkyEnvironment() {
       <sphereGeometry args={[2.15, 32, 24]} />
       <meshBasicMaterial color="#fff4d2" toneMapped={false} depthTest={true} depthWrite={false} />
     </mesh>
-    <mesh position={SKY_SUN_POSITION} renderOrder={-999} frustumCulled={false}>
-      <sphereGeometry args={[4.5, 32, 24]} />
-      <meshBasicMaterial color="#ffe0a1" transparent opacity={0.18} toneMapped={false}
-        depthTest={true} depthWrite={false} />
-    </mesh>
     {SKY_CLOUD_GROUPS.map((cloudGroup, groupIndex) =>
       <group key={"sky-cloud-group-" + groupIndex} position={cloudGroup.position}>
         {cloudGroup.clouds.map((cloud, index) => <mesh key={index} position={cloud.position}
@@ -105,6 +101,80 @@ function SkyEnvironment() {
         </mesh>)}
       </group>
     )}
+  </group>;
+}
+
+
+/**
+ * Quiet, attached plaster homes and a narrow residential lane give the property
+ * an actual Moroccan neighborhood context. These are neighboring buildings, not
+ * decorative props; their flat roofs, parapets, recessed-looking windows and warm
+ * limewashed/earth-toned facades remain visible through exterior openings.
+ */
+function MoroccanNeighborhood() {
+  const streetPieces = [
+    { key: "sidewalk", ...MOROCCAN_STREET.sidewalk, color: "#c8bca8" },
+    { key: "road", ...MOROCCAN_STREET.road, color: "#85837c" },
+  ];
+
+  return <group>
+    {streetPieces.map((piece) => <mesh key={piece.key}
+      position={[0, piece.centerY, piece.centerZ]} receiveShadow>
+      <boxGeometry args={[piece.width, piece.height, piece.depth]} />
+      <meshStandardMaterial color={piece.color} roughness={0.98} />
+    </mesh>)}
+    {MOROCCAN_NEIGHBORHOOD.map((building) => {
+      const windowWidth = 0.82;
+      const windowHeight = 1.02;
+      const windowXOffsets = [-building.width * 0.22, building.width * 0.22];
+      const windowYLevels = [1.55, building.height - 1.4]
+        .filter((height) => height > windowHeight / 2 + 0.25 && height < building.height - windowHeight / 2 - 0.45);
+      const frontZ = building.depth / 2;
+
+      return <group key={building.id} position={[building.centerX, 0, building.centerZ]}>
+        <mesh position={[0, building.height / 2, 0]} castShadow receiveShadow>
+          <boxGeometry args={[building.width, building.height, building.depth]} />
+          <meshStandardMaterial color={building.wallColor} roughness={0.97} />
+        </mesh>
+        <mesh position={[0, building.height + 0.045, 0]} castShadow receiveShadow>
+          <boxGeometry args={[building.width + 0.16, 0.09, building.depth + 0.16]} />
+          <meshStandardMaterial color={building.trimColor} roughness={0.97} />
+        </mesh>
+        {[
+          { position: [0, building.height + 0.27, frontZ] as Vector3Tuple, size: [building.width, 0.46, 0.14] as Vector3Tuple },
+          { position: [0, building.height + 0.27, -frontZ] as Vector3Tuple, size: [building.width, 0.46, 0.14] as Vector3Tuple },
+          { position: [-building.width / 2, building.height + 0.27, 0] as Vector3Tuple, size: [0.14, 0.46, building.depth] as Vector3Tuple },
+          { position: [building.width / 2, building.height + 0.27, 0] as Vector3Tuple, size: [0.14, 0.46, building.depth] as Vector3Tuple },
+        ].map((parapet, index) => <mesh key={"parapet-" + index}
+          position={parapet.position} castShadow receiveShadow>
+          <boxGeometry args={parapet.size} />
+          <meshStandardMaterial color={building.wallColor} roughness={0.98} />
+        </mesh>)}
+        {windowYLevels.flatMap((y, row) => windowXOffsets.map((x, column) =>
+          <group key={"window-" + row + "-" + column}
+            position={[x, y, frontZ + 0.028]}>
+            <mesh>
+              <boxGeometry args={[windowWidth, windowHeight, 0.045]} />
+              <meshStandardMaterial color={building.glassColor} roughness={0.48} metalness={0.04} />
+            </mesh>
+            {[-1, 1].map((side) => <mesh key={"jamb-" + side}
+              position={[side * (windowWidth / 2 + 0.035), 0, 0.025]}>
+              <boxGeometry args={[0.07, windowHeight + 0.13, 0.07]} />
+              <meshStandardMaterial color={building.frameColor} roughness={0.86} />
+            </mesh>)}
+            {[-1, 1].map((side) => <mesh key={"lintel-" + side}
+              position={[0, side * (windowHeight / 2 + 0.035), 0.025]}>
+              <boxGeometry args={[windowWidth + 0.13, 0.07, 0.07]} />
+              <meshStandardMaterial color={building.frameColor} roughness={0.86} />
+            </mesh>)}
+            <mesh position={[0, 0, 0.04]}>
+              <boxGeometry args={[0.045, windowHeight, 0.075]} />
+              <meshStandardMaterial color={building.frameColor} roughness={0.86} />
+            </mesh>
+          </group>
+        ))}
+      </group>;
+    })}
   </group>;
 }
 
@@ -1239,6 +1309,7 @@ export function HouseScene({ location, settledLocation, reducedMotion, onArrive,
     }}>
     <color attach="background" args={["#8fc9ed"]} /><fog attach="fog" args={["#e8dfcf", 28, 76]} />
     <SkyEnvironment />
+    <MoroccanNeighborhood />
     <RealisticMaterialPass revision={`${location}:${settledLocation}:${transitioning}:${cameraZone}`} />
     <ambientLight intensity={0.42} /><hemisphereLight args={["#fff2db", "#7e866e", 0.58]} />
     <directionalLight color="#fff0d9" position={[8, 15, 9]} intensity={2.35} castShadow
