@@ -365,6 +365,7 @@ describe("3D camera paths", () => {
     const upperEye = HOUSE_LAYOUT.upperY + 1.65;
     const climb = makeCameraPath("family-table", "rooftop", poseFor("rooftop"));
     const landingClearanceViews = climb.filter((pose) =>
+      Math.abs(pose.position[0] - flight.to[0]) < 0.02 &&
       pose.position[1] >= upperEye - 0.1 &&
       pose.position[1] <= upperEye + 0.28 &&
       pose.position[2] > flight.to[2] + 0.05 &&
