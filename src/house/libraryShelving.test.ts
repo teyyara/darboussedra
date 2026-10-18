@@ -3,11 +3,13 @@ import { getLibraryBookProps } from "./libraryShelving";
 
 describe("library shelf book layout", () => {
   it("places readable book spines on the room-facing side of the shelf backing", () => {
-    const width = 2.6;
+    const width = 2.2;
     const books = getLibraryBookProps(width);
     const shelfBoardCenterX = 0.04 - width / 2 + 0.23;
     const shelfFrontX = shelfBoardCenterX + 0.4 / 2;
     expect(books).toHaveLength(27);
+    expect(shelfBoardCenterX - 0.4 / 2).toBeGreaterThan(-width / 2);
+    expect(shelfFrontX).toBeLessThan(width / 2);
 
     for (const book of books) {
       const rearEdge = book.position[0] - book.size[0] / 2;
@@ -18,7 +20,7 @@ describe("library shelf book layout", () => {
   });
 
   it("keeps each book between shelf boards and within the usable shelf length", () => {
-    const books = getLibraryBookProps(2.6);
+    const books = getLibraryBookProps(2.2);
     const boardLevels = [0.25, 0.67, 1.09, 1.48];
     const boardHalfHeight = 0.055 / 2;
     const shelfMinZ = -0.15 - 2.26 / 2;

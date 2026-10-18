@@ -1,13 +1,13 @@
 # AEOS Status — Dar Boussedra
 
-**State:** LOOP 072 — SHOW THE REAL STAIR THROUGH THE FAMILY-TABLE PORTAL — CHECKPOINT COMMITTED; CI PENDING  
-**Active keyphrase:** DAR BOUSSEDRA — LOOP 072: REMOVE THE BLANK STAIR-HALL VIEW WITHOUT EXTRA SET-DRESSING  
-**Run ID:** 20261018-darboussedra-aeos-v3-loop072  
-**Loop:** 072 · **Candidate:** dar-boussedra-walkthrough-coherence-072  
+**State:** LOOP 073 — REBALANCE LIBRARY AND PETS' CORNER WIDTH — CHECKPOINT COMMITTED; CI PENDING  
+**Active keyphrase:** DAR BOUSSEDRA — LOOP 073: WIDEN PETS' CORNER WITHOUT ADDING DECORATIONS  
+**Run ID:** 20261018-darboussedra-aeos-v3-loop073  
+**Loop:** 073 · **Candidate:** dar-boussedra-walkthrough-coherence-073  
 **Repository:** https://github.com/teyyara/darboussedra  
 **Branch:** fix/loop-064-moroccan-exterior-and-layout  
 **Base main:** e06af00a049eb72b173295438bbeb8e384c6fef5  
-**Latest source-code checkpoint commit:** see latest Loop 072 commit on the linked PR branch  
+**Latest source-code checkpoint commit:** see latest Loop 073 commit on the linked PR branch  
 **Last updated:** 2026-10-18
 
 ## Standing user priorities — keep active until explicitly cleared
@@ -648,10 +648,19 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 
 ## Loop 072 — Show the real staircase from the family-table doorway
 
-**State:** Visibility change and targeted regression coverage committed; CI and fresh Chromium review pending. PR #7 remains open and unmerged.
+**State:** Validated by full CI and fresh Chromium screenshots in [run 39137068586](https://github.com/teyyara/darboussedra/actions/runs/39137068586). PR #7 remains open and unmerged.
 
-- **Problem confirmed from Loop 071 rendered evidence:** In the settled Family Table screenshot, the back doorway opens onto a long, empty-looking passage. The room has the only ground-floor stair-hall portal, but scene-visibility rules hide both the ground stair flight and upper head landing outside an active floor transition.
-- **Change:** While settled in Family Table only, reveal the ground stair flight and the upper landing/bridge circulation geometry visible through that doorway. Keep the upper bedrooms, their objects, roof stairs, and roof deck hidden. Other settled ground-floor rooms keep the stairs and upper circulation hidden.
-- **Regression coverage:** A test asserts Family Table exposes the physical flight and landing while keeping the upper rooms/roof hidden; a companion test asserts the entrance, living room, kitchen, library, pets corner and prayer room do not expose stairwell geometry. Existing traversal and outside-visibility checks remain unchanged.
-- **Boundaries:** No decor, furniture, wall-art, new assets or dependencies; no main merge and no manual Vercel deployment.
-- **Next action:** Inspect fresh family-table and stair-ascent screenshots from the exact candidate revision. Confirm the visible stairs join the upper landing cleanly and do not leak into unrelated rooms.
+- **Rendered result:** All 21 review files uploaded, no browser runtime errors or notes, WebGL2 is available, all expected arrivals succeeded, and the mobile document has no horizontal overflow. The Family Table view exposes the actual stair flight/landing, while the Library remains free of upstairs stair geometry.
+- **Decision:** Keep the stair visibility exception restricted to the only ground-floor stair-hall doorway. Next, improve the cramped Pets' Corner through a room-footprint rebalance rather than adding props.
+- **Boundaries:** No decorations, assets or dependencies. No main merge or manual Vercel deployment.
+
+
+## Loop 073 — Rebalance library and Pets' Corner width
+
+**State:** Footprint/camera rebalance and targeted geometry regressions committed; CI and new Chromium review pending. PR #7 remains open and unmerged.
+
+- **Problem confirmed from Loop 072 screenshots:** Pets' Corner reads like a corridor because it is only 1.6m wide. The adjacent library has enough lateral allocation to share 0.4m of width while preserving their combined existing 4.2m span and the stair-shaft clearance at X=-1.2m.
+- **Geometry change:** Widen Pets' Corner from 1.6m to 2.0m and reduce the library from 2.6m to 2.2m. Shift their centers and first-person cameras with the adjoining boundary held at X=-3.2m. The rooms retain their Z footprints and all existing assets/props; the library shelf is re-anchored to the new room width.
+- **Regression coverage:** Verify the rooms still share a valid doorway, the overall two-room span remains 4.2m, both new widths are explicit, the bookshelf and spines remain inside the library, and all destination camera poses remain inside their room footprints.
+- **Scope:** No new decor, furniture, assets or dependencies; no main merge or manual Vercel deployment.
+- **Next action:** Inspect the fresh Pets' Corner and Library first-person screenshots. Ensure the pet room feels less corridor-like, the existing bookshelf stays readable, and adjacent doors/stair clearances remain intact.

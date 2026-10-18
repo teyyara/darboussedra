@@ -43,6 +43,21 @@ describe("authoritative room and architectural layout", () => {
     }
     expect(HOUSE_LAYOUT.upperLanding.centerZ - HOUSE_LAYOUT.upperLanding.depth / 2).toBeCloseTo(0.45);
   });
+
+  it("gives Pets' Corner a wider footprint without reducing the shared library-pet-room span", () => {
+    const library = getRoomBySlug("library")!;
+    const pets = getRoomBySlug("pets-corner")!;
+    const libraryBounds = roomBounds(library);
+    const petsBounds = roomBounds(pets);
+
+    expect(library.footprint[0]).toBe(2.2);
+    expect(pets.footprint[0]).toBe(2.0);
+    expect(libraryBounds.minX).toBeCloseTo(-5.4);
+    expect(petsBounds.maxX).toBeCloseTo(-1.2);
+    expect(libraryBounds.maxX).toBeCloseTo(petsBounds.minX);
+    expect(getSharedBoundary(library, pets)).toBeDefined();
+    expect(library.footprint[0] + pets.footprint[0]).toBeCloseTo(4.2);
+  });
   it("keeps the ground and upper room footprints inside the shell and the garden adjoining the entrance", () => {
     const entrance = getRoomBySlug("entrance")!, garden = getRoomBySlug("garden")!;
     const halfWidth = HOUSE_LAYOUT.exterior.width / 2, halfDepth = HOUSE_LAYOUT.exterior.depth / 2;
