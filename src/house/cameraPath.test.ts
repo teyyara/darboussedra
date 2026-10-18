@@ -349,6 +349,8 @@ describe("3D camera paths", () => {
     expect(landingClearanceViews.length).toBeGreaterThanOrEqual(1);
     expect(landingClearanceViews.every((pose) =>
       pose.target[1] > pose.position[1] + 0.05)).toBe(true);
+    expect(landingClearanceViews.some((pose) =>
+      pose.target[1] > pose.position[1] + 0.12)).toBe(true);
     expect(landingClearanceViews.every((pose) =>
       pose.target[0] > pose.position[0] + 0.1)).toBe(true);
   });

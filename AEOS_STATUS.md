@@ -1,13 +1,13 @@
 # AEOS Status — Dar Boussedra
 
-**State:** LOOP 083 — LOOK INTO THE SIDE LANDING AS THE STAIR CLEARS THE FASCIA — CHECKPOINT COMMITTED; REGRESSION FOLLOW-UP  
-**Active keyphrase:** DAR BOUSSEDRA — LOOP 083: TURN TOWARD THE OPEN SIDE LANE AT THE UPPER LANDING; NO NEW DECORATIONS  
-**Run ID:** 20261018-darboussedra-aeos-v3-loop083  
-**Loop:** 083 · **Candidate:** dar-boussedra-walkthrough-coherence-083  
+**State:** LOOP 084 — STRENGTHEN FINAL ASCENT GAZE ABOVE LANDING FASCIA — CHECKPOINT COMMITTED; CI PENDING  
+**Active keyphrase:** DAR BOUSSEDRA — LOOP 084: CLEAR THE LANDING FASCIA WITH UPWARD AND RIGHTWARD LOOK-AHEAD; NO NEW DECORATIONS  
+**Run ID:** 20261018-darboussedra-aeos-v3-loop084  
+**Loop:** 084 · **Candidate:** dar-boussedra-walkthrough-coherence-084  
 **Repository:** https://github.com/teyyara/darboussedra  
 **Branch:** fix/loop-064-moroccan-exterior-and-layout  
 **Base main:** e06af00a049eb72b173295438bbeb8e384c6fef5  
-**Latest source-code checkpoint commit:** see latest Loop 083 commit on the linked PR branch  
+**Latest source-code checkpoint commit:** see latest Loop 084 commit on the linked PR branch  
 **Last updated:** 2026-10-18
 
 ## Standing user priorities — keep active until explicitly cleared
@@ -781,3 +781,14 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 - The first CI attempt after introducing the rightward landing look-ahead failed the general intermediate-heading alignment test at garden-to-rooftop waypoint 19 (alignment 0.928, expected above 0.98). That waypoint is the intentional clearance sightline: it is upward and rightward to see the side landing before arrival, not a travel-tangent view.
 - Added a narrow condition to skip tangent alignment only when the waypoint is within the stair landing-clearance height/Z band and its actual target is both above eye level and to the right. Dedicated landing-gaze tests plus the Chromium X/Y direction gate remain in force; all other headings still require >0.98 alignment.
 - No route positions, geometry, decorations, props, assets, or dependencies changed.
+
+
+## Loop 084 — Strengthen final ascent gaze above the landing fascia
+
+**State:** Narrow camera-aim correction committed; CI and fresh Chromium review pending. PR #7 remains open and unmerged.
+
+- **Problem:** Loop 083 screenshot measured direction-X +0.284 but direction-Y only +0.092, slightly below the +0.10 browser gate; the landing fascia still crosses the center view.
+- **Change:** Increase only the upward gaze coefficient inside the landing-clearance band from 0.25 to 0.34. The rightward look-ahead, early tread gaze, descent view, stair geometry and room footprints stay unchanged.
+- **Regression coverage:** The browser still requires direction-Y above +0.10 and below +0.32 with direction-X between +0.2 and +0.5. Camera-path tests additionally require at least one clearance pose to target more than 0.12m above eye height.
+- **Scope:** No decorations, assets or physical geometry changes. No merge or manual Vercel deployment.
+- **Next:** Inspect a fresh ascent screenshot and confirm the fascia no longer blocks the side landing while tread edges stay visible.

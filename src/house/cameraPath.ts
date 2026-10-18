@@ -363,7 +363,7 @@ export function makeCameraPath(from: HouseLocation, to: HouseLocation, finalPose
       pose.position[1] <= upperFloor + 0.28 &&
       pose.position[2] < -0.5;
     const verticalAim = dy >= 0
-      ? dy * (clearingUpperLanding ? 0.25 : -0.25)
+      ? dy * (clearingUpperLanding ? 0.34 : -0.25)
       : dy * 0.75;
     // Anticipate the turn onto the right-side landing lane while clearing the fascia.
     // Looking straight into the rear wall kept the slab edge central even with upward pitch.
