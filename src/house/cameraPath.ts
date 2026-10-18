@@ -368,18 +368,21 @@ export function makeCameraPath(from: HouseLocation, to: HouseLocation, finalPose
       pose.position[2] > flightEndZ - 0.05 &&
       pose.position[2] < flightEndZ + 1.0;
     const verticalAim = dy >= 0
-      ? dy * (clearingUpperLanding ? 0.34 : -0.25)
+      ? dy * (clearingUpperLanding ? 0.4 : -0.25)
       : dy * 0.75;
-    // Anticipate the turn onto the right-side landing lane while clearing the fascia.
-    // Looking straight into the rear wall kept the slab edge central even with upward pitch.
+    // Before the last tread, the stairs still lead toward negative Z, but the safe
+    // upper landing is off to the right and toward the front (+Z). Keep the lens
+    // aimed across that open bridge instead of tracing the stair tangent into the
+    // opaque landing fascia. This is a sightline change only; the walking path stays put.
     const sightlineX = clearingUpperLanding ? Math.abs(dz) * 0.58 : dx;
-    const length = Math.hypot(sightlineX, verticalAim, dz);
+    const sightlineZ = clearingUpperLanding ? Math.abs(dz) * 0.35 : dz;
+    const length = Math.hypot(sightlineX, verticalAim, sightlineZ);
     return {
       position: pose.position,
       target: [
         pose.position[0] + sightlineX / length * lookAhead,
         pose.position[1] + verticalAim / length * lookAhead,
-        pose.position[2] + dz / length * lookAhead,
+        pose.position[2] + sightlineZ / length * lookAhead,
       ],
     };
   });

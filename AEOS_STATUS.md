@@ -1,13 +1,13 @@
 # AEOS Status — Dar Boussedra
 
-**State:** LOOP 090 — SERIALIZE CAMERA PHASE HOLDS AND CAPTURE TRUE STAIR/LANDING FRAMES — CHECKPOINT COMMITTED; CI PENDING  
-**Active keyphrase:** DAR BOUSSEDRA — LOOP 090: FIX THE SHARED CAMERA-PHASE HOLD RACE; NO NEW DECORATIONS  
-**Run ID:** 20261018-darboussedra-aeos-v3-loop090  
-**Loop:** 090 · **Candidate:** dar-boussedra-camera-phase-capture-090  
+**State:** LOOP 091 — AIM THE FINAL STAIR ASCENT ACROSS THE OPEN UPPER LANDING — CHECKPOINT COMMITTED; CI PENDING  
+**Active keyphrase:** DAR BOUSSEDRA — LOOP 091: TURN THE LATE ASCENT VIEW TOWARD THE OPEN BRIDGE; NO NEW DECORATIONS  
+**Run ID:** 20261018-darboussedra-aeos-v3-loop091  
+**Loop:** 091 · **Candidate:** dar-boussedra-late-stair-sightline-091  
 **Repository:** https://github.com/teyyara/darboussedra  
 **Branch:** fix/loop-064-moroccan-exterior-and-layout  
 **Base main:** e06af00a049eb72b173295438bbeb8e384c6fef5  
-**Latest source-code checkpoint commit:** this Loop 090 checkpoint on the linked PR branch  
+**Latest source-code checkpoint commit:** this Loop 091 checkpoint on the linked PR branch  
 **Last updated:** 2026-10-18
 
 ## Standing user priorities — keep active until explicitly cleared
@@ -871,3 +871,19 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 - **Regression coverage:** Added checks for the real upper-bridge coordinate, an early lower-stair frame that must not count as clearance, and the initial roof treads.
 - **User boundaries:** No new furniture, wall art, rugs, garden/rooftop props, ornaments, paid assets, or dependencies. Neighborhood and cloud changes remain architectural/sky context only. No manual Vercel deployment.
 - **Validation evidence:** Prior commit `528b8f2` passed typecheck, unit tests and production build but the Chromium visual review failed because three transition phases timed out and reused the same frozen frame. The new commit must pass a fresh Foundation checks run before this repair is treated as validated.
+
+
+## Loop 090 — Validation outcome
+
+- **Source commit:** `5dac21368616957aea3513c304de63cf97960d2e`.
+- **CI:** [Foundation checks run 39166944037](https://github.com/teyyara/darboussedra/actions/runs/39166944037) passed typecheck, unit tests, production build, Chromium installation, and the rendered browser capture.
+- **Browser evidence:** 14/14 room arrivals settled; 21 screenshots uploaded; no runtime errors or review notes. The measured phases now correctly captured stair midflight, upper landing, roof-stair flight, roof-hatch clearance, and lower-stair descent.
+- **Remaining observed defect:** the late ascent screenshot still looked mostly into the opaque stair fascia despite the camera's upward pitch. Loop 091 addresses that sightline only; the route positions and room geometry are unchanged.
+
+## Loop 091 — Aim the final stair ascent across the open upper landing
+
+- **State:** source checkpoint committed; CI pending.
+- **Evidence:** Loop 090 artifact from run 39166944037 shows `13b-stair-ascent-landing-clearance.png` at camera position `[0, 4.321, -3.782]`, looking `[0.386, 0.128, -0.914]`. The gaze was still dominated by negative-Z stair travel and the frame was almost entirely blocked by the landing fascia/wall.
+- **Change:** during only the last-tread clearance band, redirect the gaze horizontally toward the right-hand bridge and positive-Z open landing, with a slightly stronger upward aim. The physical stair route, room footprints, props, and all layout dimensions stay unchanged.
+- **Regression test:** require every sampled late-ascent clearance pose to aim into positive Z, across the open landing rather than back along the opaque fascia.
+- **User constraints:** no new decorations, paid dependencies, assets, manual Vercel deployment, or merge to `main`.

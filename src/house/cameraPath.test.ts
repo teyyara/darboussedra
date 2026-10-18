@@ -377,6 +377,9 @@ describe("3D camera paths", () => {
       pose.target[1] > pose.position[1] + 0.12)).toBe(true);
     expect(landingClearanceViews.every((pose) =>
       pose.target[0] > pose.position[0] + 0.1)).toBe(true);
+    expect(landingClearanceViews.every((pose) =>
+      pose.target[2] > pose.position[2]),
+    "at the landing turn, the camera should look across the open bridge (+Z), not back into the stair fascia").toBe(true);
   });
 
   it("uses spatial landing turns instead of duplicate-position heading reversals", () => {
