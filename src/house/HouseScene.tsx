@@ -1309,7 +1309,7 @@ export function HouseScene({ location, settledLocation, reducedMotion, onArrive,
     }}>
     <color attach="background" args={["#8fc9ed"]} /><fog attach="fog" args={["#e8dfcf", 28, 76]} />
     <SkyEnvironment />
-    <MoroccanNeighborhood />
+    {cameraZone === "outside" && <MoroccanNeighborhood />}
     <RealisticMaterialPass revision={`${location}:${settledLocation}:${transitioning}:${cameraZone}`} />
     <ambientLight intensity={0.42} /><hemisphereLight args={["#fff2db", "#7e866e", 0.58]} />
     <directionalLight color="#fff0d9" position={[8, 15, 9]} intensity={2.35} castShadow

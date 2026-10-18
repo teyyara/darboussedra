@@ -1,14 +1,14 @@
 # AEOS Status — Dar Boussedra
 
-**State:** LOOP 050 GARDEN VIEW COMPOSITION — COMMITTED, LATEST VALIDATION QUEUED  
-**Active keyphrase:** DAR BOUSSEDRA — LOOP 050: KEEP THE GARDEN PATH AND BOTH OLIVES IN VIEW  
-**Run ID:** 20261017-darboussedra-aeos-v3-loop050  
-**Loop:** 050 · **Candidate:** dar-boussedra-garden-composition-050  
+**State:** LOOP 065 — SKY READABILITY, OUTDOOR DRAW SCOPE, WALKTHROUGH QA — CHECKPOINT COMMITTED; CI PENDING  
+**Active keyphrase:** DAR BOUSSEDRA — LOOP 065: IMPROVE CLOUD READABILITY AND VALIDATE DESCENT CAPTURE  
+**Run ID:** 20261018-darboussedra-aeos-v3-loop065  
+**Loop:** 065 · **Candidate:** dar-boussedra-sky-and-render-scope-065  
 **Repository:** https://github.com/teyyara/darboussedra  
-**Branch:** fix/loop-004-architecture-coherence  
-**Base main:** 501cc6ccf3e6926504dfcd051ac98147360cd48a  
-**Latest source-code checkpoint commit:** de1ffa3709f971114a591389062a24884200068d  
-**Last updated:** 2026-10-17
+**Branch:** fix/loop-064-moroccan-exterior-and-layout  
+**Base main:** e06af00a049eb72b173295438bbeb8e384c6fef5  
+**Latest source-code checkpoint commit:** this loop's branch HEAD (verify with `git rev-parse HEAD`)  
+**Last updated:** 2026-10-18
 
 ## Loop 003 outcome
 - Lazy-loaded the 3D house scene so the initial navigation UI is not coupled to the full Three.js scene bundle.
@@ -537,3 +537,14 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 - Loop 049 run [39072491627](https://github.com/teyyara/darboussedra/actions/runs/39072491627) passed typecheck, tests, production build and Chromium installation; its capture step is still in progress at last check.
 - Loop 048 source checks passed. The last complete movement report confirms the hatch-exit screenshot was captured, but the descent screenshot was at route waypoint 33/56 in the upper landing with cameraDirectionY -0.033. Loop 049 extends the lower-stair phase wait to 90s to avoid accepting that false frame.
 - Visual acceptance of Loop 047's garden/roof camera poses and Loop 050's inward tree placement remains pending new screenshots. Don't merge or deploy manually; PR #5 stays open/draft and main is unchanged.
+
+
+## Loop 065 — Cloud readability, outdoor rendering scope, and walkthrough validation
+
+- **Scope:** Improve the visible exterior sky and make the existing neighborhood buildings render only while the camera is outside. No new furniture, garden props, rooftop decoration, external assets, paid services, APIs, or dependencies were added.
+- **Sky:** Enlarged the existing overlapping ellipsoid cloud lobes and spaced the two clusters more naturally beside the single sun disc. The existing sky projection tests continue to constrain the cloud groups to the visible frame.
+- **Scene cost:** The four procedural neighborhood buildings, windows, parapets, sidewalk and road remain visible for exterior/garden/outdoor shots, but their meshes are removed from the render while the camera is indoors. This avoids unnecessary background geometry on every interior frame.
+- **Browser QA repair:** The previous branch run [39083452560](https://github.com/teyyara/darboussedra/actions/runs/39083452560) passed install, typecheck, unit tests, production build and Chromium install. Its rendered review failed only in the late movement probe: it timed out waiting for the lower-stair descent capture at 45 seconds and then evaluated an upper-landing frame as the descent. The capture window now allows 90 seconds; its movement/pitch assertions remain intact so a wrong camera angle is not silently accepted.
+- **Validation status:** CI for this checkpoint must re-run before any merge decision. The earlier failure is not counted as a passing browser test. The Vercel checks for the prior revision reported a build-rate limit; no manual Vercel deployment was issued.
+- **Checkpoint:** This status and the source changes are committed together on the current work branch. The exact commit SHA is the verified branch HEAD.
+- **Next:** Inspect the new GitHub Actions results and visual-review artifact. Merge only if the capture completes and the actual descent view passes; otherwise repair the camera route rather than relaxing the assertion.
