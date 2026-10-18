@@ -95,7 +95,7 @@ export const ROOM_ACCESS_PORTALS: readonly { readonly room: string; readonly tar
   { room: "fatiha-room", targetSlug: "fatiha-room", zone: "upper-landing", side: "front", offset: 0, width: DEFAULT_DOOR_WIDTH },
 ];
 
-export const EXTERIOR_CAMERA = { position: [6.1, 5.1, 12.8] as Vector3Tuple, target: [0, 1.75, 3.8] as Vector3Tuple };
+export const EXTERIOR_CAMERA = { position: [6.1, 1.65, 12.8] as Vector3Tuple, target: [0, 1.45, 3.8] as Vector3Tuple };
 // The map is an HTML floor plan; never switch the 3D scene into an overhead view for it.
 export const MAP_CAMERA = EXTERIOR_CAMERA;
 

@@ -38,8 +38,9 @@ describe("3D camera paths", () => {
         expect(verticalLook, room.slug + " remains an eye-level view").toBeLessThan(0.45);
       }
     }
-    expect(EXTERIOR_CAMERA.position[1]).toBeGreaterThan(doorHeight);
+    expect(EXTERIOR_CAMERA.position[1], "the street view uses standing eye height").toBeCloseTo(1.65);
     expect(EXTERIOR_CAMERA.position[1]).toBeLessThan(HOUSE_LAYOUT.exterior.wallHeight);
+    expect(EXTERIOR_CAMERA.target[1]).toBeGreaterThan(1.2);
     expect(EXTERIOR_CAMERA.position[0]).toBeGreaterThan(HOUSE_LAYOUT.exterior.width / 2);
     expect(EXTERIOR_CAMERA.position[2]).toBeGreaterThan(frontZ);
     expect(Math.abs(EXTERIOR_CAMERA.target[0])).toBeLessThan(1);
