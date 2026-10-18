@@ -1,13 +1,13 @@
 # AEOS Status — Dar Boussedra
 
-**State:** LOOP 085 — KEEP THE UPPER LANDING VIEW ALONG THE SIDE BRIDGE — CHECKPOINT COMMITTED; CI PENDING  
-**Active keyphrase:** DAR BOUSSEDRA — LOOP 085: LOOK ALONG THE OPEN BRIDGE INSTEAD OF INTO THE ROOF STAIR UNDERSIDE; NO NEW DECORATIONS  
-**Run ID:** 20261018-darboussedra-aeos-v3-loop085  
-**Loop:** 085 · **Candidate:** dar-boussedra-walkthrough-coherence-085  
+**State:** LOOP 086 — ONLY CLEAR THE LANDING WHEN THE CAMERA REACHES THE TOP TREAD — CHECKPOINT COMMITTED; CI PENDING  
+**Active keyphrase:** DAR BOUSSEDRA — LOOP 086: KEEP MID-FLIGHT GAZE ON TREADS; TURN UP ONLY AT TOP-TREAD CLEARANCE; NO NEW DECORATIONS  
+**Run ID:** 20261018-darboussedra-aeos-v3-loop086  
+**Loop:** 086 · **Candidate:** dar-boussedra-walkthrough-coherence-086  
 **Repository:** https://github.com/teyyara/darboussedra  
 **Branch:** fix/loop-064-moroccan-exterior-and-layout  
 **Base main:** e06af00a049eb72b173295438bbeb8e384c6fef5  
-**Latest source-code checkpoint commit:** see latest Loop 085 commit on the linked PR branch  
+**Latest source-code checkpoint commit:** see latest Loop 086 commit on the linked PR branch  
 **Last updated:** 2026-10-18
 
 ## Standing user priorities — keep active until explicitly cleared
@@ -796,13 +796,13 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 
 ## Loop 085 — Keep the upper-landing view along the side bridge
 
-**State:** Camera-heading correction, stronger final-ascent look-ahead, and browser direction checks committed; CI and fresh Chromium review pending. PR #7 remains open and unmerged.
+**State:** Validated by full CI and fresh Chromium review in [run 39155520405](https://github.com/teyyara/darboussedra/actions/runs/39155520405). PR #7 remains open and unmerged.
 
 - **Problem confirmed from Loop 084 frames:** Ascent passes its upward pitch gate (+0.140), but the upper-landing-turn screenshot still fills the center with the underside of the roof stair. The camera is on the side walkway yet looks sharply left into the shaft (direction-X -0.378), rather than along the open path.
 - **Change:** Keep the physical step-off and side bridge floors intact. Re-aim the bridge path along +Z with a small outer-side bias (+X), retaining modest downward pitch. Increase only the final-ascent rightward look-ahead coefficient from 0.4 to 0.58 so the opening and side lane become visible before the top tread.
 - **Regression coverage:** Unit tests assert forward and return upper-bridge poses look ahead along the bridge and do not aim sharply left into the shaft. Chromium checks the measured upper-landing direction in X, Y and Z: downward pitch remains -0.14 to -0.32, X stays between -0.15 and +0.25, and Z stays above +0.88.
 - **Scope:** No decorations, furniture, room/stair geometry, assets or dependencies. No merge and no manual Vercel deployment.
-- **Next action:** Inspect fresh ascent and upper-landing screenshots to confirm the side landing appears beyond the fascia and the roof staircase no longer dominates the bridge view.
+- **Rendered follow-up:** The new heading checks passed, but the actual mid-flight screenshot still showed a wall/fascia. The browser report measured eye Y=3.161 at Z=-2.305 with upward direction-Y +0.128—midway through the flight, not at landing clearance. Loop 086 fixes the phase boundary rather than weakening this test.
 
 
 ### Loop 085 test follow-up
@@ -816,3 +816,14 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 
 - The first test correction passed the three forward-entry heading checks but over-constrained the reverse route to always target +Z. The existing reverseRoute intentionally anchors its view to the stairwell centre at Z=upperBridge.centerZ, which can be slightly behind the camera near the front of the bridge.
 - Restored that spatial anchor assertion while retaining the new check that the camera does not pan sharply left into the stair underside. No route poses or production camera code changed in this test-only follow-up.
+
+
+## Loop 086 — Separate mid-flight tread gaze from top-tread clearance
+
+**State:** Camera-path condition, unit tests, and browser capture phases committed; CI and fresh Chromium review pending. PR #7 remains open and unmerged.
+
+- **Problem confirmed from Loop 085 artifact:** The screenshot named mid-flight was captured at camera Y=3.161, Z=-2.305. That is halfway along the lower stair flight, yet the direction-Y was +0.128 because clearance mode was keyed to the camera eye crossing the floor's absolute Y band.
+- **Root cause and fix:** A camera at eye height crosses the floor Y-coordinate halfway up a stair incline; that is not the moment the walker reaches the landing. Landing-clearance gaze now requires the actual upper-storey standing eye height (upper landing + 1.65m) and position in the final 0.4m of the flight. Earlier ascent gaze remains directed down toward upcoming treads.
+- **Browser review:** Keep the mid-flight still and add a distinct top-tread clearance still. The first must show slight downward pitch; the second must show upward/rightward look-ahead. Upper-landing heading, descent pitch, room-arrival, runtime, WebGL, and mobile-overflow checks remain active.
+- **Scope:** No wall/stair/floor mesh, furniture, or decoration changes. No assets or dependencies, no main merge, and no manual Vercel deployment.
+- **Next action:** Inspect fresh mid-flight, top-tread clearance, and upper-landing frames from the exact passing CI revision. If the top-tread frame still hits fascia, continue with its physical clearance geometry rather than widening the camera-angle gate.
