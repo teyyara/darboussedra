@@ -2,9 +2,10 @@ import { describe, expect, it } from "vitest";
 import { CAMERA_PHASE_RULES, isCameraPhaseMatch } from "./visualReviewPhases.mjs";
 
 describe("browser-review stair camera phases", () => {
-  it("recognizes the roof hatch as soon as the camera clears the opening", () => {
+  it("recognizes the roof deck only after the camera steps sideways clear of the hatch", () => {
     expect(isCameraPhaseMatch("roof-hatch-clear", {
-      position: [0.12, 6.74, -2.45],
+      // The camera has exited the 1.65m-wide hatch to the right-side roof deck.
+      position: [1.05, 6.74, -2.45],
       zone: "roof",
     })).toBe(true);
   });

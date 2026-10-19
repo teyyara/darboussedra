@@ -1048,3 +1048,10 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 - **Correction:** restore a catchable sampled clearance band y=[4.25,4.93], z=[-4.38,-3.3]; cap each phase wait to 30 seconds by default; on a missed phase mark all downstream phases skipped with explicit statuses and fallback images; expose phaseCaptureResults and fail acceptance for any status other than matched. Include existing scripts phase tests in Vitest so rules are actually covered by npm test.
 - **Validation:** pending fresh typecheck, enlarged suite, build, and browser evidence. Do not use fallback frames to infer camera geometry.
 - **Scope:** visual-review instrumentation and phase-window test coverage only. No camera runtime logic, structural geometry, decorations, or dependencies changed.
+
+
+## Loop 105a — Fix newly activated roof-hatch phase test
+
+- **Evidence:** run 39190470096 correctly started executing the previously excluded scripts phase tests. Type-check passed; 144 tests passed and one failed: the roof-hatch phase test expected a camera at X=0.12m (still centered over the hatch) to be a valid roof-deck exit, while the actual phase rule requires X>0.9m after stepping sideways clear of the opening.
+- **Correction:** change only the positive fixture to X=1.05m, consistent with the phase rule and distinct negative tests for a camera above the opening or too near the hatch.
+- **Validation:** pending. Do not weaken the actual hatch-clear phase rule.
