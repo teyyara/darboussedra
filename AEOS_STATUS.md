@@ -1039,3 +1039,12 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 - **Tests:** bridge-gaze assertions require a bounded inward target offset of 0.02–0.20m, still keep the bridge target forward (+Z), and retain all camera position / route bounds and landing aim assertions.
 - **Validation:** pending fresh full CI and screenshot inspection. Do not claim acceptance unless both upper-landing aiming checks pass and images 13b/14 are visually clear.
 - **Scope:** camera path and regression tests only. No architecture, decorations, assets, or dependencies changed.
+
+
+## Loop 105 — Fix phase-window starvation and make screenshot validity explicit
+
+- **Evidence:** workflow 39187622415 / artifact 12158767554 passed typecheck, existing 139 tests, and build, but browser review timed out for lower-stair-clearance and then all following phases. The report had 13b/14/16/17 all at the final rooftop position [3.45,7.2,0.5], route 56/56, proving these were stale fallback frames rather than the requested camera phases.
+- **Root cause found in code review:** the lower-clearance window had been narrowed to y=[4.4,4.68], z=[-4.12,-3.84]. This is narrower than the older test's expected [0,4.65,-4.2] match and allows the moving camera to pass between samples. The phase timeout was 90 seconds per phase, so one missed capture cascaded into several minutes of stale captures.
+- **Correction:** restore a catchable sampled clearance band y=[4.25,4.93], z=[-4.38,-3.3]; cap each phase wait to 30 seconds by default; on a missed phase mark all downstream phases skipped with explicit statuses and fallback images; expose phaseCaptureResults and fail acceptance for any status other than matched. Include existing scripts phase tests in Vitest so rules are actually covered by npm test.
+- **Validation:** pending fresh typecheck, enlarged suite, build, and browser evidence. Do not use fallback frames to infer camera geometry.
+- **Scope:** visual-review instrumentation and phase-window test coverage only. No camera runtime logic, structural geometry, decorations, or dependencies changed.

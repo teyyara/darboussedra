@@ -1,7 +1,7 @@
 export const CAMERA_PHASE_RULES = {
-  // Capture the upward/rightward look while the camera moves across the last three treads.
+  // Use a wide enough sampled band to catch more than one render frame on the last treads.
   "lower-stair-midflight": { x: [-0.2, 0.2], y: [3.04, 3.42], z: [-2.7, -2.1] },
-  "lower-stair-clearance": { x: [-0.2, 0.2], y: [4.4, 4.68], z: [-4.12, -3.84] },
+  "lower-stair-clearance": { x: [-0.2, 0.2], y: [4.25, 4.93], z: [-4.38, -3.3] },
   "lower-stair-flight": { y: [2.9, 4.25], z: [-4.2, -1.0] },
   // Capture farther along the bridge, not at the same top-tread pose as the clearance still.
   "upper-side-landing": { x: [0.55, null], y: [4.4, 4.9], z: [-3.2, -2.4] },

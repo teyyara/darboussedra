@@ -13,6 +13,7 @@ const report = {
   screenshots: [],
   roomArrivals: [],
   frameStates: [],
+  phaseCaptureResults: [],
   runtimeErrors: [],
   notes: [],
 };
@@ -243,7 +244,7 @@ async function selectDirectoryRoom(page, name, slug, transitionCaptures = [], ar
   // so no phase window is missed, but its timeout does not elapse during the prior
   // screenshot. The next watcher ignores any overlap until this token is released.
   const startPhaseCapture = (capture, blockedByHoldToken) => {
-    const timeout = capture.timeout ?? 90000;
+    // Each valid phase should occur within one traversal segment. A bounded wait keeps one missed phase from stalling the rest of review.\n    const timeout = capture.timeout ?? 30_000;
     const task = (async () => {
       let matched = false;
       try {
@@ -251,33 +252,67 @@ async function selectDirectoryRoom(page, name, slug, transitionCaptures = [], ar
           page, slug, capture.phase, capture.filename, timeout, blockedByHoldToken,
         );
         matched = true;
-      } catch {
-        report.notes.push("Timed out waiting for camera phase " + capture.phase + " on route " + slug + "; capturing the current frame instead.");
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        report.notes.push("Timed out waiting for camera phase " + capture.phase + " on route " + slug + "; this frame is a fallback and is not phase-valid.");
       }
+      report.phaseCaptureResults.push({
+        phase: capture.phase,
+        filename: capture.filename,
+        destination: slug,
+        status: matched ? "matched" : "timed-out",
+        blockedByHoldToken: blockedByHoldToken ?? null,
+      });
 
       try {
         await saveScreenshot(page, capture.filename);
       } finally {
-        // Start the next watcher while this phase still owns the camera, then
-        // release only this capture's token. A timeout is logged and remains a
-        // visual-review failure; it is never treated as a matched phase.
-        const nextCapture = phaseCaptures[nextPhaseIndex];
-        if (nextCapture) {
-          nextPhaseIndex += 1;
-          startPhaseCapture(nextCapture, matched ? capture.filename : undefined);
+        if (matched) {
+          // Arm the next phase while the current matched frame is still held, then
+          // release only this capture's token. This prevents overlapping phase windows.
+          const nextCapture = phaseCaptures[nextPhaseIndex];
+          if (nextCapture) {
+            nextPhaseIndex += 1;
+            startPhaseCapture(nextCapture, capture.filename);
+          }
+          await page.evaluate((holdToken) => {
+            const reviewWindow = window;
+            const tokens = Array.isArray(reviewWindow.__darBoussedraVisualReviewHoldTokens)
+              ? reviewWindow.__darBoussedraVisualReviewHoldTokens : [];
+            reviewWindow.__darBoussedraVisualReviewHoldTokens = tokens.filter((token) => token !== holdToken);
+            const deadlines = { ...(reviewWindow.__darBoussedraVisualReviewHoldDeadlines ?? {}) };
+            delete deadlines[holdToken];
+            reviewWindow.__darBoussedraVisualReviewHoldDeadlines = deadlines;
+            reviewWindow.__darBoussedraVisualReviewHoldCamera =
+              reviewWindow.__darBoussedraVisualReviewHoldTokens.length > 0;
+          }, capture.filename).catch(() => {});
+        } else {
+          // A missing phase makes downstream positions unknowable. Mark the rest
+          // as skipped rather than spending another 90s per stale screenshot.
+          const skippedCaptures = phaseCaptures.slice(nextPhaseIndex);
+          nextPhaseIndex = phaseCaptures.length;
+          let fallbackChain = Promise.resolve();
+          for (const skipped of skippedCaptures) {
+            report.phaseCaptureResults.push({
+              phase: skipped.phase,
+              filename: skipped.filename,
+              destination: slug,
+              status: "skipped-after-prior-phase-timeout",
+              priorPhase: capture.phase,
+            });
+            report.notes.push("Skipped camera phase " + skipped.phase + " after " + capture.phase + " timed out; saved an explicitly unvalidated fallback frame.");
+            const skippedTask = fallbackChain.then(() => saveScreenshot(page, skipped.filename));
+            phaseTasks.set(skipped, skippedTask);
+            fallbackChain = skippedTask;
+          }
+          await page.evaluate(() => {
+            const reviewWindow = window;
+            reviewWindow.__darBoussedraVisualReviewHoldTokens = [];
+            reviewWindow.__darBoussedraVisualReviewHoldDeadlines = {};
+            reviewWindow.__darBoussedraVisualReviewHoldCamera = false;
+            reviewWindow.__darBoussedraVisualReviewMatchedTokens = [];
+          }).catch(() => {});
         }
-
-        await page.evaluate((holdToken) => {
-          const reviewWindow = window;
-          const tokens = Array.isArray(reviewWindow.__darBoussedraVisualReviewHoldTokens)
-            ? reviewWindow.__darBoussedraVisualReviewHoldTokens : [];
-          reviewWindow.__darBoussedraVisualReviewHoldTokens = tokens.filter((token) => token !== holdToken);
-          const deadlines = { ...(reviewWindow.__darBoussedraVisualReviewHoldDeadlines ?? {}) };
-          delete deadlines[holdToken];
-          reviewWindow.__darBoussedraVisualReviewHoldDeadlines = deadlines;
-          reviewWindow.__darBoussedraVisualReviewHoldCamera =
-            reviewWindow.__darBoussedraVisualReviewHoldTokens.length > 0;
-        }, capture.filename).catch(() => {});
       }
     })();
     phaseTasks.set(capture, task);
@@ -499,7 +534,8 @@ if (
   !report.upperLandingAiming.looksAlongBridge ||
   report.mobileHasHorizontalDocumentOverflow ||
   report.roomDirectoryButtonCount !== 13 ||
-  report.mobileRoomDirectoryButtonCount !== 13
+  report.mobileRoomDirectoryButtonCount !== 13 ||
+  report.phaseCaptureResults.some((capture) => capture.status !== "matched")
 ) {
   process.exitCode = 1;
 }
