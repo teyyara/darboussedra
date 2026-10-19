@@ -1,10 +1,10 @@
 export const CAMERA_PHASE_RULES = {
   // Use a wide enough sampled band to catch more than one render frame on the last treads.
-  "lower-stair-midflight": { x: [-0.2, 0.2], y: [3.04, 3.42], z: [-2.7, -2.1] },
+  "lower-stair-midflight": { x: [-0.25, 0.25], y: [2.7, 3.95], z: [-3.4, -1.2] },
   "lower-stair-clearance": { x: [-0.2, 0.2], y: [4.25, 4.93], z: [-4.38, -3.3] },
   "lower-stair-flight": { y: [2.9, 4.25], z: [-4.2, -1.0] },
   // Capture farther along the bridge, not at the same top-tread pose as the clearance still.
-  "upper-side-landing": { x: [0.55, null], y: [4.4, 4.9], z: [-3.2, -2.4] },
+  "upper-side-landing": { x: [0.55, null], y: [4.4, 4.9], z: [-4.5, -2.25] },
   "roof-stair-flight": { y: [4.65, 6.6], z: [-2.75, 2.0] },
   // This capture is after the camera steps sideways out of the hatch, not while
   // the camera is still rising through the opening and seeing only sky.

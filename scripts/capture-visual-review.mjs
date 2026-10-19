@@ -228,7 +228,7 @@ async function waitForCameraPhase(page, destination, phase, holdToken, timeout =
     phaseRule: rule,
     holdToken,
     blockedByHoldToken: blockedByHoldToken ?? null,
-  }, { timeout });
+  }, { timeout, polling: 100 });
 }
 
 async function selectDirectoryRoom(page, name, slug, transitionCaptures = [], arrivalTimeout = 12000) {
@@ -328,7 +328,7 @@ async function selectDirectoryRoom(page, name, slug, transitionCaptures = [], ar
       if (!canvas || canvas.dataset.destination !== expectedDestination) return false;
       const progress = /^(\d+)\/(\d+)$/.exec(canvas.dataset.routeProgress || "");
       return Boolean(progress && Number(progress[2]) > 0);
-    }, slug, { timeout: 15000 });
+    }, slug, { timeout: 15000, polling: 100 });
     nextPhaseIndex = 1;
     startPhaseCapture(phaseCaptures[0], undefined);
   }
@@ -444,11 +444,14 @@ await motionProbe.emulateMedia({ reducedMotion: "no-preference" });
 await motionProbe.waitForTimeout(180);
 await openMap(motionProbe);
 const rooftopArrived = await selectDirectoryRoom(motionProbe, "Rooftop Terrace", "rooftop", [
-  { phase: "lower-stair-midflight", filename: "13-stair-ascent-midflight.png" },
-  { phase: "lower-stair-clearance", filename: "13b-stair-ascent-landing-clearance.png" },
-  { phase: "upper-side-landing", filename: "14-upper-landing-turn.png" },
-  { phase: "roof-stair-flight", filename: "16-roof-stair-ascent.png" },
-  { phase: "roof-hatch-clear", filename: "17-roof-hatch-exit.png" },
+  // The low-end software renderer can take several seconds per camera frame.
+  // Give each traversal zone a bounded, phase-appropriate wait rather than letting
+  // the mid-stair capture time out before the camera reaches the lower flight.
+  { phase: "lower-stair-midflight", filename: "13-stair-ascent-midflight.png", timeout: 90000 },
+  { phase: "lower-stair-clearance", filename: "13b-stair-ascent-landing-clearance.png", timeout: 60000 },
+  { phase: "upper-side-landing", filename: "14-upper-landing-turn.png", timeout: 60000 },
+  { phase: "roof-stair-flight", filename: "16-roof-stair-ascent.png", timeout: 60000 },
+  { phase: "roof-hatch-clear", filename: "17-roof-hatch-exit.png", timeout: 60000 },
 ], 90000);
 await saveScreenshot(motionProbe, "18-rooftop-motion-probe.png");
 

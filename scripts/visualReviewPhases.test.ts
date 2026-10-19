@@ -49,7 +49,16 @@ describe("browser-review stair camera phases", () => {
       position: [0, 3.2, -2.36], zone: "ground",
     })).toBe(false);
     expect(isCameraPhaseMatch("lower-stair-midflight", {
-      position: [0, 2.914, -1.991], zone: "ground",
+      // A real browser fallback crossed here while the narrow window was missed.
+      position: [0, 2.862, -1.924], zone: "ground",
+    })).toBe(true);
+    expect(isCameraPhaseMatch("lower-stair-midflight", {
+      // The destination doorway/base is not yet mid-flight.
+      position: [0, 1.9, -0.7], zone: "ground",
+    })).toBe(false);
+    expect(isCameraPhaseMatch("lower-stair-midflight", {
+      // The upper landing belongs to its own phase window.
+      position: [0.925, 4.65, -3.368], zone: "upper",
     })).toBe(false);
     expect(isCameraPhaseMatch("lower-stair-clearance", {
       position: [0, 4.65, -4.2], zone: "upper",
@@ -79,5 +88,9 @@ describe("browser-review stair camera phases", () => {
     expect(isCameraPhaseMatch("upper-side-landing", {
       position: [0.2, 4.65, -2.8], zone: "upper",
     })).toBe(false);
+    expect(isCameraPhaseMatch("upper-side-landing", {
+      // Camera is on the side lane and has reached the turn but not yet the central landing.
+      position: [0.925, 4.65, -3.368], zone: "upper",
+    })).toBe(true);
   });
 });

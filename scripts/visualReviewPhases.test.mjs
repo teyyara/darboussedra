@@ -20,8 +20,14 @@ describe("visual review camera phase windows", () => {
     };
 
     expect(isCameraPhaseMatch("lower-stair-clearance", topTreadClearance)).toBe(true);
+    expect(isCameraPhaseMatch("lower-stair-midflight", {
+      position: [0, 2.862, -1.924], zone: "ground",
+    })).toBe(true);
     expect(isCameraPhaseMatch("upper-side-landing", topTreadClearance)).toBe(false);
     expect(isCameraPhaseMatch("upper-side-landing", upperSideLanding)).toBe(true);
+    expect(isCameraPhaseMatch("upper-side-landing", {
+      position: [0.925, 4.65, -3.368], zone: "upper",
+    })).toBe(true);
     expect(isCameraPhaseMatch("lower-stair-clearance", upperSideLanding)).toBe(false);
   });
 

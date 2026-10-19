@@ -1070,3 +1070,12 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 - **Found before validation:** Loop 106 source generation emitted double backslashes in the regex literals in both the pure route-readiness helper and Playwright route readiness predicate. Those patterns would reject normal route progress strings such as 0/56.
 - **Correction:** use JavaScript regex literals matching digits, a literal slash, and the numeric route length.
 - **Validation:** pending; run the expanded unit suite and browser review on the complete checkpoint.
+
+
+## Loop 107 — Match broad stair/landing phases under slow rendering
+
+- **Evidence:** run 39191552660 / artifact 12160745173 passed type-check, the expanded 145-test suite, and build; browser failed only on phase-matching requirements. The first phase was timed out at route position [0.662,1.65,1.341], route 0/56; after fallback screenshots began, a real route sample appeared at [0,2.862,-1.924], progress 8/56. The existing lower-stair-midflight rule excluded that actual intermediate stair position (Y started at 3.04, Z ended at -2.1), indicating the window was overly narrow for software-rendered frame sampling. The upper-side-landing fallback reached [0.925,4.65,-3.368], progress 22/56, just outside its previous Z minimum -3.2.
+- **Correction:** broaden the lower-stair mid-flight window to X±0.25, Y 2.7–3.95, Z -3.4 to -1.2; broaden upper-side landing Z to -4.5 through -2.25. Use 100ms polling instead of RAF-only polling for both route readiness and phase matching. Give the midflight phase 90s and each following ascent/roof phase 60s (each still bounded, within the workflow's 15-minute job timeout).
+- **Tests:** require the previously observed midflight fallback position and the upper side-lane position to match their intended phases, while keeping the doorway/base and top landing distinct.
+- **Validation:** pending fresh test/build/browser run. Acceptance still requires every phaseCaptureResults entry matched, not a fallback/skipped screenshot.
+- **Scope:** test and browser-review harness only; no runtime camera or house geometry changed.
