@@ -343,18 +343,18 @@ describe("3D camera paths", () => {
     expect(Math.max(...path.map((pose) => pose.position[1]))).toBeLessThanOrEqual(HOUSE_LAYOUT.roofY + 1.7);
   });
 
-  it("keeps the reverse upper-landing gaze aimed inward into the open stairwell", () => {
+  it("keeps the reverse upper-landing gaze slightly inward while retaining bridge alignment", () => {
     const path = makeCameraPath("rooftop", "family-table", poseFor("family-table"));
     const landingGaze = path.find((pose) => pose.preserveHeading &&
       pose.position[2] < -4.0 && pose.position[2] > -4.5);
     expect(landingGaze).toBeDefined();
     expect(landingGaze!.target[2]).toBeGreaterThan(landingGaze!.position[2]);
-    expect(landingGaze!.target[0]).toBeLessThan(landingGaze!.position[0] - 0.2);
-    expect(landingGaze!.target[0]).toBeGreaterThan(landingGaze!.position[0] - 0.6);
+    expect(landingGaze!.target[0]).toBeLessThan(landingGaze!.position[0] - 0.02);
+    expect(landingGaze!.target[0]).toBeGreaterThan(landingGaze!.position[0] - 0.2);
     expect(landingGaze!.target[1]).toBeCloseTo(landingGaze!.position[1] - 0.65);
   });
 
-  it("keeps an inward stairwell glance while looking along the upper bridge in both travel directions", () => {
+  it("keeps a slight inward glance while looking along the upper bridge in both travel directions", () => {
     const upperEye = HOUSE_LAYOUT.upperY + 1.65;
     const climb = makeCameraPath("family-table", "rooftop", poseFor("rooftop"));
     const forwardGlances = climb.filter((pose) =>
@@ -365,8 +365,8 @@ describe("3D camera paths", () => {
     expect(forwardGlances.every((pose) =>
       Math.abs(pose.target[1] - (pose.position[1] - 0.28)) < 0.001)).toBe(true);
     expect(forwardGlances.every((pose) =>
-      pose.target[0] < pose.position[0] - 0.2 &&
-      pose.target[0] > pose.position[0] - 0.6 &&
+      pose.target[0] < pose.position[0] - 0.02 &&
+      pose.target[0] > pose.position[0] - 0.2 &&
       pose.target[2] > pose.position[2])).toBe(true);
 
     const returning = makeCameraPath("rooftop", "family-table", poseFor("family-table"));
@@ -378,8 +378,8 @@ describe("3D camera paths", () => {
     expect(reverseGlances.every((pose) =>
       Math.abs(pose.target[1] - (pose.position[1] - 0.65)) < 0.001)).toBe(true);
     expect(reverseGlances.every((pose) =>
-      pose.target[0] < pose.position[0] - 0.2 &&
-      pose.target[0] > pose.position[0] - 0.6 &&
+      pose.target[0] < pose.position[0] - 0.02 &&
+      pose.target[0] > pose.position[0] - 0.2 &&
       pose.target[2] > pose.position[2])).toBe(true);
   });
 
@@ -585,8 +585,8 @@ describe("3D camera paths", () => {
     expect(laneEntry, "the route reaches the side lane after clearing the stair edge").toBeDefined();
     expect(laneEntry!.position[2], "the turn remains behind the rear bedroom-wall line").toBeLessThan(-3.95);
     expect(laneEntry!.target[2] - laneEntry!.position[2]).toBeGreaterThan(1.0);
-    expect(laneEntry!.target[0], "the authored view glances inward without leaving the side-lane safe boundary").toBeLessThan(laneEntry!.position[0] - 0.2);
-    expect(laneEntry!.target[0]).toBeGreaterThan(laneEntry!.position[0] - 0.6);
+    expect(laneEntry!.target[0], "the authored view glances slightly inward while retaining bridge alignment").toBeLessThan(laneEntry!.position[0] - 0.02);
+    expect(laneEntry!.target[0]).toBeGreaterThan(laneEntry!.position[0] - 0.2);
   });
 
   it("looks along the upper bridge while keeping the camera on the protected side lane", () => {
@@ -601,8 +601,8 @@ describe("3D camera paths", () => {
     expect(turnViews.length).toBeGreaterThanOrEqual(7);
     for (const pose of turnViews) {
       expect(pose.position[0]).toBeGreaterThan(HOUSE_LAYOUT.stairs.openingWidth / 2 + 0.08);
-      expect(pose.target[0]).toBeLessThan(pose.position[0] - 0.2);
-      expect(pose.target[0]).toBeGreaterThan(pose.position[0] - 0.6);
+      expect(pose.target[0]).toBeLessThan(pose.position[0] - 0.02);
+      expect(pose.target[0]).toBeGreaterThan(pose.position[0] - 0.2);
       expect(pose.target[2]).toBeGreaterThan(pose.position[2] + 0.9);
     }
   });
@@ -619,8 +619,8 @@ describe("3D camera paths", () => {
       Math.abs(pose.position[2] - flightEndZ) < 0.02);
 
     expect(turn, "the lateral turn uses an authored bridge gaze").toBeDefined();
-    expect(turn!.target[0]).toBeLessThan(turn!.position[0] - 0.2);
-    expect(turn!.target[0]).toBeGreaterThan(turn!.position[0] - 0.6);
+    expect(turn!.target[0]).toBeLessThan(turn!.position[0] - 0.02);
+    expect(turn!.target[0]).toBeGreaterThan(turn!.position[0] - 0.2);
     expect(turn!.target[2]).toBeGreaterThan(turn!.position[2] + 0.9);
   });
 
@@ -636,8 +636,8 @@ describe("3D camera paths", () => {
 
     expect(returnViews.length).toBeGreaterThanOrEqual(4);
     for (const pose of returnViews) {
-      expect(pose.target[0], "gaze remains gently inward toward the stair shaft").toBeLessThan(pose.position[0] - 0.2);
-      expect(pose.target[0]).toBeGreaterThan(pose.position[0] - 0.6);
+      expect(pose.target[0], "gaze remains gently inward while following the bridge").toBeLessThan(pose.position[0] - 0.02);
+      expect(pose.target[0]).toBeGreaterThan(pose.position[0] - 0.2);
       expect(pose.target[2], "return gaze stays anchored on the central stair opening")
         .toBeCloseTo(HOUSE_LAYOUT.upperBridge.centerZ, 2);
       expect(pose.target[1], "return view looks down into the stairwell")

@@ -143,14 +143,14 @@ function groundStairWalkway(): CameraPose[] {
     // The lateral step is the critical turn: a tangent-facing pose here looks
     // straight into the rear bedroom wall. Keep the camera on the protected lane
     // but start looking through the open stairwell before the forward walk begins.
-    poseFacingAlongUpperBridge([sideLaneX, upperEye, flight.to[2]], [-0.35, 0.94]),
+    poseFacingAlongUpperBridge([sideLaneX, upperEye, flight.to[2]], [-0.08, 0.99]),
     // Continue the inward view along the upper bridge rather than tracking the wall.
-    poseFacingAlongUpperBridge([sideLaneX, upperEye, flight.to[2] + 0.2], [-0.35, 0.94]),
-    poseFacingAlongUpperBridge([sideLaneX, upperEye, flight.to[2] + 0.6], [-0.35, 0.94]),
+    poseFacingAlongUpperBridge([sideLaneX, upperEye, flight.to[2] + 0.2], [-0.08, 0.99]),
+    poseFacingAlongUpperBridge([sideLaneX, upperEye, flight.to[2] + 0.6], [-0.08, 0.99]),
     // The side lane is narrow and bordered by bedroom walls. Let the view glance
     // toward the open stair shaft as the camera walks forward, instead of staring
     // at an uninterrupted wall; reverseRoute mirrors travel but keeps this inward glance.
-    ...[-2.8, -1.8, -0.8, 0.2].map((z) => poseFacingAlongUpperBridge([sideLaneX, upperEye, z], [-0.35, 0.94])),
+    ...[-2.8, -1.8, -0.8, 0.2].map((z) => poseFacingAlongUpperBridge([sideLaneX, upperEye, z], [-0.08, 0.99])),
     // Rejoin the full-width upper landing beyond the end of the open stair shaft.
     poseFacing([sideLaneX * 0.7, upperEye, 0.72], [0.2, 1]),
     poseFacing([0, upperEye, 1.05], [0, 1]),
@@ -385,7 +385,7 @@ export function makeCameraPath(from: HouseLocation, to: HouseLocation, finalPose
     // the landing fascia, and retains a negative-Z component. The actual U-turn
     // toward the family hall happens on the open landing, not while the camera is
     // still underneath the slab.
-    const landingGlanceX = Math.abs(dz) * 0.45;
+    const landingGlanceX = Math.abs(dz) * 0.20;
     const landingGlanceZ = dz * 0.75;
     const landingGlanceY = Math.hypot(landingGlanceX, landingGlanceZ) * 0.20;
     const sightlineX = lateAscentTurn ? dx * (1 - turnProgress) + landingGlanceX * turnProgress : dx;

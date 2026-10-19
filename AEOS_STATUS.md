@@ -1030,3 +1030,12 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 - **Correction:** assert the final tread gaze remains along the flight (-Z), while the separate upper-landing test still explicitly requires the top landing to look forward into the bridge (+Z). Define the tangent-alignment exception from the actual late-ascent clearance band (position height and Z range), not from whether the resulting target already crosses a second upward-look threshold.
 - **Validation:** pending fresh typecheck, 139 tests, build and browser review.
 - **Scope:** regression test corrections only; no runtime or geometry changes.
+
+
+## Loop 104 — Retain the flight view and align the upper-bridge gaze
+
+- **Evidence:** workflow 39186902422, artifact 12158258421, SHA-256 2d392ab1cc39bb9613ec40fc8c2df8aafc8ee037f6f9cad5cec9842800b087b6. Typecheck, tests, and build passed; the browser captured all 21 frames, 14/14 room arrivals settled, no runtime errors and no mobile overflow. The browser gate still failed because `upperLandingAiming.looksAlongBridge=false`. Direction was [-0.339,-0.227,0.913], outside the permitted X band. Frame 13b remained mostly near-field wall, and frame 14 was aimed too far into the stair underside.
+- **Correction:** reduce the late-ascent lateral glance factor from 0.45 to 0.20 so the camera keeps the stair run in front through the last treads. Change the four side-lane camera hints from [-0.35,0.94] to [-0.08,0.99] for a much smaller inward glance that should stay aligned with the open bridge rather than looking directly at the stair underside.
+- **Tests:** bridge-gaze assertions require a bounded inward target offset of 0.02–0.20m, still keep the bridge target forward (+Z), and retain all camera position / route bounds and landing aim assertions.
+- **Validation:** pending fresh full CI and screenshot inspection. Do not claim acceptance unless both upper-landing aiming checks pass and images 13b/14 are visually clear.
+- **Scope:** camera path and regression tests only. No architecture, decorations, assets, or dependencies changed.
