@@ -980,3 +980,11 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 - **Tests:** replace global-deadline cases with per-token expiry tests, including one stale token expiring while another remains live.
 - **Validation:** pending a fresh run. Do not accept the stair/hatch walkthrough until screenshots 16 and 17 exist at true, distinct camera positions.
 - **Scope:** no architectural geometry or decor changes, dependencies, merge or deployment.
+
+
+## Loop 101a — Fix per-token helper type-check regression
+
+- **Observed:** workflow 39183973522 stopped at type-check with TS1128/TS1434 errors at src/house/cameraTiming.ts lines 41–47.
+- **Cause:** the scripted replacement changed the old helper signature but left its trailing legacy return/body block after the new function.
+- **Correction:** remove the orphaned suffix; intended per-token expiry logic is unchanged.
+- **Validation:** rerun type-check, unit tests, build and browser review on the updated candidate.

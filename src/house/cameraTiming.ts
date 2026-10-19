@@ -38,10 +38,3 @@ export function getActiveVisualReviewHoldTokens(args: {
       Number.isFinite(deadline) &&
       args.nowMs < deadline;
   });
-}): boolean {
-  const requested = args.activeTokenCount > 0 || args.forceHold;
-  return requested &&
-    Number.isFinite(args.holdUntilMs) &&
-    Number.isFinite(args.nowMs) &&
-    args.nowMs < (args.holdUntilMs as number);
-}
