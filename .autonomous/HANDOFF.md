@@ -1,28 +1,28 @@
 # Handoff — Dar Boussedra
 
-**STATUS: CHECKPOINTED / IN PROGRESS. Loop 100 hold-expiry repair committed; validation pending.**
+**STATUS: CHECKPOINTED / IN PROGRESS. Loop 101 per-token hold correction committed; fresh validation pending.**
 
 ## Candidate
 - Branch: fix/loop-064-moroccan-exterior-and-layout
-- Loop 100 source commit: 9021c8b2f8002faccddc0fcc38e9f606b4a7fb3b
-- Main baseline: e06af00a049eb72b173295438bbeb8e384c6fef5.
+- Loop 101 source commit: 0f638eb74f160c408e2d68275edac0a905e30220
 - Open PR #7: https://github.com/teyyara/darboussedra/pull/7
-- Canonical strategy: .autonomous/STRATEGY.md; current machine state: .autonomous/STATE.json. Cold-start recovery passed earlier. The old .aeos/state.json is a historical loop-050 snapshot.
+- Main baseline remains e06af00a049eb72b173295438bbeb8e384c6fef5.
+- Canonical strategy and state: .autonomous/STRATEGY.md and .autonomous/STATE.json.
 
-## Loop 100 change
-The browser-review camera hold now has a 50-second maximum lifetime; expired hold tokens clear in the render loop. Frame telemetry records active hold-token count and remaining deadline. Unit tests cover active, expired, no-request and invalid-deadline behavior. This review-only flag is absent from normal navigation.
+## Loop 100 actual result
+Workflow 39182940594: https://github.com/teyyara/darboussedra/actions/runs/39182940594
+Artifact 12157625304: https://github.com/teyyara/darboussedra/actions/runs/39182940594/artifacts/12157625304
+Artifact SHA-256: f70e6f673979f213d1f3566d6877dc2c69b89ec55a9884c656f5a886490a7386
+Typecheck, tests (22 files/137 tests), build and Chromium passed; browser review failed with two phase and two screenshot timeouts. Images 16/17 were missing.
 
-## Latest evidence before Loop 100
-Run 39181992857: https://github.com/teyyara/darboussedra/actions/runs/39181992857
-Artifact 12156503344: https://github.com/teyyara/darboussedra/actions/runs/39181992857/artifacts/12156503344
-ZIP SHA-256: ece0411ee34009fd6e0fd81cfda97cf39d0298a8ac969312b9e43811c78a5127
-Typecheck, 133 tests, build and Chromium install passed; 14/14 arrivals settled, no runtime errors, mobile had no horizontal overflow at 390px. But the roof-stair-flight and roof-hatch-clear phases timed out and both captured the same stale frame at routeProgress 27/56 and cameraPosition [0.249, 4.65, 0.923]. Entrance is improved but still frame-heavy; stair view remains underside/wall-heavy. Overall workflow success is not visual acceptance.
+## Root cause
+At both fallback captures the camera remained at [0.925,4.65,-2.98], routeProgress 22/56, with one hold token and ~43.7s remaining. The phase predicate refreshed a shared 50-second deadline every time the same token's match remained true. This could keep a stale hold alive indefinitely.
 
-## Hypothesis
-A review-only hold could remain set if screenshot cleanup failed, freezing later camera-phase watchers. The artifact is consistent with this but does not prove it. Loop 100 bounds this hold and adds telemetry.
+## Loop 101 correction
+Commit 0f638eb74f160c408e2d68275edac0a905e30220 stores expiry per token, sets it only on first match (tracked by a one-shot matched-token list), and removes each token/deadline independently. HouseScene keeps only tokens whose own deadline is still live. Browser telemetry now records each token's remaining time; unit tests cover independent expiry.
 
 ## Next action
-Inspect the new Foundation checks run for the final branch head. If source checks pass, inspect hold-token/deadline telemetry in frames 13b, 14, 16 and 17. Confirm that roof-stair and hatch are captured at independent route positions; then fix remaining camera/geometry issues in a separate bounded loop.
+Inspect the new Foundation checks run for the final branch head. Images 16 and 17 must both exist and show distinct positions on the roof flight and after clearing the hatch, with per-token deadline telemetry. Then refine the visual stair/landing issue in a separate bounded loop.
 
 ## Constraints
-No new decoration, paid service/dependency, merge to main with failing/unknown visual gate, or manual Vercel deployment.
+No decorations or new paid dependencies. No merge to main with a failing/unknown visual gate; no manual Vercel deployment.

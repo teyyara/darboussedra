@@ -28,3 +28,10 @@
 - Visual review remains incomplete: roof-stair-flight and roof-hatch-clear reused the same stale waypoint (27/56).
 - Source commit 9021c8b2f8002faccddc0fcc38e9f606b4a7fb3b adds bounded expiry to review-only camera holds, unit coverage and hold state telemetry; no architecture, decor or dependencies changed.
 - Next: inspect the fresh report before another product-code change.
+
+
+## 2026-10-19 — Loop 101 / independent hold expiries
+- Run 39182940594 failed its browser gate after typecheck, 137 tests, build and Chromium passed. Artifact 12157625304 SHA-256 f70e6f673979f213d1f3566d6877dc2c69b89ec55a9884c656f5a886490a7386.
+- Two later phase screenshots failed; same upper-landing frame showed one hold token and ~43.7s remaining. The shared deadline was being renewed while the matching token remained true.
+- Source commit 0f638eb74f160c408e2d68275edac0a905e30220 switches to per-token deadlines and a one-shot matching guard, with independent cleanup and unit tests.
+- Fresh full/browser validation pending; no architecture or decor changed.

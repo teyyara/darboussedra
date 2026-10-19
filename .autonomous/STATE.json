@@ -3,10 +3,10 @@
   "strategy_version": "4.1",
   "project_status": "IN_PROGRESS",
   "current_phase": "STAIR_TRAVERSAL_AND_VISUAL_VALIDATION",
-  "current_goal": "Capture actual roof-stair and hatch phases reliably, then address remaining stair-landing sightline defects from fresh evidence.",
+  "current_goal": "Prevent the browser-review harness from renewing stale camera holds, then capture real roof-stair/hatch phases before further stair improvements.",
   "current_candidate_branch": "fix/loop-064-moroccan-exterior-and-layout",
-  "current_candidate_commit": "9021c8b2f8002faccddc0fcc38e9f606b4a7fb3b",
-  "last_checkpoint_commit": "9021c8b2f8002faccddc0fcc38e9f606b4a7fb3b",
+  "current_candidate_commit": "0f638eb74f160c408e2d68275edac0a905e30220",
+  "last_checkpoint_commit": "0f638eb74f160c408e2d68275edac0a905e30220",
   "last_known_good_commit": "e06af00a049eb72b173295438bbeb8e384c6fef5",
   "last_known_good_release": null,
   "active_operation_id": null,
@@ -22,44 +22,47 @@
     "Loop 099 updated regression expectations to require an off-axis sightline through the real shared doorway while preserving entrance and target-room bounds.",
     "Loop 100 source change: add a 50-second safety fuse to review-only camera holds, clear expired tokens in the render loop, and report hold count/deadline telemetry.",
     "Inspected artifact 12156503344 from workflow 39181992857: typecheck/tests/build/Chromium pass, 133 tests pass, 14/14 arrivals settle and no runtime errors.",
-    "Recorded visual review as incomplete despite green workflow because roof-stair-flight and roof-hatch-clear timed out and saved the same stale upper-landing frame."
+    "Recorded visual review as incomplete despite green workflow because roof-stair-flight and roof-hatch-clear timed out and saved the same stale upper-landing frame.",
+    "Loop 100 validation completed with failure: typecheck, 137 tests, build and Chromium passed, but the browser step timed out on roof-stair-flight/hatch screenshots. Artifact 12157625304 showed repeated hold-token deadline renewal.",
+    "Loop 101 source commit created: independent per-token deadlines, first-match-only claim guard, independent cleanup, per-token telemetry, and tests for independent expiry."
   ],
   "pending_work": [
-    "Validate Loop 100 on the final PR head and inspect hold count/deadline telemetry for frames 13b, 14, 16 and 17.",
-    "Confirm roof-stair and hatch captures are at independent route positions, not a timeout fallback.",
-    "After captures are trustworthy, refine the upper landing/stair sightline if the underside/wall still dominates.",
-    "Profile render readiness/pop-in only after the staircase is visually coherent."
+    "Validate Loop 101 at the final PR head with typecheck, full unit tests, build and fresh browser review.",
+    "Verify images 16 and 17 both exist and show actual, distinct roof-flight and hatch-clear positions; inspect per-token deadline telemetry.",
+    "After screenshot capture is reliable, fix the visually wall/underside-heavy stair landing and narrow upper passage from fresh evidence.",
+    "Reassess entrance framing; it is improved but remains visually unaccepted.",
+    "Measure render readiness/pop-in only after traversal quality is coherent."
   ],
   "known_blockers": [
-    "Prior workflow 39181992857 was overall SUCCESS, but roof-stair and hatch phase captures timed out at the same stale waypoint, so visual acceptance remains incomplete.",
-    "Entrance view improved but still has a dominant foreground portal and a second interior frame.",
-    "Stair top view remains wall/underside-heavy; cause of stale phase position is not proven until hold telemetry is available."
+    "Run 39182940594 failed the browser gate although all source checks passed. It had 2 screenshot capture timeouts and 2 phase timeouts; images 16/17 were absent.",
+    "Root cause found in artifact telemetry: at both fallback captures the same upper-side token remained live at ~43.7s, implying the shared deadline was refreshed on repeated matcher evaluations. Loop 101 switches to per-token deadlines and a one-shot matched-token guard; revalidation required.",
+    "Entrance and upper landing visuals still need improvement. No geometry changes were made in Loop 101."
   ],
-  "latest_validation_status": "PENDING",
+  "latest_validation_status": "NOT_RUN",
   "latest_validation": {
-    "candidate_source_commit": "9021c8b2f8002faccddc0fcc38e9f606b4a7fb3b",
+    "candidate_source_commit": "0f638eb74f160c408e2d68275edac0a905e30220",
     "source_checks": "PENDING",
     "browser_review": "PENDING",
     "result": "NOT_RUN"
   },
   "latest_release_status": "NOT_RELEASED",
-  "next_action": "Inspect the Foundation checks workflow for the final memory-aware branch head. Confirm source gates pass, then verify the new report's hold-token count/deadline around images 13b, 14, 16 and 17; the last two must capture real stair/hatch positions, not waypoint 27/56.",
-  "updated_at": "2026-10-19T00:55:08.330Z",
-  "previous_candidate_validation_status": "VISUAL_REVIEW_INCOMPLETE",
+  "next_action": "Inspect Foundation checks for the final branch head. Confirm source gates pass, then inspect browser-review.json and images 13, 13b, 14, 16 and 17. Both 16/17 must exist, report distinct camera positions/progress and show the roof flight/hatch clearance; check per-token deadline values.",
+  "updated_at": "2026-10-19T01:04:30Z",
+  "previous_candidate_validation_status": "FAIL",
   "previous_candidate_validation": {
-    "workflow_run": 39181992857,
-    "source_commit": "c9c0ec033c7433d46fd3a27ee5ca5c80a4a72526",
-    "overall_workflow": "SUCCESS",
-    "source_checks": "PASS: typecheck, 22 test files / 133 tests, production build, Chromium install",
-    "browser_review": "PARTIAL / NOT ACCEPTED",
-    "artifact_id": 12156503344,
-    "artifact_sha256": "ece0411ee34009fd6e0fd81cfda97cf39d0298a8ac969312b9e43811c78a5127",
+    "workflow_run": 39182940594,
+    "source_commit": "56a1c4bdc34f8a1cf8471637f99046d087706836",
+    "overall_workflow": "FAILURE",
+    "source_checks": "PASS: typecheck; 22 test files / 137 tests; production build; Chromium install",
+    "browser_review": "FAIL",
+    "artifact_id": 12157625304,
+    "artifact_sha256": "f70e6f673979f213d1f3566d6877dc2c69b89ec55a9884c656f5a886490a7386",
     "findings": [
-      "14/14 room arrivals settled; runtimeErrors empty.",
-      "390px mobile width has no horizontal overflow; 13 room-directory buttons present desktop and mobile.",
-      "Entrance less frontal but still dominated by large doorway frames.",
-      "Stair anticipation/clearance booleans are true, while images still show stair underside/wall dominating the landing.",
-      "roof-stair-flight and roof-hatch-clear timed out and reused frame routeProgress 27/56, cameraPosition [0.249,4.65,0.923]."
+      "14/14 room arrivals settled; no JS runtime errors aside from screenshot capture failures.",
+      "390px mobile viewport has no horizontal overflow; 13 room-directory buttons visible.",
+      "roof-stair-flight and roof-hatch-clear timed out.",
+      "Both fallback frames show [0.925,4.65,-2.98], routeProgress 22/56, one active hold and ~43.7s deadline remaining.",
+      "Images 16 and 17 were not saved after 45s/30s screenshot timeouts."
     ]
   }
 }

@@ -1,21 +1,20 @@
 # Prioritized Plan
 
-## P0 — Stair and landing traversal
-- [ ] Loop 100 review-only camera hold-expiry implementation committed; CI/browser revalidation pending.
-- [ ] Verify roof-stair-flight and roof-hatch-clear captures progress beyond stale waypoint 27/56.
-- [ ] Inspect lower-stair clearance and upper landing; camera booleans pass but the rendered view remains underside/wall-heavy.
-- [ ] Keep the entrance under visual review; improved framing is not yet acceptance-ready.
-- [ ] Audit head clearance, walkway width and floor/hatch gaps after fresh evidence localizes the specific defect.
+## P0 — Capture and stair traversal
+- [ ] Loop 101 per-token hold-expiry fix committed; full validation pending.
+- [ ] Verify screenshot 16 reaches the roof flight and screenshot 17 reaches the deck beyond the hatch, with distinct camera positions/progress and per-token deadline data.
+- [ ] Fix the wall/underside-heavy lower landing and narrow upper passage from fresh visual evidence.
+- [ ] Reassess entrance framing; improved but not accepted.
 
 ## P1 — Rendering readiness / pop-in
-- [ ] Measure first-scene readiness, first-movement latency and frame stalls.
-- [ ] Profile before optimizing; do not infer a rendering bottleneck from screenshot timeout alone.
-- [ ] Avoid destructive visibility handoffs; inspect exact browser images and telemetry.
+- [ ] Measure initial readiness, first movement and frame stalls after reliable captures are available.
+- [ ] Profile before optimizing; don't infer a renderer bottleneck from screenshot timeout alone.
+- [ ] Inspect exact screenshot/report evidence.
 
-## P2 — Moroccan visual coherence
+## P2 — Moroccan coherence
 - [ ] Keep existing plaster, tile, wood, neighborhood, sun and clouds coherent.
-- [ ] No decorations until explicit user approval.
+- [ ] No new decorations until explicit approval.
 
 ## Release
-- [ ] Typecheck, full tests, build, room arrivals, actual stair/hatch captures, responsive checks and memory integrity pass on a frozen candidate.
-- [ ] No release while a critical visual gate is FAIL/BLOCKED/UNKNOWN. Never manually deploy to Vercel.
+- [ ] Typecheck, full tests, production build, arrivals, real roof-stair/hatch captures, responsive checks and memory integrity pass on a frozen candidate.
+- [ ] No release with critical FAIL/BLOCKED/UNKNOWN. Never manually deploy to Vercel.
