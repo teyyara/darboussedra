@@ -1,21 +1,22 @@
 # Prioritized Plan
 
 ## P0 — Physical architecture
-- [ ] Loop 098: entrance camera pose implementation committed; validation pending. Confirm the destination no longer looks like a tunnel.
-- [ ] Fix stair-top view so it clears the fascia and looks into the open upper landing.
-- [ ] Verify structural floor substrates close unintentional gaps while preserving the intended stairwell/hatch openings.
-- [ ] Audit wall/portal ownership, adjacency, floor/ceiling joins, thresholds, head clearance, landings and rails.
+- [ ] Loop 098 entrance framing implementation awaits visual confirmation.
+- [ ] Loop 099 updates contradictory camera-path assertions; run unit tests/build before proceeding.
+- [ ] Fix stair-top view so the camera clears the fascia and looks into the open upper landing.
+- [ ] Verify structural substrates close unintended gaps while preserving the real stairwell/hatch openings.
+- [ ] Audit portal ownership, room adjacency, floor/ceiling joins, thresholds, head clearance, landings and rails.
 
-## P1 — Rendering readiness and pop-in
-- [ ] Measure first-scene readiness, time-to-first-movement, frame stalls and transition delays on a production build.
-- [ ] Profile before optimizing; prewarm/reuse resources only when evidence supports it.
-- [ ] Avoid destructive visibility handoffs and prepare upcoming geometry before camera rotations expose it.
+## P1 — Rendering readiness / pop-in
+- [ ] Measure first-scene readiness, first-movement latency, frame stalls and transition delays.
+- [ ] Profile before optimizing; prewarm/reuse resources only when supported by measurements.
+- [ ] Avoid destructive visibility handoffs; have upcoming visible geometry ready before camera turns reveal it.
 - [ ] Keep camera phase windows distinct and inspect fresh artifacts.
 
 ## P2 — Moroccan visual coherence
-- [ ] Keep existing plaster, tile, wood, street, neighborhood, sun and clouds coherent.
-- [ ] Tune existing materials/lighting after P0/P1. Add no decor until explicit approval.
+- [ ] Keep existing plaster, tile, wood, neighborhood, sun and clouds coherent.
+- [ ] No new decor until explicitly approved.
 
 ## Release
-- [ ] Typecheck, unit tests, build, room arrivals, stair ascent/descent, visual review, responsive checks and memory validation pass on a frozen candidate.
-- [ ] No release while any critical status is FAIL/BLOCKED/UNKNOWN. No manual Vercel deployment.
+- [ ] Source checks, room arrivals, stair ascent/descent, fresh visual review, responsive checks and memory integrity pass on a frozen candidate.
+- [ ] No release with critical FAIL/BLOCKED/UNKNOWN. No manual Vercel deployment.

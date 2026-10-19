@@ -5,8 +5,8 @@
   "current_phase": "ARCHITECTURE_AND_RENDERING_REPAIR",
   "current_goal": "Fix tunnel-like entrance and incoherent stair/floor views; diagnose rendering pop-in before performance optimization.",
   "current_candidate_branch": "fix/loop-064-moroccan-exterior-and-layout",
-  "current_candidate_commit": "4fecdacd646ef616cafabbc803c23ad08cb60149",
-  "last_checkpoint_commit": "4fecdacd646ef616cafabbc803c23ad08cb60149",
+  "current_candidate_commit": "10ff07e0882133bb68a31c8333c90e4d64340719",
+  "last_checkpoint_commit": "10ff07e0882133bb68a31c8333c90e4d64340719",
   "last_known_good_commit": "e06af00a049eb72b173295438bbeb8e384c6fef5",
   "last_known_good_release": null,
   "active_operation_id": null,
@@ -17,43 +17,38 @@
     "Confirmed typecheck/tests/build pass but browser-review gate fails.",
     "Adopted canonical AEOS v4.1 repository memory.",
     "Cold-start recovery PASS: canonical memory files exist and are readable; v4.1 markers and constraints reconstruct accurately.",
-    "Loop 098 source checkpoint created: diagonal entrance camera pose and regression assertions; source-level validation is pending."
+    "Loop 098 source checkpoint created: diagonal entrance camera pose and regression assertions; source-level validation is pending.",
+    "Diagnosed Loop 098 test failure in run 39181779811: two camera-path assertions still required a centered entrance gaze and a target inside the vestibule.",
+    "Loop 099 updated regression expectations to require an off-axis sightline through the real shared doorway while preserving entrance and target-room bounds."
   ],
   "pending_work": [
-    "Validate Loop 098 on the final PR branch head with typecheck, full unit tests, production build and browser review.",
-    "Inspect the fresh entrance screenshot; do not mark the tunnel issue fixed until visually supported.",
-    "Address the stair-top wall/fascia view and phase timeout separately after the current candidate is reviewed.",
-    "Profile render readiness/pop-in; optimize from measured evidence."
+    "Validate Loop 099 at the final PR head: typecheck, full unit tests and production build.",
+    "Inspect a fresh entrance screenshot and browser report before treating the tunnel issue as fixed.",
+    "Handle the stair-top wall/fascia view and capture timeouts in a separate bounded loop.",
+    "Measure renderer readiness/pop-in before performance changes."
   ],
   "known_blockers": [
-    "Prior browser review run 39177873937 failed on earlier source commit and must remain recorded as historical evidence.",
-    "Loop 098 has not been validated; the final branch update should trigger a new Foundation checks run."
+    "Loop 098 CI on commit 1d9f0cdb5d5bd8bb2e2081501e9cec15dea9d72e passed typecheck but failed two legacy camera-path assertions; Loop 099 updates them but is not yet validated.",
+    "Prior browser review 39177873937 showed stair-top obstruction and capture/phase timeouts; that problem remains open."
   ],
   "latest_validation_status": "NOT_RUN",
   "latest_validation": {
-    "candidate_source_commit": "4fecdacd646ef616cafabbc803c23ad08cb60149",
+    "candidate_source_commit": "10ff07e0882133bb68a31c8333c90e4d64340719",
     "source_checks": "NOT_RUN",
     "browser_review": "NOT_RUN",
     "result": "PENDING"
   },
   "latest_release_status": "NOT_RELEASED",
-  "next_action": "Inspect the Foundation checks run for the final branch head; validate source checks and review fresh entrance/stair browser artifacts before making another source change.",
-  "updated_at": "2026-10-19T00:39:35.028Z",
+  "next_action": "Inspect the new Foundation checks run for the final branch head; confirm tests/build pass and review fresh entrance/stair screenshots before further edits.",
+  "updated_at": "2026-10-19T00:42:28.585Z",
   "previous_candidate_validation_status": "FAIL",
   "previous_candidate_validation": {
-    "workflow_run": 39177873937,
-    "commit": "4acf977818f22ff486ff82636f146ea6de2ed28f",
-    "source_checks": "PASS: typecheck, unit tests, production build, Chromium install",
-    "browser_review": "FAIL",
-    "artifact_id": 12154942342,
-    "artifact_sha256": "8b50f020216fa7075a105b0e8ab4d829d0723468654fbb139a08c386c46e779f",
-    "observations": [
-      "14/14 expected room arrivals settled.",
-      "02-entrance-eye-level.png remains a tunnel-like aligned doorway view.",
-      "13b-stair-ascent-landing-clearance.png is dominated by opaque wall/fascia.",
-      "16-roof-stair-ascent screenshot timed out after 45000ms waiting for screenshot/fonts.",
-      "upper-side-landing, roof-stair-flight and roof-hatch-clear camera phases timed out.",
-      "anticipatesUpperLandingTurn=false and clearsUpperLandingOnAscent=false."
-    ]
+    "workflow_run": 39181779811,
+    "source_commit": "1d9f0cdb5d5bd8bb2e2081501e9cec15dea9d72e",
+    "typecheck": "PASS",
+    "unit_tests": "FAIL: 131 passed, 2 failed; legacy cameraPath.test.ts assertions conflicted with the intentional entrance target",
+    "build": "SKIPPED",
+    "browser_review": "SKIPPED",
+    "artifacts": "No screenshots; tests failed before browser capture"
   }
 }

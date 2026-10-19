@@ -22,3 +22,10 @@ Latest candidate visual quality is not certified; a preview Ready status may ref
 - Change: off-axis eye-level entrance camera and regression assertions.
 - Validation: pending new Foundation checks triggered by final branch update.
 - Prior baseline artifact: workflow 39177873937 / artifact 12154942342 / SHA-256 8b50f020216fa7075a105b0e8ab4d829d0723468654fbb139a08c386c46e779f. It proves the old defect, not whether Loop 098 fixed it.
+
+
+## Loop 098/099 — entrance sightline regression
+- Loop 098 source commit: 4fecdacd646ef616cafabbc803c23ad08cb60149.
+- Run 39181779811: https://github.com/teyyara/darboussedra/actions/runs/39181779811, head 1d9f0cdb5d5bd8bb2e2081501e9cec15dea9d72e.
+- Result: typecheck PASS; tests FAIL with 131 passed / 2 failed in cameraPath.test.ts. Build and browser capture were skipped; no screenshots were produced.
+- Root cause and correction documented in .autonomous/FAILURES.md; source commit 10ff07e0882133bb68a31c8333c90e4d64340719 revises tests rather than removing the doorway/bounds checks. Re-validation pending.
