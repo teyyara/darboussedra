@@ -12,3 +12,9 @@
 - An overall workflow SUCCESS can conceal incomplete visual evidence when the capture script records phase timeouts but exits successfully.
 - Two phase images at exactly the same position are not independent evidence; inspect routeProgress, cameraPosition, runtime errors and hold-token telemetry with the frames.
 - Camera direction predicates and source tests are not visual acceptance; actual screenshots remain necessary.
+
+
+## Loop 101 learning
+- A shared TTL is not a hard bound if its timestamp is rewritten while the match remains true.
+- Per-token deadline telemetry made the renewal bug identifiable.
+- Two fallback screenshots at the same position and missing target-phase images are a browser-review failure even if source tests pass.

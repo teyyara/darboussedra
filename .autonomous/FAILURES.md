@@ -24,3 +24,8 @@ Run 39181779811 failed two tests because the old tests required the entrance cam
 ## F-006 — Unbounded visual-review hold (hypothesis)
 Class TEST INFRASTRUCTURE; mitigation in source commit 9021c8b2f8002faccddc0fcc38e9f606b4a7fb3b, verification pending.
 Two later phase captures reused the same stale waypoint after timeout. HouseScene intentionally pauses movement while the review harness captures a matched frame, but there was no hold deadline if cleanup failed. Loop 100 adds a 50-second expiry and pure unit tests. Do not mark resolved until a fresh artifact shows the roof stair/hatch phases at independent route positions.
+
+
+## F-007 — Shared review-hold deadline renewed indefinitely
+Class TEST INFRASTRUCTURE; Loop 101 mitigation committed, revalidation pending.
+Workflow 39182940594 / artifact 12157625304. Screenshots 16/17 timed out and fell back to [0.925,4.65,-2.98], routeProgress 22/56, one active hold and ~43.7s remaining. The phase predicate refreshed a shared 50-second deadline while the same matched pose remained true. Loop 101 stores deadlines per token and uses a first-match-only guard. Do not mark resolved until new screenshots 16/17 exist at distinct, true route positions.

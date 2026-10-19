@@ -38,3 +38,12 @@ Latest candidate visual quality is not certified; a preview Ready status may ref
 - Source gates: PASS (typecheck, 133 tests, build, Chromium); 14/14 arrivals and no runtime errors.
 - Caveat: the roof-stair-flight and roof-hatch-clear images timed out at the same stale position [0.249,4.65,0.923], route progress 27/56. Green workflow result is not a full visual pass.
 - Loop 100 source commit 9021c8b2f8002faccddc0fcc38e9f606b4a7fb3b introduces hold expiry and telemetry; validate with fresh images.
+
+
+## Loop 100 failure / Loop 101 correction
+- Workflow 39182940594: https://github.com/teyyara/darboussedra/actions/runs/39182940594
+- Artifact 12157625304: https://github.com/teyyara/darboussedra/actions/runs/39182940594/artifacts/12157625304
+- SHA-256: f70e6f673979f213d1f3566d6877dc2c69b89ec55a9884c656f5a886490a7386
+- Source checks passed (137 tests, production build, Chromium), but browser review failed with two screenshot and two phase timeouts. Captures 16/17 were absent.
+- Both fallback frame states showed [0.925,4.65,-2.98], progress 22/56, one hold token, ~43.7s remaining. The global deadline was renewed repeatedly.
+- Loop 101 source commit 0f638eb74f160c408e2d68275edac0a905e30220 uses per-token deadlines and one-shot matching. Fresh validation is pending.
