@@ -3,10 +3,10 @@
   "strategy_version": "4.1",
   "project_status": "IN_PROGRESS",
   "current_phase": "STAIR_TRAVERSAL_AND_VISUAL_VALIDATION",
-  "current_goal": "Prevent the browser-review harness from renewing stale camera holds, then capture real roof-stair/hatch phases before further stair improvements.",
+  "current_goal": "Sequence browser phase captures so later phase timers do not expire during an earlier screenshot hold; then verify real roof-stair/hatch frames.",
   "current_candidate_branch": "fix/loop-064-moroccan-exterior-and-layout",
-  "current_candidate_commit": "4335a37895f2a56595cb97b43b11c3da78808358",
-  "last_checkpoint_commit": "4335a37895f2a56595cb97b43b11c3da78808358",
+  "current_candidate_commit": "5e294d5a96444ffdaf56edb8f022a30723c736a5",
+  "last_checkpoint_commit": "5e294d5a96444ffdaf56edb8f022a30723c736a5",
   "last_known_good_commit": "e06af00a049eb72b173295438bbeb8e384c6fef5",
   "last_known_good_release": null,
   "active_operation_id": null,
@@ -28,43 +28,46 @@
     "Loop 101 source correction committed: per-token hold deadlines and first-match-only token claim; unit coverage added.",
     "Run 39183973522 failed at typecheck because the scripted helper replacement left an orphaned `): boolean` function tail. Corrected in source commit bfbf926e4c46bdd06b18356a8b153ba09d061e19.",
     "Loop 101 per-token deadline source logic committed; the first CI attempt failed due an orphaned legacy helper suffix.",
-    "Loop 101b restores the new helper's closing brace after the first corrective edit left it open; both typecheck failures are recorded in AEOS_STATUS.md."
+    "Loop 101b restores the new helper's closing brace after the first corrective edit left it open; both typecheck failures are recorded in AEOS_STATUS.md.",
+    "Loop 101 per-token hold expiry passed source gates but browser capture still failed on workflow 39184178983.",
+    "Artifact 12157498087 shows 19 saved images, missing screenshots 16/17, and later phase timeout fallbacks at the upper-side landing with the prior hold token still live.",
+    "Loop 102 source commit sequences phase watchers one-at-a-time, arming the next while the previous capture still holds the camera and preventing overlap until the predecessor token releases."
   ],
   "pending_work": [
-    "Validate the corrected helper with typecheck and all unit tests before browser review.",
-    "If source gates pass, inspect new artifact and verify captures 16/17 show actual independent roof-flight/hatch phases and per-token deadlines.",
-    "Then make a separate evidence-based stair/landing visual correction, if required."
+    "Validate Loop 102 on final branch head: typecheck, tests, build and fresh browser review.",
+    "Verify images 16/17 both exist and show independent real roof-stair/hatch-clear positions with no stale hold token.",
+    "Then address the wall/underside-heavy lower landing and upper passage in a separate visual/geometry loop.",
+    "Reassess the entrance framing after traversal review is reliable."
   ],
   "known_blockers": [
-    "Run 39182940594 failed browser review because per-token safety fuse logic was not yet implemented correctly; root cause identified from artifact telemetry.",
-    "Run 39183973522 failed typecheck because old helper suffix remained. Run 39184079432 failed typecheck because the new helper's closing brace had also been removed. Loop 101b restores it. Fresh validation is required.",
-    "Stair landing visuals remain underside/wall-heavy; no geometry fix has been implemented."
+    "Workflow 39184178983 source checks passed, but browser review failed. Images 16/17 were absent; roof-stair/hatch phases timed out while upper-side capture held the camera.",
+    "Loop 102 changes harness sequencing; fresh validation pending.",
+    "Lower landing and upper-passage images remain visually obstructed; no house geometry was changed in Loop 102."
   ],
   "latest_validation_status": "NOT_RUN",
   "latest_validation": {
-    "candidate_source_commit": "4335a37895f2a56595cb97b43b11c3da78808358",
-    "source_checks": "NOT_RUN",
-    "browser_review": "NOT_RUN",
-    "result": "PENDING"
+    "candidate_source_commit": "5e294d5a96444ffdaf56edb8f022a30723c736a5",
+    "source_checks": "PENDING",
+    "browser_review": "PENDING",
+    "result": "NOT_RUN"
   },
   "latest_release_status": "NOT_RELEASED",
-  "next_action": "Inspect CI for the final memory-aware branch head. Check typecheck first, then unit tests/build. Only after those pass inspect fresh browser report and screenshots 13b,14,16,17.",
-  "updated_at": "2026-10-19T01:10:35Z",
+  "next_action": "Inspect Foundation checks for final Loop 102 head. Ensure source gates pass, then inspect browser report and images 13b, 14, 16, 17; screenshots 16/17 must exist and be at distinct actual route positions.",
+  "updated_at": "2026-10-19T01:20:00Z",
   "previous_candidate_validation_status": "FAIL",
   "previous_candidate_validation": {
-    "workflow_run": 39182940594,
-    "source_commit": "56a1c4bdc34f8a1cf8471637f99046d087706836",
+    "workflow_run": 39184178983,
+    "source_commit": "a4304e2790cc145111967608736e3ba18a452787",
     "overall_workflow": "FAILURE",
-    "source_checks": "PASS: typecheck; 22 test files / 137 tests; production build; Chromium install",
+    "source_checks": "PASS: typecheck, full tests, production build, Chromium",
     "browser_review": "FAIL",
-    "artifact_id": 12157625304,
-    "artifact_sha256": "f70e6f673979f213d1f3566d6877dc2c69b89ec55a9884c656f5a886490a7386",
+    "artifact_id": 12157498087,
+    "artifact_sha256": "a53e368cd993b25a2cb61e18702396c10d3e78171fd86effd98b2d8716ad6cd5",
     "findings": [
-      "14/14 room arrivals settled; no JS runtime errors aside from screenshot capture failures.",
-      "390px mobile viewport has no horizontal overflow; 13 room-directory buttons visible.",
-      "roof-stair-flight and roof-hatch-clear timed out.",
-      "Both fallback frames show [0.925,4.65,-2.98], routeProgress 22/56, one active hold and ~43.7s deadline remaining.",
-      "Images 16 and 17 were not saved after 45s/30s screenshot timeouts."
+      "19 screenshots saved; 16 and 17 missing after 45s/30s screenshot timeouts.",
+      "roof-stair-flight and roof-hatch-clear waiters timed out.",
+      "Fallbacks for 16/17 stayed at [0.925,4.65,-2.942], progress 22/56, while token 14-upper-landing-turn.png remained active at roughly 45.3s.",
+      "Lower landing and upper landing visuals remain wall/underside-heavy."
     ]
   }
 }

@@ -29,3 +29,8 @@ Two later phase captures reused the same stale waypoint after timeout. HouseScen
 ## F-007 — Shared review-hold deadline renewed indefinitely
 Class TEST INFRASTRUCTURE; Loop 101 mitigation committed, revalidation pending.
 Workflow 39182940594 / artifact 12157625304. Screenshots 16/17 timed out and fell back to [0.925,4.65,-2.98], routeProgress 22/56, one active hold and ~43.7s remaining. The phase predicate refreshed a shared 50-second deadline while the same matched pose remained true. Loop 101 stores deadlines per token and uses a first-match-only guard. Do not mark resolved until new screenshots 16/17 exist at distinct, true route positions.
+
+
+## F-008 — Concurrent phase timeouts during screenshot holds
+Class TEST INFRASTRUCTURE; mitigation in Loop 102 source commit 5e294d5a96444ffdaf56edb8f022a30723c736a5, verification pending.
+Workflow 39184178983 / artifact 12157498087. The upper-side capture held camera at [0.925,4.65,-2.942], progress 22/56. Later roof-stair/hatch waiters were started concurrently, so their 90-second windows elapsed before the route reached those phases. Screenshots 16/17 were missing after screenshot timeouts. Loop 102 starts the next watcher after the prior screenshot but before releasing the current token; the next matcher waits until the previous token has been removed. Phase timeouts are unchanged. Verify in fresh report before marking fixed.

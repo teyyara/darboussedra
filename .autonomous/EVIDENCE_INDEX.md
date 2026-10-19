@@ -47,3 +47,13 @@ Latest candidate visual quality is not certified; a preview Ready status may ref
 - Source checks passed (137 tests, production build, Chromium), but browser review failed with two screenshot and two phase timeouts. Captures 16/17 were absent.
 - Both fallback frame states showed [0.925,4.65,-2.98], progress 22/56, one hold token, ~43.7s remaining. The global deadline was renewed repeatedly.
 - Loop 101 source commit 0f638eb74f160c408e2d68275edac0a905e30220 uses per-token deadlines and one-shot matching. Fresh validation is pending.
+
+
+## Loop 101 browser failure / Loop 102 correction
+- Workflow 39184178983: https://github.com/teyyara/darboussedra/actions/runs/39184178983
+- Artifact 12157498087: https://github.com/teyyara/darboussedra/actions/runs/39184178983/artifacts/12157498087
+- ZIP SHA-256: a53e368cd993b25a2cb61e18702396c10d3e78171fd86effd98b2d8716ad6cd5
+- Source gates passed; browser gate failed. 19 images saved; images 16/17 absent after phase/screenshot timeouts.
+- Frames 14/16/17 all remained at [0.925,4.65,-2.942], routeProgress 22/56. Token 14-upper-landing-turn.png remained active with ~45.3s left.
+- Diagnosis: all phase timers started at route start and expired during an earlier screenshot hold.
+- Loop 102 source commit 5e294d5a96444ffdaf56edb8f022a30723c736a5 makes watchers sequential while arming the next before release. Revalidation pending.

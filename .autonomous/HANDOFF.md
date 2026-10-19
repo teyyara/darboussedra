@@ -1,22 +1,24 @@
 # Handoff — Dar Boussedra
 
-**STATUS: CHECKPOINTED / IN PROGRESS. Loop 101 has a per-token hold implementation; two syntax corrections have been applied. Validation pending.**
+**STATUS: CHECKPOINTED / IN PROGRESS. Loop 102 sequential phase-capture change committed; validation pending.**
 
-## Candidate
 - Branch: fix/loop-064-moroccan-exterior-and-layout
-- Corrective source commit: 4335a37895f2a56595cb97b43b11c3da78808358
+- Loop 102 source commit: 5e294d5a96444ffdaf56edb8f022a30723c736a5
 - Open PR #7: https://github.com/teyyara/darboussedra/pull/7
-- Main baseline remains e06af00a049eb72b173295438bbeb8e384c6fef5.
-- AEOS v4.1 remains canonical.
+- Main baseline unchanged: e06af00a049eb72b173295438bbeb8e384c6fef5
+- AEOS v4.1 remains canonical in .autonomous/STRATEGY.md.
 
-## Evidence / history
-- Run 39182940594 failed browser review after source gates passed. Artifact 12157625304 showed phases roof-stair-flight and roof-hatch-clear timing out at the same upper-side landing frame ([0.925, 4.65, -2.98], routeProgress 22/56) with one token and ~43.7s remaining.
-- Source commit 0f638eb74f160c408e2d68275edac0a905e30220 moved to per-token deadlines and a one-shot matched-token guard.
-- Run 39183973522 failed typecheck (TS1128/TS1434) because the prior helper tail remained; commit bfbf926e removed the tail but removed the new function's closing brace too.
-- Run 39184079432 failed typecheck with TS1005 at line 41. Loop 101b source commit 4335a37895f2a56595cb97b43b11c3da78808358 restores the closing brace. No browser screenshots were produced for those failed source runs.
+## Latest evidence before Loop 102
+Workflow 39184178983: https://github.com/teyyara/darboussedra/actions/runs/39184178983
+Artifact 12157498087: https://github.com/teyyara/darboussedra/actions/runs/39184178983/artifacts/12157498087
+ZIP digest: a53e368cd993b25a2cb61e18702396c10d3e78171fd86effd98b2d8716ad6cd5
+Typecheck/tests/build/Chromium passed, but browser review failed. 19 images were saved; screenshots 16/17 were missing after screenshot timeouts. roof-stair-flight and roof-hatch-clear timed out. Frames 14/16/17 remained at [0.925,4.65,-2.942], routeProgress 22/56, with token 14-upper-landing-turn.png still active (~45.3s remaining).
 
-## Next exact action
-Inspect the Foundation checks run for the final branch head. Confirm typecheck, tests and build pass. If they do, inspect the fresh browser artifact: screenshots 16 and 17 must exist and show distinct actual roof-stair and hatch-clear positions; inspect per-token deadline telemetry. Do not continue to architectural changes before confirming this gate.
+## Diagnosis and Loop 102
+The phase watchers were all started together. Their 90-second timers were running while the earlier upper-side screenshot held the camera, so later roof-phase waits could time out before the route reached them. Loop 101 per-token deadlines alone did not fix this. Loop 102 (source commit 5e294d5a96444ffdaf56edb8f022a30723c736a5) starts the first watcher before the route click, then arms only the next watcher after each screenshot finishes but before the current hold releases. The next matcher explicitly ignores an overlapping camera window until the predecessor token disappears. Existing timeouts are unchanged.
+
+## Next action
+Inspect the fresh workflow for the final branch head. Confirm typecheck/tests/build pass, then inspect the new report and images 13b, 14, 16, 17. The last two must exist and show distinct real roof-stair and hatch-exit positions. After reliable capture, fix remaining wall/underside-heavy stair visuals separately.
 
 ## Constraints
-No decoration or paid dependency. No merge to main with failing/unknown gates. No manual Vercel deployment.
+No decorations/new paid dependencies, no merge to main with failing or unknown visual gates, and no manual Vercel deployment.

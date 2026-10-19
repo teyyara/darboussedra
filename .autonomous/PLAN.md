@@ -1,20 +1,19 @@
 # Prioritized Plan
 
-## P0 — Capture and stair traversal
-- [ ] Loop 101 per-token hold-expiry fix committed; full validation pending.
-- [ ] Verify screenshot 16 reaches the roof flight and screenshot 17 reaches the deck beyond the hatch, with distinct camera positions/progress and per-token deadline data.
-- [ ] Fix the wall/underside-heavy lower landing and narrow upper passage from fresh visual evidence.
-- [ ] Reassess entrance framing; improved but not accepted.
+## P0 — Reliable stair review
+- [ ] Validate Loop 102 phase-capture sequencing on a fresh CI/browser run.
+- [ ] Verify images 16/17 exist, show real distinct roof-flight/hatch-clear positions, and have no active stale hold.
+- [ ] Fix the lower landing and upper passage where wall/stair underside dominates.
+- [ ] Reassess entrance framing; improved but not yet visually accepted.
 
-## P1 — Rendering readiness / pop-in
-- [ ] Measure initial readiness, first movement and frame stalls after reliable captures are available.
-- [ ] Profile before optimizing; don't infer a renderer bottleneck from screenshot timeout alone.
-- [ ] Inspect exact screenshot/report evidence.
+## P1 — Rendering readiness
+- [ ] Once traversal captures are trustworthy, measure first-render readiness, movement latency and stalls.
+- [ ] Profile before performance optimizations; distinguish renderer stalls from review-harness timeouts.
 
 ## P2 — Moroccan coherence
-- [ ] Keep existing plaster, tile, wood, neighborhood, sun and clouds coherent.
-- [ ] No new decorations until explicit approval.
+- [ ] Preserve existing plaster/tile/wood/neighborhood/sun/cloud direction.
+- [ ] No new decorations before explicit approval.
 
 ## Release
-- [ ] Typecheck, full tests, production build, arrivals, real roof-stair/hatch captures, responsive checks and memory integrity pass on a frozen candidate.
-- [ ] No release with critical FAIL/BLOCKED/UNKNOWN. Never manually deploy to Vercel.
+- [ ] Typecheck, tests, build, room arrivals, real stair/hatch screenshots, responsive checks and memory integrity pass on frozen candidate.
+- [ ] No release on critical FAIL/BLOCKED/UNKNOWN; never manually deploy to Vercel.
