@@ -126,6 +126,27 @@ describe("authoritative room and architectural layout", () => {
     const rearInteriorFaceZ = -HOUSE_LAYOUT.exterior.depth / 2 + HOUSE_LAYOUT.exterior.wallThickness / 2;
     expect(lastTreadMinZ).toBeGreaterThanOrEqual(rearInteriorFaceZ + 0.05);
   });
+  it("frames the entrance diagonally into shared circulation instead of a doorway tunnel", () => {
+    const entrance = getRoomBySlug("entrance")!;
+    const family = getRoomBySlug("family-table")!;
+    const entranceBounds = roomBounds(entrance);
+    const familyBounds = roomBounds(family);
+    const [positionX, , positionZ] = entrance.camera.position;
+    const [targetX, , targetZ] = entrance.camera.target;
+
+    expect(positionX).toBeGreaterThan(entranceBounds.minX + 0.2);
+    expect(positionX).toBeLessThan(entranceBounds.maxX - 0.2);
+    expect(positionZ).toBeGreaterThan(entranceBounds.minZ + 0.2);
+    expect(positionZ).toBeLessThan(entranceBounds.maxZ - 0.2);
+    expect(targetX).toBeGreaterThan(familyBounds.minX);
+    expect(targetX).toBeLessThan(familyBounds.maxX);
+    expect(targetZ).toBeGreaterThan(familyBounds.minZ);
+    expect(targetZ).toBeLessThan(familyBounds.maxZ);
+    expect(Math.abs(targetX - positionX)).toBeGreaterThan(1);
+    expect(targetZ).toBeLessThan(positionZ - 2);
+    expect(Math.abs((targetX - positionX) / (targetZ - positionZ))).toBeGreaterThan(0.35);
+  });
+
   it("keeps the family-room camera aim inside its footprint and toward the rear circulation", () => {
     const family = getRoomBySlug("family-table")!;
     const [positionX, , positionZ] = family.camera.position;

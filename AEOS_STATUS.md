@@ -942,3 +942,13 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 - Corrected the upper substrate opening to derive its Z bounds from the actual ground staircase flight, with a small clearance at each end, instead of borrowing the roof hatch bounds.
 - Updated geometry tests to assert the opening tracks the staircase path.
 - This is a source-level geometry correction; visual validation remains pending. No decorations, merge, or deployment.
+
+
+## Loop 098 — Reframe the entrance destination away from a tunnel
+
+- **Goal:** make the first-person entrance destination read as a small vestibule opening into shared family circulation, rather than looking directly along stacked doorway frames.
+- **Change:** move the entrance destination camera sideways within the entrance footprint and aim diagonally into the existing Family Table room. Room dimensions, door openings, stair geometry, neighborhood, assets and existing objects are unchanged.
+- **Regression coverage:** assert the camera stays inside the entrance bounds, its target is within the connected Family Table footprint, and its gaze is meaningfully off-axis.
+- **Cold-start check:** PASS. The v4.1 strategy, current branch, approved constraints, latest validation failure and next action were reconstructed from committed repository memory. Required files are present; JSON state parses. The check found a stale checkpoint reference, corrected in the accompanying memory checkpoint.
+- **Validation:** PENDING on the final PR branch commit. No visual pass is claimed until a fresh browser artifact is inspected.
+- **Scope:** No new decorations, dependencies, paid services, manual deployment or main merge.

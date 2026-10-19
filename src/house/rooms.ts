@@ -43,7 +43,7 @@ export const HOUSE_LAYOUT = {
 
 const roomDefinitions = [
   { id: "entrance", slug: "entrance", name: "Front Door & Entrance", kind: "entry", level: "ground",
-    scenePosition: [0, HOUSE_LAYOUT.groundY, 3.695], camera: { position: [0, 1.65, 4.2], target: [0, 1.35, 2.85] },
+    scenePosition: [0, HOUSE_LAYOUT.groundY, 3.695], camera: { position: [0.65, 1.65, 4.2], target: [-0.65, 1.35, 1.65] },
     footprint: [2.1, 1.89], connectedTo: ["family-table", "garden"] },
   { id: "living-room", slug: "living-room", name: "Living Room", kind: "interior", level: "ground",
     scenePosition: [-3.6, HOUSE_LAYOUT.groundY, 1.175], camera: { position: [-2.4, 1.65, 2.25], target: [-4.4, 1.25, 0.8] },
