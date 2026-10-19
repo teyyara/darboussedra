@@ -54,3 +54,7 @@ Workflow 39186902422 / artifact 12158258421. Source gates passed, 21 screenshots
 ## F-011 — Browser phase capture starvation / stale fallbacks
 Class TEST / VISUAL REVIEW; Loop 105 mitigation committed, validation pending.
 Run 39187622415, artifact 12158767554. Source gates passed, but lower-stair-clearance timed out and all remaining phases timed out sequentially. Screenshot frame states for 13b, 14, 16 and 17 all show [3.45,7.2,0.5], route progress 56/56, so they are not valid phase screenshots. The phase window excluded the scripted/tested top-tread case and npm test was configured to exclude scripts/*.test.*. Loop 105 broadens the range, makes downstream capture skipping explicit and includes the script tests; rerun before resolving.
+
+
+## F-012 — Roof hatch positive fixture physically over opening
+Run39190470096: typecheck passed; 144 passed / 1 failed. Positive test used x=0.12m, still centered over 1.65m hatch, while asserting zone roof and hatch-clear. Phase rule correctly requires x>0.9m and roof zone. Loop105a updates fixture to x=1.05m; implementation rule remains unchanged. Rerun before resolution.

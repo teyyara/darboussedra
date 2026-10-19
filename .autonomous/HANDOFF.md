@@ -1,24 +1,23 @@
 # Handoff — Dar Boussedra
 
-**STATUS: CHECKPOINTED / IN PROGRESS. Loop 105 visual-review harness repair committed; validation pending.**
+**STATUS: CHECKPOINTED / IN PROGRESS. Loop 105a test fixture correction committed; validation pending.**
 
-## Candidate
 - Branch: fix/loop-064-moroccan-exterior-and-layout
-- Loop 105 source commit: 2cf72fb2001e05a1e8db90b513ebe3e2ae519a87
+- Source commit: 917a0b93674d505f63e1cebb872923579c615f5b
 - PR #7: https://github.com/teyyara/darboussedra/pull/7
-- Main baseline unchanged: e06af00a049eb72b173295438bbeb8e384c6fef5.
-- AEOS v4.1 is canonical.
+- AEOS v4.1 is canonical. Main remains unchanged.
 
-## Loop 104 evidence and limitation
-Workflow 39187622415: https://github.com/teyyara/darboussedra/actions/runs/39187622415
-Artifact 12158767554: https://github.com/teyyara/darboussedra/actions/runs/39187622415/artifacts/12158767554
-Typecheck, existing tests and build passed, but the browser run is NOT a valid framing review: clearance capture timed out, then later phases timed out. Screenshots 13b/14/16/17 all show the final rooftop position [3.45,7.2,0.5], route progress 56/56. They must not be used to judge the Loop 104 camera vectors.
+## Loop 104 evidence limitation
+Workflow 39187622415 / artifact 12158767554: typecheck, prior tests and build passed, but browser review is invalid for visual assessment. Clearance phase timed out and frames 13b/14/16/17 all show final roof position [3.45,7.2,0.5], route 56/56.
 
-## Loop 105 fix
-Source commit 2cf72fb2001e05a1e8db90b513ebe3e2ae519a87 restores a sampled clearance band y=[4.25,4.93], z=[-4.38,-3.3] so it catches several upper treads. Capture waits now default to 30 seconds. If a phase times out, downstream phases are explicitly marked skipped, saved only as unvalidated fallbacks and the browser gate fails. The report now includes phaseCaptureResults. Both script phase test files are included in Vitest; they were previously excluded.
+## Loop 105 harness repair
+Commit 2cf72fb2001e05a1e8db90b513ebe3e2ae519a87 widens the clearance phase, caps waits at 30s, reports matched/timed-out/skipped phase results, aborts cascading stale captures, and enables scripts phase tests in Vitest.
 
-## Next action
-Run full CI and confirm the newly enabled phase tests pass. Then require every phaseCaptureResults entry to be matched, no capture timeouts, and distinct positions/progress for screenshots 13b, 14, 16 and 17. Only that valid artifact can decide whether Loop 104's camera-vector adjustment improved the walkthrough.
+## Loop 105a test correction
+Run 39190470096 ran the newly enabled tests: typecheck passed; 144 tests passed and one failed because a positive hatch-clear fixture used [0.12,6.74,-2.45] while the camera was still over the hatch. Commit 917a0b93674d505f63e1cebb872923579c615f5b moves the positive fixture to X=1.05m on the roof deck; phase rules and negative tests remain intact.
 
-## Product constraints
-No decorations, no paid deps, no merge to main while acceptance is failing/unknown, no manual Vercel deployment.
+## Next
+Require typecheck, full tests, build, and browser review. All phaseCaptureResults must be matched; screenshots 13b/14/16/17 must show distinct real camera positions. Only then evaluate the camera vectors.
+
+## Constraints
+No decor, no paid dependencies, no merge to main while acceptance fails/unknown, no manual Vercel deployment.

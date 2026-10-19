@@ -89,3 +89,8 @@
 - Loop 104 run 39187622415 / artifact 12158767554 is invalid for camera-framing evaluation: lower-stair-clearance timed out; all later phase tasks timed out and 13b/14/16/17 are fallback frames at final rooftop position [3.45,7.2,0.5], route 56/56.
 - Phase window y [4.4,4.68], z [-4.12,-3.84] was too narrow and inconsistent with the existing script test case [0,4.65,-4.2]. Because tests only included src/**/*.test.ts, neither script phase test ran.
 - Loop 105 commit 2cf72fb2001e05a1e8db90b513ebe3e2ae519a87 widens the phase window, caps phase timeout at 30s, marks downstream captures skipped on a miss and fails gate for all non-matched phases; includes script phase tests in Vitest. Validation pending.
+
+
+## 2026-10-19 — Loop 105a
+- Run 39190470096 executed the newly enabled script phase tests. Typecheck passed; 144 passed, 1 failed. The positive roof-hatch fixture marked x=0.12m over the hatch as zone roof / hatch clear, contrary to the rule requiring the camera to be more than 0.9m off-center on the deck.
+- Source commit 917a0b93674d505f63e1cebb872923579c615f5b changes the fixture to x=1.05m. Fresh source + browser validation pending.
