@@ -42,3 +42,10 @@
 - Loop 101 changed from a shared renewable deadline to per-token expiry and one-shot matched-token claiming.
 - Run 39183973522 failed at typecheck: TS1128/TS1434 at lines 41–47 of cameraTiming.ts, because the text replacement left the previous helper's return/body tail.
 - Corrective source commit bfbf926e4c46bdd06b18356a8b153ba09d061e19 removes that orphaned tail. Fresh validation is pending; no geometry or decor was changed.
+
+
+## 2026-10-19 — Loop 101 syntax correction follow-up
+- Run 39183973522 failed at typecheck with TS1128/TS1434; the first edit left an orphaned previous helper body.
+- Run 39184079432 failed at typecheck with TS1005 expected } after that orphan was removed; the new helper closure had also been removed.
+- Source commit 4335a37895f2a56595cb97b43b11c3da78808358 restores the final closing brace. No unit or browser results exist for this revision yet.
+- Next: inspect new CI, first typecheck, then tests/build, then the visual artifacts after a successful browser capture.
