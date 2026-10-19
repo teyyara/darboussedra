@@ -20,3 +20,11 @@
 - Run 39181779811 on head 1d9f0cdb5d5bd8bb2e2081501e9cec15dea9d72e: typecheck PASS; tests FAIL (131 pass, 2 fail); build and browser capture skipped. Exact failures were obsolete expectations of an X-centered entrance gaze and focus remaining inside the entrance footprint.
 - Updated the test contract to require a diagonal entrance sightline through the shared portal into Family Table; preserves camera bounds, focus-room bounds and aperture crossing constraints.
 - Source checkpoint 10ff07e0882133bb68a31c8333c90e4d64340719; validation NOT RUN for this revision. Inspect fresh CI before more product edits.
+
+
+## 2026-10-19 — Loop 100 / review hold safety fuse
+- Inspected workflow 39181992857 and artifact 12156503344 (SHA-256 ece0411ee34009fd6e0fd81cfda97cf39d0298a8ac969312b9e43811c78a5127).
+- Source gates passed: typecheck, 22 test files / 133 tests, build, Chromium install. 14/14 room arrivals, no runtime errors, mobile has no horizontal overflow at 390px.
+- Visual review remains incomplete: roof-stair-flight and roof-hatch-clear reused the same stale waypoint (27/56).
+- Source commit 9021c8b2f8002faccddc0fcc38e9f606b4a7fb3b adds bounded expiry to review-only camera holds, unit coverage and hold state telemetry; no architecture, decor or dependencies changed.
+- Next: inspect the fresh report before another product-code change.

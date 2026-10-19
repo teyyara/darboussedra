@@ -1,22 +1,21 @@
 # Prioritized Plan
 
-## P0 — Physical architecture
-- [ ] Loop 098 entrance framing implementation awaits visual confirmation.
-- [ ] Loop 099 updates contradictory camera-path assertions; run unit tests/build before proceeding.
-- [ ] Fix stair-top view so the camera clears the fascia and looks into the open upper landing.
-- [ ] Verify structural substrates close unintended gaps while preserving the real stairwell/hatch openings.
-- [ ] Audit portal ownership, room adjacency, floor/ceiling joins, thresholds, head clearance, landings and rails.
+## P0 — Stair and landing traversal
+- [ ] Loop 100 review-only camera hold-expiry implementation committed; CI/browser revalidation pending.
+- [ ] Verify roof-stair-flight and roof-hatch-clear captures progress beyond stale waypoint 27/56.
+- [ ] Inspect lower-stair clearance and upper landing; camera booleans pass but the rendered view remains underside/wall-heavy.
+- [ ] Keep the entrance under visual review; improved framing is not yet acceptance-ready.
+- [ ] Audit head clearance, walkway width and floor/hatch gaps after fresh evidence localizes the specific defect.
 
 ## P1 — Rendering readiness / pop-in
-- [ ] Measure first-scene readiness, first-movement latency, frame stalls and transition delays.
-- [ ] Profile before optimizing; prewarm/reuse resources only when supported by measurements.
-- [ ] Avoid destructive visibility handoffs; have upcoming visible geometry ready before camera turns reveal it.
-- [ ] Keep camera phase windows distinct and inspect fresh artifacts.
+- [ ] Measure first-scene readiness, first-movement latency and frame stalls.
+- [ ] Profile before optimizing; do not infer a rendering bottleneck from screenshot timeout alone.
+- [ ] Avoid destructive visibility handoffs; inspect exact browser images and telemetry.
 
 ## P2 — Moroccan visual coherence
 - [ ] Keep existing plaster, tile, wood, neighborhood, sun and clouds coherent.
-- [ ] No new decor until explicitly approved.
+- [ ] No decorations until explicit user approval.
 
 ## Release
-- [ ] Source checks, room arrivals, stair ascent/descent, fresh visual review, responsive checks and memory integrity pass on a frozen candidate.
-- [ ] No release with critical FAIL/BLOCKED/UNKNOWN. No manual Vercel deployment.
+- [ ] Typecheck, full tests, build, room arrivals, actual stair/hatch captures, responsive checks and memory integrity pass on a frozen candidate.
+- [ ] No release while a critical visual gate is FAIL/BLOCKED/UNKNOWN. Never manually deploy to Vercel.

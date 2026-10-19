@@ -2,11 +2,11 @@
   "schema_version": 1,
   "strategy_version": "4.1",
   "project_status": "IN_PROGRESS",
-  "current_phase": "ARCHITECTURE_AND_RENDERING_REPAIR",
-  "current_goal": "Fix tunnel-like entrance and incoherent stair/floor views; diagnose rendering pop-in before performance optimization.",
+  "current_phase": "STAIR_TRAVERSAL_AND_VISUAL_VALIDATION",
+  "current_goal": "Capture actual roof-stair and hatch phases reliably, then address remaining stair-landing sightline defects from fresh evidence.",
   "current_candidate_branch": "fix/loop-064-moroccan-exterior-and-layout",
-  "current_candidate_commit": "10ff07e0882133bb68a31c8333c90e4d64340719",
-  "last_checkpoint_commit": "10ff07e0882133bb68a31c8333c90e4d64340719",
+  "current_candidate_commit": "9021c8b2f8002faccddc0fcc38e9f606b4a7fb3b",
+  "last_checkpoint_commit": "9021c8b2f8002faccddc0fcc38e9f606b4a7fb3b",
   "last_known_good_commit": "e06af00a049eb72b173295438bbeb8e384c6fef5",
   "last_known_good_release": null,
   "active_operation_id": null,
@@ -19,36 +19,47 @@
     "Cold-start recovery PASS: canonical memory files exist and are readable; v4.1 markers and constraints reconstruct accurately.",
     "Loop 098 source checkpoint created: diagonal entrance camera pose and regression assertions; source-level validation is pending.",
     "Diagnosed Loop 098 test failure in run 39181779811: two camera-path assertions still required a centered entrance gaze and a target inside the vestibule.",
-    "Loop 099 updated regression expectations to require an off-axis sightline through the real shared doorway while preserving entrance and target-room bounds."
+    "Loop 099 updated regression expectations to require an off-axis sightline through the real shared doorway while preserving entrance and target-room bounds.",
+    "Loop 100 source change: add a 50-second safety fuse to review-only camera holds, clear expired tokens in the render loop, and report hold count/deadline telemetry.",
+    "Inspected artifact 12156503344 from workflow 39181992857: typecheck/tests/build/Chromium pass, 133 tests pass, 14/14 arrivals settle and no runtime errors.",
+    "Recorded visual review as incomplete despite green workflow because roof-stair-flight and roof-hatch-clear timed out and saved the same stale upper-landing frame."
   ],
   "pending_work": [
-    "Validate Loop 099 at the final PR head: typecheck, full unit tests and production build.",
-    "Inspect a fresh entrance screenshot and browser report before treating the tunnel issue as fixed.",
-    "Handle the stair-top wall/fascia view and capture timeouts in a separate bounded loop.",
-    "Measure renderer readiness/pop-in before performance changes."
+    "Validate Loop 100 on the final PR head and inspect hold count/deadline telemetry for frames 13b, 14, 16 and 17.",
+    "Confirm roof-stair and hatch captures are at independent route positions, not a timeout fallback.",
+    "After captures are trustworthy, refine the upper landing/stair sightline if the underside/wall still dominates.",
+    "Profile render readiness/pop-in only after the staircase is visually coherent."
   ],
   "known_blockers": [
-    "Loop 098 CI on commit 1d9f0cdb5d5bd8bb2e2081501e9cec15dea9d72e passed typecheck but failed two legacy camera-path assertions; Loop 099 updates them but is not yet validated.",
-    "Prior browser review 39177873937 showed stair-top obstruction and capture/phase timeouts; that problem remains open."
+    "Prior workflow 39181992857 was overall SUCCESS, but roof-stair and hatch phase captures timed out at the same stale waypoint, so visual acceptance remains incomplete.",
+    "Entrance view improved but still has a dominant foreground portal and a second interior frame.",
+    "Stair top view remains wall/underside-heavy; cause of stale phase position is not proven until hold telemetry is available."
   ],
-  "latest_validation_status": "NOT_RUN",
+  "latest_validation_status": "PENDING",
   "latest_validation": {
-    "candidate_source_commit": "10ff07e0882133bb68a31c8333c90e4d64340719",
-    "source_checks": "NOT_RUN",
-    "browser_review": "NOT_RUN",
-    "result": "PENDING"
+    "candidate_source_commit": "9021c8b2f8002faccddc0fcc38e9f606b4a7fb3b",
+    "source_checks": "PENDING",
+    "browser_review": "PENDING",
+    "result": "NOT_RUN"
   },
   "latest_release_status": "NOT_RELEASED",
-  "next_action": "Inspect the new Foundation checks run for the final branch head; confirm tests/build pass and review fresh entrance/stair screenshots before further edits.",
-  "updated_at": "2026-10-19T00:42:28.585Z",
-  "previous_candidate_validation_status": "FAIL",
+  "next_action": "Inspect the Foundation checks workflow for the final memory-aware branch head. Confirm source gates pass, then verify the new report's hold-token count/deadline around images 13b, 14, 16 and 17; the last two must capture real stair/hatch positions, not waypoint 27/56.",
+  "updated_at": "2026-10-19T00:55:08.330Z",
+  "previous_candidate_validation_status": "VISUAL_REVIEW_INCOMPLETE",
   "previous_candidate_validation": {
-    "workflow_run": 39181779811,
-    "source_commit": "1d9f0cdb5d5bd8bb2e2081501e9cec15dea9d72e",
-    "typecheck": "PASS",
-    "unit_tests": "FAIL: 131 passed, 2 failed; legacy cameraPath.test.ts assertions conflicted with the intentional entrance target",
-    "build": "SKIPPED",
-    "browser_review": "SKIPPED",
-    "artifacts": "No screenshots; tests failed before browser capture"
+    "workflow_run": 39181992857,
+    "source_commit": "c9c0ec033c7433d46fd3a27ee5ca5c80a4a72526",
+    "overall_workflow": "SUCCESS",
+    "source_checks": "PASS: typecheck, 22 test files / 133 tests, production build, Chromium install",
+    "browser_review": "PARTIAL / NOT ACCEPTED",
+    "artifact_id": 12156503344,
+    "artifact_sha256": "ece0411ee34009fd6e0fd81cfda97cf39d0298a8ac969312b9e43811c78a5127",
+    "findings": [
+      "14/14 room arrivals settled; runtimeErrors empty.",
+      "390px mobile width has no horizontal overflow; 13 room-directory buttons present desktop and mobile.",
+      "Entrance less frontal but still dominated by large doorway frames.",
+      "Stair anticipation/clearance booleans are true, while images still show stair underside/wall dominating the landing.",
+      "roof-stair-flight and roof-hatch-clear timed out and reused frame routeProgress 27/56, cameraPosition [0.249,4.65,0.923]."
+    ]
   }
 }

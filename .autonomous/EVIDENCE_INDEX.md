@@ -29,3 +29,12 @@ Latest candidate visual quality is not certified; a preview Ready status may ref
 - Run 39181779811: https://github.com/teyyara/darboussedra/actions/runs/39181779811, head 1d9f0cdb5d5bd8bb2e2081501e9cec15dea9d72e.
 - Result: typecheck PASS; tests FAIL with 131 passed / 2 failed in cameraPath.test.ts. Build and browser capture were skipped; no screenshots were produced.
 - Root cause and correction documented in .autonomous/FAILURES.md; source commit 10ff07e0882133bb68a31c8333c90e4d64340719 revises tests rather than removing the doorway/bounds checks. Re-validation pending.
+
+
+## Latest browser artifact before Loop 100
+- Workflow 39181992857: https://github.com/teyyara/darboussedra/actions/runs/39181992857
+- Artifact 12156503344: https://github.com/teyyara/darboussedra/actions/runs/39181992857/artifacts/12156503344
+- ZIP SHA-256: ece0411ee34009fd6e0fd81cfda97cf39d0298a8ac969312b9e43811c78a5127
+- Source gates: PASS (typecheck, 133 tests, build, Chromium); 14/14 arrivals and no runtime errors.
+- Caveat: the roof-stair-flight and roof-hatch-clear images timed out at the same stale position [0.249,4.65,0.923], route progress 27/56. Green workflow result is not a full visual pass.
+- Loop 100 source commit 9021c8b2f8002faccddc0fcc38e9f606b4a7fb3b introduces hold expiry and telemetry; validate with fresh images.
