@@ -49,3 +49,8 @@ Run 39186716661: typecheck passed; 137/139 tests passed. One test incorrectly de
 ## F-010 — Upper bridge gaze remains stair-underside oriented
 Class CAMERA / VISUAL ACCEPTANCE; Loop 104 mitigation committed, validation pending.
 Workflow 39186902422 / artifact 12158258421. Source gates passed, 21 screenshots, 14/14 arrivals, no runtime errors/mobile overflow. upperLandingAiming.looksAlongBridge=false at direction [-0.339,-0.227,0.913]. Frame13b is wall-dominated and frame14 looks too far inward at the stair underside. Loop104 reduces the late-ascent lateral component and softens bridge vectors; only change geometry if new screenshots still show occlusion.
+
+
+## F-011 — Browser phase capture starvation / stale fallbacks
+Class TEST / VISUAL REVIEW; Loop 105 mitigation committed, validation pending.
+Run 39187622415, artifact 12158767554. Source gates passed, but lower-stair-clearance timed out and all remaining phases timed out sequentially. Screenshot frame states for 13b, 14, 16 and 17 all show [3.45,7.2,0.5], route progress 56/56, so they are not valid phase screenshots. The phase window excluded the scripted/tested top-tread case and npm test was configured to exclude scripts/*.test.*. Loop 105 broadens the range, makes downstream capture skipping explicit and includes the script tests; rerun before resolving.

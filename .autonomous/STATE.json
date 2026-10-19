@@ -2,11 +2,11 @@
   "schema_version": 1,
   "strategy_version": "4.1",
   "project_status": "IN_PROGRESS",
-  "current_phase": "STAIR_TRAVERSAL_AND_VISUAL_VALIDATION",
-  "current_goal": "Validate the reduced late-ascent lateral glance and subtler inward upper-bridge view in screenshots 13b and 14.",
+  "current_phase": "VISUAL_REVIEW_HARNESS_VALIDATION",
+  "current_goal": "Validate robust stair/roof camera phase capture before evaluating Loop 104's changed camera vectors.",
   "current_candidate_branch": "fix/loop-064-moroccan-exterior-and-layout",
-  "current_candidate_commit": "dd44aec75ab73fc0d4ce5f7e05afc6157c181c83",
-  "last_checkpoint_commit": "dd44aec75ab73fc0d4ce5f7e05afc6157c181c83",
+  "current_candidate_commit": "2cf72fb2001e05a1e8db90b513ebe3e2ae519a87",
+  "last_checkpoint_commit": "2cf72fb2001e05a1e8db90b513ebe3e2ae519a87",
   "last_known_good_commit": "e06af00a049eb72b173295438bbeb8e384c6fef5",
   "last_known_good_release": null,
   "active_operation_id": null,
@@ -39,30 +39,33 @@
     "Loop 103a run 39186716661: type-check passed, 137 of 139 tests passed. One assertion incorrectly required +Z gaze while still on the final treads; a separate test already requires +Z gaze when reaching the actual landing. The other failed check used a narrower tangent-exception window than the 2.45m clearance turn.",
     "Loop 103b source commit created: final-tread gaze is expected to remain along the stair flight (-Z), with +Z transition on the physical landing. Path-tangent exception is now based on the complete geometric clearance band.",
     "Loop 103b run 39186902422 / artifact 12158258421: all source gates passed; 21 screenshots, 14/14 arrivals, no runtime errors, no mobile horizontal overflow. Frames 16/17 are real distinct roof stair/hatch positions. Browser acceptance failed because upperLandingAiming.looksAlongBridge was false (direction [-0.339,-0.227,0.913]); frame 13b was near-field-wall dominated.",
-    "Loop 104 source commit created: lower late-ascent lateral glance factor 0.45 to 0.20 and soften four bridge-side direction hints from [-0.35,0.94] to [-0.08,0.99], with tests revised to assert a subtle 0.02-0.20m inward target offset."
+    "Loop 104 source commit created: lower late-ascent lateral glance factor 0.45 to 0.20 and soften four bridge-side direction hints from [-0.35,0.94] to [-0.08,0.99], with tests revised to assert a subtle 0.02-0.20m inward target offset.",
+    "Loop 104 run 39187622415 source gates passed but browser phase captures were invalid: 13b, 14, 16, and 17 all saved the same final rooftop frame [3.45,7.2,0.5] at route 56/56 after lower-stair-clearance timed out.",
+    "Found an over-narrow clearance phase range y=[4.4,4.68], z=[-4.12,-3.84] that excluded previously tested top-tread pose [0,4.65,-4.2]. The earlier 90s timeout caused subsequent phases to start after route completion.",
+    "Loop 105 source commit created: restore sampled upper-tread clearance window; bound phase waits at 30s; on missed phase mark all downstream frames as skipped/unvalidated instead of cascading stale screenshots; add phaseCaptureResults and make browser gate fail on any non-matched phase; include scripts phase tests in Vitest."
   ],
   "pending_work": [
-    "Validate Loop 104 on the frozen final head: typecheck, full tests, build and browser review.",
-    "Require both upperLandingAiming predicates and both ascent-clearance predicates to pass; images 13b/14 must be visually clear.",
-    "Confirm images 16/17 remain distinct actual roof-flight/hatch-clear positions, 14/14 arrivals, no runtime errors and no mobile overflow.",
-    "If the updated gaze still sees a physical wall, make a separate geometry change only after inspecting the new artifact.",
-    "Reassess entry composition and pop-in after stair acceptance."
+    "Run typecheck, the newly expanded unit suite, build and browser review for Loop 105.",
+    "Check the report's phaseCaptureResults: all required phases must have status matched; no timeout/skipped notes.",
+    "Inspect actual screenshots 13b, 14, 16 and 17 and compare their cameraPosition/routeProgress. Confirm 16 and 17 are different, valid positions.",
+    "Only then assess whether Loop 104's smoother late-ascent vector and bridge gaze improve framing.",
+    "If the corrected capture frames still show physical wall/fascia obstruction, make a separate geometry change based on the valid artifact."
   ],
   "known_blockers": [
-    "Run 39186902422 visual acceptance failed despite source checks passing. Artifact 12158258421 SHA-256 2d392ab1cc39bb9613ec40fc8c2df8aafc8ee037f6f9cad5cec9842800b087b6. upperLandingAiming.looksAlongBridge=false at direction [-0.339,-0.227,0.913]; frame 13b mostly wall, 14 too far inward. Ascent predicates true.",
-    "Loop 104 changes the late-ascent lateral component and side-bridge direction; validation pending.",
-    "Entrance still has repeated portal framing and remains unaddressed."
+    "Loop 104 browser evidence artifact 12158767554: lower-stair-clearance timed out then upper-side-landing, roof-stair-flight and roof-hatch-clear timed out. 13b/14/16/17 are all fallback screenshots at [3.45,7.2,0.5], route 56/56. They provide no valid evidence about Loop 104's camera vectors.",
+    "Script phase tests were present but excluded by vitest.config.ts (only src/**/*.test.ts included), so the narrowed phase rule wasn't caught by npm test.",
+    "Loop 105 widens the phase range and explicitly fails on unmatched/skipped phases; validation pending."
   ],
   "latest_validation_status": "NOT_RUN",
   "latest_validation": {
-    "candidate_source_commit": "dd44aec75ab73fc0d4ce5f7e05afc6157c181c83",
+    "candidate_source_commit": "2cf72fb2001e05a1e8db90b513ebe3e2ae519a87",
     "source_checks": "PENDING",
     "browser_review": "PENDING",
     "result": "NOT_RUN"
   },
   "latest_release_status": "NOT_RELEASED",
-  "next_action": "Inspect the Foundation run on the final head. Source gates first; then report plus images 13b/14/16/17. Both bridge aiming predicates and both ascent-clearance predicates must pass; do not accept fallback frames.",
-  "updated_at": "2026-10-19T01:53:00Z",
+  "next_action": "Inspect CI for the final Loop 105 head. All enabled unit tests must pass, including scripts/visualReviewPhases.test.ts and .mjs. Browser review must record matched statuses for clearance, upper landing, roof flight and hatch clear; inspect distinct real screenshots.",
+  "updated_at": "2026-10-19T03:30:00Z",
   "previous_candidate_validation_status": "FAIL",
   "previous_candidate_validation": {
     "workflow_run": 39184178983,

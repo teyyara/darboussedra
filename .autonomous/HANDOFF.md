@@ -1,25 +1,24 @@
 # Handoff — Dar Boussedra
 
-**STATUS: CHECKPOINTED / IN PROGRESS. Loop 104 camera adjustment committed; fresh validation pending.**
+**STATUS: CHECKPOINTED / IN PROGRESS. Loop 105 visual-review harness repair committed; validation pending.**
 
 ## Candidate
 - Branch: fix/loop-064-moroccan-exterior-and-layout
-- Loop 104 source commit: dd44aec75ab73fc0d4ce5f7e05afc6157c181c83
-- Open PR #7: https://github.com/teyyara/darboussedra/pull/7
-- Main baseline: e06af00a049eb72b173295438bbeb8e384c6fef5.
+- Loop 105 source commit: 2cf72fb2001e05a1e8db90b513ebe3e2ae519a87
+- PR #7: https://github.com/teyyara/darboussedra/pull/7
+- Main baseline unchanged: e06af00a049eb72b173295438bbeb8e384c6fef5.
 - AEOS v4.1 is canonical.
 
-## Loop 103b evidence
-Workflow 39186902422: https://github.com/teyyara/darboussedra/actions/runs/39186902422
-Artifact 12158258421: https://github.com/teyyara/darboussedra/actions/runs/39186902422/artifacts/12158258421
-SHA-256: 2d392ab1cc39bb9613ec40fc8c2df8aafc8ee037f6f9cad5cec9842800b087b6
-Source gates passed; 21 screenshots, 14/14 room arrivals, no runtime errors, no mobile overflow. Frames 16/17 show actual distinct roof stair/hatch positions. Visual gate still failed: upperLandingAiming.looksAlongBridge=false, direction [-0.339,-0.227,0.913]. Image 13b is mostly near-field wall; image14 points too far inward at the stair underside. Ascent clearance/anticipation predicates passed.
+## Loop 104 evidence and limitation
+Workflow 39187622415: https://github.com/teyyara/darboussedra/actions/runs/39187622415
+Artifact 12158767554: https://github.com/teyyara/darboussedra/actions/runs/39187622415/artifacts/12158767554
+Typecheck, existing tests and build passed, but the browser run is NOT a valid framing review: clearance capture timed out, then later phases timed out. Screenshots 13b/14/16/17 all show the final rooftop position [3.45,7.2,0.5], route progress 56/56. They must not be used to judge the Loop 104 camera vectors.
 
-## Loop 104
-Source commit dd44aec75ab73fc0d4ce5f7e05afc6157c181c83 reduces late-ascent lateral glance factor 0.45 to 0.20, and softens four bridge direction vectors [-0.35,0.94] to [-0.08,0.99]. Tests require only a slight inward target bias while retaining forward bridge focus and route bounds.
+## Loop 105 fix
+Source commit 2cf72fb2001e05a1e8db90b513ebe3e2ae519a87 restores a sampled clearance band y=[4.25,4.93], z=[-4.38,-3.3] so it catches several upper treads. Capture waits now default to 30 seconds. If a phase times out, downstream phases are explicitly marked skipped, saved only as unvalidated fallbacks and the browser gate fails. The report now includes phaseCaptureResults. Both script phase test files are included in Vitest; they were previously excluded.
 
-## Exact next action
-Inspect Foundation validation for the final head. Require source tests/build and inspect images 13b/14/16/17. Both upper-landing aim predicates and both ascent predicates must pass; the landing must show the open bridge rather than the wall/underside, and roof frames 16/17 must stay real and distinct.
+## Next action
+Run full CI and confirm the newly enabled phase tests pass. Then require every phaseCaptureResults entry to be matched, no capture timeouts, and distinct positions/progress for screenshots 13b, 14, 16 and 17. Only that valid artifact can decide whether Loop 104's camera-vector adjustment improved the walkthrough.
 
-## Constraints
-No decorations, paid dependencies, merge to main while visual acceptance fails/unknown, or manual Vercel deployment.
+## Product constraints
+No decorations, no paid deps, no merge to main while acceptance is failing/unknown, no manual Vercel deployment.

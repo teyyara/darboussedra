@@ -83,3 +83,9 @@
 - Run 39186902422 / artifact 12158258421: source gates passed, all 21 screenshots saved, 14/14 arrivals, no runtime errors/mobile overflow. Actual roof stair/hatch frames 16/17 present.
 - Browser gate failed upperLandingAiming.looksAlongBridge; direction [-0.339,-0.227,0.913]. Frame13b wall-dominated, frame14 too far inward at the stair underside. Both ascent aim predicates passed.
 - Source commit dd44aec75ab73fc0d4ce5f7e05afc6157c181c83 changes lateral look factor 0.45 to 0.20 and bridge direction vectors to [-0.08,0.99]. Fresh full CI/browser validation pending.
+
+
+## 2026-10-19 — Loop 105 / visual-review harness
+- Loop 104 run 39187622415 / artifact 12158767554 is invalid for camera-framing evaluation: lower-stair-clearance timed out; all later phase tasks timed out and 13b/14/16/17 are fallback frames at final rooftop position [3.45,7.2,0.5], route 56/56.
+- Phase window y [4.4,4.68], z [-4.12,-3.84] was too narrow and inconsistent with the existing script test case [0,4.65,-4.2]. Because tests only included src/**/*.test.ts, neither script phase test ran.
+- Loop 105 commit 2cf72fb2001e05a1e8db90b513ebe3e2ae519a87 widens the phase window, caps phase timeout at 30s, marks downstream captures skipped on a miss and fails gate for all non-matched phases; includes script phase tests in Vitest. Validation pending.

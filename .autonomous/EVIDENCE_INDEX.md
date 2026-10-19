@@ -86,3 +86,10 @@ Latest candidate visual quality is not certified; a preview Ready status may ref
 - All source gates passed; 21 screenshots, 14/14 arrivals, no runtime errors/mobile overflow. Images 16/17 are distinct, real roof/hatch positions.
 - Visual gate failed upper bridge alignment; direction X=-0.339, Y=-0.227, Z=0.913. Frame13b shows near-field wall; frame14 the stair underside.
 - Loop 104 commit dd44aec75ab73fc0d4ce5f7e05afc6157c181c83 softens gaze; new artifact is required.
+
+
+## Loop 104 invalid artifact / Loop 105 validation
+- Workflow 39187622415: https://github.com/teyyara/darboussedra/actions/runs/39187622415
+- Artifact 12158767554: https://github.com/teyyara/darboussedra/actions/runs/39187622415/artifacts/12158767554
+- Typecheck/tests/build passed, browser review failed. Frames 13b/14/16/17 all fallback at final rooftop position [3.45,7.2,0.5], route 56/56 after clearance phase miss; ignore for geometry conclusions.
+- Loop 105 source commit 2cf72fb2001e05a1e8db90b513ebe3e2ae519a87 adds wide clearance phase, 30s cap, explicit skipped/matched statuses, and script phase tests to npm test.
