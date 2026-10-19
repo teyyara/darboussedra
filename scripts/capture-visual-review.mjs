@@ -326,7 +326,7 @@ async function selectDirectoryRoom(page, name, slug, transitionCaptures = [], ar
     await page.waitForFunction((expectedDestination) => {
       const canvas = document.querySelector("canvas");
       if (!canvas || canvas.dataset.destination !== expectedDestination) return false;
-      const progress = /^(\\d+)\\/(\\d+)$/.exec(canvas.dataset.routeProgress || "");
+      const progress = /^(\d+)\/(\d+)$/.exec(canvas.dataset.routeProgress || "");
       return Boolean(progress && Number(progress[2]) > 0);
     }, slug, { timeout: 15000 });
     nextPhaseIndex = 1;

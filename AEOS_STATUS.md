@@ -1063,3 +1063,10 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 - **Correction:** start the first phase watcher only after the selector click and URL transition, then wait for canvas.dataset.destination to equal the requested room and routeProgress to show a populated path (for example 0/56). Add an exported pure readiness predicate and regression tests for destination mismatch, empty route and populated route.
 - **Validation:** pending fresh typecheck, 149-ish unit tests, build, and browser review. All phaseCaptureResults must match before any camera framing judgement.
 - **Scope:** browser-review harness and tests only; runtime camera and house geometry unchanged.
+
+
+## Loop 106a — Correct route-progress regex escaping
+
+- **Found before validation:** Loop 106 source generation emitted double backslashes in the regex literals in both the pure route-readiness helper and Playwright route readiness predicate. Those patterns would reject normal route progress strings such as 0/56.
+- **Correction:** use JavaScript regex literals matching digits, a literal slash, and the numeric route length.
+- **Validation:** pending; run the expanded unit suite and browser review on the complete checkpoint.
