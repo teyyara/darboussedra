@@ -369,8 +369,8 @@ export function makeCameraPath(from: HouseLocation, to: HouseLocation, finalPose
     // The old look-ahead flipped from -Z toward +Z on a single tread, making the
     // camera sweep sideways across the fascia. Begin a gradual, rightward/upward
     // glance over the final 1.6m while still looking generally along the flight.
-    const turnStartZ = flightEndZ + 1.68;
-    const turnEndZ = flightEndZ + 0.12;
+    const turnStartZ = flightEndZ + 2.45;
+    const turnEndZ = flightEndZ + 0.02;
     const lateAscentTurn = dy > 0 &&
       pose.position[1] >= upperEye - 1.0 &&
       pose.position[1] <= upperEye + 0.28 &&
@@ -387,7 +387,7 @@ export function makeCameraPath(from: HouseLocation, to: HouseLocation, finalPose
     // still underneath the slab.
     const landingGlanceX = Math.abs(dz) * 0.45;
     const landingGlanceZ = dz * 0.75;
-    const landingGlanceY = Math.hypot(landingGlanceX, landingGlanceZ) * 0.24;
+    const landingGlanceY = Math.hypot(landingGlanceX, landingGlanceZ) * 0.20;
     const sightlineX = lateAscentTurn ? dx * (1 - turnProgress) + landingGlanceX * turnProgress : dx;
     const sightlineZ = lateAscentTurn ? dz * (1 - turnProgress) + landingGlanceZ * turnProgress : dz;
     const verticalAim = lateAscentTurn

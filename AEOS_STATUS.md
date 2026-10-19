@@ -1014,3 +1014,11 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 - **Correction:** blend the last-tread look gradually over 1.6m, glance up/right while retaining a forward-along-flight Z component, and save the turn toward the hall for the open landing. Aim the side-lane camera inward (-X), and narrow the clearance capture to the last few treads so the report measures the intended pose.
 - **Tests:** add a path continuity check limiting yaw change between late treads, plus a clearance-pose check for moderate right/up/flight-directed gaze.
 - **Validation:** pending a fresh run and artifact inspection. No structural geometry, decorations or dependencies changed.
+
+
+## Loop 103a — Reconcile inward gaze and the full late-clearance band
+
+- **Evidence:** Loop 103 type-check passed but cameraPath.test.ts failed 8 assertions. Six reflected stale expectations that the upper-lane gaze must remain outward/neutral even though screenshot 14 showed the exterior wall blocking nearly half the frame. One was a real flaw: the new late-ascent upward blend began too late for every pose in the existing clearance band. The remaining heading-alignment failure occurred on a clearance/look-ahead pose.
+- **Correction:** align bridge tests with the intended bounded inward gaze (target X 0.2–0.6m toward the shaft) while still requiring forward +Z bridge focus and safe camera position. Start the easing 2.45m before the last tread, keep the blend active until 2cm before the flight endpoint, and use a shallow 0.20 vertical blend so the full near-top band clears the fascia without over-pitching.
+- **Validation:** pending. Keep route geometry and position-clearance checks intact. Browser predicates and real images must pass before acceptance.
+- **Scope:** camera path, tests, and phase rules only; no structural geometry, decor, new assets or dependencies.
