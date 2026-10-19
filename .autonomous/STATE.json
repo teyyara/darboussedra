@@ -3,10 +3,10 @@
   "strategy_version": "4.1",
   "project_status": "IN_PROGRESS",
   "current_phase": "VISUAL_REVIEW_HARNESS_VALIDATION",
-  "current_goal": "Validate broadened camera-phase windows and explicit phase-match reporting before judging Loop 104 camera vectors.",
+  "current_goal": "Validate route-readiness capture sequencing and real phase-matched camera screenshots before assessing camera framing.",
   "current_candidate_branch": "fix/loop-064-moroccan-exterior-and-layout",
-  "current_candidate_commit": "917a0b93674d505f63e1cebb872923579c615f5b",
-  "last_checkpoint_commit": "917a0b93674d505f63e1cebb872923579c615f5b",
+  "current_candidate_commit": "a633263bf94ee4a8a7b07d454fbc68b8634ae944",
+  "last_checkpoint_commit": "a633263bf94ee4a8a7b07d454fbc68b8634ae944",
   "last_known_good_commit": "e06af00a049eb72b173295438bbeb8e384c6fef5",
   "last_known_good_release": null,
   "active_operation_id": null,
@@ -44,29 +44,32 @@
     "Found an over-narrow clearance phase range y=[4.4,4.68], z=[-4.12,-3.84] that excluded previously tested top-tread pose [0,4.65,-4.2]. The earlier 90s timeout caused subsequent phases to start after route completion.",
     "Loop 105 source commit created: restore sampled upper-tread clearance window; bound phase waits at 30s; on missed phase mark all downstream frames as skipped/unvalidated instead of cascading stale screenshots; add phaseCaptureResults and make browser gate fail on any non-matched phase; include scripts phase tests in Vitest.",
     "Run 39190470096 enabled script phase tests; type-check passed, 144 tests passed and one test failed because the positive roof-hatch fixture falsely used x=0.12m over the opening with zone roof.",
-    "Loop105a commit fixes the positive hatch test fixture to x=1.05m after stepping sideways onto roof deck; implementation rules unchanged."
+    "Loop105a commit fixes the positive hatch test fixture to x=1.05m after stepping sideways onto roof deck; implementation rules unchanged.",
+    "Loop 105a run 39190695353: type-check, expanded tests and production build passed. Browser review failed honestly: first lower-stair-midflight timed out, with later phases explicitly marked skipped. The fallbacks prove the first phase watch began before the selected route was active: its frame had destination family-table and route progress 0/0; later frames progressed on the rooftop route.",
+    "Loop 106 source commit 597bc45107c04a921f5edbdda8c6df6c05a2bbe6 moved initial phase watcher startup after map selection and waited for destination and populated route progress.",
+    "Loop 106a source commit a633263bf94ee4a8a7b07d454fbc68b8634ae944 corrected over-escaped regex literals in both route readiness predicates, so route strings such as 0/56 and 3/56 can be parsed."
   ],
   "pending_work": [
-    "Validate the final candidate with typecheck, expanded unit suite, build, and browser review.",
-    "Require all phaseCaptureResults statuses to be matched; no timeout or skip.",
-    "Check that captures 13b/14/16/17 have distinct valid camera positions and route progress.",
-    "Only then judge camera vectors; physical geometry fix only if valid screenshots still show occlusion."
+    "Run full validation after pushing the latest checkpoint: typecheck, enlarged unit suite (including scripts phase tests), production build and browser review.",
+    "Confirm the new route readiness predicate passes populated route progress (0/56) but rejects stale destination or 0/0; check script tests.",
+    "Require all required phaseCaptureResults statuses to be matched with no timeout/skip. Verify screenshots 13, 13b, 14, 16, 17 and 15 are actual distinct camera positions appropriate to their phases.",
+    "Only after valid screenshots exist, evaluate Loop104 camera-vector change; adjust camera or geometry in a separate loop if true visuals show obstruction."
   ],
   "known_blockers": [
-    "Loop104 artifact 12158767554 has invalid frames 13b/14/16/17 at final roof position [3.45,7.2,0.5], route 56/56.",
-    "Loop105 script tests uncovered the stale roof-hatch fixture; Loop105a changes x position to 1.05m for the positive roof-clear case.",
-    "Loop105/105a full validation pending."
+    "Loop105a browser artifact 12159956771 had first phase timed out; later ascent/roof phases were skipped and descent phase timed out. Those frames are invalid for camera assessment.",
+    "Loop106 route-readiness code originally had over-escaped regular expressions and would not recognize normal slash-delimited route progress. Loop106a fixes both regexes; validation pending.",
+    "Camera visual acceptance remains unknown; no merge to main and no deployment."
   ],
   "latest_validation_status": "NOT_RUN",
   "latest_validation": {
-    "candidate_source_commit": "917a0b93674d505f63e1cebb872923579c615f5b",
+    "candidate_source_commit": "a633263bf94ee4a8a7b07d454fbc68b8634ae944",
     "source_checks": "PENDING",
     "browser_review": "PENDING",
     "result": "NOT_RUN"
   },
   "latest_release_status": "NOT_RELEASED",
-  "next_action": "Inspect Foundation run on final head. Require all source/script tests and build pass; browser phase results must all be matched and frames 13b/14/16/17 valid and distinct.",
-  "updated_at": "2026-10-19T03:34:00Z",
+  "next_action": "Push the metadata-aware checkpoint. Inspect CI on exact final branch head, ensure source/script tests/build pass, then inspect phaseCaptureResults and actual screenshots; never treat fallback images as valid.",
+  "updated_at": "2026-10-19T03:42:00Z",
   "previous_candidate_validation_status": "FAIL",
   "previous_candidate_validation": {
     "workflow_run": 39184178983,

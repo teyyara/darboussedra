@@ -94,3 +94,9 @@
 ## 2026-10-19 — Loop 105a
 - Run 39190470096 executed the newly enabled script phase tests. Typecheck passed; 144 passed, 1 failed. The positive roof-hatch fixture marked x=0.12m over the hatch as zone roof / hatch clear, contrary to the rule requiring the camera to be more than 0.9m off-center on the deck.
 - Source commit 917a0b93674d505f63e1cebb872923579c615f5b changes the fixture to x=1.05m. Fresh source + browser validation pending.
+
+
+## 2026-10-19 — Loop106 / Loop106a route readiness
+- Run39190695353: source type-check, expanded unit tests and build passed. Browser failed first phase; later phases correctly marked skipped. Fallback state reveals watcher was armed before selected route: destination family-table, route 0/0. No valid framing conclusion.
+- Commit 597bc45107c04a921f5edbdda8c6df6c05a2bbe6 delayed initial phase watch until after click/path change and route progress is populated.
+- Before branch validation, source review discovered its regexes were over-escaped. Commit a633263bf94ee4a8a7b07d454fbc68b8634ae944 corrects both regexes so slash-delimited progress values are parsed. Fresh validation pending.

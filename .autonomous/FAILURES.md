@@ -58,3 +58,7 @@ Run 39187622415, artifact 12158767554. Source gates passed, but lower-stair-clea
 
 ## F-012 — Roof hatch positive fixture physically over opening
 Run39190470096: typecheck passed; 144 passed / 1 failed. Positive test used x=0.12m, still centered over 1.65m hatch, while asserting zone roof and hatch-clear. Phase rule correctly requires x>0.9m and roof zone. Loop105a updates fixture to x=1.05m; implementation rule remains unchanged. Rerun before resolution.
+
+
+## F-013 — First phase watcher started before an active route
+Run39190695353 / artifact12159956771. First ascent phase timed out with destination family-table, route 0/0; later phases were explicitly skipped. Loop106 moved watcher startup after selection and waits for selected destination and populated route. Loop106a fixed both regexes that parse route progress. Resolution pending fresh CI/browser run; do not infer visual quality from fallbacks.

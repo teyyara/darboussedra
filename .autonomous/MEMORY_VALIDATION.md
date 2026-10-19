@@ -1,6 +1,6 @@
 # Memory Validation
 
-- AEOS v4.1 is canonical in .autonomous/STRATEGY.md. .autonomous/STATE.json is canonical; legacy .aeos state is historical loop-050.
-- Loop104 run 39187622415 artifact 12158767554: browser phases timed out and screenshots 13b/14/16/17 were fallback at [3.45,7.2,0.5], route 56/56.
-- Loop105 widens the clearance phase window, bounds waits and exposes matched/timed-out/skipped results; scripts phase tests are now included in Vitest.
-- Run39190470096 passed typecheck, but 144 tests passed/1 failed due to the old roof-hatch positive fixture centered over the hatch. Loop105a moves that positive fixture to x=1.05m. Validation pending.
+- AEOS v4.1 is canonical in .autonomous/STRATEGY.md; .autonomous/STATE.json is canonical.
+- Loop105a run39190695353: typecheck/tests/build passed, browser failed first ascent phase; later ascent/roof screenshots explicitly marked skipped. Initial state was destination family-table route 0/0, so no valid camera judgement.
+- Loop106 delays initial phase watcher until selected destination reports a populated route.
+- Loop106a source a633263bf94ee4a8a7b07d454fbc68b8634ae944 fixes over-escaped regex literals in route readiness helper and browser route wait. Await full unit/script tests and fresh browser evidence.

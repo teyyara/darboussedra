@@ -98,3 +98,10 @@ Latest candidate visual quality is not certified; a preview Ready status may ref
 ## Loop105a
 - Run 39190470096: typecheck passed; 144 passed/1 failed in a newly enabled script phase test. Build/browser skipped.
 - Source commit 917a0b93674d505f63e1cebb872923579c615f5b moves positive hatch-clear fixture to x=1.05m, preserving phase rules. New run and browser artifact required.
+
+
+## Loop105a / Loop106a
+- Run39190695353: https://github.com/teyyara/darboussedra/actions/runs/39190695353
+- Artifact12159956771: source gates passed; browser phase1 timed out and later phases were marked skipped. Initial fallback had destination family-table, route 0/0. Not usable for camera assessment.
+- Source 597bc45107c04a921f5edbdda8c6df6c05a2bbe6 delayed phase watcher until route became active.
+- Source a633263bf94ee4a8a7b07d454fbc68b8634ae944 corrected the regex escapes. Validate fresh head before camera changes.
