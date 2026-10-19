@@ -257,6 +257,42 @@ describe("3D camera paths", () => {
     expect(Math.abs(landing!.target[0] - landing!.position[0])).toBeLessThan(0.05);
   });
 
+  it("eases the late stair gaze toward the upper landing without a sideways camera snap", () => {
+    const path = makeCameraPath("family-table", "rooftop", poseFor("rooftop"));
+    const flight = HOUSE_LAYOUT.stairs.groundFlight;
+    const upperEye = HOUSE_LAYOUT.upperY + 1.65;
+    const lateTreads = path.filter((pose) =>
+      Math.abs(pose.position[0]) < 0.02 &&
+      pose.position[1] >= upperEye - 1.0 &&
+      pose.position[1] <= upperEye + 0.02 &&
+      pose.position[2] < flight.to[2] + 1.68 &&
+      pose.position[2] > flight.to[2] + 0.02);
+    expect(lateTreads.length, "the turn is spread over several actual treads").toBeGreaterThanOrEqual(5);
+
+    const directions = lateTreads.map((pose) =>
+      new Vector3(...pose.target).sub(new Vector3(...pose.position)).normalize());
+    const yawAngles = directions.map((direction) => Math.atan2(direction.x, direction.z));
+    const yawSteps = yawAngles.slice(1).map((angle, index) => {
+      let difference = angle - yawAngles[index];
+      while (difference > Math.PI) difference -= 2 * Math.PI;
+      while (difference < -Math.PI) difference += 2 * Math.PI;
+      return Math.abs(difference);
+    });
+    expect(Math.max(...yawSteps), "adjacent treads should turn progressively, not flip toward the opposite wall").toBeLessThan(1.05);
+
+    const clearance = lateTreads.find((pose) =>
+      pose.position[2] > flight.to[2] + 0.25 &&
+      pose.position[2] < flight.to[2] + 0.42);
+    expect(clearance, "the clearance gaze exists before the final tread").toBeDefined();
+    const clearanceDirection = new Vector3(...clearance!.target)
+      .sub(new Vector3(...clearance!.position)).normalize();
+    expect(clearanceDirection.x, "look ahead toward the side lane").toBeGreaterThan(0.2);
+    expect(clearanceDirection.x).toBeLessThan(0.6);
+    expect(clearanceDirection.y, "look slightly above the landing fascia").toBeGreaterThan(0.1);
+    expect(clearanceDirection.y).toBeLessThan(0.4);
+    expect(clearanceDirection.z, "keep the stair flight in front until the landing").toBeLessThan(-0.3);
+  });
+
   it("climbs to the rooftop through the roof stair and hatch instead of an overhead camera jump", () => {
     const path = makeCameraPath("family-table", "rooftop", poseFor("rooftop"));
     expect(path.some((pose) => pose.position[1] > HOUSE_LAYOUT.upperY + 1.5 && pose.position[1] < HOUSE_LAYOUT.roofY + 0.5)).toBe(true);

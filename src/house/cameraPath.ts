@@ -143,14 +143,14 @@ function groundStairWalkway(): CameraPose[] {
     // The lateral step is the critical turn: a tangent-facing pose here looks
     // straight into the rear bedroom wall. Keep the camera on the protected lane
     // but start looking through the open stairwell before the forward walk begins.
-    poseFacingAlongUpperBridge([sideLaneX, upperEye, flight.to[2]], [0.12, 0.99]),
+    poseFacingAlongUpperBridge([sideLaneX, upperEye, flight.to[2]], [-0.35, 0.94]),
     // Continue the inward view along the upper bridge rather than tracking the wall.
-    poseFacingAlongUpperBridge([sideLaneX, upperEye, flight.to[2] + 0.2], [0.12, 0.99]),
-    poseFacingAlongUpperBridge([sideLaneX, upperEye, flight.to[2] + 0.6], [0.12, 0.99]),
+    poseFacingAlongUpperBridge([sideLaneX, upperEye, flight.to[2] + 0.2], [-0.35, 0.94]),
+    poseFacingAlongUpperBridge([sideLaneX, upperEye, flight.to[2] + 0.6], [-0.35, 0.94]),
     // The side lane is narrow and bordered by bedroom walls. Let the view glance
     // toward the open stair shaft as the camera walks forward, instead of staring
     // at an uninterrupted wall; reverseRoute mirrors travel but keeps this inward glance.
-    ...[-2.8, -1.8, -0.8, 0.2].map((z) => poseFacingAlongUpperBridge([sideLaneX, upperEye, z], [0.12, 0.99])),
+    ...[-2.8, -1.8, -0.8, 0.2].map((z) => poseFacingAlongUpperBridge([sideLaneX, upperEye, z], [-0.35, 0.94])),
     // Rejoin the full-width upper landing beyond the end of the open stair shaft.
     poseFacing([sideLaneX * 0.7, upperEye, 0.72], [0.2, 1]),
     poseFacing([0, upperEye, 1.05], [0, 1]),
@@ -365,20 +365,34 @@ export function makeCameraPath(from: HouseLocation, to: HouseLocation, finalPose
     // Keep the stronger downward look on descent.
     const upperEye = HOUSE_LAYOUT.upperY + HEAD_HEIGHT;
     const flightEndZ = HOUSE_LAYOUT.stairs.groundFlight.to[2];
-    const clearingUpperLanding = dy > 0 &&
-      pose.position[1] >= upperEye - 0.45 &&
+    // Keep following the stair flight until the top landing is physically reached.
+    // The old look-ahead flipped from -Z toward +Z on a single tread, making the
+    // camera sweep sideways across the fascia. Begin a gradual, rightward/upward
+    // glance over the final 1.6m while still looking generally along the flight.
+    const turnStartZ = flightEndZ + 1.68;
+    const turnEndZ = flightEndZ + 0.12;
+    const lateAscentTurn = dy > 0 &&
+      pose.position[1] >= upperEye - 1.0 &&
       pose.position[1] <= upperEye + 0.28 &&
-      pose.position[2] > flightEndZ - 0.05 &&
-      pose.position[2] < flightEndZ + 1.0;
-    const verticalAim = dy >= 0
-      ? dy * (clearingUpperLanding ? 0.15 : -0.25)
-      : dy * 0.75;
-    // Keep the late-ascent gaze inside the clear 1.3m stair opening until the
-    // camera reaches the side lane. A strong rightward/upward vector looks into
-    // the bridge slab underside; transition toward the open landing with a small
-    // rightward glance and a shallow rise instead of leaving the opening too early.
-    const sightlineX = clearingUpperLanding ? Math.abs(dz) * 0.2 : dx;
-    const sightlineZ = clearingUpperLanding ? Math.abs(dz) * 0.75 : dz;
+      pose.position[2] < turnStartZ &&
+      pose.position[2] > turnEndZ;
+    const rawTurnProgress = lateAscentTurn
+      ? Math.max(0, Math.min(1, (turnStartZ - pose.position[2]) / (turnStartZ - turnEndZ)))
+      : 0;
+    const turnProgress = rawTurnProgress * rawTurnProgress * (3 - 2 * rawTurnProgress);
+    const baseVerticalAim = dy >= 0 ? dy * -0.25 : dy * 0.75;
+    // The target on the last treads glances toward the side lane (+X), lifts above
+    // the landing fascia, and retains a negative-Z component. The actual U-turn
+    // toward the family hall happens on the open landing, not while the camera is
+    // still underneath the slab.
+    const landingGlanceX = Math.abs(dz) * 0.45;
+    const landingGlanceZ = dz * 0.75;
+    const landingGlanceY = Math.hypot(landingGlanceX, landingGlanceZ) * 0.24;
+    const sightlineX = lateAscentTurn ? dx * (1 - turnProgress) + landingGlanceX * turnProgress : dx;
+    const sightlineZ = lateAscentTurn ? dz * (1 - turnProgress) + landingGlanceZ * turnProgress : dz;
+    const verticalAim = lateAscentTurn
+      ? baseVerticalAim * (1 - turnProgress) + landingGlanceY * turnProgress
+      : baseVerticalAim;
     const length = Math.hypot(sightlineX, verticalAim, sightlineZ);
     return {
       position: pose.position,

@@ -1005,3 +1005,12 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 - **Correction:** start the first watcher before the route click; after each phase screenshot finishes, arm only the next watcher while the current token still holds the camera, then release the current token. The next matcher ignores an overlapping window until the prior token is removed. Each phase keeps its original timeout; no timeout is widened.
 - **Validation:** pending. Fresh browser evidence must show images 16 and 17 successfully captured at actual, distinct roof-stair/hatch positions. Stair camera/geometry defects remain open.
 - **Scope:** no house geometry, decorations, assets, paid services, merge or deployment.
+
+
+## Loop 103 — Smooth late-ascent turn and inward landing gaze
+
+- **Evidence:** workflow 39185169298 (head 29869009735dde78339acc5f5f1c19439d89f0be) passed type-check, 22 test files / 138 tests, build and Chromium. Artifact 12157699074 (SHA-256 a53e368cd993b25a2cb61e18702396c10d3e78171fd86effd98b2d8716ad6cd5) successfully captured all 21 screenshots, including real, distinct roof-stair and hatch-clear positions, with no runtime errors. The browser gate still failed because late-ascent clearance and upper-landing camera predicates were false.
+- **Visual root cause:** screenshot 13b showed a wall/fascia covering nearly all the frame as the camera turned abruptly from looking down the flight to facing toward the landing. Screenshot 14 shows a large wall on the bridge view; the side-lane gaze pointed outward (+X), contrary to the intended inward sightline toward the open stair shaft.
+- **Correction:** blend the last-tread look gradually over 1.6m, glance up/right while retaining a forward-along-flight Z component, and save the turn toward the hall for the open landing. Aim the side-lane camera inward (-X), and narrow the clearance capture to the last few treads so the report measures the intended pose.
+- **Tests:** add a path continuity check limiting yaw change between late treads, plus a clearance-pose check for moderate right/up/flight-directed gaze.
+- **Validation:** pending a fresh run and artifact inspection. No structural geometry, decorations or dependencies changed.
