@@ -318,13 +318,20 @@ async function selectDirectoryRoom(page, name, slug, transitionCaptures = [], ar
     phaseTasks.set(capture, task);
   };
 
+  await selector.click();
+  await page.waitForFunction((expected) => window.location.pathname === "/room/" + expected, slug, { timeout: 12000 });
+  // Don't start the phase timeout while the canvas still reports the previous room
+  // or an empty route. Wait until the selected target owns a populated route first.
   if (phaseCaptures.length > 0) {
+    await page.waitForFunction((expectedDestination) => {
+      const canvas = document.querySelector("canvas");
+      if (!canvas || canvas.dataset.destination !== expectedDestination) return false;
+      const progress = /^(\\d+)\\/(\\d+)$/.exec(canvas.dataset.routeProgress || "");
+      return Boolean(progress && Number(progress[2]) > 0);
+    }, slug, { timeout: 15000 });
     nextPhaseIndex = 1;
     startPhaseCapture(phaseCaptures[0], undefined);
   }
-
-  await selector.click();
-  await page.waitForFunction((expected) => window.location.pathname === "/room/" + expected, slug, { timeout: 12000 });
   const transitionStarted = Date.now();
   for (const capture of transitionCaptures) {
     if (capture.phase) {

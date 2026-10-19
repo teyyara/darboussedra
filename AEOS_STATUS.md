@@ -1055,3 +1055,11 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 - **Evidence:** run 39190470096 correctly started executing the previously excluded scripts phase tests. Type-check passed; 144 tests passed and one failed: the roof-hatch phase test expected a camera at X=0.12m (still centered over the hatch) to be a valid roof-deck exit, while the actual phase rule requires X>0.9m after stepping sideways clear of the opening.
 - **Correction:** change only the positive fixture to X=1.05m, consistent with the phase rule and distinct negative tests for a camera above the opening or too near the hatch.
 - **Validation:** pending. Do not weaken the actual hatch-clear phase rule.
+
+
+## Loop 106 — Arm phase watchers only after route readiness
+
+- **Evidence:** Loop 105a run 39190695353 correctly failed fast and labeled fallback frames. Its first phase timed out while frame state still reported destination "family-table" and routeProgress "0/0" at [1,1.65,2.05]. Later fallback screenshots then advanced through the route (13b progress 3/56, 14 progress 19/56, 16 progress 27/56, 17 progress 43/56), proving the watcher was armed before the target's camera route became active. The descent phase similarly timed out at rooftop position with routeProgress 0/56 just as its route began.
+- **Correction:** start the first phase watcher only after the selector click and URL transition, then wait for canvas.dataset.destination to equal the requested room and routeProgress to show a populated path (for example 0/56). Add an exported pure readiness predicate and regression tests for destination mismatch, empty route and populated route.
+- **Validation:** pending fresh typecheck, 149-ish unit tests, build, and browser review. All phaseCaptureResults must match before any camera framing judgement.
+- **Scope:** browser-review harness and tests only; runtime camera and house geometry unchanged.

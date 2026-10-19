@@ -20,3 +20,10 @@ export function isCameraPhaseMatch(phase, frame) {
     ((bounds[0] == null || value > bounds[0]) && (bounds[1] == null || value < bounds[1]));
   return within(x, rule.x) && within(y, rule.y) && within(z, rule.z);
 }
+
+/** A phase watcher should start only after the selected destination owns a non-empty camera route. */
+export function isCameraRouteReady(destination, frame) {
+  if (!frame || frame.destination !== destination) return false;
+  const progress = /^\\d+\\/(\\d+)$/.exec(String(frame.routeProgress ?? ""));
+  return Boolean(progress && Number(progress[1]) > 0);
+}

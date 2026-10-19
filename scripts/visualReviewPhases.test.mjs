@@ -1,7 +1,14 @@
 import { describe, expect, it } from "vitest";
-import { isCameraPhaseMatch } from "./visualReviewPhases.mjs";
+import { isCameraPhaseMatch, isCameraRouteReady } from "./visualReviewPhases.mjs";
 
 describe("visual review camera phase windows", () => {
+  it("does not start a phase watch against an empty or previous-room route", () => {
+    expect(isCameraRouteReady("rooftop", { destination: "family-table", routeProgress: "0/0" })).toBe(false);
+    expect(isCameraRouteReady("rooftop", { destination: "rooftop", routeProgress: "0/0" })).toBe(false);
+    expect(isCameraRouteReady("rooftop", { destination: "rooftop", routeProgress: "0/56" })).toBe(true);
+  });
+
+
   it("separates the final top-tread clearance from the later upper-side landing", () => {
     const topTreadClearance = {
       position: [0, 4.65, -4.2],

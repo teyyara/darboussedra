@@ -1,7 +1,23 @@
 import { describe, expect, it } from "vitest";
-import { CAMERA_PHASE_RULES, isCameraPhaseMatch } from "./visualReviewPhases.mjs";
+import { CAMERA_PHASE_RULES, isCameraPhaseMatch, isCameraRouteReady } from "./visualReviewPhases.mjs";
 
 describe("browser-review stair camera phases", () => {
+  it("waits for the selected destination to own a populated route before starting phase capture", () => {
+    expect(isCameraRouteReady("rooftop", {
+      destination: "family-table", routeProgress: "0/0",
+    })).toBe(false);
+    expect(isCameraRouteReady("rooftop", {
+      destination: "rooftop", routeProgress: "0/0",
+    })).toBe(false);
+    expect(isCameraRouteReady("rooftop", {
+      destination: "rooftop", routeProgress: "0/56",
+    })).toBe(true);
+    expect(isCameraRouteReady("rooftop", {
+      destination: "rooftop", routeProgress: "3/56",
+    })).toBe(true);
+  });
+
+
   it("recognizes the roof deck only after the camera steps sideways clear of the hatch", () => {
     expect(isCameraPhaseMatch("roof-hatch-clear", {
       // The camera has exited the 1.65m-wide hatch to the right-side roof deck.
