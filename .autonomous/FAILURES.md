@@ -62,3 +62,7 @@ Run39190470096: typecheck passed; 144 passed / 1 failed. Positive test used x=0.
 
 ## F-013 — First phase watcher started before an active route
 Run39190695353 / artifact12159956771. First ascent phase timed out with destination family-table, route 0/0; later phases were explicitly skipped. Loop106 moved watcher startup after selection and waits for selected destination and populated route. Loop106a fixed both regexes that parse route progress. Resolution pending fresh CI/browser run; do not infer visual quality from fallbacks.
+
+
+## F-014 — Camera phase windows too narrow for slow rendered sampling
+Run39191552660 / artifact12160745173: source gates pass (145 tests, build), browser phase 1 times out and later images are explicitly skipped. The initial route readiness is correct; the first fallback has destination rooftop and route 0/56. During subsequent fallback screenshot captures, the route reaches [0,2.862,-1.924] at progress8/56 (outside the old y≥3.04,z≤-2.1 window) and [0.925,4.65,-3.368] at progress22/56 (outside prior upper landing z>-3.2). Loop107 widens the sampled ranges, uses 100ms polling, and lengthens only the relevant waits. Validation pending; do not resolve until actual phase matches.

@@ -1,6 +1,6 @@
 # Memory Validation
 
-- AEOS v4.1 is canonical in .autonomous/STRATEGY.md; .autonomous/STATE.json is canonical.
-- Loop105a run39190695353: typecheck/tests/build passed, browser failed first ascent phase; later ascent/roof screenshots explicitly marked skipped. Initial state was destination family-table route 0/0, so no valid camera judgement.
-- Loop106 delays initial phase watcher until selected destination reports a populated route.
-- Loop106a source a633263bf94ee4a8a7b07d454fbc68b8634ae944 fixes over-escaped regex literals in route readiness helper and browser route wait. Await full unit/script tests and fresh browser evidence.
+- AEOS v4.1 in .autonomous/STRATEGY.md; .autonomous/STATE.json is canonical.
+- Loop106a run39191552660: typecheck, 145 tests, build pass; browser phase 1 timed out, later phases explicitly skipped.
+- The report's route state demonstrates the active route was correct; phase windows were too narrow for slow sampled frames. Actual observed positions: midflight [0,2.862,-1.924] progress8/56; upper side lane [0.925,4.65,-3.368] progress22/56.
+- Loop107 commit ff06bf663adff19640fd5b967deda0e2d499fbd8 widens windows and polls at 100ms with bounded 60–90s waits. Validate all phase matches before any geometry judgement.

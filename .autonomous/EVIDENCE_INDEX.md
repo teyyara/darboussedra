@@ -105,3 +105,9 @@ Latest candidate visual quality is not certified; a preview Ready status may ref
 - Artifact12159956771: source gates passed; browser phase1 timed out and later phases were marked skipped. Initial fallback had destination family-table, route 0/0. Not usable for camera assessment.
 - Source 597bc45107c04a921f5edbdda8c6df6c05a2bbe6 delayed phase watcher until route became active.
 - Source a633263bf94ee4a8a7b07d454fbc68b8634ae944 corrected the regex escapes. Validate fresh head before camera changes.
+
+
+## Loop106a baseline and Loop107 candidate
+- Run 39191552660: https://github.com/teyyara/darboussedra/actions/runs/39191552660
+- Artifact 12160745173: type-check, tests and build passed; browser phase status invalid. First ascent phase timed out; rest were skipped. Fallback positions show active route but missed phase windows.
+- Source commit ff06bf663adff19640fd5b967deda0e2d499fbd8 widens lower midflight and upper side landing windows, uses 100ms polling, and longer bounded phase waits. Fresh run/artifact required.

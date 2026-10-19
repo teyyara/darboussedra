@@ -100,3 +100,9 @@
 - Run39190695353: source type-check, expanded unit tests and build passed. Browser failed first phase; later phases correctly marked skipped. Fallback state reveals watcher was armed before selected route: destination family-table, route 0/0. No valid framing conclusion.
 - Commit 597bc45107c04a921f5edbdda8c6df6c05a2bbe6 delayed initial phase watch until after click/path change and route progress is populated.
 - Before branch validation, source review discovered its regexes were over-escaped. Commit a633263bf94ee4a8a7b07d454fbc68b8634ae944 corrects both regexes so slash-delimited progress values are parsed. Fresh validation pending.
+
+
+## 2026-10-19 — Loop107 / wider phase sampling
+- Run39191552660 / artifact12160745173: typecheck, expanded 145 tests and build passed; browser gate failed because lower-stair-midflight timed out; downstream ascent/roof phases correctly marked skipped.
+- Fallback report had destination rooftop and a populated route, so Loop106 route readiness is working. The old phase window excluded the observed midflight [0,2.862,-1.924] at progress8/56. The upper side-lane pose [0.925,4.65,-3.368] at progress22/56 was just outside its old Z lower bound.
+- Source ff06bf663adff19640fd5b967deda0e2d499fbd8 widens both windows, changes waits to 100ms polling and gives slow rendered zones longer bounded timeouts. Fresh validation pending.

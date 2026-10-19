@@ -1,20 +1,20 @@
 # Prioritized Plan
 
-## P0 — Reliable visual evidence
-- [ ] Validate route-readiness regex helper and browser predicate.
-- [ ] Run typecheck, complete unit/script tests and production build.
-- [ ] Require all phaseCaptureResults status matched; no timeout/skip.
-- [ ] Confirm captures 13/13b/14/16/17 and 15 are valid, distinct camera states.
+## P0 — Valid camera-phase evidence
+- [ ] Validate Loop107 typecheck, expanded tests, build and browser review.
+- [ ] Require all phaseCaptureResults status values to be matched.
+- [ ] Verify real positions/progress for screenshots 13, 13b, 14, 16, 17 and 15.
+- [ ] Do not infer visual quality from any fallback or skipped phase.
 
-## P1 — Stair / upper-bridge camera quality
-- [ ] Assess camera vectors only with valid phase images.
-- [ ] If genuine views remain blocked by walls or fascia, make a separate tested geometry change.
+## P1 — Stair / upper bridge visuals
+- [ ] Once frames are valid, assess whether late ascent keeps the steps in view and whether the upper landing shows the open bridge.
+- [ ] If actual wall/fascia occlusion remains, make a separate evidence-based geometry fix.
 
-## P2 — Entrance and rendering
-- [ ] Reduce oversized foreground entrance framing.
-- [ ] Profile pop-in after navigation acceptance; keep Moroccan neighborhood/sky/clouds coherent.
-- [ ] No new decor without explicit authorization.
+## P2 — Entrance / rendering
+- [ ] Reduce repeated portal framing.
+- [ ] Check render pop-in after navigation acceptance; preserve Moroccan neighborhood and sky/clouds.
+- [ ] No new decorations without explicit approval.
 
 ## Release
-- [ ] Source, browser, arrivals, responsive and memory gates pass on one frozen candidate.
-- [ ] Do not merge or deploy while any critical gate is failed or unknown.
+- [ ] Source, browser, arrival, mobile and memory checks pass on one frozen candidate.
+- [ ] No merge/deployment when any critical gate is failed or unknown.
