@@ -35,3 +35,10 @@
 - Two later phase screenshots failed; same upper-landing frame showed one hold token and ~43.7s remaining. The shared deadline was being renewed while the matching token remained true.
 - Source commit 0f638eb74f160c408e2d68275edac0a905e30220 switches to per-token deadlines and a one-shot matching guard, with independent cleanup and unit tests.
 - Fresh full/browser validation pending; no architecture or decor changed.
+
+
+## 2026-10-19 — Loop 101 per-token hold, syntax correction
+- Run 39182940594 failed browser review after source checks passed (137 tests/build/Chromium); artifact 12157625304 shows both roof-phase captures fell back to the same upper-landing state, one token and ~43.7s remaining.
+- Loop 101 changed from a shared renewable deadline to per-token expiry and one-shot matched-token claiming.
+- Run 39183973522 failed at typecheck: TS1128/TS1434 at lines 41–47 of cameraTiming.ts, because the text replacement left the previous helper's return/body tail.
+- Corrective source commit bfbf926e4c46bdd06b18356a8b153ba09d061e19 removes that orphaned tail. Fresh validation is pending; no geometry or decor was changed.

@@ -5,8 +5,8 @@
   "current_phase": "STAIR_TRAVERSAL_AND_VISUAL_VALIDATION",
   "current_goal": "Prevent the browser-review harness from renewing stale camera holds, then capture real roof-stair/hatch phases before further stair improvements.",
   "current_candidate_branch": "fix/loop-064-moroccan-exterior-and-layout",
-  "current_candidate_commit": "0f638eb74f160c408e2d68275edac0a905e30220",
-  "last_checkpoint_commit": "0f638eb74f160c408e2d68275edac0a905e30220",
+  "current_candidate_commit": "bfbf926e4c46bdd06b18356a8b153ba09d061e19",
+  "last_checkpoint_commit": "bfbf926e4c46bdd06b18356a8b153ba09d061e19",
   "last_known_good_commit": "e06af00a049eb72b173295438bbeb8e384c6fef5",
   "last_known_good_release": null,
   "active_operation_id": null,
@@ -24,30 +24,31 @@
     "Inspected artifact 12156503344 from workflow 39181992857: typecheck/tests/build/Chromium pass, 133 tests pass, 14/14 arrivals settle and no runtime errors.",
     "Recorded visual review as incomplete despite green workflow because roof-stair-flight and roof-hatch-clear timed out and saved the same stale upper-landing frame.",
     "Loop 100 validation completed with failure: typecheck, 137 tests, build and Chromium passed, but the browser step timed out on roof-stair-flight/hatch screenshots. Artifact 12157625304 showed repeated hold-token deadline renewal.",
-    "Loop 101 source commit created: independent per-token deadlines, first-match-only claim guard, independent cleanup, per-token telemetry, and tests for independent expiry."
+    "Loop 101 source commit created: independent per-token deadlines, first-match-only claim guard, independent cleanup, per-token telemetry, and tests for independent expiry.",
+    "Loop 101 source correction committed: per-token hold deadlines and first-match-only token claim; unit coverage added.",
+    "Run 39183973522 failed at typecheck because the scripted helper replacement left an orphaned `): boolean` function tail. Corrected in source commit bfbf926e4c46bdd06b18356a8b153ba09d061e19."
   ],
   "pending_work": [
-    "Validate Loop 101 at the final PR head with typecheck, full unit tests, build and fresh browser review.",
-    "Verify images 16 and 17 both exist and show actual, distinct roof-flight and hatch-clear positions; inspect per-token deadline telemetry.",
-    "After screenshot capture is reliable, fix the visually wall/underside-heavy stair landing and narrow upper passage from fresh evidence.",
-    "Reassess entrance framing; it is improved but remains visually unaccepted.",
-    "Measure render readiness/pop-in only after traversal quality is coherent."
+    "Validate the corrected Loop 101 candidate: typecheck, complete unit tests, production build and fresh browser review.",
+    "Verify images 16 and 17 exist and depict independent, true roof-flight/hatch-clear phases, with per-token deadline telemetry.",
+    "Then make a separate camera/architecture repair for remaining stair landing obstruction, based on fresh images.",
+    "Reassess entrance framing after traversal evidence is reliable."
   ],
   "known_blockers": [
-    "Run 39182940594 failed the browser gate although all source checks passed. It had 2 screenshot capture timeouts and 2 phase timeouts; images 16/17 were absent.",
-    "Root cause found in artifact telemetry: at both fallback captures the same upper-side token remained live at ~43.7s, implying the shared deadline was refreshed on repeated matcher evaluations. Loop 101 switches to per-token deadlines and a one-shot matched-token guard; revalidation required.",
-    "Entrance and upper landing visuals still need improvement. No geometry changes were made in Loop 101."
+    "Run 39182940594 browser review failed: screenshots 16/17 timed out while an upper-landing token remained live with ~43.7 seconds on a shared deadline.",
+    "Run 39183973522 failed immediately at typecheck due an orphaned old helper tail. Corrected source commit bfbf926e needs a fresh run.",
+    "Stair landing views remain visually wall/underside-heavy. No geometry change has yet been made to address that product defect."
   ],
   "latest_validation_status": "NOT_RUN",
   "latest_validation": {
-    "candidate_source_commit": "0f638eb74f160c408e2d68275edac0a905e30220",
-    "source_checks": "PENDING",
-    "browser_review": "PENDING",
-    "result": "NOT_RUN"
+    "candidate_source_commit": "bfbf926e4c46bdd06b18356a8b153ba09d061e19",
+    "source_checks": "NOT_RUN",
+    "browser_review": "NOT_RUN",
+    "result": "PENDING"
   },
   "latest_release_status": "NOT_RELEASED",
-  "next_action": "Inspect Foundation checks for the final branch head. Confirm source gates pass, then inspect browser-review.json and images 13, 13b, 14, 16 and 17. Both 16/17 must exist, report distinct camera positions/progress and show the roof flight/hatch clearance; check per-token deadline values.",
-  "updated_at": "2026-10-19T01:04:30Z",
+  "next_action": "Inspect CI on the final branch head. Confirm typecheck passes first, then unit tests/build, then inspect fresh browser-review report and images 16/17.",
+  "updated_at": "2026-10-19T01:09:20Z",
   "previous_candidate_validation_status": "FAIL",
   "previous_candidate_validation": {
     "workflow_run": 39182940594,
