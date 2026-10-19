@@ -62,10 +62,30 @@ describe("3D camera paths", () => {
     expect(EXTERIOR_CAMERA.target[1]).toBeGreaterThan(EXTERIOR_CAMERA.position[1]);
   });
 
-  it("keeps the entrance view aligned with the passage and family-table view across the shared room", () => {
+  it("aims the entrance diagonally through the real portal into shared family circulation", () => {
+    const entranceRoom = getRoomBySlug("entrance")!;
+    const familyRoom = getRoomBySlug("family-table")!;
     const entrance = poseFor("entrance");
-    expect(Math.abs(entrance.position[0] - entrance.target[0])).toBeLessThan(0.05);
+    const entranceBounds = roomBounds(entranceRoom);
+    const familyBounds = roomBounds(familyRoom);
+
+    expect(entrance.position[0]).toBeGreaterThan(entranceBounds.minX + 0.2);
+    expect(entrance.position[0]).toBeLessThan(entranceBounds.maxX - 0.2);
+    expect(entrance.position[2]).toBeGreaterThan(entranceBounds.minZ + 0.2);
+    expect(entrance.position[2]).toBeLessThan(entranceBounds.maxZ - 0.2);
+    expect(Math.abs(entrance.position[0] - entrance.target[0]), "the entrance gaze must be off-axis").toBeGreaterThan(1.0);
     expect(entrance.position[2]).toBeGreaterThan(entrance.target[2]);
+
+    expect(entrance.target[0]).toBeGreaterThan(familyBounds.minX);
+    expect(entrance.target[0]).toBeLessThan(familyBounds.maxX);
+    expect(entrance.target[2]).toBeGreaterThan(familyBounds.minZ);
+    expect(entrance.target[2]).toBeLessThan(familyBounds.maxZ);
+
+    const thresholdZ = entranceBounds.minZ;
+    const thresholdProgress = (thresholdZ - entrance.position[2]) / (entrance.target[2] - entrance.position[2]);
+    const thresholdX = entrance.position[0] + (entrance.target[0] - entrance.position[0]) * thresholdProgress;
+    expect(Math.abs(thresholdX), "the diagonal sightline must pass through the real shared doorway").toBeLessThan(entranceRoom.footprint[0] / 2 - 0.1);
+
     const family = poseFor("family-table");
     expect(family.position[0]).toBeGreaterThan(0.8);
     expect(Math.abs(family.target[0]), "family-table view centers the stair-hall doorway").toBeLessThan(0.15);
@@ -165,10 +185,15 @@ describe("3D camera paths", () => {
     }
   });
 
-  it("keeps every destination camera and focus point inside the room named by the route", () => {
+  it("keeps each destination camera inside its room and focus inside its intended visible room", () => {
     for (const room of rooms) {
-      const bounds = roomBounds(room);
+      const cameraBounds = roomBounds(room);
+      // The entrance intentionally looks through its real shared doorway into the
+      // Family Table; it should not aim back at the nearby vestibule wall.
+      const focusRoom = room.slug === "entrance" ? getRoomBySlug("family-table")! : room;
+      const focusBounds = roomBounds(focusRoom);
       for (const [label, point] of [["camera", room.camera.position], ["focus", room.camera.target]] as const) {
+        const bounds = label === "camera" ? cameraBounds : focusBounds;
         expect(point[0], room.slug + " " + label + " X").toBeGreaterThan(bounds.minX + 0.01);
         expect(point[0], room.slug + " " + label + " X").toBeLessThan(bounds.maxX - 0.01);
         expect(point[2], room.slug + " " + label + " Z").toBeGreaterThan(bounds.minZ + 0.01);

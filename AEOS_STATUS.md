@@ -952,3 +952,11 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 - **Cold-start check:** PASS. The v4.1 strategy, current branch, approved constraints, latest validation failure and next action were reconstructed from committed repository memory. Required files are present; JSON state parses. The check found a stale checkpoint reference, corrected in the accompanying memory checkpoint.
 - **Validation:** PENDING on the final PR branch commit. No visual pass is claimed until a fresh browser artifact is inspected.
 - **Scope:** No new decorations, dependencies, paid services, manual deployment or main merge.
+
+
+## Loop 099 — Reconcile entrance sightline test contract
+
+- **Observed:** workflow 39181779811 checked branch head 1d9f0cdb5d5bd8bb2e2081501e9cec15dea9d72e. Type-check passed; unit tests failed (131 passed, 2 failed across 22 test files). The existing camera-path suite still required the entrance target to remain centered on the Z axis and inside the vestibule bounds, directly contradicting the approved diagonal gaze into the connected Family Table. Production build and browser capture were skipped.
+- **Correction:** replace those obsolete expectations with explicit assertions that the camera stays inside the entrance, the focus lands inside Family Table, and the diagonal sightline crosses the shared doorway opening. All other room focus points remain constrained to their own footprints.
+- **Validation:** pending a fresh CI run. No visual result exists for this revision; the entrance and stair issues remain open.
+- **Scope:** no room geometry, decorations, assets, dependencies, merge or deployment.
