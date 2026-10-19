@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-19T01:30:00+01:00",
+  "stack": {
+    "framework": "Vite + React + TypeScript",
+    "renderer": "Three.js / React Three Fiber",
+    "unitTests": "Vitest",
+    "browserReview": "Playwright + Chromium in GitHub Actions"
+  },
+  "tools": {
+    "githubConnector": "available",
+    "githubActions": "available",
+    "browserArtifacts": "available via CI",
+    "manualDeployment": "prohibited",
+    "localShellRepositoryMutation": "not used"
+  },
+  "cost": {
+    "paidServicesAllowed": false,
+    "paidDependenciesAllowed": false,
+    "ci": "Existing repository workflow; no new paid infrastructure provisioned",
+    "vercel": "Automatic preview checks can be stale or rate-limited"
+  },
+  "credentials": {
+    "presence": "not inspected",
+    "secretValuesStored": false
+  }
+}
