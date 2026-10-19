@@ -57,3 +57,12 @@ Latest candidate visual quality is not certified; a preview Ready status may ref
 - Frames 14/16/17 all remained at [0.925,4.65,-2.942], routeProgress 22/56. Token 14-upper-landing-turn.png remained active with ~45.3s left.
 - Diagnosis: all phase timers started at route start and expired during an earlier screenshot hold.
 - Loop 102 source commit 5e294d5a96444ffdaf56edb8f022a30723c736a5 makes watchers sequential while arming the next before release. Revalidation pending.
+
+
+## Loop 102 visual acceptance baseline
+- Workflow 39185169298: https://github.com/teyyara/darboussedra/actions/runs/39185169298
+- Artifact 12157699074: https://github.com/teyyara/darboussedra/actions/runs/39185169298/artifacts/12157699074
+- SHA-256: a53e368cd993b25a2cb61e18702396c10d3e78171fd86effd98b2d8716ad6cd5
+- Source gates passed (22 test files / 138 tests, build, Chromium). 21/21 screenshots saved, 14/14 room arrivals, no runtime errors and mobile overflow false.
+- Browser gate failed because the late-ascent clearing and turn predicates were false. Images 16/17 showed distinct real roof-stair/hatch-clear positions.
+- Loop 103 source commit 87d5d43ddfe22cfe74ae15772fb811f1ea11b334 changes the turn and inward gaze; fresh validation pending.

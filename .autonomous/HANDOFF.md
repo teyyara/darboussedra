@@ -1,24 +1,30 @@
 # Handoff — Dar Boussedra
 
-**STATUS: CHECKPOINTED / IN PROGRESS. Loop 102 sequential phase-capture change committed; validation pending.**
+**STATUS: CHECKPOINTED / IN PROGRESS. Loop 103 camera-path correction committed; validation pending.**
 
+## Candidate
 - Branch: fix/loop-064-moroccan-exterior-and-layout
-- Loop 102 source commit: 5e294d5a96444ffdaf56edb8f022a30723c736a5
+- Loop 103 source commit: 87d5d43ddfe22cfe74ae15772fb811f1ea11b334
 - Open PR #7: https://github.com/teyyara/darboussedra/pull/7
-- Main baseline unchanged: e06af00a049eb72b173295438bbeb8e384c6fef5
-- AEOS v4.1 remains canonical in .autonomous/STRATEGY.md.
+- Main baseline: e06af00a049eb72b173295438bbeb8e384c6fef5.
+- AEOS v4.1 remains canonical.
 
-## Latest evidence before Loop 102
-Workflow 39184178983: https://github.com/teyyara/darboussedra/actions/runs/39184178983
-Artifact 12157498087: https://github.com/teyyara/darboussedra/actions/runs/39184178983/artifacts/12157498087
-ZIP digest: a53e368cd993b25a2cb61e18702396c10d3e78171fd86effd98b2d8716ad6cd5
-Typecheck/tests/build/Chromium passed, but browser review failed. 19 images were saved; screenshots 16/17 were missing after screenshot timeouts. roof-stair-flight and roof-hatch-clear timed out. Frames 14/16/17 remained at [0.925,4.65,-2.942], routeProgress 22/56, with token 14-upper-landing-turn.png still active (~45.3s remaining).
+## Loop 102 evidence
+Workflow 39185169298: https://github.com/teyyara/darboussedra/actions/runs/39185169298
+Artifact 12157699074: https://github.com/teyyara/darboussedra/actions/runs/39185169298/artifacts/12157699074
+Artifact SHA-256: a53e368cd993b25a2cb61e18702396c10d3e78171fd86effd98b2d8716ad6cd5
+Source gates passed (22 test files / 138 tests, build and Chromium). All 21 screenshots saved; 14/14 room arrivals, no runtime errors, mobile overflow false. Images 16/17 now show real roof-stair and hatch-clear positions. Browser acceptance still failed: clearsUpperLandingOnAscent=false and anticipatesUpperLandingTurn=false.
 
-## Diagnosis and Loop 102
-The phase watchers were all started together. Their 90-second timers were running while the earlier upper-side screenshot held the camera, so later roof-phase waits could time out before the route reached them. Loop 101 per-token deadlines alone did not fix this. Loop 102 (source commit 5e294d5a96444ffdaf56edb8f022a30723c736a5) starts the first watcher before the route click, then arms only the next watcher after each screenshot finishes but before the current hold releases. The next matcher explicitly ignores an overlapping camera window until the predecessor token disappears. Existing timeouts are unchanged.
+## Visual diagnosis
+- Frame 13b (position [0,4.333,-3.797], direction [0.808,0.098,0.581]) is mostly wall/fascia. The route switches from down-flight (-Z) to toward the bridge (+Z) too abruptly, making the camera sweep sideways before clearing the fascia.
+- Frame 14 (position [0.925,4.65,-2.84], direction [0.117,-0.228,0.967]) has a near-field wall filling the left half. The side-lane gaze points outward rather than inward to the stair opening.
+- Frame 16 now depicts the roof stair; frame 17 is on the deck after clearing the hatch.
+
+## Loop 103 change
+Commit 87d5d43ddfe22cfe74ae15772fb811f1ea11b334 eases the late-ascent gaze over the final 1.6m of treads, keeps its view generally along the flight until the top is reached, pitches gently upward to clear the fascia, aims the side-bridge view inward (-X), narrows the clearance capture phase, and adds regression tests for yaw continuity and clearance pose.
 
 ## Next action
-Inspect the fresh workflow for the final branch head. Confirm typecheck/tests/build pass, then inspect the new report and images 13b, 14, 16, 17. The last two must exist and show distinct real roof-stair and hatch-exit positions. After reliable capture, fix remaining wall/underside-heavy stair visuals separately.
+Inspect the Foundation run for the exact final branch head. If typecheck/tests/build pass, inspect screenshots 13b and 14; the clearance predicates should pass, and the bridge view should reveal the open stair/landing. Ensure screenshots 16/17 remain valid.
 
 ## Constraints
-No decorations/new paid dependencies, no merge to main with failing or unknown visual gates, and no manual Vercel deployment.
+No new decor, no paid dependencies, no merge to main while visual acceptance is failing/unknown, no manual Vercel deployment.

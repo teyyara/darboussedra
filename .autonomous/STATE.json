@@ -3,10 +3,10 @@
   "strategy_version": "4.1",
   "project_status": "IN_PROGRESS",
   "current_phase": "STAIR_TRAVERSAL_AND_VISUAL_VALIDATION",
-  "current_goal": "Sequence browser phase captures so later phase timers do not expire during an earlier screenshot hold; then verify real roof-stair/hatch frames.",
+  "current_goal": "Validate the smoothed late-ascent turn and inward upper-bridge sightline against browser evidence before another camera or geometry adjustment.",
   "current_candidate_branch": "fix/loop-064-moroccan-exterior-and-layout",
-  "current_candidate_commit": "5e294d5a96444ffdaf56edb8f022a30723c736a5",
-  "last_checkpoint_commit": "5e294d5a96444ffdaf56edb8f022a30723c736a5",
+  "current_candidate_commit": "87d5d43ddfe22cfe74ae15772fb811f1ea11b334",
+  "last_checkpoint_commit": "87d5d43ddfe22cfe74ae15772fb811f1ea11b334",
   "last_known_good_commit": "e06af00a049eb72b173295438bbeb8e384c6fef5",
   "last_known_good_release": null,
   "active_operation_id": null,
@@ -31,29 +31,32 @@
     "Loop 101b restores the new helper's closing brace after the first corrective edit left it open; both typecheck failures are recorded in AEOS_STATUS.md.",
     "Loop 101 per-token hold expiry passed source gates but browser capture still failed on workflow 39184178983.",
     "Artifact 12157498087 shows 19 saved images, missing screenshots 16/17, and later phase timeout fallbacks at the upper-side landing with the prior hold token still live.",
-    "Loop 102 source commit sequences phase watchers one-at-a-time, arming the next while the previous capture still holds the camera and preventing overlap until the predecessor token releases."
+    "Loop 102 source commit sequences phase watchers one-at-a-time, arming the next while the previous capture still holds the camera and preventing overlap until the predecessor token releases.",
+    "Loop 102 run 39185169298 passed type-check, 22 test files / 138 tests, build and Chromium. All 21 screenshots including roof stair and hatch-clear were saved with no runtime errors, but browser acceptance failed because both landing clearance aim predicates were false.",
+    "Loop 103 source commit created: blend the late stair look over the final 1.6m while retaining a flightward negative-Z component; aim side-lane views inward to the stair shaft; narrow the clearance capture window; add camera-path continuity and pose tests."
   ],
   "pending_work": [
-    "Validate Loop 102 on final branch head: typecheck, tests, build and fresh browser review.",
-    "Verify images 16/17 both exist and show independent real roof-stair/hatch-clear positions with no stale hold token.",
-    "Then address the wall/underside-heavy lower landing and upper passage in a separate visual/geometry loop.",
-    "Reassess the entrance framing after traversal review is reliable."
+    "Validate Loop 103 at the frozen final branch head: typecheck, full unit tests, production build and Chromium review.",
+    "Inspect 13b and 14 screenshots and confirm clearsUpperLandingOnAscent, anticipatesUpperLandingTurn and upperLandingAiming improve.",
+    "Confirm roof-stair/hatch captures 16/17 remain successful at distinct real positions.",
+    "If the bridge still appears as a near-field blank wall or stair fascia still dominates, make a separate evidence-based architecture/sightline change.",
+    "Reassess entrance framing after stair traversal becomes coherent."
   ],
   "known_blockers": [
-    "Workflow 39184178983 source checks passed, but browser review failed. Images 16/17 were absent; roof-stair/hatch phases timed out while upper-side capture held the camera.",
-    "Loop 102 changes harness sequencing; fresh validation pending.",
-    "Lower landing and upper-passage images remain visually obstructed; no house geometry was changed in Loop 102."
+    "Loop 102 source gates passed (22 files / 138 tests, build, Chromium), 21/21 screenshots saved, 14/14 room arrivals, no runtime errors. Browser acceptance still failed: clearsUpperLandingOnAscent=false and anticipatesUpperLandingTurn=false.",
+    "Loop 102 image 13b showed the fascia covering nearly all of the frame while the camera turned abruptly from down the flight (-Z) toward the bridge (+Z).",
+    "Loop 102 image 14 showed a large near-field wall; the side-lane gaze pointed outward (+X) rather than inward toward the stair shaft. Loop 103 addresses both; validation pending."
   ],
   "latest_validation_status": "NOT_RUN",
   "latest_validation": {
-    "candidate_source_commit": "5e294d5a96444ffdaf56edb8f022a30723c736a5",
+    "candidate_source_commit": "87d5d43ddfe22cfe74ae15772fb811f1ea11b334",
     "source_checks": "PENDING",
     "browser_review": "PENDING",
     "result": "NOT_RUN"
   },
   "latest_release_status": "NOT_RELEASED",
-  "next_action": "Inspect Foundation checks for final Loop 102 head. Ensure source gates pass, then inspect browser report and images 13b, 14, 16, 17; screenshots 16/17 must exist and be at distinct actual route positions.",
-  "updated_at": "2026-10-19T01:20:00Z",
+  "next_action": "Inspect the Foundation run for the final branch head. If source gates pass, inspect screenshots 13b,14,16,17; the clearance predicates must pass and the upper landing must show the open stair/bridge rather than a near-field wall.",
+  "updated_at": "2026-10-19T01:36:00Z",
   "previous_candidate_validation_status": "FAIL",
   "previous_candidate_validation": {
     "workflow_run": 39184178983,

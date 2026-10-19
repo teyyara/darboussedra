@@ -56,3 +56,10 @@
 - Artifact 12157498087 digest a53e368cd993b25a2cb61e18702396c10d3e78171fd86effd98b2d8716ad6cd5. 19 screenshots saved; images 16/17 missing. Later phase waiters timed out while the upper-side capture token remained live at ~45.3s and position [0.925,4.65,-2.942], progress 22/56.
 - Loop 102 source commit 5e294d5a96444ffdaf56edb8f022a30723c736a5 sequences waiters: next phase starts after previous screenshot, before current token release, and is blocked from matching until the previous token clears. Phase timeouts unchanged.
 - Fresh validation pending; no house geometry/decor changed.
+
+
+## 2026-10-19 — Loop 103 / ascent turn and inward landing view
+- Run 39185169298 passed typecheck, 22 test files / 138 tests, production build and Chromium setup. All 21 screenshots were saved, with 14/14 arrivals and no runtime errors, but the visual gate failed on the late-ascent clearance and anticipatory turn predicates.
+- Artifact 12157699074 shows true, separate roof-stair and hatch-clear frames. Its hash is a53e368cd993b25a2cb61e18702396c10d3e78171fd86effd98b2d8716ad6cd5.
+- Visual diagnosis: image 13b had the stair fascia covering almost the whole view as the camera swung from -Z to +Z too abruptly. Image 14 showed a near-field wall because its side-lane gaze pointed outward.
+- Loop 103 source commit 87d5d43ddfe22cfe74ae15772fb811f1ea11b334 blends the late stair turn over ~1.6m, keeps a flightward Z component, adds modest upward look-ahead, points the bridge gaze inward (-X), narrows the capture zone and adds tests. New validation pending.
