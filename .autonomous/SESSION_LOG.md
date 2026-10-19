@@ -70,3 +70,10 @@
 - Six failures were old assertions that insisted side-lane camera targets stay at or to the right of their position. This contradicts the screenshot-based finding that a near-field outer wall dominates the upper-landing view, so these are updated to require a bounded inward glance while preserving positive-Z bridge focus and safe lane positions.
 - The late-ascent clearance predicate also failed for a pose in its intended capture band. Start turn earlier (2.45m before top), end only 2cm before the flight endpoint, and limit upward amplitude to a 0.20 horizontal blend ratio so the near-top frames remain shallow and clear the fascia.
 - Source commit 81210677c12b1e1a10a521af6abca537f29b42e0. Fresh validation pending; no decor or structural geometry change.
+
+
+## 2026-10-19 — Loop 103b / final-clearance assertion
+- Run 39186716661: typecheck passed, 137/139 unit tests passed. Only two cameraPath assertions failed, so build/browser were skipped.
+- One test expected +Z gaze while the camera was still on the final treads. The intended route retains a view down the flight until the top landing and then turns toward the bridge; the existing landing-specific test keeps that +Z contract.
+- The tangent-alignment exception used a target-based and too-narrow range for the 2.45m late clearance blend. Loop 103b bases the exception on the geometric clearance zone while retaining separate aim assertions.
+- Source commit bf7be9496af8121116e70450089332a9588412f6; fresh validation pending.

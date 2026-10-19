@@ -3,10 +3,10 @@
   "strategy_version": "4.1",
   "project_status": "IN_PROGRESS",
   "current_phase": "STAIR_TRAVERSAL_AND_VISUAL_VALIDATION",
-  "current_goal": "Validate the revised shallow upward late-ascent look and bounded inward upper-bridge gaze against tests and fresh browser screenshots.",
+  "current_goal": "Validate the smooth late-ascent clearance and inward upper-bridge gaze with full unit and browser evidence.",
   "current_candidate_branch": "fix/loop-064-moroccan-exterior-and-layout",
-  "current_candidate_commit": "81210677c12b1e1a10a521af6abca537f29b42e0",
-  "last_checkpoint_commit": "81210677c12b1e1a10a521af6abca537f29b42e0",
+  "current_candidate_commit": "bf7be9496af8121116e70450089332a9588412f6",
+  "last_checkpoint_commit": "bf7be9496af8121116e70450089332a9588412f6",
   "last_known_good_commit": "e06af00a049eb72b173295438bbeb8e384c6fef5",
   "last_known_good_release": null,
   "active_operation_id": null,
@@ -35,30 +35,31 @@
     "Loop 102 run 39185169298 passed type-check, 22 test files / 138 tests, build and Chromium. All 21 screenshots including roof stair and hatch-clear were saved with no runtime errors, but browser acceptance failed because both landing clearance aim predicates were false.",
     "Loop 103 source commit created: blend the late stair look over the final 1.6m while retaining a flightward negative-Z component; aim side-lane views inward to the stair shaft; narrow the clearance capture window; add camera-path continuity and pose tests.",
     "Loop 103 validation on run 39186386526: typecheck passed, but 8 cameraPath tests failed. Six failures captured stale outward/neutral gaze expectations, the late-clearance upward look began too late for one part of the clearance band, and the tangent-alignment exclusion did not cover an anticipation pose.",
-    "Loop 103a source commit created: update bridge-gaze tests to require a bounded inward glance while retaining forward bridge focus and protected camera positions; start ascent turn 2.45m before final tread, keep it active to 2cm before flight end, and slightly lower its vertical blend to maintain a shallow upward gaze."
+    "Loop 103a source commit created: update bridge-gaze tests to require a bounded inward glance while retaining forward bridge focus and protected camera positions; start ascent turn 2.45m before final tread, keep it active to 2cm before flight end, and slightly lower its vertical blend to maintain a shallow upward gaze.",
+    "Loop 103a run 39186716661: type-check passed, 137 of 139 tests passed. One assertion incorrectly required +Z gaze while still on the final treads; a separate test already requires +Z gaze when reaching the actual landing. The other failed check used a narrower tangent-exception window than the 2.45m clearance turn.",
+    "Loop 103b source commit created: final-tread gaze is expected to remain along the stair flight (-Z), with +Z transition on the physical landing. Path-tangent exception is now based on the complete geometric clearance band."
   ],
   "pending_work": [
-    "Validate Loop 103a on the exact final branch head: typecheck, full unit tests, build and browser review.",
-    "Ensure all camera-path tests pass without removing route bounds, lane position or stair/hatch traversal checks.",
-    "Check browser report: clearsUpperLandingOnAscent and anticipatesUpperLandingTurn true, upperLandingAiming both true, images 13b/14 visibly clear, images 16/17 actual and distinct.",
-    "After visual checks pass, make a separate architecture/geometry change if the stair fascia/wall still dominates.",
-    "Only then revisit entrance framing and render pop-in."
+    "Validate Loop 103b on the final branch head: typecheck, all unit tests, production build, Chromium, and browser review.",
+    "Browser acceptance: clearsUpperLandingOnAscent and anticipatesUpperLandingTurn true; upperLandingAiming checks true; images 13b/14 visibly clear; images 16/17 remain actual and distinct.",
+    "If images still show fascia/wall obstruction, make a separate evidence-driven geometry change.",
+    "Then reassess entrance framing and rendering pop-in."
   ],
   "known_blockers": [
-    "Run 39186386526 failed the unit test step: 22 test files total, 21 passed, cameraPath.test.ts had 8 failures (139 tests: 131 passed/8 failed). Build and browser review were skipped.",
-    "Six failures came from existing assertions requiring outward/neutral bridge gaze; this contradicted the visual diagnosis from screenshot 14 and the intended inward glance. Loop 103a updates those assertions to a bounded inward target while keeping forward +Z focus and protected camera positions.",
-    "The clearance-gaze test also failed because the blend didn't start early enough for the full near-top band. Loop 103a extends the blend earlier and through the final step, reducing the upward amplitude to keep it shallow. Fresh CI required."
+    "Run 39186716661 stopped at tests: 137/139 tests passed, with two cameraPath assertions failing. Build/browser skipped. Loop 103b updates the final-tread view assertion and the tangent-alignment exception band without removing the route or aim checks.",
+    "Browser evidence from Loop 102 shows fascia and wall obstruction before the late ascent turn; Loop 103a/103b has not yet completed browser validation.",
+    "Entrance remains frame-heavy and unchanged."
   ],
   "latest_validation_status": "NOT_RUN",
   "latest_validation": {
-    "candidate_source_commit": "81210677c12b1e1a10a521af6abca537f29b42e0",
+    "candidate_source_commit": "bf7be9496af8121116e70450089332a9588412f6",
     "source_checks": "PENDING",
     "browser_review": "PENDING",
     "result": "NOT_RUN"
   },
   "latest_release_status": "NOT_RELEASED",
-  "next_action": "Inspect CI on the new metadata-aware head. Typecheck and every camera-path test must pass first. Browser review then must report both clearance predicates true and screenshots 13b,14,16,17 correctly framed at distinct, real positions.",
-  "updated_at": "2026-10-19T01:43:00Z",
+  "next_action": "Inspect Foundation checks on the final head. All source gates must pass, then inspect frames 13b/14/16/17 and require both clearance predicates, both upperLandingAiming booleans, and distinct real roof/hatch positions.",
+  "updated_at": "2026-10-19T01:46:00Z",
   "previous_candidate_validation_status": "FAIL",
   "previous_candidate_validation": {
     "workflow_run": 39184178983,

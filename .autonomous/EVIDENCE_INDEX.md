@@ -73,3 +73,8 @@ Latest candidate visual quality is not certified; a preview Ready status may ref
 - Artifact 12157699074, SHA a53e368cd993b25a2cb61e18702396c10d3e78171fd86effd98b2d8716ad6cd5. All 21 screenshots captured; browser gate failed the landing predicates only.
 - Run 39186386526: https://github.com/teyyara/darboussedra/actions/runs/39186386526. Typecheck passed; cameraPath.test.ts failed 8 assertions, other 21 test files passed; build/browser skipped.
 - Loop 103a source commit 81210677c12b1e1a10a521af6abca537f29b42e0: inward side-lane target assertions, earlier and slightly shallower ascent look-ahead, clearance blend continues through last tread. Validation pending.
+
+
+## Loop 103b validation next
+- Run 39186716661: typecheck pass; 137/139 tests pass; only cameraPath.test.ts fails two assertions; browser/build skipped.
+- Loop 103b source commit bf7be9496af8121116e70450089332a9588412f6 corrects the final-tread direction assertion and the geometry-defined late-clearance exception. Fresh run/artifact is required before marking fixed.

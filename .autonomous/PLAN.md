@@ -1,20 +1,19 @@
 # Prioritized Plan
 
 ## P0 — Stair/walkthrough camera
-- [ ] Validate Loop 103a inward bridge gaze and full late-clearance blend.
-- [ ] Require all camera-path tests to pass while preserving route/bounds and camera-position checks.
-- [ ] Inspect real screenshots 13b and 14; require both browser clearance predicates and upper-landing aiming checks to pass.
-- [ ] Ensure real, distinct roof-flight/hatch screenshots 16/17 remain available.
-- [ ] If visuals still show fascia/wall domination, make a separate physical-clearance geometry adjustment based on the new screenshots.
+- [ ] Validate Loop 103b: full tests and browser review.
+- [ ] Require both clearance predicates and both upperLandingAiming checks.
+- [ ] Inspect real frames 13b and 14 for wall/fascia obstruction.
+- [ ] Keep real, distinct roof stair/hatch captures 16/17.
+- [ ] If screenshots still fail, make a separate evidence-based physical-clearance geometry change.
 
 ## P1 — Entrance framing
-- [ ] Reduce oversized foreground portal and repeated interior frame without breaking a plausible Moroccan entry.
+- [ ] Reduce oversized foreground portal and repeated interior framing while preserving a plausible Moroccan entrance.
 
-## P2 — Rendering/exterior
-- [ ] Profile pop-in only after walking path is visually coherent.
-- [ ] Retain a Moroccan neighborhood, sky, sun and clouds; no blank exterior void.
-- [ ] No new decorations until explicit user authorization.
+## P2 — Rendering / exterior
+- [ ] Profile pop-in after camera acceptance.
+- [ ] Maintain Moroccan neighborhood, sky, sun and clouds; no new decorations until approval.
 
 ## Release
-- [ ] Typecheck, unit tests, build, arrivals, stair/roof browser acceptance, mobile checks and memory integrity pass on a frozen candidate.
-- [ ] No merge to main or manual deployment while any critical gate fails/is unknown.
+- [ ] Typecheck, tests, build, settled arrivals, actual stair/roof captures, mobile and memory checks pass on one frozen candidate.
+- [ ] Never merge/deploy while any critical acceptance gate is failed or unknown.

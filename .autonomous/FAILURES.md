@@ -39,3 +39,8 @@ Workflow 39184178983 / artifact 12157498087. The upper-side capture held camera 
 ## F-008 — Loop 103 camera-path regression failures
 Class TEST / CAMERA; open pending Loop 103a validation.
 Run 39186386526, candidate head b61cffd0ad6a54e0c1cd827de265c029ae668c81. Typecheck passed; cameraPath.test.ts failed 8 tests (131 passed / 8 failed). Six assertions encoded outward/neutral side-lane gaze and were inconsistent with the screenshot showing a wall dominating the upper landing. The remaining failures showed the full clearance band did not always get a positive upward target and the tangent-alignment checker didn't classify a desired clearance look-ahead frame as an exception. Loop 103a corrects the target expectation and starts the upward blend earlier. Require full rerun before resolution.
+
+
+## F-009 — Loop 103 late-clearance test mismatch
+Class TEST / CAMERA; Loop 103b correction committed, validation pending.
+Run 39186716661: typecheck passed; 137/139 tests passed. One test incorrectly demanded +Z while on the final treads; the designed route keeps the flight in front until the camera reaches the landing, and the separate landing test already asserts +Z. One alignment failure fell inside the camera's 2.45m easing zone but outside the test's target-dependent exception. Loop 103b changes only these test semantics, preserving the separate aim and bounds assertions. Rerun all source and browser gates before resolution.
