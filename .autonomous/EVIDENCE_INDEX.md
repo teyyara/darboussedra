@@ -15,3 +15,10 @@
 
 ## Limitations
 Latest candidate visual quality is not certified; a preview Ready status may refer to a stale SHA; no manual deployment was attempted. Visual review remains a structured human-perspective assessment.
+
+
+## Loop 098 — entrance framing
+- Source commit: 4fecdacd646ef616cafabbc803c23ad08cb60149.
+- Change: off-axis eye-level entrance camera and regression assertions.
+- Validation: pending new Foundation checks triggered by final branch update.
+- Prior baseline artifact: workflow 39177873937 / artifact 12154942342 / SHA-256 8b50f020216fa7075a105b0e8ab4d829d0723468654fbb139a08c386c46e779f. It proves the old defect, not whether Loop 098 fixed it.

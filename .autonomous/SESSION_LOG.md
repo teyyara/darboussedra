@@ -7,3 +7,10 @@
 - Source checks passed but visual review failed.
 - Migrated repository memory to v4.1; no product code, validator criteria, trusted workflow, deployment or decorations were changed.
 - Cold-start recovery test must run before next product edit.
+
+
+## 2026-10-19 — Loop 098 / cold-start validation
+- Reconstructed the project using only committed canonical memory after strategy migration; cold-start recovery PASS.
+- Added off-axis entrance destination camera pose and regression tests in source commit 4fecdacd646ef616cafabbc803c23ad08cb60149; appended Loop 098 to AEOS_STATUS.md.
+- Candidate validation was NOT RUN at checkpoint writing; a new workflow is expected on the final branch update. Inspect it before further product edits.
+- No geometry changes, new decorations, paid services, manual deployment or main merge.

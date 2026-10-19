@@ -5,8 +5,8 @@
   "current_phase": "ARCHITECTURE_AND_RENDERING_REPAIR",
   "current_goal": "Fix tunnel-like entrance and incoherent stair/floor views; diagnose rendering pop-in before performance optimization.",
   "current_candidate_branch": "fix/loop-064-moroccan-exterior-and-layout",
-  "current_candidate_commit": "4acf977818f22ff486ff82636f146ea6de2ed28f",
-  "last_checkpoint_commit": "4acf977818f22ff486ff82636f146ea6de2ed28f",
+  "current_candidate_commit": "4fecdacd646ef616cafabbc803c23ad08cb60149",
+  "last_checkpoint_commit": "4fecdacd646ef616cafabbc803c23ad08cb60149",
   "last_known_good_commit": "e06af00a049eb72b173295438bbeb8e384c6fef5",
   "last_known_good_release": null,
   "active_operation_id": null,
@@ -15,21 +15,32 @@
     "Reconciled main and candidate branch; legacy state described loop 050 while candidate memory reached loop 097.",
     "Inspected visual artifact 12154942342 from workflow 39177873937.",
     "Confirmed typecheck/tests/build pass but browser-review gate fails.",
-    "Adopted canonical AEOS v4.1 repository memory."
+    "Adopted canonical AEOS v4.1 repository memory.",
+    "Cold-start recovery PASS: canonical memory files exist and are readable; v4.1 markers and constraints reconstruct accurately.",
+    "Loop 098 source checkpoint created: diagonal entrance camera pose and regression assertions; source-level validation is pending."
   ],
   "pending_work": [
-    "After cold-start recovery test, correct entrance camera framing inside room bounds and add a regression test.",
-    "Fix top-of-stairs view that is still dominated by opaque wall/fascia.",
-    "Diagnose 45-second screenshot timeout and three camera-phase timeouts without weakening gates.",
-    "Profile render readiness/pop-in, then optimize based on measured cause.",
-    "Inspect fresh desktop and mobile screenshots after each coherent source loop."
+    "Validate Loop 098 on the final PR branch head with typecheck, full unit tests, production build and browser review.",
+    "Inspect the fresh entrance screenshot; do not mark the tunnel issue fixed until visually supported.",
+    "Address the stair-top wall/fascia view and phase timeout separately after the current candidate is reviewed.",
+    "Profile render readiness/pop-in; optimize from measured evidence."
   ],
   "known_blockers": [
-    "Latest browser review run 39177873937 failed: screenshot timeout, upper-side-landing/roof-stair/hatch timeouts and false stair-top camera checks.",
-    "Vercel auto-preview status may be stale/rate-limited; latest candidate release identity not certified."
+    "Prior browser review run 39177873937 failed on earlier source commit and must remain recorded as historical evidence.",
+    "Loop 098 has not been validated; the final branch update should trigger a new Foundation checks run."
   ],
-  "latest_validation_status": "FAIL",
+  "latest_validation_status": "NOT_RUN",
   "latest_validation": {
+    "candidate_source_commit": "4fecdacd646ef616cafabbc803c23ad08cb60149",
+    "source_checks": "NOT_RUN",
+    "browser_review": "NOT_RUN",
+    "result": "PENDING"
+  },
+  "latest_release_status": "NOT_RELEASED",
+  "next_action": "Inspect the Foundation checks run for the final branch head; validate source checks and review fresh entrance/stair browser artifacts before making another source change.",
+  "updated_at": "2026-10-19T00:39:35.028Z",
+  "previous_candidate_validation_status": "FAIL",
+  "previous_candidate_validation": {
     "workflow_run": 39177873937,
     "commit": "4acf977818f22ff486ff82636f146ea6de2ed28f",
     "source_checks": "PASS: typecheck, unit tests, production build, Chromium install",
@@ -44,8 +55,5 @@
       "upper-side-landing, roof-stair-flight and roof-hatch-clear camera phases timed out.",
       "anticipatesUpperLandingTurn=false and clearsUpperLandingOnAscent=false."
     ]
-  },
-  "latest_release_status": "NOT_RELEASED",
-  "next_action": "Perform cold-start reconstruction from repository memory; then adjust the entrance destination camera pose to look diagonally into circulation while remaining inside the registered entrance footprint, add a regression assertion, and validate via typecheck/tests/build plus fresh browser review.",
-  "updated_at": "2026-10-19T01:30:00+01:00"
+  }
 }
