@@ -34,3 +34,8 @@ Workflow 39182940594 / artifact 12157625304. Screenshots 16/17 timed out and fel
 ## F-008 — Concurrent phase timeouts during screenshot holds
 Class TEST INFRASTRUCTURE; mitigation in Loop 102 source commit 5e294d5a96444ffdaf56edb8f022a30723c736a5, verification pending.
 Workflow 39184178983 / artifact 12157498087. The upper-side capture held camera at [0.925,4.65,-2.942], progress 22/56. Later roof-stair/hatch waiters were started concurrently, so their 90-second windows elapsed before the route reached those phases. Screenshots 16/17 were missing after screenshot timeouts. Loop 102 starts the next watcher after the prior screenshot but before releasing the current token; the next matcher waits until the previous token has been removed. Phase timeouts are unchanged. Verify in fresh report before marking fixed.
+
+
+## F-008 — Loop 103 camera-path regression failures
+Class TEST / CAMERA; open pending Loop 103a validation.
+Run 39186386526, candidate head b61cffd0ad6a54e0c1cd827de265c029ae668c81. Typecheck passed; cameraPath.test.ts failed 8 tests (131 passed / 8 failed). Six assertions encoded outward/neutral side-lane gaze and were inconsistent with the screenshot showing a wall dominating the upper landing. The remaining failures showed the full clearance band did not always get a positive upward target and the tangent-alignment checker didn't classify a desired clearance look-ahead frame as an exception. Loop 103a corrects the target expectation and starts the upward blend earlier. Require full rerun before resolution.

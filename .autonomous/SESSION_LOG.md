@@ -63,3 +63,10 @@
 - Artifact 12157699074 shows true, separate roof-stair and hatch-clear frames. Its hash is a53e368cd993b25a2cb61e18702396c10d3e78171fd86effd98b2d8716ad6cd5.
 - Visual diagnosis: image 13b had the stair fascia covering almost the whole view as the camera swung from -Z to +Z too abruptly. Image 14 showed a near-field wall because its side-lane gaze pointed outward.
 - Loop 103 source commit 87d5d43ddfe22cfe74ae15772fb811f1ea11b334 blends the late stair turn over ~1.6m, keeps a flightward Z component, adds modest upward look-ahead, points the bridge gaze inward (-X), narrows the capture zone and adds tests. New validation pending.
+
+
+## 2026-10-19 — Loop 103a / inward gaze and full clearance band
+- Run 39186386526: typecheck passed; tests failed 8 assertions in cameraPath.test.ts (21 test files passed; 131 passed / 8 failed); build/browser skipped.
+- Six failures were old assertions that insisted side-lane camera targets stay at or to the right of their position. This contradicts the screenshot-based finding that a near-field outer wall dominates the upper-landing view, so these are updated to require a bounded inward glance while preserving positive-Z bridge focus and safe lane positions.
+- The late-ascent clearance predicate also failed for a pose in its intended capture band. Start turn earlier (2.45m before top), end only 2cm before the flight endpoint, and limit upward amplitude to a 0.20 horizontal blend ratio so the near-top frames remain shallow and clear the fascia.
+- Source commit 81210677c12b1e1a10a521af6abca537f29b42e0. Fresh validation pending; no decor or structural geometry change.

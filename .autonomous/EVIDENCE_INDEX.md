@@ -66,3 +66,10 @@ Latest candidate visual quality is not certified; a preview Ready status may ref
 - Source gates passed (22 test files / 138 tests, build, Chromium). 21/21 screenshots saved, 14/14 room arrivals, no runtime errors and mobile overflow false.
 - Browser gate failed because the late-ascent clearing and turn predicates were false. Images 16/17 showed distinct real roof-stair/hatch-clear positions.
 - Loop 103 source commit 87d5d43ddfe22cfe74ae15772fb811f1ea11b334 changes the turn and inward gaze; fresh validation pending.
+
+
+## Loop 103 visual baseline and Loop 103a repair
+- Run 39185169298: https://github.com/teyyara/darboussedra/actions/runs/39185169298
+- Artifact 12157699074, SHA a53e368cd993b25a2cb61e18702396c10d3e78171fd86effd98b2d8716ad6cd5. All 21 screenshots captured; browser gate failed the landing predicates only.
+- Run 39186386526: https://github.com/teyyara/darboussedra/actions/runs/39186386526. Typecheck passed; cameraPath.test.ts failed 8 assertions, other 21 test files passed; build/browser skipped.
+- Loop 103a source commit 81210677c12b1e1a10a521af6abca537f29b42e0: inward side-lane target assertions, earlier and slightly shallower ascent look-ahead, clearance blend continues through last tread. Validation pending.
