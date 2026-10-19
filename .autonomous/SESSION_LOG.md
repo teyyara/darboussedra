@@ -77,3 +77,9 @@
 - One test expected +Z gaze while the camera was still on the final treads. The intended route retains a view down the flight until the top landing and then turns toward the bridge; the existing landing-specific test keeps that +Z contract.
 - The tangent-alignment exception used a target-based and too-narrow range for the 2.45m late clearance blend. Loop 103b bases the exception on the geometric clearance zone while retaining separate aim assertions.
 - Source commit bf7be9496af8121116e70450089332a9588412f6; fresh validation pending.
+
+
+## 2026-10-19 — Loop 104 / reduced lateral stair glance
+- Run 39186902422 / artifact 12158258421: source gates passed, all 21 screenshots saved, 14/14 arrivals, no runtime errors/mobile overflow. Actual roof stair/hatch frames 16/17 present.
+- Browser gate failed upperLandingAiming.looksAlongBridge; direction [-0.339,-0.227,0.913]. Frame13b wall-dominated, frame14 too far inward at the stair underside. Both ascent aim predicates passed.
+- Source commit dd44aec75ab73fc0d4ce5f7e05afc6157c181c83 changes lateral look factor 0.45 to 0.20 and bridge direction vectors to [-0.08,0.99]. Fresh full CI/browser validation pending.

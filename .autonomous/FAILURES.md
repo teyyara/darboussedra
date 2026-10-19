@@ -44,3 +44,8 @@ Run 39186386526, candidate head b61cffd0ad6a54e0c1cd827de265c029ae668c81. Typech
 ## F-009 — Loop 103 late-clearance test mismatch
 Class TEST / CAMERA; Loop 103b correction committed, validation pending.
 Run 39186716661: typecheck passed; 137/139 tests passed. One test incorrectly demanded +Z while on the final treads; the designed route keeps the flight in front until the camera reaches the landing, and the separate landing test already asserts +Z. One alignment failure fell inside the camera's 2.45m easing zone but outside the test's target-dependent exception. Loop 103b changes only these test semantics, preserving the separate aim and bounds assertions. Rerun all source and browser gates before resolution.
+
+
+## F-010 — Upper bridge gaze remains stair-underside oriented
+Class CAMERA / VISUAL ACCEPTANCE; Loop 104 mitigation committed, validation pending.
+Workflow 39186902422 / artifact 12158258421. Source gates passed, 21 screenshots, 14/14 arrivals, no runtime errors/mobile overflow. upperLandingAiming.looksAlongBridge=false at direction [-0.339,-0.227,0.913]. Frame13b is wall-dominated and frame14 looks too far inward at the stair underside. Loop104 reduces the late-ascent lateral component and softens bridge vectors; only change geometry if new screenshots still show occlusion.

@@ -78,3 +78,11 @@ Latest candidate visual quality is not certified; a preview Ready status may ref
 ## Loop 103b validation next
 - Run 39186716661: typecheck pass; 137/139 tests pass; only cameraPath.test.ts fails two assertions; browser/build skipped.
 - Loop 103b source commit bf7be9496af8121116e70450089332a9588412f6 corrects the final-tread direction assertion and the geometry-defined late-clearance exception. Fresh run/artifact is required before marking fixed.
+
+
+## Loop 103b baseline / Loop 104 candidate
+- Workflow 39186902422: https://github.com/teyyara/darboussedra/actions/runs/39186902422
+- Artifact 12158258421; SHA-256 2d392ab1cc39bb9613ec40fc8c2df8aafc8ee037f6f9cad5cec9842800b087b6.
+- All source gates passed; 21 screenshots, 14/14 arrivals, no runtime errors/mobile overflow. Images 16/17 are distinct, real roof/hatch positions.
+- Visual gate failed upper bridge alignment; direction X=-0.339, Y=-0.227, Z=0.913. Frame13b shows near-field wall; frame14 the stair underside.
+- Loop 104 commit dd44aec75ab73fc0d4ce5f7e05afc6157c181c83 softens gaze; new artifact is required.

@@ -1,28 +1,25 @@
 # Handoff — Dar Boussedra
 
-**STATUS: CHECKPOINTED / IN PROGRESS. Loop 103b camera-path assertion correction committed; fresh validation pending.**
+**STATUS: CHECKPOINTED / IN PROGRESS. Loop 104 camera adjustment committed; fresh validation pending.**
 
 ## Candidate
 - Branch: fix/loop-064-moroccan-exterior-and-layout
-- Source commit: bf7be9496af8121116e70450089332a9588412f6
+- Loop 104 source commit: dd44aec75ab73fc0d4ce5f7e05afc6157c181c83
 - Open PR #7: https://github.com/teyyara/darboussedra/pull/7
 - Main baseline: e06af00a049eb72b173295438bbeb8e384c6fef5.
-- AEOS v4.1 remains canonical.
+- AEOS v4.1 is canonical.
 
-## Loop 102 visual baseline
-Run 39185169298: https://github.com/teyyara/darboussedra/actions/runs/39185169298
-Artifact 12157699074. All 21 screenshots saved; 14/14 room arrivals, no runtime errors, mobile overflow false. Images 16/17 show distinct real roof stair and hatch positions. Visual gate still failed both clearance aiming predicates.
+## Loop 103b evidence
+Workflow 39186902422: https://github.com/teyyara/darboussedra/actions/runs/39186902422
+Artifact 12158258421: https://github.com/teyyara/darboussedra/actions/runs/39186902422/artifacts/12158258421
+SHA-256: 2d392ab1cc39bb9613ec40fc8c2df8aafc8ee037f6f9cad5cec9842800b087b6
+Source gates passed; 21 screenshots, 14/14 room arrivals, no runtime errors, no mobile overflow. Frames 16/17 show actual distinct roof stair/hatch positions. Visual gate still failed: upperLandingAiming.looksAlongBridge=false, direction [-0.339,-0.227,0.913]. Image 13b is mostly near-field wall; image14 points too far inward at the stair underside. Ascent clearance/anticipation predicates passed.
 
-## Loop 103a source validation
-Run 39186716661: typecheck passed; 137/139 tests passed; two cameraPath assertions failed, so build/browser were skipped.
-1. The final-tread assertion expected +Z bridge gaze before the camera had physically reached the landing. The correct invariant is flightward (-Z) on the last treads, then +Z once on the open landing; another test already asserts the landing pose.
-2. Strict tangent alignment was tested inside the intentional late-ascent clearance band. Its exception range was narrower than the new 2.45m camera blend.
+## Loop 104
+Source commit dd44aec75ab73fc0d4ce5f7e05afc6157c181c83 reduces late-ascent lateral glance factor 0.45 to 0.20, and softens four bridge direction vectors [-0.35,0.94] to [-0.08,0.99]. Tests require only a slight inward target bias while retaining forward bridge focus and route bounds.
 
-## Loop 103b correction
-Commit bf7be9496af8121116e70450089332a9588412f6 keeps the target-direction and landing checks and expands only the tangent test's exception to the geometric clearance band. The remaining product goal is unchanged: smooth gaze, no wall-dominated landing and valid roof-stair/hatch captures.
-
-## Next action
-Inspect the new Foundation run. Require typecheck, full tests and build; then inspect screenshots 13b/14/16/17. Both clearance predicates and both upperLandingAiming checks must pass; the landing must reveal the open stair/bridge, and the roof captures must be distinct actual positions.
+## Exact next action
+Inspect Foundation validation for the final head. Require source tests/build and inspect images 13b/14/16/17. Both upper-landing aim predicates and both ascent predicates must pass; the landing must show the open bridge rather than the wall/underside, and roof frames 16/17 must stay real and distinct.
 
 ## Constraints
-No decorations, paid dependencies, merge to main with failed/unknown visual gate, or manual Vercel deployment.
+No decorations, paid dependencies, merge to main while visual acceptance fails/unknown, or manual Vercel deployment.
