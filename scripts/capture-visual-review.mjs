@@ -173,10 +173,17 @@ async function openMap(page) {
   await page.locator(".map-panel").waitFor({ state: "visible", timeout: 15000 });
 }
 
-async function waitForCameraPhase(page, destination, phase, holdToken, timeout = 30000) {
+async function waitForCameraPhase(page, destination, phase, holdToken, timeout = 30000, blockedByHoldToken) {
   const rule = CAMERA_PHASE_RULES[phase];
   if (!rule) throw new Error("Unknown camera phase: " + phase);
-  await page.waitForFunction(({ expectedDestination, phaseRule, holdToken }) => {
+  await page.waitForFunction(({ expectedDestination, phaseRule, holdToken, blockedByHoldToken }) => {
+    // The next phase watcher is armed while the prior phase's screenshot is being
+    // written. Don't let an overlapping window match until that previous hold releases.
+    if (blockedByHoldToken) {
+      const activeTokens = Array.isArray(window.__darBoussedraVisualReviewHoldTokens)
+        ? window.__darBoussedraVisualReviewHoldTokens : [];
+      if (activeTokens.includes(blockedByHoldToken)) return false;
+    }
     const canvas = document.querySelector("canvas");
     if (!canvas || canvas.dataset.destination !== expectedDestination) return false;
     const position = canvas.dataset.cameraPosition?.split(",").map(Number);
@@ -215,41 +222,55 @@ async function waitForCameraPhase(page, destination, phase, holdToken, timeout =
       reviewWindow.__darBoussedraVisualReviewHoldCamera = tokens.length > 0;
     }
     return matches;
-  }, { expectedDestination: destination, phaseRule: rule, holdToken }, { timeout });
+  }, {
+    expectedDestination: destination,
+    phaseRule: rule,
+    holdToken,
+    blockedByHoldToken: blockedByHoldToken ?? null,
+  }, { timeout });
 }
 
 async function selectDirectoryRoom(page, name, slug, transitionCaptures = [], arrivalTimeout = 12000) {
   const selector = page.locator(".map-directory").getByRole("button", { name, exact: true }).first();
   await selector.waitFor({ state: "visible", timeout: 12000 });
 
-  // Arm every route-phase watcher before clicking the destination so fast camera
-  // windows are observed even while another screenshot is being written. Start the
-  // screenshot immediately when a phase matches; a second script-level queue made
-  // the camera travel several waypoints before the queued image was captured.
+  const phaseCaptures = transitionCaptures.filter((capture) => capture.phase);
   const phaseTasks = new Map();
-  for (const capture of transitionCaptures) {
-    if (!capture.phase) continue;
+  let nextPhaseIndex = 0;
+
+  // Watch one camera phase at a time. Once a phase matches, its token holds the
+  // route while we save that still; arm the next watcher before releasing the hold
+  // so no phase window is missed, but its timeout does not elapse during the prior
+  // screenshot. The next watcher ignores any overlap until this token is released.
+  const startPhaseCapture = (capture, blockedByHoldToken) => {
     const timeout = capture.timeout ?? 90000;
     const task = (async () => {
       let matched = false;
       try {
-        await waitForCameraPhase(page, slug, capture.phase, capture.filename, timeout);
+        await waitForCameraPhase(
+          page, slug, capture.phase, capture.filename, timeout, blockedByHoldToken,
+        );
         matched = true;
       } catch {
         report.notes.push("Timed out waiting for camera phase " + capture.phase + " on route " + slug + "; capturing the current frame instead.");
       }
+
       try {
-        // A matched phase owns the camera until its still is recorded. Other
-        // phase watchers remain armed, then proceed once the hold is released.
         await saveScreenshot(page, capture.filename);
       } finally {
-        // Always release this capture's own token, even after a timeout. Never
-        // clear a different phase's hold while its screenshot is being saved.
+        // Start the next watcher while this phase still owns the camera, then
+        // release only this capture's token. A timeout is logged and remains a
+        // visual-review failure; it is never treated as a matched phase.
+        const nextCapture = phaseCaptures[nextPhaseIndex];
+        if (nextCapture) {
+          nextPhaseIndex += 1;
+          startPhaseCapture(nextCapture, matched ? capture.filename : undefined);
+        }
+
         await page.evaluate((holdToken) => {
           const reviewWindow = window;
           const tokens = Array.isArray(reviewWindow.__darBoussedraVisualReviewHoldTokens)
-            ? reviewWindow.__darBoussedraVisualReviewHoldTokens
-            : [];
+            ? reviewWindow.__darBoussedraVisualReviewHoldTokens : [];
           reviewWindow.__darBoussedraVisualReviewHoldTokens = tokens.filter((token) => token !== holdToken);
           const deadlines = { ...(reviewWindow.__darBoussedraVisualReviewHoldDeadlines ?? {}) };
           delete deadlines[holdToken];
@@ -260,6 +281,11 @@ async function selectDirectoryRoom(page, name, slug, transitionCaptures = [], ar
       }
     })();
     phaseTasks.set(capture, task);
+  };
+
+  if (phaseCaptures.length > 0) {
+    nextPhaseIndex = 1;
+    startPhaseCapture(phaseCaptures[0], undefined);
   }
 
   await selector.click();

@@ -996,3 +996,12 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 - **Cause:** the prior suffix-removal also removed the new helper's closing brace.
 - **Correction:** restore the function closure after the per-token filter. No behavioral change beyond completing the intended helper.
 - **Validation:** new source run required.
+
+
+## Loop 102 — Sequence camera phase captures instead of timing them concurrently
+
+- **Evidence:** workflow 39184178983 failed the browser step after typecheck, all tests, build and Chromium setup passed. Artifact 12157498087 (SHA-256 a53e368cd993b25a2cb61e18702396c10d3e78171fd86effd98b2d8716ad6cd5) saved 19 screenshots but still timed out on roof-stair-flight and roof-hatch-clear; images 16/17 were absent. The report showed the upper-side landing hold token at 45.3s remaining while later phase watchers timed out. The lower-landing/upper-passage screenshots remain visually obstructed.
+- **Root cause:** all phase watchers were started together, so their 90-second timers ran while an earlier phase held the camera for screenshot capture. Later watchers could time out just as the prior phase completed. Multiple tasks also attempted screenshots on one Playwright page concurrently.
+- **Correction:** start the first watcher before the route click; after each phase screenshot finishes, arm only the next watcher while the current token still holds the camera, then release the current token. The next matcher ignores an overlapping window until the prior token is removed. Each phase keeps its original timeout; no timeout is widened.
+- **Validation:** pending. Fresh browser evidence must show images 16 and 17 successfully captured at actual, distinct roof-stair/hatch positions. Stair camera/geometry defects remain open.
+- **Scope:** no house geometry, decorations, assets, paid services, merge or deployment.
