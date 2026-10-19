@@ -56,6 +56,10 @@ async function saveScreenshot(page, filename) {
       cameraZone: data.cameraZone || null,
       destination: data.destination || null,
       routeProgress: data.routeProgress || null,
+      reviewHoldTokenCount: Array.isArray(window.__darBoussedraVisualReviewHoldTokens)
+        ? window.__darBoussedraVisualReviewHoldTokens.length : 0,
+      reviewHoldDeadlineRemainingMs: Number.isFinite(window.__darBoussedraVisualReviewHoldUntilMs)
+        ? Math.max(0, window.__darBoussedraVisualReviewHoldUntilMs - Date.now()) : null,
       walkSpeed: data.walkSpeed == null ? null : Number(data.walkSpeed),
       remainingPathDistance: data.remainingPathDistance == null ? null : Number(data.remainingPathDistance),
       currentWaypointDistance: data.currentWaypointDistance == null ? null : Number(data.currentWaypointDistance),
@@ -183,6 +187,8 @@ async function waitForCameraPhase(page, destination, phase, holdToken, timeout =
       if (!tokens.includes(holdToken)) tokens.push(holdToken);
       reviewWindow.__darBoussedraVisualReviewHoldTokens = tokens;
       reviewWindow.__darBoussedraVisualReviewHoldCamera = tokens.length > 0;
+      // Slightly longer than the screenshot timeout plus cleanup margin.
+      reviewWindow.__darBoussedraVisualReviewHoldUntilMs = Date.now() + 50_000;
     }
     return matches;
   }, { expectedDestination: destination, phaseRule: rule, holdToken }, { timeout });
@@ -223,6 +229,9 @@ async function selectDirectoryRoom(page, name, slug, transitionCaptures = [], ar
           reviewWindow.__darBoussedraVisualReviewHoldTokens = tokens.filter((token) => token !== holdToken);
           reviewWindow.__darBoussedraVisualReviewHoldCamera =
             reviewWindow.__darBoussedraVisualReviewHoldTokens.length > 0;
+          if (reviewWindow.__darBoussedraVisualReviewHoldTokens.length === 0) {
+            reviewWindow.__darBoussedraVisualReviewHoldUntilMs = 0;
+          }
         }, capture.filename).catch(() => {});
       }
     })();

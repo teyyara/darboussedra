@@ -18,3 +18,19 @@ export function getCameraFrameDeltas(deltaSeconds: number): {
     rotationDelta: Math.min(elapsed, MAX_CAMERA_ROTATION_DELTA_SECONDS),
   };
 }
+
+/** Maximum time the browser review harness may pause a camera for one still. */
+export const MAX_VISUAL_REVIEW_HOLD_MS = 50_000;
+
+export function shouldHoldCameraForVisualReview(args: {
+  readonly activeTokenCount: number;
+  readonly forceHold: boolean;
+  readonly holdUntilMs: number | undefined;
+  readonly nowMs: number;
+}): boolean {
+  const requested = args.activeTokenCount > 0 || args.forceHold;
+  return requested &&
+    Number.isFinite(args.holdUntilMs) &&
+    Number.isFinite(args.nowMs) &&
+    args.nowMs < (args.holdUntilMs as number);
+}

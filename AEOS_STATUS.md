@@ -960,3 +960,13 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 - **Correction:** replace those obsolete expectations with explicit assertions that the camera stays inside the entrance, the focus lands inside Family Table, and the diagonal sightline crosses the shared doorway opening. All other room focus points remain constrained to their own footprints.
 - **Validation:** pending a fresh CI run. No visual result exists for this revision; the entrance and stair issues remain open.
 - **Scope:** no room geometry, decorations, assets, dependencies, merge or deployment.
+
+
+## Loop 100 — Bound browser-review camera holds
+
+- **Evidence:** visual artifact 12156503344 from workflow 39181992857 passed all source checks and the overall workflow, but the roof-stair-flight and roof-hatch-clear captures both timed out and saved the same stale upper-landing frame (routeProgress 27/56, camera position [0.249, 4.65, 0.923]). The roof/hatch views were therefore not actually captured.
+- **Cause assessment:** the camera is intentionally paused while a matched screenshot is captured. If cleanup fails to release a review hold, it can freeze later phase watchers. This is plausible, not yet proven from the report.
+- **Change:** give review-only holds a 50-second expiry (just beyond the 45-second screenshot bound), clear expired tokens in the animation loop, and record hold-state telemetry. Normal navigation is unaffected when the review flag is absent.
+- **Tests:** added unit coverage for active, expired, absent and invalid-deadline hold states.
+- **Validation:** pending new typecheck, full tests, build and browser capture. No visual pass claimed until new stair/hatch frames are inspected.
+- **Scope:** no architectural geometry, decorations, dependencies, main merge or deployment.

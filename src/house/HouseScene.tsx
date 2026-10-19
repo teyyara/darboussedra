@@ -18,7 +18,7 @@ import { ROOF_SEATING_RUG, ROOF_TEA_STOOLS, ROOF_TEA_TABLE } from "./roofTerrace
 import { getRoofDeckTileJoints } from "./roofDeckTiles";
 import { getStructuralFloorPanels } from "./structuralFloors";
 import { getRoofHatchGuardRails } from "./roofHatchRails";
-import { getCameraFrameDeltas } from "./cameraTiming";
+import { getCameraFrameDeltas, shouldHoldCameraForVisualReview } from "./cameraTiming";
 import { RealisticMaterialPass } from "./realisticMaterials";
 import { getCameraZoneForPosition, getHouseSceneVisibility, shouldRenderInteriorPerimeterShell, type CameraZone } from "./sceneVisibility";
 import {
@@ -251,12 +251,26 @@ function CameraRig({ location, reducedMotion, onArrive, onTransitionChange, onEx
       ? window as Window & {
           __darBoussedraVisualReviewHoldCamera?: boolean;
           __darBoussedraVisualReviewHoldTokens?: string[];
+          __darBoussedraVisualReviewHoldUntilMs?: number;
         }
       : undefined;
-    const visualReviewHold = Boolean(reviewWindow && (
-      (reviewWindow.__darBoussedraVisualReviewHoldTokens?.length ?? 0) > 0 ||
-      reviewWindow.__darBoussedraVisualReviewHoldCamera === true
-    ));
+    const nowMs = Date.now();
+    const holdTokens = reviewWindow?.__darBoussedraVisualReviewHoldTokens ?? [];
+    const reviewHoldRequested = holdTokens.length > 0 ||
+      reviewWindow?.__darBoussedraVisualReviewHoldCamera === true;
+    const visualReviewHold = Boolean(reviewWindow && shouldHoldCameraForVisualReview({
+      activeTokenCount: holdTokens.length,
+      forceHold: reviewWindow.__darBoussedraVisualReviewHoldCamera === true,
+      holdUntilMs: reviewWindow.__darBoussedraVisualReviewHoldUntilMs,
+      nowMs,
+    }));
+    // A screenshot can fail before its cleanup runs. Expire stale tokens so a CI-only
+    // capture cannot leave a user's route—or later review phases—frozen.
+    if (reviewWindow && reviewHoldRequested && !visualReviewHold) {
+      reviewWindow.__darBoussedraVisualReviewHoldTokens = [];
+      reviewWindow.__darBoussedraVisualReviewHoldCamera = false;
+      reviewWindow.__darBoussedraVisualReviewHoldUntilMs = 0;
+    }
     if (visualReviewHold) {
       invalidate();
       return;
