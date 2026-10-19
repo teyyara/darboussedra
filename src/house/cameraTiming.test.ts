@@ -4,7 +4,7 @@ import {
   MAX_CAMERA_MOVEMENT_DELTA_SECONDS,
   MAX_CAMERA_ROTATION_DELTA_SECONDS,
   MAX_VISUAL_REVIEW_HOLD_MS,
-  shouldHoldCameraForVisualReview,
+  getActiveVisualReviewHoldTokens,
 } from "./cameraTiming";
 
 describe("camera movement timing", () => {
@@ -32,32 +32,45 @@ describe("camera movement timing", () => {
   });
 });
 
-describe("visual-review camera hold safety fuse", () => {
-  it("allows a requested hold while its screenshot deadline is still live", () => {
-    expect(shouldHoldCameraForVisualReview({
-      activeTokenCount: 1, forceHold: false, holdUntilMs: 10_000, nowMs: 9_999,
-    })).toBe(true);
+describe("visual-review camera hold expiry", () => {
+  it("holds a screenshot token only while its own deadline is live", () => {
+    expect(getActiveVisualReviewHoldTokens({
+      tokens: ["upper-landing"],
+      deadlines: { "upper-landing": 10_000 },
+      nowMs: 9_999,
+    })).toEqual(["upper-landing"]);
     expect(MAX_VISUAL_REVIEW_HOLD_MS).toBe(50_000);
   });
 
-  it("releases a stale token/flag after its deadline", () => {
-    expect(shouldHoldCameraForVisualReview({
-      activeTokenCount: 2, forceHold: true, holdUntilMs: 10_000, nowMs: 10_000,
-    })).toBe(false);
+  it("expires a stuck token without extending it because another token has a later deadline", () => {
+    expect(getActiveVisualReviewHoldTokens({
+      tokens: ["upper-landing", "roof-hatch"],
+      deadlines: { "upper-landing": 10_000, "roof-hatch": 10_500 },
+      nowMs: 10_001,
+    })).toEqual(["roof-hatch"]);
   });
 
-  it("does not pause normal navigation when no review hold is requested", () => {
-    expect(shouldHoldCameraForVisualReview({
-      activeTokenCount: 0, forceHold: false, holdUntilMs: 10_000, nowMs: 9_000,
-    })).toBe(false);
+  it("fails open when a token has no valid deadline", () => {
+    expect(getActiveVisualReviewHoldTokens({
+      tokens: ["missing", "nan", "infinite"],
+      deadlines: { nan: Number.NaN, infinite: Number.POSITIVE_INFINITY },
+      nowMs: 9_000,
+    })).toEqual([]);
   });
 
-  it("fails open to movement when a hold deadline is missing or invalid", () => {
-    for (const holdUntilMs of [undefined, Number.NaN, Number.POSITIVE_INFINITY]) {
-      expect(shouldHoldCameraForVisualReview({
-        activeTokenCount: 1, forceHold: true, holdUntilMs, nowMs: 9_000,
-      })).toBe(false);
-    }
+  it("does not pause normal navigation when there are no review tokens", () => {
+    expect(getActiveVisualReviewHoldTokens({
+      tokens: [],
+      deadlines: { stale: 10_000 },
+      nowMs: 9_000,
+    })).toEqual([]);
+  });
+
+  it("fails open if the wall clock is invalid", () => {
+    expect(getActiveVisualReviewHoldTokens({
+      tokens: ["token"],
+      deadlines: { token: 10_000 },
+      nowMs: Number.NaN,
+    })).toEqual([]);
   });
 });
-

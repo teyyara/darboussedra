@@ -970,3 +970,13 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 - **Tests:** added unit coverage for active, expired, absent and invalid-deadline hold states.
 - **Validation:** pending new typecheck, full tests, build and browser capture. No visual pass claimed until new stair/hatch frames are inspected.
 - **Scope:** no architectural geometry, decorations, dependencies, main merge or deployment.
+
+
+## Loop 101 — Make review-hold expiry genuinely one-shot
+
+- **Evidence:** workflow 39182940594 failed its browser step after source gates passed (typecheck, 22 test files / 137 tests, production build, Chromium install). Artifact 12157625304 (SHA-256 f70e6f673979f213d1f3566d6877dc2c69b89ec55a9884c656f5a886490a7386) timed out on roof-stair-flight and roof-hatch-clear. Both fallback frames used the same upper-side landing position [0.925, 4.65, -2.98], progress 22/56, with one hold token and roughly 43.7 seconds remaining.
+- **Root cause:** the phase predicate refreshed one shared 50-second deadline every time the same token's match remained true. This could renew a stuck hold indefinitely. One shared deadline also couples independent screenshot phases.
+- **Correction:** store expiry per token and set it only on the token's first match (guarded by a matched-token list). HouseScene keeps only tokens whose own deadline is live; cleanup removes only its token/deadline. Browser report records per-token expiry.
+- **Tests:** replace global-deadline cases with per-token expiry tests, including one stale token expiring while another remains live.
+- **Validation:** pending a fresh run. Do not accept the stair/hatch walkthrough until screenshots 16 and 17 exist at true, distinct camera positions.
+- **Scope:** no architectural geometry or decor changes, dependencies, merge or deployment.

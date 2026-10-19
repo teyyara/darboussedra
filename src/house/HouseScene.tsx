@@ -18,7 +18,7 @@ import { ROOF_SEATING_RUG, ROOF_TEA_STOOLS, ROOF_TEA_TABLE } from "./roofTerrace
 import { getRoofDeckTileJoints } from "./roofDeckTiles";
 import { getStructuralFloorPanels } from "./structuralFloors";
 import { getRoofHatchGuardRails } from "./roofHatchRails";
-import { getCameraFrameDeltas, shouldHoldCameraForVisualReview } from "./cameraTiming";
+import { getCameraFrameDeltas, getActiveVisualReviewHoldTokens } from "./cameraTiming";
 import { RealisticMaterialPass } from "./realisticMaterials";
 import { getCameraZoneForPosition, getHouseSceneVisibility, shouldRenderInteriorPerimeterShell, type CameraZone } from "./sceneVisibility";
 import {
@@ -251,25 +251,34 @@ function CameraRig({ location, reducedMotion, onArrive, onTransitionChange, onEx
       ? window as Window & {
           __darBoussedraVisualReviewHoldCamera?: boolean;
           __darBoussedraVisualReviewHoldTokens?: string[];
-          __darBoussedraVisualReviewHoldUntilMs?: number;
+          __darBoussedraVisualReviewHoldDeadlines?: Record<string, number>;
         }
       : undefined;
     const nowMs = Date.now();
     const holdTokens = reviewWindow?.__darBoussedraVisualReviewHoldTokens ?? [];
+    const holdDeadlines = reviewWindow?.__darBoussedraVisualReviewHoldDeadlines ?? {};
+    const activeHoldTokens = reviewWindow ? getActiveVisualReviewHoldTokens({
+      tokens: holdTokens,
+      deadlines: holdDeadlines,
+      nowMs,
+    }) : [];
+    const visualReviewHold = activeHoldTokens.length > 0;
     const reviewHoldRequested = holdTokens.length > 0 ||
       reviewWindow?.__darBoussedraVisualReviewHoldCamera === true;
-    const visualReviewHold = Boolean(reviewWindow && shouldHoldCameraForVisualReview({
-      activeTokenCount: holdTokens.length,
-      forceHold: reviewWindow.__darBoussedraVisualReviewHoldCamera === true,
-      holdUntilMs: reviewWindow.__darBoussedraVisualReviewHoldUntilMs,
-      nowMs,
-    }));
-    // A screenshot can fail before its cleanup runs. Expire stale tokens so a CI-only
-    // capture cannot leave a user's route—or later review phases—frozen.
-    if (reviewWindow && reviewHoldRequested && !visualReviewHold) {
-      reviewWindow.__darBoussedraVisualReviewHoldTokens = [];
-      reviewWindow.__darBoussedraVisualReviewHoldCamera = false;
-      reviewWindow.__darBoussedraVisualReviewHoldUntilMs = 0;
+
+    // Expire each token independently. A later phase must not keep an earlier,
+    // abandoned screenshot hold alive by refreshing one shared deadline.
+    if (reviewWindow && reviewHoldRequested &&
+      (activeHoldTokens.length !== holdTokens.length ||
+        reviewWindow.__darBoussedraVisualReviewHoldCamera !== visualReviewHold)) {
+      const remainingDeadlines: Record<string, number> = {};
+      for (const token of activeHoldTokens) {
+        const deadline = holdDeadlines[token];
+        if (typeof deadline === "number" && Number.isFinite(deadline)) remainingDeadlines[token] = deadline;
+      }
+      reviewWindow.__darBoussedraVisualReviewHoldTokens = activeHoldTokens;
+      reviewWindow.__darBoussedraVisualReviewHoldDeadlines = remainingDeadlines;
+      reviewWindow.__darBoussedraVisualReviewHoldCamera = visualReviewHold;
     }
     if (visualReviewHold) {
       invalidate();
