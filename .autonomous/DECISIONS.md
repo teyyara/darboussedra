@@ -25,3 +25,10 @@ Require fresh screenshots/runtime evidence for meaningful camera/geometry change
 - **Reason:** The phase wait predicate was refreshing a shared deadline while a stale match remained true.
 - **Safety:** HouseScene expires tokens independently; later phases cannot renew an earlier hold. Cleanup removes only the matching token/deadline.
 - **Verification:** Fresh report must show expired holds cleared and images 16/17 captured at actual roof-flight/hatch positions.
+
+
+## ADR-007 — Sequence browser camera-phase captures
+- **Decision:** Start one camera-phase watcher at a time. After a phase matches and its screenshot attempt finishes, arm the next watcher while the current token still holds the camera, then release the current token.
+- **Reason:** In run 39184178983, all watchers started concurrently; later 90-second windows expired during an earlier screenshot hold. Roof-stair/hatch images 16/17 were absent and their frames remained at the upper-side landing.
+- **Safety:** The next watcher is blocked while its predecessor token remains active, preventing overlapping phase windows from capturing the same held pose. Existing phase timeout values are unchanged.
+- **Verification:** Fresh report must contain real, distinct screenshots 16/17 and no lingering predecessor token.

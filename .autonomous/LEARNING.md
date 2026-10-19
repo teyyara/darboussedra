@@ -18,3 +18,9 @@
 - A shared TTL is not a hard bound if its timestamp is rewritten while the match remains true.
 - Per-token deadline telemetry made the renewal bug identifiable.
 - Two fallback screenshots at the same position and missing target-phase images are a browser-review failure even if source tests pass.
+
+
+## Loop 102 learning
+- Per-token expiry prevents renewal loops but cannot by itself prevent an already-running phase timeout from elapsing while an earlier capture holds the camera.
+- Phase waiters need to be sequenced, with the next watcher armed immediately before predecessor-hold release. A guard prevents an overlapping phase window from matching the old held frame.
+- The visual review must fail if expected phase screenshots are missing or fallback frames show the same stale position.
