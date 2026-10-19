@@ -988,3 +988,11 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 - **Cause:** the scripted replacement changed the old helper signature but left its trailing legacy return/body block after the new function.
 - **Correction:** remove the orphaned suffix; intended per-token expiry logic is unchanged.
 - **Validation:** rerun type-check, unit tests, build and browser review on the updated candidate.
+
+
+## Loop 101b — Restore the helper's closing brace
+
+- **Observed:** workflow 39184079432 failed type-check at src/house/cameraTiming.ts(41,1) with TS1005, expected '}'.
+- **Cause:** the prior suffix-removal also removed the new helper's closing brace.
+- **Correction:** restore the function closure after the per-token filter. No behavioral change beyond completing the intended helper.
+- **Validation:** new source run required.
