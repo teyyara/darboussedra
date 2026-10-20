@@ -40,6 +40,19 @@ function poseFacing(
   };
 }
 
+function poseFacingAlongUpperBridge(
+  position: Vector3Tuple,
+  direction: readonly [number, number],
+): CameraPose {
+  const pose = poseFacing(position, direction, true);
+  return {
+    ...pose,
+    // Look along the side lane with a slight downward gaze. Keep the stair shaft
+    // to the side rather than pointing directly at the roof-stair underside.
+    target: [pose.target[0], position[1] - 0.28, pose.target[2]],
+  };
+}
+
 function poseFacingDown(
   position: Vector3Tuple,
   direction: readonly [number, number],
@@ -63,10 +76,10 @@ function reverseRoute(path: readonly CameraPose[]): CameraPose[] {
     target: pose.preserveHeading
       ? [
           // Keep the side-of-stairwell view tied to the opening itself, not to
-          // the direction of travel. This lets the return route look into the
-          // opening from either end of the upper bridge instead of at a wall.
+          // the direction of travel. On return, look farther down into the shaft
+          // while keeping the camera pitch relative to the current eye height.
           pose.position[0] + (pose.target[0] - pose.position[0]),
-          HOUSE_LAYOUT.upperY + 0.8,
+          pose.position[1] - 0.65,
           HOUSE_LAYOUT.upperBridge.centerZ,
         ]
       : pose.preserveTarget
@@ -114,24 +127,30 @@ function groundStairWalkway(): CameraPose[] {
   const flight = HOUSE_LAYOUT.stairs.groundFlight;
   const upperEye = HOUSE_LAYOUT.upperY + HEAD_HEIGHT;
   const top: Vector3Tuple = [flight.to[0], flight.to[1] + STAIR_HEAD_HEIGHT, flight.to[2]];
-  const sideLaneX = HOUSE_LAYOUT.upperBridge.centerX + HOUSE_LAYOUT.stairs.openingWidth / 2 + 0.12;
+  // Center the camera in the clear bridge strip, between the stair rail and outer edge.
+  // The old 12cm offset left the camera almost rubbing the rail while facing the stairs.
+  const sideWalkwayWidth = (HOUSE_LAYOUT.upperBridge.width - HOUSE_LAYOUT.stairs.openingWidth) / 2;
+  const sideLaneX = HOUSE_LAYOUT.upperBridge.centerX + HOUSE_LAYOUT.stairs.openingWidth / 2 + sideWalkwayWidth / 2;
   return [
     ...sampledStairWaypoints(flight),
-    poseFacing(top, [0, -1]),
+    // At the stair top, look into the open bridge before the body starts its
+    // lateral turn. Following the route tangent here points at the rear wall/soffit
+    // and makes the first upper-landing frame feel like a camera collision.
+    poseFacingAlongUpperBridge(top, [0, 0.99]),
     // Finish the turn laterally while still behind the rear bedroom-wall line,
     // then move forward along the guarded landing. The former diagonal U-turn
     // aimed the camera straight into the bedroom's side wall for several frames.
     // The lateral step is the critical turn: a tangent-facing pose here looks
     // straight into the rear bedroom wall. Keep the camera on the protected lane
     // but start looking through the open stairwell before the forward walk begins.
-    poseFacing([sideLaneX, upperEye, flight.to[2]], [-0.42, 0.91], true),
+    poseFacingAlongUpperBridge([sideLaneX, upperEye, flight.to[2]], [-0.08, 0.99]),
     // Continue the inward view along the upper bridge rather than tracking the wall.
-    poseFacing([sideLaneX, upperEye, flight.to[2] + 0.2], [-0.42, 0.91], true),
-    poseFacing([sideLaneX, upperEye, flight.to[2] + 0.6], [-0.25, 0.97], true),
+    poseFacingAlongUpperBridge([sideLaneX, upperEye, flight.to[2] + 0.2], [-0.08, 0.99]),
+    poseFacingAlongUpperBridge([sideLaneX, upperEye, flight.to[2] + 0.6], [-0.08, 0.99]),
     // The side lane is narrow and bordered by bedroom walls. Let the view glance
     // toward the open stair shaft as the camera walks forward, instead of staring
     // at an uninterrupted wall; reverseRoute mirrors travel but keeps this inward glance.
-    ...[-2.8, -1.8, -0.8, 0.2].map((z) => poseFacing([sideLaneX, upperEye, z], [-0.34, 0.94], true)),
+    ...[-2.8, -1.8, -0.8, 0.2].map((z) => poseFacingAlongUpperBridge([sideLaneX, upperEye, z], [-0.08, 0.99])),
     // Rejoin the full-width upper landing beyond the end of the open stair shaft.
     poseFacing([sideLaneX * 0.7, upperEye, 0.72], [0.2, 1]),
     poseFacing([0, upperEye, 1.05], [0, 1]),
@@ -162,7 +181,9 @@ function roofStairWalkway(): CameraPose[] {
     poseFacingDown([1.65, roofEye, -1.55], [0, 1]),
     poseFacing([1.85, roofEye, -0.55], [0.3, 1]),
     poseFacing([1.9, roofEye, 0.1], [0.7, 0.7]),
-    poseFacing([0, roofEye, 0.6], [0, 1]),
+    // Stay on solid deck on the outside of the guardrail until beyond the hatch's
+    // front edge; only then turn inward toward the terrace, never crossing the void.
+    poseFacing([openingRightEdge + 1.05, roofEye, opening.centerZ + opening.depth / 2 + 0.25], [0, 1]),
   ];
 }
 
@@ -336,17 +357,49 @@ export function makeCameraPath(from: HouseLocation, to: HouseLocation, finalPose
       };
     }
 
-    // A literal stair-slope gaze (about 38° here) stares into the back wall on
-    // ascent. Let the eyes lead the path, but limit vertical pitch to a natural
-    // range: around 10° up while climbing and 15° down while descending.
-    const verticalAim = dy * (dy >= 0 ? 0.22 : 0.35);
-    const length = Math.hypot(dx, verticalAim, dz);
+    // Keep the mid-flight gaze on the next treads. The camera eye passes the
+    // floor's absolute Y level halfway up the incline, so that level cannot identify
+    // landing clearance. Begin the upward/rightward look only on the final three treads,
+    // near upper-storey standing eye height, so the camera clears the fascia before
+    // reaching the last tread without turning upward halfway up the flight.
+    // Keep the stronger downward look on descent.
+    const upperEye = HOUSE_LAYOUT.upperY + HEAD_HEIGHT;
+    const flightEndZ = HOUSE_LAYOUT.stairs.groundFlight.to[2];
+    // Keep following the stair flight until the top landing is physically reached.
+    // The old look-ahead flipped from -Z toward +Z on a single tread, making the
+    // camera sweep sideways across the fascia. Begin a gradual, rightward/upward
+    // glance over the final 1.6m while still looking generally along the flight.
+    const turnStartZ = flightEndZ + 2.45;
+    const turnEndZ = flightEndZ + 0.02;
+    const lateAscentTurn = dy > 0 &&
+      pose.position[1] >= upperEye - 1.0 &&
+      pose.position[1] <= upperEye + 0.28 &&
+      pose.position[2] < turnStartZ &&
+      pose.position[2] > turnEndZ;
+    const rawTurnProgress = lateAscentTurn
+      ? Math.max(0, Math.min(1, (turnStartZ - pose.position[2]) / (turnStartZ - turnEndZ)))
+      : 0;
+    const turnProgress = rawTurnProgress * rawTurnProgress * (3 - 2 * rawTurnProgress);
+    const baseVerticalAim = dy >= 0 ? dy * -0.25 : dy * 0.75;
+    // The target on the last treads glances toward the side lane (+X), lifts above
+    // the landing fascia, and retains a negative-Z component. The actual U-turn
+    // toward the family hall happens on the open landing, not while the camera is
+    // still underneath the slab.
+    const landingGlanceX = Math.abs(dz) * 0.20;
+    const landingGlanceZ = dz * 0.75;
+    const landingGlanceY = Math.hypot(landingGlanceX, landingGlanceZ) * 0.20;
+    const sightlineX = lateAscentTurn ? dx * (1 - turnProgress) + landingGlanceX * turnProgress : dx;
+    const sightlineZ = lateAscentTurn ? dz * (1 - turnProgress) + landingGlanceZ * turnProgress : dz;
+    const verticalAim = lateAscentTurn
+      ? baseVerticalAim * (1 - turnProgress) + landingGlanceY * turnProgress
+      : baseVerticalAim;
+    const length = Math.hypot(sightlineX, verticalAim, sightlineZ);
     return {
       position: pose.position,
       target: [
-        pose.position[0] + dx / length * lookAhead,
+        pose.position[0] + sightlineX / length * lookAhead,
         pose.position[1] + verticalAim / length * lookAhead,
-        pose.position[2] + dz / length * lookAhead,
+        pose.position[2] + sightlineZ / length * lookAhead,
       ],
     };
   });

@@ -43,6 +43,21 @@ describe("authoritative room and architectural layout", () => {
     }
     expect(HOUSE_LAYOUT.upperLanding.centerZ - HOUSE_LAYOUT.upperLanding.depth / 2).toBeCloseTo(0.45);
   });
+
+  it("gives Pets' Corner a wider footprint without reducing the shared library-pet-room span", () => {
+    const library = getRoomBySlug("library")!;
+    const pets = getRoomBySlug("pets-corner")!;
+    const libraryBounds = roomBounds(library);
+    const petsBounds = roomBounds(pets);
+
+    expect(library.footprint[0]).toBe(2.2);
+    expect(pets.footprint[0]).toBe(2.0);
+    expect(libraryBounds.minX).toBeCloseTo(-5.4);
+    expect(petsBounds.maxX).toBeCloseTo(-1.2);
+    expect(libraryBounds.maxX).toBeCloseTo(petsBounds.minX);
+    expect(getSharedBoundary(library, pets)).toBeDefined();
+    expect(library.footprint[0] + pets.footprint[0]).toBeCloseTo(4.2);
+  });
   it("keeps the ground and upper room footprints inside the shell and the garden adjoining the entrance", () => {
     const entrance = getRoomBySlug("entrance")!, garden = getRoomBySlug("garden")!;
     const halfWidth = HOUSE_LAYOUT.exterior.width / 2, halfDepth = HOUSE_LAYOUT.exterior.depth / 2;
@@ -111,6 +126,43 @@ describe("authoritative room and architectural layout", () => {
     const rearInteriorFaceZ = -HOUSE_LAYOUT.exterior.depth / 2 + HOUSE_LAYOUT.exterior.wallThickness / 2;
     expect(lastTreadMinZ).toBeGreaterThanOrEqual(rearInteriorFaceZ + 0.05);
   });
+  it("frames the entrance diagonally into shared circulation instead of a doorway tunnel", () => {
+    const entrance = getRoomBySlug("entrance")!;
+    const family = getRoomBySlug("family-table")!;
+    const entranceBounds = roomBounds(entrance);
+    const familyBounds = roomBounds(family);
+    const [positionX, , positionZ] = entrance.camera.position;
+    const [targetX, , targetZ] = entrance.camera.target;
+
+    expect(positionX).toBeGreaterThan(entranceBounds.minX + 0.2);
+    expect(positionX).toBeLessThan(entranceBounds.maxX - 0.2);
+    expect(positionZ).toBeGreaterThan(entranceBounds.minZ + 0.2);
+    expect(positionZ).toBeLessThan(entranceBounds.maxZ - 0.2);
+    expect(targetX).toBeGreaterThan(familyBounds.minX);
+    expect(targetX).toBeLessThan(familyBounds.maxX);
+    expect(targetZ).toBeGreaterThan(familyBounds.minZ);
+    expect(targetZ).toBeLessThan(familyBounds.maxZ);
+    expect(Math.abs(targetX - positionX)).toBeGreaterThan(1);
+    expect(targetZ).toBeLessThan(positionZ - 2);
+    expect(Math.abs((targetX - positionX) / (targetZ - positionZ))).toBeGreaterThan(0.35);
+  });
+
+  it("keeps the family-room camera aim inside its footprint and toward the rear circulation", () => {
+    const family = getRoomBySlug("family-table")!;
+    const [positionX, , positionZ] = family.camera.position;
+    const [targetX, , targetZ] = family.camera.target;
+    const bounds = roomBounds(family);
+    expect(targetX).toBeGreaterThan(bounds.minX);
+    expect(targetX).toBeLessThan(bounds.maxX);
+    expect(targetZ).toBeGreaterThan(bounds.minZ);
+    expect(targetZ).toBeLessThan(bounds.maxZ);
+    expect(targetZ).toBeLessThan(positionZ - 1);
+    expect(Math.abs(targetX)).toBeLessThan(HOUSE_LAYOUT.stairs.groundDoorwayWidth / 2 - 0.1);
+    expect(positionX).toBeGreaterThan(bounds.minX + 0.25);
+    expect(positionX).toBeLessThan(bounds.maxX - 0.25);
+    expect(positionZ).toBeLessThan(bounds.maxZ - 0.25);
+  });
+
   it("frames the kitchen counter, rather than the refrigerator, in its first-person destination view", () => {
     const kitchen = getRoomBySlug("kitchen")!;
     const counterCenter = [
@@ -159,7 +211,10 @@ describe("authoritative room and architectural layout", () => {
     expect(stairs.roofFlight.from[1]).toBe(upperSurface);
     expect(stairs.roofFlight.to[1]).toBe(HOUSE_LAYOUT.roofY);
     expect(stairs.groundFlight.to[2]).toBe(HOUSE_LAYOUT.upperBridge.centerZ - HOUSE_LAYOUT.upperBridge.depth / 2);
-    expect(stairs.roofFlight.from[2]).toBe(HOUSE_LAYOUT.upperLanding.centerZ + HOUSE_LAYOUT.upperLanding.depth / 2);
+    const upperLanding = HOUSE_LAYOUT.upperLanding;
+    expect(stairs.roofFlight.from[2]).toBe(upperLanding.centerZ + upperLanding.depth / 2);
+    expect(Math.abs(stairs.roofFlight.from[0] - upperLanding.centerX))
+      .toBeLessThan(upperLanding.width / 2 - stairs.width / 2);
     expect(Math.abs(stairs.roofFlight.to[2] - stairs.roofOpening.centerZ)).toBeLessThan(stairs.roofOpening.depth / 2);
     expect(stairs.roofOpening.width).toBeGreaterThan(stairs.width);
   });

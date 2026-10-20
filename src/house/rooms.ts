@@ -32,32 +32,36 @@ export const HOUSE_LAYOUT = {
     width: 1, shaftWidth: 2.4, openingWidth: 1.3, groundDoorwayWidth: 1.2,
     // The stair begins just beyond the family-table portal and climbs toward the rear landing.
     groundFlight: { from: [0, 0.14, -0.5] as Vector3Tuple, to: [0, 3.14, -4.32] as Vector3Tuple, steps: 16 },
+    // Keep the upper flight on the rear shaft, ending before the back corridor
+    // instead of crossing over that corridor at head height.
     roofFlight: { from: [0, 3.14, 2.05] as Vector3Tuple, to: [0, 5.55, -2.68] as Vector3Tuple, steps: 14 },
-    roofOpening: { centerX: 0, centerZ: -1.8, width: 1.65, depth: 1.85 },
+    // Extend the roof void across the eye-height portion of the flight while leaving
+    // the upstairs corridor beyond the last tread covered by a full roof/ceiling.
+    roofOpening: { centerX: 0, centerZ: -0.85, width: 1.65, depth: 4.6 },
   },
 } as const;
 
 const roomDefinitions = [
   { id: "entrance", slug: "entrance", name: "Front Door & Entrance", kind: "entry", level: "ground",
-    scenePosition: [0, HOUSE_LAYOUT.groundY, 3.695], camera: { position: [0, 1.65, 4.2], target: [0, 1.35, 2.85] },
+    scenePosition: [0, HOUSE_LAYOUT.groundY, 3.695], camera: { position: [0.65, 1.65, 4.2], target: [-0.65, 1.35, 1.65] },
     footprint: [2.1, 1.89], connectedTo: ["family-table", "garden"] },
   { id: "living-room", slug: "living-room", name: "Living Room", kind: "interior", level: "ground",
-    scenePosition: [-3.6, HOUSE_LAYOUT.groundY, 1.175], camera: { position: [-2.65, 1.65, 2.05], target: [-4.05, 1.25, 1.2] },
+    scenePosition: [-3.6, HOUSE_LAYOUT.groundY, 1.175], camera: { position: [-2.4, 1.65, 2.25], target: [-4.4, 1.25, 0.8] },
     footprint: [3.6, 3.15], connectedTo: ["family-table", "library"] },
   { id: "family-table", slug: "family-table", name: "Family Table", kind: "interior", level: "ground",
-    scenePosition: [0, HOUSE_LAYOUT.groundY, 1.175], camera: { position: [1.15, 1.65, 2.3], target: [-1.15, 1.1, -0.15] },
+    scenePosition: [0, HOUSE_LAYOUT.groundY, 1.175], camera: { position: [1.0, 1.65, 2.05], target: [0, 1.3, -0.15] },
     footprint: [3.6, 3.15], connectedTo: ["entrance", "living-room", "kitchen"] },
   { id: "kitchen", slug: "kitchen", name: "Kitchen", kind: "interior", level: "ground",
     scenePosition: [3.6, HOUSE_LAYOUT.groundY, 1.175], camera: { position: [3.45, 1.65, 2.35], target: [4.75, 1.25, 0.95] },
     footprint: [3.6, 3.15], connectedTo: ["family-table", "prayer-room"] },
   { id: "library", slug: "library", name: "Library", kind: "interior", level: "ground",
-    scenePosition: [-4.1, HOUSE_LAYOUT.groundY, -2.49], camera: { position: [-2.95, 1.65, -0.55], target: [-4.85, 1.25, -2.4] },
-    footprint: [2.6, 4.18], connectedTo: ["living-room", "pets-corner"] },
+    scenePosition: [-4.3, HOUSE_LAYOUT.groundY, -2.49], camera: { position: [-4.5, 1.65, -0.7], target: [-3.9, 1.18, -2.6] },
+    footprint: [2.2, 4.18], connectedTo: ["living-room", "pets-corner"] },
   { id: "pets-corner", slug: "pets-corner", name: "Pets' Corner", kind: "interior", level: "ground",
-    scenePosition: [-2.0, HOUSE_LAYOUT.groundY, -2.49], camera: { position: [-2.6, 1.65, -0.65], target: [-1.9, 1.05, -3.1] },
-    footprint: [1.6, 4.18], connectedTo: ["library"] },
+    scenePosition: [-2.2, HOUSE_LAYOUT.groundY, -2.49], camera: { position: [-2.2, 1.65, -0.65], target: [-1.85, 1.05, -3.1] },
+    footprint: [2.0, 4.18], connectedTo: ["library"] },
   { id: "prayer-room", slug: "prayer-room", name: "Prayer Room / Musalla", kind: "spiritual", level: "ground",
-    scenePosition: [3.3, HOUSE_LAYOUT.groundY, -2.49], camera: { position: [4.45, 1.65, -1.8], target: [3.75, 1.0, -3.14] },
+    scenePosition: [3.3, HOUSE_LAYOUT.groundY, -2.49], camera: { position: [4.8, 1.65, -0.45], target: [2.8, 0.35, -3.1] },
     footprint: [4.2, 4.18], connectedTo: ["kitchen"] },
   { id: "zakariae-room", slug: "zakariae-room", name: "Zakariae's Private Room", kind: "private", level: "upper",
     scenePosition: [-4.25, HOUSE_LAYOUT.upperY, -1.75], camera: { position: [-4.75, HOUSE_LAYOUT.upperY + 1.65, 0.1], target: [-3.8, HOUSE_LAYOUT.upperY + 1.35, -1.9] },
@@ -95,7 +99,7 @@ export const ROOM_ACCESS_PORTALS: readonly { readonly room: string; readonly tar
   { room: "fatiha-room", targetSlug: "fatiha-room", zone: "upper-landing", side: "front", offset: 0, width: DEFAULT_DOOR_WIDTH },
 ];
 
-export const EXTERIOR_CAMERA = { position: [6.1, 5.1, 12.8] as Vector3Tuple, target: [0, 1.75, 3.8] as Vector3Tuple };
+export const EXTERIOR_CAMERA = { position: [0, 1.65, 16.5] as Vector3Tuple, target: [0, 3.15, 3.8] as Vector3Tuple };
 // The map is an HTML floor plan; never switch the 3D scene into an overhead view for it.
 export const MAP_CAMERA = EXTERIOR_CAMERA;
 
@@ -340,8 +344,16 @@ export function roomRegistryIssues(): string[] {
   const opening = HOUSE_LAYOUT.stairs.roofOpening;
   if (opening.width < HOUSE_LAYOUT.stairs.width + 0.2 || Math.abs(roof.to[0] - opening.centerX) > opening.width / 2 ||
       Math.abs(roof.to[2] - opening.centerZ) > opening.depth / 2) issues.push("Rooftop stair exit does not fit inside the roof opening.");
+  const upperLanding = HOUSE_LAYOUT.upperLanding;
+  const landingMinZ = upperLanding.centerZ - upperLanding.depth / 2;
+  const landingMaxZ = upperLanding.centerZ + upperLanding.depth / 2;
+  const roofStartOnLanding =
+    Math.abs(roof.from[0] - upperLanding.centerX) <
+      upperLanding.width / 2 - HOUSE_LAYOUT.stairs.width / 2 &&
+    roof.from[2] >= landingMinZ - EPSILON &&
+    roof.from[2] <= landingMaxZ + EPSILON;
   if (Math.abs(ground.to[2] - (HOUSE_LAYOUT.upperBridge.centerZ - HOUSE_LAYOUT.upperBridge.depth / 2)) > EPSILON ||
-      Math.abs(roof.from[2] - (HOUSE_LAYOUT.upperLanding.centerZ + HOUSE_LAYOUT.upperLanding.depth / 2)) > EPSILON) {
+      !roofStartOnLanding) {
     issues.push("Stair flights are disconnected from their landings.");
   }
   return issues;

@@ -8,6 +8,7 @@ import { getInteriorRoofCeilingPanels, getInteriorRoofHatchTrim } from "./interi
 import { getRoomCeilingBottomLocal } from "./roomDetails";
 import { getRoomWallDecor } from "./wallDecor";
 import { SKY_CLOUD_GROUPS, SKY_SUN_POSITION } from "./skyLayout";
+import { MOROCCAN_NEIGHBORHOOD, MOROCCAN_STREET } from "./neighborhoodLayout";
 import { getKitchenFixtureLayout } from "./kitchenLayout";
 import { getLibraryBookProps } from "./libraryShelving";
 import { GARDEN_SHRUBS, GARDEN_TREES } from "./gardenPlants";
@@ -15,8 +16,9 @@ import { getGardenPavers } from "./gardenPath";
 import { getExteriorFacadePanels, getInteriorPerimeterWallPanels } from "./perimeterWalls";
 import { ROOF_SEATING_RUG, ROOF_TEA_STOOLS, ROOF_TEA_TABLE } from "./roofTerraceProps";
 import { getRoofDeckTileJoints } from "./roofDeckTiles";
+import { getStructuralFloorPanels } from "./structuralFloors";
 import { getRoofHatchGuardRails } from "./roofHatchRails";
-import { getCameraFrameDeltas } from "./cameraTiming";
+import { getCameraFrameDeltas, getActiveVisualReviewHoldTokens, getCameraFrameLoopMode, shouldAutoUpdateShadowMap, getDirectionalShadowMapSize } from "./cameraTiming";
 import { RealisticMaterialPass } from "./realisticMaterials";
 import { getCameraZoneForPosition, getHouseSceneVisibility, shouldRenderInteriorPerimeterShell, type CameraZone } from "./sceneVisibility";
 import {
@@ -37,6 +39,8 @@ const WALK_SPEED = 1.35;
 const WALK_ACCELERATION = 3.6;
 const WALK_DECELERATION = 3.2;
 const TURN_RESPONSE = 7.2;
+
+const STRUCTURAL_FLOOR_PANELS = [...getStructuralFloorPanels("ground"), ...getStructuralFloorPanels("upper")];
 
 function poseFor(location: HouseLocation): CameraPose {
   if (location === "exterior" || location === "map") return EXTERIOR_CAMERA;
@@ -90,11 +94,6 @@ function SkyEnvironment() {
       <sphereGeometry args={[2.15, 32, 24]} />
       <meshBasicMaterial color="#fff4d2" toneMapped={false} depthTest={true} depthWrite={false} />
     </mesh>
-    <mesh position={SKY_SUN_POSITION} renderOrder={-999} frustumCulled={false}>
-      <sphereGeometry args={[4.5, 32, 24]} />
-      <meshBasicMaterial color="#ffe0a1" transparent opacity={0.18} toneMapped={false}
-        depthTest={true} depthWrite={false} />
-    </mesh>
     {SKY_CLOUD_GROUPS.map((cloudGroup, groupIndex) =>
       <group key={"sky-cloud-group-" + groupIndex} position={cloudGroup.position}>
         {cloudGroup.clouds.map((cloud, index) => <mesh key={index} position={cloud.position}
@@ -105,6 +104,80 @@ function SkyEnvironment() {
         </mesh>)}
       </group>
     )}
+  </group>;
+}
+
+
+/**
+ * Quiet, attached plaster homes and a narrow residential lane give the property
+ * an actual Moroccan neighborhood context. These are neighboring buildings, not
+ * decorative props; their flat roofs, parapets, recessed-looking windows and warm
+ * limewashed/earth-toned facades remain visible through exterior openings.
+ */
+function MoroccanNeighborhood() {
+  const streetPieces = [
+    { key: "sidewalk", ...MOROCCAN_STREET.sidewalk, color: "#c8bca8" },
+    { key: "road", ...MOROCCAN_STREET.road, color: "#85837c" },
+  ];
+
+  return <group>
+    {streetPieces.map((piece) => <mesh key={piece.key}
+      position={[0, piece.centerY, piece.centerZ]} receiveShadow>
+      <boxGeometry args={[piece.width, piece.height, piece.depth]} />
+      <meshStandardMaterial color={piece.color} roughness={0.98} />
+    </mesh>)}
+    {MOROCCAN_NEIGHBORHOOD.map((building) => {
+      const windowWidth = 0.82;
+      const windowHeight = 1.02;
+      const windowXOffsets = [-building.width * 0.22, building.width * 0.22];
+      const windowYLevels = [1.55, building.height - 1.4]
+        .filter((height) => height > windowHeight / 2 + 0.25 && height < building.height - windowHeight / 2 - 0.45);
+      const frontZ = building.depth / 2;
+
+      return <group key={building.id} position={[building.centerX, 0, building.centerZ]}>
+        <mesh position={[0, building.height / 2, 0]} castShadow receiveShadow>
+          <boxGeometry args={[building.width, building.height, building.depth]} />
+          <meshStandardMaterial color={building.wallColor} roughness={0.97} />
+        </mesh>
+        <mesh position={[0, building.height + 0.045, 0]} castShadow receiveShadow>
+          <boxGeometry args={[building.width + 0.16, 0.09, building.depth + 0.16]} />
+          <meshStandardMaterial color={building.trimColor} roughness={0.97} />
+        </mesh>
+        {[
+          { position: [0, building.height + 0.27, frontZ] as Vector3Tuple, size: [building.width, 0.46, 0.14] as Vector3Tuple },
+          { position: [0, building.height + 0.27, -frontZ] as Vector3Tuple, size: [building.width, 0.46, 0.14] as Vector3Tuple },
+          { position: [-building.width / 2, building.height + 0.27, 0] as Vector3Tuple, size: [0.14, 0.46, building.depth] as Vector3Tuple },
+          { position: [building.width / 2, building.height + 0.27, 0] as Vector3Tuple, size: [0.14, 0.46, building.depth] as Vector3Tuple },
+        ].map((parapet, index) => <mesh key={"parapet-" + index}
+          position={parapet.position} castShadow receiveShadow>
+          <boxGeometry args={parapet.size} />
+          <meshStandardMaterial color={building.wallColor} roughness={0.98} />
+        </mesh>)}
+        {windowYLevels.flatMap((y, row) => windowXOffsets.map((x, column) =>
+          <group key={"window-" + row + "-" + column}
+            position={[x, y, frontZ + 0.028]}>
+            <mesh>
+              <boxGeometry args={[windowWidth, windowHeight, 0.045]} />
+              <meshStandardMaterial color={building.glassColor} roughness={0.48} metalness={0.04} />
+            </mesh>
+            {[-1, 1].map((side) => <mesh key={"jamb-" + side}
+              position={[side * (windowWidth / 2 + 0.035), 0, 0.025]}>
+              <boxGeometry args={[0.07, windowHeight + 0.13, 0.07]} />
+              <meshStandardMaterial color={building.frameColor} roughness={0.86} />
+            </mesh>)}
+            {[-1, 1].map((side) => <mesh key={"lintel-" + side}
+              position={[0, side * (windowHeight / 2 + 0.035), 0.025]}>
+              <boxGeometry args={[windowWidth + 0.13, 0.07, 0.07]} />
+              <meshStandardMaterial color={building.frameColor} roughness={0.86} />
+            </mesh>)}
+            <mesh position={[0, 0, 0.04]}>
+              <boxGeometry args={[0.045, windowHeight, 0.075]} />
+              <meshStandardMaterial color={building.frameColor} roughness={0.86} />
+            </mesh>
+          </group>
+        ))}
+      </group>;
+    })}
   </group>;
 }
 
@@ -171,6 +244,47 @@ function CameraRig({ location, reducedMotion, onArrive, onTransitionChange, onEx
   }, [camera, desired, invalidate, location, onArrive, onTransitionChange, onExteriorShellVisibilityChange, onCameraZoneChange, pose, reducedMotion]);
 
   useFrame((state, delta) => {
+    // The browser visual-review harness may pin the camera at a matched route
+    // phase while it records that exact frame. This flag is undefined during
+    // normal play and has no effect on user movement.
+    const reviewWindow = typeof window !== "undefined"
+      ? window as Window & {
+          __darBoussedraVisualReviewHoldCamera?: boolean;
+          __darBoussedraVisualReviewHoldTokens?: string[];
+          __darBoussedraVisualReviewHoldDeadlines?: Record<string, number>;
+        }
+      : undefined;
+    const nowMs = Date.now();
+    const holdTokens = reviewWindow?.__darBoussedraVisualReviewHoldTokens ?? [];
+    const holdDeadlines = reviewWindow?.__darBoussedraVisualReviewHoldDeadlines ?? {};
+    const activeHoldTokens = reviewWindow ? getActiveVisualReviewHoldTokens({
+      tokens: holdTokens,
+      deadlines: holdDeadlines,
+      nowMs,
+    }) : [];
+    const visualReviewHold = activeHoldTokens.length > 0;
+    const reviewHoldRequested = holdTokens.length > 0 ||
+      reviewWindow?.__darBoussedraVisualReviewHoldCamera === true;
+
+    // Expire each token independently. A later phase must not keep an earlier,
+    // abandoned screenshot hold alive by refreshing one shared deadline.
+    if (reviewWindow && reviewHoldRequested &&
+      (activeHoldTokens.length !== holdTokens.length ||
+        reviewWindow.__darBoussedraVisualReviewHoldCamera !== visualReviewHold)) {
+      const remainingDeadlines: Record<string, number> = {};
+      for (const token of activeHoldTokens) {
+        const deadline = holdDeadlines[token];
+        if (typeof deadline === "number" && Number.isFinite(deadline)) remainingDeadlines[token] = deadline;
+      }
+      reviewWindow.__darBoussedraVisualReviewHoldTokens = activeHoldTokens;
+      reviewWindow.__darBoussedraVisualReviewHoldDeadlines = remainingDeadlines;
+      reviewWindow.__darBoussedraVisualReviewHoldCamera = visualReviewHold;
+    }
+    if (visualReviewHold) {
+      invalidate();
+      return;
+    }
+
     // Keep travel in real time on slow software-rendered devices without
     // allowing a large catch-up jump after a suspended tab.
     const { movementDelta, rotationDelta } = getCameraFrameDeltas(delta);
@@ -1131,6 +1245,19 @@ function HouseArchitecture({ location, visualLocation, transitioning, exteriorSh
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.205, 0]} receiveShadow>
       <planeGeometry args={[220, 220]} /><meshStandardMaterial color="#d6d5c0" roughness={1} />
     </mesh>
+    {/* Structural substrate sits just below finish floors to bridge registry seams without z-fighting. */}
+    {STRUCTURAL_FLOOR_PANELS.map((floorPanel) => {
+      const visible = floorPanel.key.startsWith("ground-")
+        ? visibility.showGroundRooms && cameraZone !== "outside" && cameraZone !== "roof"
+        : visibility.showUpperRooms || visibility.showUpperCirculation;
+      return visible ? <mesh key={"structural-floor-" + floorPanel.key}
+        position={floorPanel.position} receiveShadow>
+        <boxGeometry args={floorPanel.size} />
+        <meshStandardMaterial color="#d9cbb6" roughness={0.98} />
+      </mesh> : null;
+    })}
+
+
     {/* Continuous underside over the upper circulation. The real stair hatch remains open,
         but interior walks no longer look through the house into the exterior sky. */}
     {cameraZone !== "outside" && cameraZone !== "roof" && getInteriorRoofCeilingPanels().map((panel, index) =>
@@ -1202,6 +1329,38 @@ function HouseArchitecture({ location, visualLocation, transitioning, exteriorSh
   </>;
 }
 
+/**
+ * Walking changes the camera every frame but not most scene geometry. Cache the
+ * static shadow map during travel; refresh it when travel/visibility zones change,
+ * then resume normal shadow-map updates at rest.
+ */
+function ShadowMapMotionPolicy({ transitioning, cameraZone }: {
+  transitioning: boolean;
+  cameraZone: CameraZone;
+}) {
+  const { gl, invalidate } = useThree();
+
+  useEffect(() => {
+    const previousAutoUpdate = gl.shadowMap.autoUpdate;
+    gl.shadowMap.autoUpdate = shouldAutoUpdateShadowMap(transitioning);
+    gl.shadowMap.needsUpdate = true;
+    invalidate();
+    return () => {
+      gl.shadowMap.autoUpdate = previousAutoUpdate;
+      gl.shadowMap.needsUpdate = true;
+      invalidate();
+    };
+  }, [gl, invalidate, transitioning]);
+
+  useEffect(() => {
+    // Storey/zone visibility changes affect occluders, so refresh once per zone.
+    gl.shadowMap.needsUpdate = true;
+    invalidate();
+  }, [cameraZone, gl, invalidate]);
+
+  return null;
+}
+
 export function HouseScene({ location, settledLocation, reducedMotion, onArrive, onTransitionChange: onNavigationChange, onDoorActivate, onSelect }: {
   location: HouseLocation;
   settledLocation: HouseLocation;
@@ -1225,10 +1384,10 @@ export function HouseScene({ location, settledLocation, reducedMotion, onArrive,
     setCameraZone(zone);
   }, []);
   const visualTransition = transitioning || settledLocation !== location;
-  const sceneFov = location === "exterior" || location === "map" ? 58 : 66;
+  const sceneFov = 66;
   return <Canvas camera={{ position: EXTERIOR_CAMERA.position, fov: sceneFov, near: 0.1, far: 120 }}
-    gl={{ antialias: true, powerPreference: "high-performance" }} dpr={reducedMotion ? 1 : ([1, 1.6] as [number, number])}
-    frameloop="demand" shadows
+    gl={{ antialias: true, powerPreference: "high-performance" }} dpr={reducedMotion || visualTransition ? 1 : ([1, 1.6] as [number, number])}
+    frameloop={getCameraFrameLoopMode(visualTransition)} shadows
     onCreated={({ gl, scene }) => {
       // Set the clear color explicitly as a final safety net: even if any architecture
       // is temporarily out of view, a camera frame can never fall back to page beige.
@@ -1237,12 +1396,14 @@ export function HouseScene({ location, settledLocation, reducedMotion, onArrive,
       gl.toneMapping = ACESFilmicToneMapping;
       gl.toneMappingExposure = 1;
     }}>
+    <ShadowMapMotionPolicy transitioning={visualTransition} cameraZone={cameraZone} />
     <color attach="background" args={["#8fc9ed"]} /><fog attach="fog" args={["#e8dfcf", 28, 76]} />
     <SkyEnvironment />
+    {cameraZone === "outside" && <MoroccanNeighborhood />}
     <RealisticMaterialPass revision={`${location}:${settledLocation}:${transitioning}:${cameraZone}`} />
     <ambientLight intensity={0.42} /><hemisphereLight args={["#fff2db", "#7e866e", 0.58]} />
     <directionalLight color="#fff0d9" position={[8, 15, 9]} intensity={2.35} castShadow
-      shadow-mapSize-width={2048} shadow-mapSize-height={2048}
+      shadow-mapSize-width={getDirectionalShadowMapSize(visualTransition)} shadow-mapSize-height={getDirectionalShadowMapSize(visualTransition)}
       shadow-camera-left={-14} shadow-camera-right={14} shadow-camera-top={14} shadow-camera-bottom={-14}
       shadow-camera-near={0.1} shadow-camera-far={48}
       shadow-bias={-0.00015} shadow-normalBias={0.02} />

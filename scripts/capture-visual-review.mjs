@@ -13,6 +13,7 @@ const report = {
   screenshots: [],
   roomArrivals: [],
   frameStates: [],
+  phaseCaptureResults: [],
   runtimeErrors: [],
   notes: [],
 };
@@ -56,6 +57,23 @@ async function saveScreenshot(page, filename) {
       cameraZone: data.cameraZone || null,
       destination: data.destination || null,
       routeProgress: data.routeProgress || null,
+      reviewHoldTokenCount: Array.isArray(window.__darBoussedraVisualReviewHoldTokens)
+        ? window.__darBoussedraVisualReviewHoldTokens.length : 0,
+      reviewHoldDeadlinesRemainingMs: Object.fromEntries(
+        (Array.isArray(window.__darBoussedraVisualReviewHoldTokens)
+          ? window.__darBoussedraVisualReviewHoldTokens : []).map((token) => {
+            const deadline = window.__darBoussedraVisualReviewHoldDeadlines?.[token];
+            return [token, Number.isFinite(deadline) ? Math.max(0, deadline - Date.now()) : null];
+          }),
+      ),
+      reviewHoldDeadlineRemainingMs: (() => {
+        const values = (Array.isArray(window.__darBoussedraVisualReviewHoldTokens)
+          ? window.__darBoussedraVisualReviewHoldTokens : [])
+          .map((token) => window.__darBoussedraVisualReviewHoldDeadlines?.[token])
+          .filter((deadline) => Number.isFinite(deadline))
+          .map((deadline) => Math.max(0, deadline - Date.now()));
+        return values.length ? Math.min(...values) : null;
+      })(),
       walkSpeed: data.walkSpeed == null ? null : Number(data.walkSpeed),
       remainingPathDistance: data.remainingPathDistance == null ? null : Number(data.remainingPathDistance),
       currentWaypointDistance: data.currentWaypointDistance == null ? null : Number(data.currentWaypointDistance),
@@ -64,7 +82,10 @@ async function saveScreenshot(page, filename) {
   }).catch(() => null);
   report.frameStates.push({ filename, ...frameState });
   try {
-    await page.screenshot({ path: filepath, animations: "allow", timeout: 30000 });
+    // Animated stair-transition frames can be heavier than settled room stills.
+    // Keep the capture mandatory but allow them 15 more seconds before a hard failure.
+    const screenshotTimeout = /stair|landing-turn/i.test(filename) ? 45000 : 30000;
+    await page.screenshot({ path: filepath, animations: "allow", timeout: screenshotTimeout });
     report.screenshots.push(filename);
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
@@ -153,10 +174,17 @@ async function openMap(page) {
   await page.locator(".map-panel").waitFor({ state: "visible", timeout: 15000 });
 }
 
-async function waitForCameraPhase(page, destination, phase, timeout = 30000) {
+async function waitForCameraPhase(page, destination, phase, holdToken, timeout = 30000, blockedByHoldToken) {
   const rule = CAMERA_PHASE_RULES[phase];
   if (!rule) throw new Error("Unknown camera phase: " + phase);
-  await page.waitForFunction(({ expectedDestination, phaseRule }) => {
+  await page.waitForFunction(({ expectedDestination, phaseRule, holdToken, blockedByHoldToken }) => {
+    // The next phase watcher is armed while the prior phase's screenshot is being
+    // written. Don't let an overlapping window match until that previous hold releases.
+    if (blockedByHoldToken) {
+      const activeTokens = Array.isArray(window.__darBoussedraVisualReviewHoldTokens)
+        ? window.__darBoussedraVisualReviewHoldTokens : [];
+      if (activeTokens.includes(blockedByHoldToken)) return false;
+    }
     const canvas = document.querySelector("canvas");
     if (!canvas || canvas.dataset.destination !== expectedDestination) return false;
     const position = canvas.dataset.cameraPosition?.split(",").map(Number);
@@ -165,29 +193,154 @@ async function waitForCameraPhase(page, destination, phase, timeout = 30000) {
     const zone = canvas.dataset.cameraZone;
     const within = (value, bounds) => !bounds ||
       ((bounds[0] == null || value > bounds[0]) && (bounds[1] == null || value < bounds[1]));
-    return (!phaseRule.zone || zone === phaseRule.zone) &&
+    const matches = (!phaseRule.zone || zone === phaseRule.zone) &&
       within(x, phaseRule.x) && within(y, phaseRule.y) && within(z, phaseRule.z);
-  }, { expectedDestination: destination, phaseRule: rule }, { timeout });
+    // Pin the route synchronously in the same browser evaluation that observes
+    // the camera-phase match. This closes the race between the matching dataset
+    // sample and the Node-side screenshot request.
+    if (matches) {
+      // Several phase watchers run concurrently. Hold tokens prevent one
+      // screenshot's cleanup from releasing another screenshot's camera hold.
+      const reviewWindow = window;
+      const tokens = Array.isArray(reviewWindow.__darBoussedraVisualReviewHoldTokens)
+        ? reviewWindow.__darBoussedraVisualReviewHoldTokens : [];
+      const deadlines = reviewWindow.__darBoussedraVisualReviewHoldDeadlines &&
+        typeof reviewWindow.__darBoussedraVisualReviewHoldDeadlines === "object"
+        ? reviewWindow.__darBoussedraVisualReviewHoldDeadlines : {};
+      const matchedTokens = Array.isArray(reviewWindow.__darBoussedraVisualReviewMatchedTokens)
+        ? reviewWindow.__darBoussedraVisualReviewMatchedTokens : [];
+
+      // The wait predicate can be evaluated repeatedly while Playwright receives
+      // its result. Claim each token once so repeated matches cannot renew expiry.
+      if (!matchedTokens.includes(holdToken)) {
+        matchedTokens.push(holdToken);
+        if (!tokens.includes(holdToken)) tokens.push(holdToken);
+        deadlines[holdToken] = Date.now() + 50_000;
+      }
+      reviewWindow.__darBoussedraVisualReviewMatchedTokens = matchedTokens;
+      reviewWindow.__darBoussedraVisualReviewHoldTokens = tokens;
+      reviewWindow.__darBoussedraVisualReviewHoldDeadlines = deadlines;
+      reviewWindow.__darBoussedraVisualReviewHoldCamera = tokens.length > 0;
+    }
+    return matches;
+  }, {
+    expectedDestination: destination,
+    phaseRule: rule,
+    holdToken,
+    blockedByHoldToken: blockedByHoldToken ?? null,
+  }, { timeout, polling: 100 });
 }
 
 async function selectDirectoryRoom(page, name, slug, transitionCaptures = [], arrivalTimeout = 12000) {
   const selector = page.locator(".map-directory").getByRole("button", { name, exact: true }).first();
   await selector.waitFor({ state: "visible", timeout: 12000 });
+
+  const phaseCaptures = transitionCaptures.filter((capture) => capture.phase);
+  const phaseTasks = new Map();
+  let nextPhaseIndex = 0;
+
+  // Watch one camera phase at a time. Once a phase matches, its token holds the
+  // route while we save that still; arm the next watcher before releasing the hold
+  // so no phase window is missed, but its timeout does not elapse during the prior
+  // screenshot. The next watcher ignores any overlap until this token is released.
+  const startPhaseCapture = (capture, blockedByHoldToken) => {
+    // Each valid phase should occur within one traversal segment. A bounded wait keeps one missed phase from stalling the rest of review.\n    const timeout = capture.timeout ?? 30_000;
+    const task = (async () => {
+      let matched = false;
+      try {
+        await waitForCameraPhase(
+          page, slug, capture.phase, capture.filename, timeout, blockedByHoldToken,
+        );
+        matched = true;
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        report.notes.push("Timed out waiting for camera phase " + capture.phase + " on route " + slug + "; this frame is a fallback and is not phase-valid.");
+      }
+      report.phaseCaptureResults.push({
+        phase: capture.phase,
+        filename: capture.filename,
+        destination: slug,
+        status: matched ? "matched" : "timed-out",
+        blockedByHoldToken: blockedByHoldToken ?? null,
+      });
+
+      try {
+        await saveScreenshot(page, capture.filename);
+      } finally {
+        if (matched) {
+          // Arm the next phase while the current matched frame is still held, then
+          // release only this capture's token. This prevents overlapping phase windows.
+          const nextCapture = phaseCaptures[nextPhaseIndex];
+          if (nextCapture) {
+            nextPhaseIndex += 1;
+            startPhaseCapture(nextCapture, capture.filename);
+          }
+          await page.evaluate((holdToken) => {
+            const reviewWindow = window;
+            const tokens = Array.isArray(reviewWindow.__darBoussedraVisualReviewHoldTokens)
+              ? reviewWindow.__darBoussedraVisualReviewHoldTokens : [];
+            reviewWindow.__darBoussedraVisualReviewHoldTokens = tokens.filter((token) => token !== holdToken);
+            const deadlines = { ...(reviewWindow.__darBoussedraVisualReviewHoldDeadlines ?? {}) };
+            delete deadlines[holdToken];
+            reviewWindow.__darBoussedraVisualReviewHoldDeadlines = deadlines;
+            reviewWindow.__darBoussedraVisualReviewHoldCamera =
+              reviewWindow.__darBoussedraVisualReviewHoldTokens.length > 0;
+          }, capture.filename).catch(() => {});
+        } else {
+          // A missing phase makes downstream positions unknowable. Mark the rest
+          // as skipped rather than spending another 90s per stale screenshot.
+          const skippedCaptures = phaseCaptures.slice(nextPhaseIndex);
+          nextPhaseIndex = phaseCaptures.length;
+          let fallbackChain = Promise.resolve();
+          for (const skipped of skippedCaptures) {
+            report.phaseCaptureResults.push({
+              phase: skipped.phase,
+              filename: skipped.filename,
+              destination: slug,
+              status: "skipped-after-prior-phase-timeout",
+              priorPhase: capture.phase,
+            });
+            report.notes.push("Skipped camera phase " + skipped.phase + " after " + capture.phase + " timed out; saved an explicitly unvalidated fallback frame.");
+            const skippedTask = fallbackChain.then(() => saveScreenshot(page, skipped.filename));
+            phaseTasks.set(skipped, skippedTask);
+            fallbackChain = skippedTask;
+          }
+          await page.evaluate(() => {
+            const reviewWindow = window;
+            reviewWindow.__darBoussedraVisualReviewHoldTokens = [];
+            reviewWindow.__darBoussedraVisualReviewHoldDeadlines = {};
+            reviewWindow.__darBoussedraVisualReviewHoldCamera = false;
+            reviewWindow.__darBoussedraVisualReviewMatchedTokens = [];
+          }).catch(() => {});
+        }
+      }
+    })();
+    phaseTasks.set(capture, task);
+  };
+
   await selector.click();
   await page.waitForFunction((expected) => window.location.pathname === "/room/" + expected, slug, { timeout: 12000 });
+  // Don't start the phase timeout while the canvas still reports the previous room
+  // or an empty route. Wait until the selected target owns a populated route first.
+  if (phaseCaptures.length > 0) {
+    await page.waitForFunction((expectedDestination) => {
+      const canvas = document.querySelector("canvas");
+      if (!canvas || canvas.dataset.destination !== expectedDestination) return false;
+      const progress = /^(\d+)\/(\d+)$/.exec(canvas.dataset.routeProgress || "");
+      return Boolean(progress && Number(progress[2]) > 0);
+    }, slug, { timeout: 15000, polling: 100 });
+    nextPhaseIndex = 1;
+    startPhaseCapture(phaseCaptures[0], undefined);
+  }
   const transitionStarted = Date.now();
   for (const capture of transitionCaptures) {
     if (capture.phase) {
-      try {
-        await waitForCameraPhase(page, slug, capture.phase, capture.timeout ?? 30000);
-      } catch {
-        report.notes.push("Timed out waiting for camera phase " + capture.phase + " on route " + slug + "; capturing the current frame instead.");
-      }
+      await phaseTasks.get(capture);
     } else {
       const delay = Math.max(0, capture.afterMs - (Date.now() - transitionStarted));
       if (delay > 0) await page.waitForTimeout(delay);
+      await saveScreenshot(page, capture.filename);
     }
-    await saveScreenshot(page, capture.filename);
   }
   return await arrivalStatus(page, slug, name, arrivalTimeout);
 }
@@ -212,8 +365,18 @@ report.webgl2ContextAvailable = await desktop.locator("canvas").first().evaluate
 }).catch(() => false);
 await saveScreenshot(desktop, "01-exterior-desktop.png");
 
-// Click the gold in-scene doorway marker to verify that visual navigation is genuinely interactive.
-await desktop.locator("canvas").click({ position: { x: 665, y: 449 } });
+// Click the gold in-scene doorway marker to verify visual navigation. Its projected height
+// depends on the current first-person camera pose, so target the centered marker relative
+// to the live canvas rather than a stale absolute coordinate.
+const exteriorCanvas = desktop.locator("canvas");
+const exteriorCanvasBox = await exteriorCanvas.boundingBox();
+if (!exteriorCanvasBox) throw new Error("The exterior canvas has no measurable bounds.");
+await exteriorCanvas.click({
+  position: {
+    x: exteriorCanvasBox.width / 2,
+    y: exteriorCanvasBox.height * 0.515,
+  },
+});
 await desktop.waitForFunction(() => window.location.pathname === "/room/entrance", null, { timeout: 8000 });
 await arrivalStatus(desktop, "entrance", "Front Door & Entrance", 45000);
 await saveScreenshot(desktop, "02-entrance-eye-level.png");
@@ -281,17 +444,21 @@ await motionProbe.emulateMedia({ reducedMotion: "no-preference" });
 await motionProbe.waitForTimeout(180);
 await openMap(motionProbe);
 const rooftopArrived = await selectDirectoryRoom(motionProbe, "Rooftop Terrace", "rooftop", [
-  { phase: "lower-stair-flight", filename: "13-stair-ascent-midflight.png" },
-  { phase: "upper-side-landing", filename: "14-upper-landing-turn.png" },
-  { phase: "roof-stair-flight", filename: "16-roof-stair-ascent.png" },
-  { phase: "roof-hatch-clear", filename: "17-roof-hatch-exit.png" },
+  // The low-end software renderer can take several seconds per camera frame.
+  // Give each traversal zone a bounded, phase-appropriate wait rather than letting
+  // the mid-stair capture time out before the camera reaches the lower flight.
+  { phase: "lower-stair-midflight", filename: "13-stair-ascent-midflight.png", timeout: 90000 },
+  { phase: "lower-stair-clearance", filename: "13b-stair-ascent-landing-clearance.png", timeout: 60000 },
+  { phase: "upper-side-landing", filename: "14-upper-landing-turn.png", timeout: 60000 },
+  { phase: "roof-stair-flight", filename: "16-roof-stair-ascent.png", timeout: 60000 },
+  { phase: "roof-hatch-clear", filename: "17-roof-hatch-exit.png", timeout: 60000 },
 ], 90000);
 await saveScreenshot(motionProbe, "18-rooftop-motion-probe.png");
 
 if (rooftopArrived) {
   await openMap(motionProbe);
   const returnedToGround = await selectDirectoryRoom(motionProbe, "Family Table", "family-table", [
-    { phase: "lower-stair-flight", filename: "15-stair-descent-midflight.png", timeout: 45000 },
+    { phase: "lower-stair-flight", filename: "15-stair-descent-midflight.png", timeout: 90000 },
   ], 45000);
   if (!returnedToGround) {
     report.notes.push("The descent route did not settle at the family table before the movement probe ended.");
@@ -302,17 +469,49 @@ if (rooftopArrived) {
 await motionProbe.close();
 
 const stairAscent = report.frameStates.find((frame) => frame.filename === "13-stair-ascent-midflight.png");
+const stairClearance = report.frameStates.find((frame) => frame.filename === "13b-stair-ascent-landing-clearance.png");
 const stairDescent = report.frameStates.find((frame) => frame.filename === "15-stair-descent-midflight.png");
-report.stairCameraAiming = {
-  ascentDirectionY: stairAscent?.cameraDirection?.[1] ?? null,
-  descentDirectionY: stairDescent?.cameraDirection?.[1] ?? null,
-  looksUpDuringAscent: typeof stairAscent?.cameraDirection?.[1] === "number" &&
-    stairAscent.cameraDirection[1] > 0.1 && stairAscent.cameraDirection[1] < 0.45,
-  looksDownDuringDescent: typeof stairDescent?.cameraDirection?.[1] === "number" &&
-    stairDescent.cameraDirection[1] < -0.1 && stairDescent.cameraDirection[1] > -0.45,
+const upperLandingTurn = report.frameStates.find((frame) => frame.filename === "14-upper-landing-turn.png");
+report.upperLandingAiming = {
+  directionX: upperLandingTurn?.cameraDirection?.[0] ?? null,
+  directionY: upperLandingTurn?.cameraDirection?.[1] ?? null,
+  directionZ: upperLandingTurn?.cameraDirection?.[2] ?? null,
+  looksDownPastStairUnderside: typeof upperLandingTurn?.cameraDirection?.[1] === "number" &&
+    upperLandingTurn.cameraDirection[1] < -0.14 && upperLandingTurn.cameraDirection[1] > -0.32,
+  looksAlongBridge: typeof upperLandingTurn?.cameraDirection?.[0] === "number" &&
+    upperLandingTurn.cameraDirection[0] > -0.15 && upperLandingTurn.cameraDirection[0] < 0.25 &&
+    typeof upperLandingTurn?.cameraDirection?.[2] === "number" &&
+    upperLandingTurn.cameraDirection[2] > 0.88,
 };
-if (!report.stairCameraAiming.looksUpDuringAscent) {
-  report.notes.push("Camera should pitch upward while climbing the lower stair flight.");
+if (!report.upperLandingAiming.looksDownPastStairUnderside) {
+  report.notes.push("The upper-landing turn should pitch modestly down toward the clear bridge floor rather than hold the horizon under the roof stair.");
+}
+if (!report.upperLandingAiming.looksAlongBridge) {
+  report.notes.push("The upper-landing turn should look along the open side bridge, not left into the roof-stair underside.");
+}
+report.stairCameraAiming = {
+  ascentDirectionX: stairAscent?.cameraDirection?.[0] ?? null,
+  ascentDirectionY: stairAscent?.cameraDirection?.[1] ?? null,
+  landingClearanceDirectionX: stairClearance?.cameraDirection?.[0] ?? null,
+  landingClearanceDirectionY: stairClearance?.cameraDirection?.[1] ?? null,
+  descentDirectionY: stairDescent?.cameraDirection?.[1] ?? null,
+  looksDownDuringMidflight: typeof stairAscent?.cameraDirection?.[1] === "number" &&
+    stairAscent.cameraDirection[1] < -0.08 && stairAscent.cameraDirection[1] > -0.35,
+  anticipatesUpperLandingTurn: typeof stairClearance?.cameraDirection?.[0] === "number" &&
+    stairClearance.cameraDirection[0] > 0.2 && stairClearance.cameraDirection[0] < 0.6,
+  clearsUpperLandingOnAscent: typeof stairClearance?.cameraDirection?.[1] === "number" &&
+    stairClearance.cameraDirection[1] > 0.10 && stairClearance.cameraDirection[1] < 0.32,
+  looksDownDuringDescent: typeof stairDescent?.cameraDirection?.[1] === "number" &&
+    stairDescent.cameraDirection[1] < -0.44 && stairDescent.cameraDirection[1] > -0.65,
+};
+if (!report.stairCameraAiming.looksDownDuringMidflight) {
+  report.notes.push("Mid-flight ascent must look slightly down at the next tread edges; upward look-ahead should not activate before the top-tread clearance band.");
+}
+if (!report.stairCameraAiming.clearsUpperLandingOnAscent) {
+  report.notes.push("At the actual top-tread eye height, the ascent camera must pitch upward enough to see over the landing fascia into the open upper bridge.");
+}
+if (!report.stairCameraAiming.anticipatesUpperLandingTurn) {
+  report.notes.push("At the top tread, the ascent camera should look toward the side landing lane rather than into the rear wall.");
 }
 if (!report.stairCameraAiming.looksDownDuringDescent) {
   report.notes.push("Camera should pitch downward while descending the lower stair flight.");
@@ -337,11 +536,16 @@ if (
   !report.navigationGuideDetected ||
   !report.mobileNavigationGuideVisible ||
   !report.walkingHudHiddenDuringStairCaptures ||
-  !report.stairCameraAiming.looksUpDuringAscent ||
+  !report.stairCameraAiming.looksDownDuringMidflight ||
+  !report.stairCameraAiming.clearsUpperLandingOnAscent ||
+  !report.stairCameraAiming.anticipatesUpperLandingTurn ||
   !report.stairCameraAiming.looksDownDuringDescent ||
+  !report.upperLandingAiming.looksDownPastStairUnderside ||
+  !report.upperLandingAiming.looksAlongBridge ||
   report.mobileHasHorizontalDocumentOverflow ||
   report.roomDirectoryButtonCount !== 13 ||
-  report.mobileRoomDirectoryButtonCount !== 13
+  report.mobileRoomDirectoryButtonCount !== 13 ||
+  report.phaseCaptureResults.some((capture) => capture.status !== "matched")
 ) {
   process.exitCode = 1;
 }

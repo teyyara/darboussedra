@@ -1,14 +1,24 @@
 # AEOS Status — Dar Boussedra
 
-**State:** LOOP 050 GARDEN VIEW COMPOSITION — COMMITTED, LATEST VALIDATION QUEUED  
-**Active keyphrase:** DAR BOUSSEDRA — LOOP 050: KEEP THE GARDEN PATH AND BOTH OLIVES IN VIEW  
-**Run ID:** 20261017-darboussedra-aeos-v3-loop050  
-**Loop:** 050 · **Candidate:** dar-boussedra-garden-composition-050  
-**Repository:** https://github.com/teyyara/darboussedra  
-**Branch:** fix/loop-004-architecture-coherence  
-**Base main:** 501cc6ccf3e6926504dfcd051ac98147360cd48a  
-**Latest source-code checkpoint commit:** de1ffa3709f971114a591389062a24884200068d  
-**Last updated:** 2026-10-17
+**State:** LOOP 094 — ARCHITECTURE/RENDERING TODO ROADMAP RECORDED; NEXT PHYSICAL-FLOOR PASS NOT YET IMPLEMENTED
+**Active keyphrase:** DAR BOUSSEDRA — LOOP 094: LOG FLOOR GAPS, TUNNEL-LIKE ENTRY, FALL HAZARDS, AND RENDER POP-IN AS ORDERED TODOs
+**Run ID:** 20261018-darboussedra-aeos-v3-loop094
+**Loop:** 094 · **Candidate:** dar-boussedra-architecture-rendering-roadmap-094
+**Repository:** https://github.com/teyyara/darboussedra
+**Branch:** fix/loop-064-moroccan-exterior-and-layout
+**Base main:** e06af00a049eb72b173295438bbeb8e384c6fef5
+**Latest source-code checkpoint commit:** 51a7c4d26ae4a7e7e88063679ffeff74373eceaf (Loop 093; visual review failed)
+**Roadmap:** docs/architecture-and-rendering-repair-roadmap.md
+**Last updated:** 2026-10-18
+## Standing user priorities — keep active until explicitly cleared
+
+- [ ] **NO NEW DECORATIONS.** Do not add furniture, wall art, rugs, garden/rooftop props, ornaments, or decorative set-dressing until the user explicitly says to resume. This includes “Moroccan-themed” decoration work. Current loops should focus on architecture, materials already present, navigation, and tests only.
+- [ ] **Make the house spatially coherent.** Audit real room footprints, wall ownership, door openings, hall/landing continuity, stair clearances, floor/roof alignment, and camera sightlines. Do not treat a passing unit test as proof that the plan looks like a real home.
+- [ ] **Improve the first-person walkthrough.** Keep human eye height, walkable room-to-room routes, natural turning, step-aware stair ascent/descent, and useful views without blank walls, ceiling slabs, or furniture filling the whole frame.
+- [ ] **Keep a real neighborhood outside.** Neighboring Moroccan homes, street, and sidewalk must prevent the scene from reading as an empty void; keep them spatially connected and avoid rendering them over indoor views.
+- [ ] **Fix the sun-side circles and use soft clouds.** Keep the sun as a clean disc without halo/ring artifacts; clouds should read as rounded puffs rather than tiny flat circles.
+- [ ] **Moroccan visual identity.** When decorations are later approved, use believable Moroccan materials, joinery, proportions, and objects rather than generic staged props.
+
 
 ## Loop 003 outcome
 - Lazy-loaded the 3D house scene so the initial navigation UI is not coupled to the full Three.js scene bundle.
@@ -537,3 +547,553 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 - Loop 049 run [39072491627](https://github.com/teyyara/darboussedra/actions/runs/39072491627) passed typecheck, tests, production build and Chromium installation; its capture step is still in progress at last check.
 - Loop 048 source checks passed. The last complete movement report confirms the hatch-exit screenshot was captured, but the descent screenshot was at route waypoint 33/56 in the upper landing with cameraDirectionY -0.033. Loop 049 extends the lower-stair phase wait to 90s to avoid accepting that false frame.
 - Visual acceptance of Loop 047's garden/roof camera poses and Loop 050's inward tree placement remains pending new screenshots. Don't merge or deploy manually; PR #5 stays open/draft and main is unchanged.
+
+
+## Loop 065 — Cloud readability, outdoor rendering scope, and walkthrough validation
+
+- **Scope:** Improve the visible exterior sky and make the existing neighborhood buildings render only while the camera is outside. No new furniture, garden props, rooftop decoration, external assets, paid services, APIs, or dependencies were added.
+- **Sky:** Enlarged the existing overlapping ellipsoid cloud lobes and spaced the two clusters more naturally beside the single sun disc. The existing sky projection tests continue to constrain the cloud groups to the visible frame.
+- **Scene cost:** The four procedural neighborhood buildings, windows, parapets, sidewalk and road remain visible for exterior/garden/outdoor shots, but their meshes are removed from the render while the camera is indoors. This avoids unnecessary background geometry on every interior frame.
+- **Browser QA repair:** The previous branch run [39083452560](https://github.com/teyyara/darboussedra/actions/runs/39083452560) passed install, typecheck, unit tests, production build and Chromium install. Its rendered review failed only in the late movement probe: it timed out waiting for the lower-stair descent capture at 45 seconds and then evaluated an upper-landing frame as the descent. The capture window now allows 90 seconds; its movement/pitch assertions remain intact so a wrong camera angle is not silently accepted.
+- **Validation status:** CI for this checkpoint must re-run before any merge decision. The earlier failure is not counted as a passing browser test. The Vercel checks for the prior revision reported a build-rate limit; no manual Vercel deployment was issued.
+- **Checkpoint:** This status and the source changes are committed together on the current work branch. The exact commit SHA is the verified branch HEAD.
+- **Next:** Inspect the new GitHub Actions results and visual-review artifact. Merge only if the capture completes and the actual descent view passes; otherwise repair the camera route rather than relaxing the assertion.
+
+
+## Loop 066 — Room-scale composition and more reliable stair gaze
+
+- **No-new-decoration constraint retained:** this loop adds no furniture, wall art, rugs, garden items, rooftop objects, assets, or dependencies.
+- **Living Room arrival:** move the existing camera pose farther from the sofa and aim across the room at a more useful angle. The sofa/furniture set itself is unchanged; the goal is to stop the current viewpoint making the sofa dominate most of the frame while leaving a large empty wall.
+- **Lower stair descent:** increase the downward bias of intermediate camera poses from the existing mild angle to a more useful approximately 20-degree descent gaze. Tighten the unit regression and Chromium screenshot threshold so the actual captured descent must pitch down between 0.3 and 0.5 in normalized direction-Y. The 90-second phase window stays; the test does not accept a stale landing capture.
+- **Clouds:** enlarge the vertical/depth profile of the already-requested cloud lobes so they read as fuller cumulus puffs. The single sun disc remains unlayered; no new sky props are introduced.
+- **Scope boundary:** the room registry already derives same-level portals and checks room footprints and stair clearances. This loop does not invent a new family floor plan; it improves the confirmed camera-framing fault and retains the architectural geometry audit for the next pass.
+- **Validation:** require a new full GitHub run of typecheck, tests, production build, and Chromium captures. Do not merge this revision unless the actual stair descent view passes. Never run a manual Vercel deployment.
+
+
+### Loop 066 camera-framing follow-up
+
+- The first full CI run reported 116 passing unit tests and one genuine regression: the wider living-room camera move pushed the existing geometric wall art out of the first-person view cone. The stair-path and cloud tests passed.
+- Re-aimed the living-room view farther across the room to keep the existing feature within frame while leaving the furniture untouched. The next CI run must confirm both the original art-framing invariant and the more downward stair-descent invariant.
+- This was a camera correction prompted by the test failure, not a reason to loosen the visual assertion. No decorations were added.
+
+
+## Loop 067 — Stair-flight eye-line correction
+
+**State:** Validated by GitHub Actions and reviewed from the fresh Chromium screenshots for commit [192e70c](https://github.com/teyyara/darboussedra/commit/192e70cfb1b981237a91ca3d18d1cf4594fa714c). PR #7 remains open and unmerged.
+
+- **CI run:** [39132738897](https://github.com/teyyara/darboussedra/actions/runs/39132738897) passed typecheck, the full unit suite, production build, Chromium visual capture, and screenshot upload.
+- **Rendered confirmation:** Browser report recorded no runtime errors or review notes, all expected room arrivals, no mobile horizontal overflow, ascent direction-Y -0.192, and descent direction-Y -0.489. The fresh ascent and descent views now show individual stair treads clearly; the upper flight still shows the hatch reveal/edge crossing the climb path.
+- **Next issue:** The roof flight runs from Z=2.05 to Z=-2.68, but the hatch only spans Z=-2.725 to Z=-0.875. The camera eye reaches roof level before entering the hatch, so the underside trim crosses the view near eye height. Fix the actual flight/opening alignment rather than increasing camera pitch further.
+- **Scope:** No new decorations or assets. No dependency changes. No main merge and no manual Vercel deployment.
+
+
+## Loop 068 — Roof-stair headroom and hatch alignment
+
+**State:** Superseded after fresh Chromium review exposed an upper-corridor overlap and descent screenshot timeout. PR #7 remains open and unmerged.
+
+- **Problem confirmed from Loop 067 screenshots:** The lower stair eye-line correction works and brings the treads into view. The roof stair still passes beneath the hatch's front reveal while the eye is already at near-roof height, creating a horizontal bar directly across the first-person climb.
+- **Outcome:** The flight/opening arrangement in commit [14f3a51](https://github.com/teyyara/darboussedra/commit/14f3a5114a1f8dc858e0e4eff9bc087088467369) cleared the hatch at roof height but ran directly over the upper corridor. Loop 069 restores the prior flight endpoint and adjusts the opening instead.
+- **Regression coverage:** Assert that camera waypoints near roof height lie inside the opening. Update guardrail coverage tests to check the right-side rail reaches the front edge yet leaves a safe exit gap at the rear.
+- **Boundaries:** No decorations, room-object changes, assets, dependencies, main merge or manual Vercel deployment.
+- **Next action:** Inspect fresh roof-stair, hatch-clearance, and descent screenshots from the exact current commit; if the new opening looks too large or leaks into bedroom views, adjust it based on those captures.
+
+
+### Loop 068 validation follow-up
+
+- The first CI run for [29b705a](https://github.com/teyyara/darboussedra/commit/29b705a95c12381384fd4a49f541d1777fd2fc0e) correctly found stale layout assertions: they required the roof flight to start exactly at the far edge of the upper landing, instead of anywhere safely inside its footprint, and treated z=0 as beyond the hatch even though the new opening extends there.
+- The roof-opening headroom regression, camera route suite, interior ceiling panel test, hatch rail tests, and roof deck grout tests passed on that run. Updated the layout validator and assertions to express the new landing connection and hatch boundary rather than remove validation.
+- No merge or manual deployment.
+
+
+## Loop 069 — Preserve upper-corridor headroom and capture descent reliably
+
+**State:** Reviewed from exact commit [168a4e8](https://github.com/teyyara/darboussedra/commit/168a4e836c66f38f9485cd3cecda3787917141dc), with all CI checks passing. PR #7 remains open and unmerged.
+
+- **Geometry:** Restore the roof-flight start/end to Z=2.05 and Z=-2.68, preserving the upper corridor clear of the flight's underside. Extend the roof opening to Z=-3.15..1.45 so the near-roof camera samples stay above the opening; the top stair exit retains about 0.47m of rear clearance.
+- **Guardrails:** Keep three-sided timber protection and the right-side rail exit gap; update the required clear offset to match the restored stair-end coordinate. The egress point remains clear of the rail in X as well as Z.
+- **Screenshot capture:** Increase only stair/landing screenshot timeout from 30 to 45 seconds. The capture remains mandatory and the visual gate still fails if it cannot be captured; this does not skip or weaken any review.
+- **Regression coverage:** Check the restored flight-end against the landing edge, camera eye-height positions inside the enlarged hatch, roof-camera-zone boundary outside the opening, and the right-side guardrail egress gap.
+- **Boundaries:** No decorations, furniture, assets, dependencies, main merge or manual Vercel deployment.
+- **Rendered review:** [CI run 39134710065](https://github.com/teyyara/darboussedra/actions/runs/39134710065) passed typecheck, the full unit suite, build, Chromium review and artifact upload. Browser report has 20 screenshots, no runtime errors or review notes, rooftop route reached 56/56, descent frame captured successfully, mobile width 390/390 with no overflow. Descent gaze-Y was -0.486 and ascent gaze-Y -0.192.
+- **Next visual issue:** The upper-landing turn image still frames too much of the roof-stair underside. Inspection of geometry showed the scripted side-lane camera at x=0.77, only 0.12m from the inner guardrail, despite the usable bridge strip being about 0.55m wide.
+
+
+### Loop 069 validation follow-up
+
+- The CI run for [10ec23c](https://github.com/teyyara/darboussedra/commit/10ec23cc30eec55ed5a229ecfed73f5941109c0e) passed typecheck but correctly rejected two geometry invariants: early near-roof camera poses extended beyond the opening's forward edge, and the last roof walkway waypoint returned over the hatch after reaching solid deck.
+- Shifted the hatch forward to Z=1.45 while retaining its rear edge at Z=-3.15. The top stair ends at Z=-2.68 and its egress point remains outside the rail in X with about 0.48m Z offset.
+- Re-routed the final roof waypoint along the right-hand deck to a point beyond the hatch front edge before heading toward the terrace. The hatch-crossing assertion stays strict (no more than the single final stair point is over the opening at roof eye height).
+- The stair/landing screenshot budget is now 45 seconds, still a hard fail if the image cannot be captured. Full CI rerun pending; no merge or manual deployment.
+
+
+## Loop 070 — Center the upper walking lane
+
+**State:** Validated by full CI and fresh Chromium review in [run 39135488044](https://github.com/teyyara/darboussedra/actions/runs/39135488044); PR #7 remains open and unmerged.
+
+- **Change:** The camera is now centered at X=0.925 in the usable bridge strip, midway between the inner rail and outer edge; the room footprint, hatch and rail geometry are unchanged.
+- **Rendered result:** Typecheck, unit tests, production build and Chromium capture passed. Browser report contained 20 screenshots, no runtime errors or review notes, full room arrivals, no mobile overflow and correctly pitched ascent/descent frames. The upper-turn screenshot confirms the safe centered position, but its direction-Y was only -0.034, leaving the staircase underside visually dominant.
+- **Decision:** Keep the lane-position correction and add only a modest downward upper-bridge gaze. Do not move the staircase or reduce the visual QA bar to solve a framing problem.
+- **Boundaries:** No furniture/decorations, assets or dependencies; no main merge or manual Vercel deployment.
+
+
+## Loop 071 — Lower upper-bridge sightline without changing the stair geometry
+
+**State:** Validated by full CI and fresh Chromium screenshots in [run 39136250094](https://github.com/teyyara/darboussedra/actions/runs/39136250094). PR #7 remains open and unmerged.
+
+- **Rendered report:** All 20 screenshots captured, no browser runtime errors or notes, every expected room arrival succeeded, WebGL2 is available, and the mobile document is exactly 390px wide with no overflow. The upper-landing frame direction-Y is -0.227; stair ascent is -0.193 and descent is -0.505.
+- **Visual finding for next loop:** The upper-turn view is less sky/ceiling dominated, but the family-table doorway still reveals a blank-looking stair hall in its settled view. The source shows the stair flight and upper circulation are intentionally hidden whenever the camera is not transitioning between storeys.
+- **Change:** Loop 072 selectively reveals the ground flight and its head landing only when settled in Family Table, the room whose back portal opens directly into the stair hall. Other ground-floor views continue to hide the stairs, and all upstairs private-room walls/objects remain hidden from ground views.
+- **Scope:** No decorations, assets or dependencies. PR #7 remains open; no main merge or manual Vercel deployment.
+
+
+## Loop 072 — Show the real staircase from the family-table doorway
+
+**State:** Validated by full CI and fresh Chromium screenshots in [run 39137068586](https://github.com/teyyara/darboussedra/actions/runs/39137068586). PR #7 remains open and unmerged.
+
+- **Rendered result:** All 21 review files uploaded, no browser runtime errors or notes, WebGL2 is available, all expected arrivals succeeded, and the mobile document has no horizontal overflow. The Family Table view exposes the actual stair flight/landing, while the Library remains free of upstairs stair geometry.
+- **Decision:** Keep the stair visibility exception restricted to the only ground-floor stair-hall doorway. Next, improve the cramped Pets' Corner through a room-footprint rebalance rather than adding props.
+- **Boundaries:** No decorations, assets or dependencies. No main merge or manual Vercel deployment.
+
+
+## Loop 073 — Rebalance library and Pets' Corner width
+
+**State:** Validated by full CI and fresh Chromium screenshots in [run 39137920514](https://github.com/teyyara/darboussedra/actions/runs/39137920514). PR #7 remains open and unmerged.
+
+- **Rendered result:** All 20 screenshots captured, no runtime errors or browser review notes, full room arrivals passed, WebGL2 was detected, and mobile had no horizontal overflow. Pets' Corner is visibly wider; its existing feeding bowl and scratch post stay in bounds. The narrowed library keeps its full three-row shelf and 27 readable books.
+- **Visual follow-up:** The Library frame reveals only the edge of its existing wall accent at the right side. Loop 074 shifts only the destination aim toward the space between the shelf and that wall so the current room contents compose together.
+- **Boundaries:** No decorations, props, assets, dependencies, main merge or manual Vercel deployment.
+
+
+## Loop 074 — Frame the existing library contents
+
+**State:** Validated by TypeScript, unit tests, production build, and fresh Chromium review in [run 39138693955](https://github.com/teyyara/darboussedra/actions/runs/39138693955). PR #7 remains open and unmerged.
+
+- **Rendered result:** All 20 screenshots captured, no browser runtime errors or review notes, and the route, WebGL and mobile checks passed. The library bookshelf remains visible, but the artwork still appears as a thin edge-on sliver on the right wall.
+- **Finding:** The prior assertion checked the artwork's projected corners, not whether its wall-facing surface had a useful viewing angle. The camera was almost parallel to the right wall, so an in-frame bounding box did not equal a readable artwork face.
+- **Decision:** Keep the 2.2m library / 2.0m Pets' Corner reallocation and preserve the bookshelf; change the camera position and heading rather than moving or adding artwork.
+- **Scope:** No props, decor, assets, dependencies, main merge or manual Vercel deployment.
+
+
+## Loop 075 — Correct library wall-facing angle without sacrificing the bookshelf
+
+**State:** Validated by full TypeScript, unit tests, production build and fresh Chromium review in [run 39139869351](https://github.com/teyyara/darboussedra/actions/runs/39139869351). PR #7 remains open and unmerged.
+
+- **Rendered result:** All screenshot and route checks passed with no runtime errors or review notes. The library accent now reads face-on rather than as an edge-on sliver, while the existing bookshelf stays prominent and all three book rows remain within the asserted framing bounds.
+- **Regression coverage:** The wall-art test checks its full projected bounds and a wall-facing cosine above 0.32 (the initial 0.5 threshold proved infeasible without crowding the opposite bookshelf). Representative book spines from each row are projected into the viewport. The first CI attempt also caught and corrected a test-only TypeScript mistake.
+- **Scope:** No new decorations, furniture, wall art or assets; no dependency changes, merge or manual Vercel deployment.
+
+
+## Loop 076 — Center Pets' Corner framing around the existing bed and scratch post
+
+**State:** Validated by full CI and Chromium review in [run 39140563309](https://github.com/teyyara/darboussedra/actions/runs/39140563309). PR #7 remains open and unmerged.
+
+- **Problem confirmed from Loop 075 screenshot:** The wider Pets' Corner still feels like a corridor because the camera stands left of centre, letting the library doorway/frame dominate the foreground while the bed is pushed to one side and the scratch post becomes the main focal object.
+- **Change:** Move the camera to the room centre X=-2.2 and narrow the rightward gaze to X=-1.85. Aim between the existing bed and scratch post; all room dimensions, wall art, floor marker, pet props, doors and shelving stay unchanged.
+- **Regression coverage:** A Three.js perspective camera projects the existing bed centre and scratch-post centre into the first-person frame. It also asserts a centred camera and modest horizontal offset, while the existing room footprint, target-in-room, vertical framing and camera-path checks remain active.
+- **Scope:** No new decorations, furniture, props, assets or dependencies; no main merge and no manual Vercel deployment.
+- **Rendered result:** The bed and scratch post share the first-person view and the library doorway takes less of the foreground than before. No browser errors or review notes were reported.
+
+
+## Loop 077 — Frame the full existing prayer mat from the entry side
+
+**State:** Validated by full CI and fresh Chromium review in [run 39141142520](https://github.com/teyyara/darboussedra/actions/runs/39141142520). PR #7 remains open and unmerged.
+
+- **Rendered result:** All 21 visual-review files were captured and uploaded, no browser runtime errors or review notes were reported, all expected arrivals passed, WebGL2 was detected, and mobile had no horizontal overflow. The full prayer mat fits inside the view.
+- **Follow-up found by screenshot inspection:** The mat is still too dominant; the upper part of the window is clipped, and only a sliver of the existing left-wall accent is visible.
+- **Decision:** Pull the camera slightly toward the room entry and aim diagonally across it. Raise the target from Y=0.25 to Y=0.65 so the view balances the mat with the window and wall context while retaining the full mat.
+- **Scope:** No decor, props, furniture, assets, dependencies, merge, or manual Vercel deployment.
+- **Next action:** Inspect the fresh prayer-room eye-level frame. Verify the complete mat reads clearly with some floor space around it while the window and surrounding wall remain visible.
+
+
+## Loop 078 — Balance the prayer mat with the window and existing wall accent
+
+**State:** Superseded: first CI run found the raised gaze cropped a mat corner and the art still on the entry wall; see Loop 079 correction.
+
+- **Problem confirmed from Loop 077 screenshot:** All four mat corners are technically in-frame, but the mat dominates the lower half. The high window is clipped at the top, and the existing wall accent is cut to a thin edge at the left.
+- **Change:** Move the camera 0.55m toward the entry edge (Z=-0.45), shift it slightly to the right side (X=4.5), raise the target from Y=0.25 to Y=0.65, and aim farther across the room to X=2.8. Room footprint, windows, mat, art, doors, walls, and lighting are unchanged.
+- **Regression coverage:** Keep the four corners of the existing 1.05m × 1.75m mat in the viewport. Add a projection test for all four corners of the existing prayer-room wall accent and assert a minimum wall-facing angle. Existing room-bounds and route checks remain active.
+- **Scope:** No new decorations, assets, furniture or prop changes, dependencies, merge, or manual Vercel deployment.
+- **Next action:** Inspect the new prayer-room screenshot; confirm floor space around the mat, the window, and the whole wall accent are visible together.
+
+
+## Loop 079 — Recover full mat framing and move the existing accent off the entry wall
+
+**State:** Validated by the complete CI pipeline and fresh Chromium review in [run 39144271635](https://github.com/teyyara/darboussedra/actions/runs/39144271635). PR #7 remains open and unmerged.
+
+- **Loop 078 result:** Typecheck passed but unit tests exposed two real visual constraints: the raised Y=0.65 target cropped the near prayer-mat corner (projected Y=-1.070), and the existing art's front-wall placement lay almost directly beside the camera (projected X=-0.953).
+- **Camera:** Keep the prayer-room destination near the entry edge at Z=-0.45; shift X to 4.8 to increase distance from the near mat corner, and lower the target to Y=0.35 so the floor mat returns inside frame while maintaining a diagonal view.
+- **Wall accent placement:** Reserve the existing front/entry wall for the doorway so the unchanged wall-art accent is selected from an available side-wall run and is no longer immediately beside the destination camera.
+- **Regression coverage:** Keep the four-corner mat projection test. Keep the four-corner artwork projection and wall-facing-angle assertions, and explicitly require the selected wall accent not to use the entry wall. CI confirms the mat now passes but the wall accent top corner projects to Y=0.963; Loop 079 follow-up moves only that existing accent down 0.15m and locks its resulting height, preserving the 0.9 viewport limit.
+- **Boundaries:** No new decorations, furniture, props or assets; no dependency changes, merge or manual Vercel deployment.
+- **Next action:** Inspect new prayer-room and neighboring kitchen screenshots. Confirm mat, window and whole existing wall accent read coherently without an entry-wall obstruction.
+
+
+### Loop 079 follow-up — Adjust the existing prayer-room accent height
+
+- The second CI attempt passed the full mat-corner test and the entry-wall exclusion/horizontal artwork checks. The only remaining failure was the top artwork corner at projected Y=0.963, just outside the 0.9 limit.
+- Lowered the **existing prayer-room wall accent only** by 0.15m (center height from floorThickness + 1.36 to floorThickness + 1.21). Other rooms' art heights are unchanged. The mat and art framing tests remain strict.
+- Full CI and fresh Chromium review pending on this follow-up. No new decor, assets, props, merge, or manual deployment.
+
+
+## Loop 080 — Clear the upper landing fascia during the ground-stair ascent
+
+**State:** TypeScript, unit tests, production build, Chromium walkthrough, and screenshot upload passed in [run 39147313124](https://github.com/teyyara/darboussedra/actions/runs/39147313124). PR #7 remains open and unmerged.
+
+- **Rendered result:** All route arrivals, WebGL2, runtime-error, and mobile overflow checks passed. The lower stair treads remain individually readable early in the climb.
+- **Visual defect still present:** The ascent screenshot at camera position Y=3.206 / Z=-2.362 has direction-Y -0.022. A broad fascia still crosses the central view. The prior browser gate allowed a near-level gaze, so it was not strict enough to guarantee actual visual clearance.
+- **Decision:** Keep the physical landing, stairs, bridge width and rails unchanged. In Loop 081, increase only the upward pitch used while the eye crosses upper-floor height; earlier stair treads continue to use the slight downward gaze, and descent continues to look firmly downward.
+- **Boundaries:** No decorations, room props, assets or dependencies changed; no main merge or manual Vercel deployment.
+
+
+## Loop 081 — Require a positive clearance angle over the upper landing
+
+**State:** Source checks passed, but the full Chromium run failed on the stricter gate in [run 39150511314](https://github.com/teyyara/darboussedra/actions/runs/39150511314). PR #7 remains open and unmerged.
+
+- **Camera result:** The 0.25 late-ascent coefficient is active and the route-level target-height test passed. The browser frame still measured direction-Y -0.192 because it was captured at Y=2.914, Z=-1.991, before the eye reached the landing-clearance band around Y=3.04–3.42, Z=-2.7 to -2.1.
+- **Root cause:** The broad lower-stair-flight phase allowed any Y from 2.9 to 4.25 and Z from -4.2 to -1.0, so it selected an earlier tread pose instead of the eye-height transition. The stricter camera gate correctly failed this capture.
+- **Change for Loop 082:** Add a dedicated narrow lower-stair-clearance phase for the ascent screenshot only. Keep the broad lower-stair-flight phase for descent, where the camera must continue looking down the lower treads.
+- **Scope:** No new decorations, furniture, props, assets, dependencies, main merge or manual Vercel deployment.
+
+
+## Loop 082 — Capture the actual landing-clearance segment
+
+**State:** Validated by typecheck, all tests, build, Chromium capture and artifact upload in [run 39151219362](https://github.com/teyyara/darboussedra/actions/runs/39151219362). PR #7 remains open and unmerged.
+
+- **Rendered result:** The dedicated phase matcher captured the ascent at Y=3.089, Z=-2.213, with direction-Y +0.102; descent remained at direction-Y -0.488. All routes arrived, no browser runtime errors or review notes were reported, WebGL2 was detected, and mobile had no horizontal overflow.
+- **Visual finding:** The stricter up-pitch is now measured in the intended zone, but the camera still looks directly down the stair axis into the rear landing fascia/wall. The face is less dominant than in the prior near-level frame, but the upper side corridor remains out of view.
+- **Decision:** Keep the deterministic capture phase and positive ascent pitch. Loop 083 adds a small forward/right turn in the clearance segment to bring the existing side landing lane into the view, with a new horizontal-direction check. Earlier treads and descending gaze remain unchanged.
+- **Scope:** No decorations, assets or room geometry changed; no merge or manual Vercel deployment.
+
+
+## Loop 083 — Look into the side landing while clearing the fascia
+
+**State:** Camera heading and dual-axis regression committed; full CI and new Chromium screenshots pending. PR #7 remains open and unmerged.
+
+- **Problem confirmed from Loop 082 screenshot:** With the capture now correctly at Y=3.089 / Z=-2.213, the ascent gaze pitches upward (+0.102) but keeps pointing straight along -Z. The remaining center slab is the rear landing fascia/wall; the side landing lane only comes into the route after the top tread.
+- **Change:** During the narrow upper-floor clearance segment only, bias the gaze approximately 0.4 units toward +X per unit of remaining stair run while retaining the 0.25 upward-pitch coefficient. This anticipates the turn into the existing right-side bridge lane. Earlier treads keep their down-gaze and reverse/descent retains the stronger downward angle.
+- **Regression coverage:** Camera path tests require target Y above eye level and target X ahead toward the side lane for clearance poses. Chromium checks the actual screenshot vector has positive X direction between 0.2 and 0.5 and Y direction between 0.10 and 0.32. The first CI attempt found that the general tangent-alignment test also checked this intentional final-ascent look-ahead; the follow-up narrowly exempts poses that meet the authored clearance band and positive-X/positive-Y gaze conditions. Ordinary route headings remain subject to the existing strict alignment assertion.
+- **Scope:** No decor, props, furniture, assets, dependencies, room dimensions or physical stair geometry changed. No merge or manual deployment.
+- **Next action:** Inspect the new ascent screenshot for a visible right-hand bridge/landing beyond the fascia, without losing stair treads or introducing a wall-aim snap.
+
+
+### Loop 083 test follow-up
+
+- The first CI attempt after introducing the rightward landing look-ahead failed the general intermediate-heading alignment test at garden-to-rooftop waypoint 19 (alignment 0.928, expected above 0.98). That waypoint is the intentional clearance sightline: it is upward and rightward to see the side landing before arrival, not a travel-tangent view.
+- Added a narrow condition to skip tangent alignment only when the waypoint is within the stair landing-clearance height/Z band and its actual target is both above eye level and to the right. Dedicated landing-gaze tests plus the Chromium X/Y direction gate remain in force; all other headings still require >0.98 alignment.
+- No route positions, geometry, decorations, props, assets, or dependencies changed.
+
+
+## Loop 084 — Strengthen final ascent gaze above the landing fascia
+
+**State:** Narrow camera-aim correction committed; CI and fresh Chromium review pending. PR #7 remains open and unmerged.
+
+- **Problem:** Loop 083 screenshot measured direction-X +0.284 but direction-Y only +0.092, slightly below the +0.10 browser gate; the landing fascia still crosses the center view.
+- **Change:** Increase only the upward gaze coefficient inside the landing-clearance band from 0.25 to 0.34. The rightward look-ahead, early tread gaze, descent view, stair geometry and room footprints stay unchanged.
+- **Regression coverage:** The browser still requires direction-Y above +0.10 and below +0.32 with direction-X between +0.2 and +0.5. Camera-path tests additionally require at least one clearance pose to target more than 0.12m above eye height.
+- **Scope:** No decorations, assets or physical geometry changes. No merge or manual Vercel deployment.
+- **Next:** Inspect a fresh ascent screenshot and confirm the fascia no longer blocks the side landing while tread edges stay visible.
+
+
+## Loop 085 — Keep the upper-landing view along the side bridge
+
+**State:** Validated by full CI and fresh Chromium review in [run 39155520405](https://github.com/teyyara/darboussedra/actions/runs/39155520405). PR #7 remains open and unmerged.
+
+- **Problem confirmed from Loop 084 frames:** Ascent passes its upward pitch gate (+0.140), but the upper-landing-turn screenshot still fills the center with the underside of the roof stair. The camera is on the side walkway yet looks sharply left into the shaft (direction-X -0.378), rather than along the open path.
+- **Change:** Keep the physical step-off and side bridge floors intact. Re-aim the bridge path along +Z with a small outer-side bias (+X), retaining modest downward pitch. Increase only the final-ascent rightward look-ahead coefficient from 0.4 to 0.58 so the opening and side lane become visible before the top tread.
+- **Regression coverage:** Unit tests assert forward and return upper-bridge poses look ahead along the bridge and do not aim sharply left into the shaft. Chromium checks the measured upper-landing direction in X, Y and Z: downward pitch remains -0.14 to -0.32, X stays between -0.15 and +0.25, and Z stays above +0.88.
+- **Scope:** No decorations, furniture, room/stair geometry, assets or dependencies. No merge and no manual Vercel deployment.
+- **Rendered follow-up:** The new heading checks passed, but the actual mid-flight screenshot still showed a wall/fascia. The browser report measured eye Y=3.161 at Z=-2.305 with upward direction-Y +0.128—midway through the flight, not at landing clearance. Loop 086 fixes the phase boundary rather than weakening this test.
+
+
+### Loop 085 test follow-up
+
+- First CI attempt after changing the upper-bridge look direction failed four camera-path assertions that explicitly required the previous inward gaze (`target.x < camera.x - 0.25`). The camera change is intentional: the old gaze looked directly at the roof-stair underside and made the side walkway read as an obstruction.
+- Updated those four tests to assert the intended forward bridge gaze instead: the target stays near the lane's X coordinate and looks ahead along +Z. Protected-lane position bounds, descending pitch, the upper-landing heading limits, and the new browser direction gate remain active.
+- No camera or geometry changes in this follow-up commit.
+
+
+### Loop 085 reverse-route test follow-up
+
+- The first test correction passed the three forward-entry heading checks but over-constrained the reverse route to always target +Z. The existing reverseRoute intentionally anchors its view to the stairwell centre at Z=upperBridge.centerZ, which can be slightly behind the camera near the front of the bridge.
+- Restored that spatial anchor assertion while retaining the new check that the camera does not pan sharply left into the stair underside. No route poses or production camera code changed in this test-only follow-up.
+
+
+## Loop 086 — Separate mid-flight tread gaze from top-tread clearance
+
+**State:** Camera-path condition, unit tests, and browser capture phases committed; CI and fresh Chromium review pending. PR #7 remains open and unmerged.
+
+- **Problem confirmed from Loop 085 artifact:** The screenshot named mid-flight was captured at camera Y=3.161, Z=-2.305. That is halfway along the lower stair flight, yet the direction-Y was +0.128 because clearance mode was keyed to the camera eye crossing the floor's absolute Y band.
+- **Root cause and fix:** A camera at eye height crosses the floor Y-coordinate halfway up a stair incline; that is not the moment the walker reaches the landing. The first correction gated clearance by standing eye height and the last 0.4m, but browser polling could miss its very short single-tread window. The follow-up starts the upward/rightward look about 0.45m below standing eye height and lets it continue through the final three treads, near the upper landing. Earlier ascent gaze remains directed down toward upcoming treads.
+- **Browser review:** Keep the mid-flight still and add a distinct top-tread clearance still. The first must show slight downward pitch; the second must show upward/rightward look-ahead. Upper-landing heading, descent pitch, room-arrival, runtime, WebGL, and mobile-overflow checks remain active.
+- **Scope:** No wall/stair/floor mesh, furniture, or decoration changes. No assets or dependencies, no main merge, and no manual Vercel deployment.
+- **CI follow-up:** Camera unit tests and build passed, and the mid-flight screenshot now looks downward at the treads. The browser run still failed because the upward/rightward gaze occupied only the final ~0.2m/one tread and the screenshot wait missed that transient window; downstream frames then timed out and captured the rooftop endpoint. Widen the gaze to the final three moving treads (about the last 0.9m) and expand only the clearance phase's measured camera-position window. The mid-flight band and its downward-pitch assertion remain separate, so the old halfway-up false positive stays blocked.
+
+
+## Loop 087 — Capture transient stair phases before they pass
+
+**State:** Browser-capture synchronization fix committed; full CI and new Chromium screenshots pending. PR #7 remains open and unmerged.
+
+- **Failure confirmed from Loop 086 run 39160014080:** TypeScript, all 123 unit tests, and production build passed, but Chromium timed out on `lower-stair-clearance`, `upper-side-landing`, `roof-stair-flight`, and `roof-hatch-clear`. Since the capture helper waited for these phases one at a time, the route was already at its rooftop endpoint when later waits started. The saved landing frame therefore showed the final camera aimed left into the roof-stair railing (direction X=-0.975), not the intended bridge gaze.
+- **Change:** Arm the phase watchers before clicking the destination room, so all transient camera windows are observed concurrently. Save screenshots through a small queue to avoid overlapping Playwright screenshots on the same page. A missing phase remains a hard review note; the 45-second watcher timeout is still bounded and does not relax any camera-direction assertion.
+- **Camera design remains unchanged:** The mid-flight view stays on upcoming treads, the final tread-clearance poses look up/right only in the upper-height band, and the upper-bridge gaze keeps the floor in frame. No stair geometry, room footprint, furniture, or decor changes.
+- **Next action:** Inspect fresh `13b-stair-ascent-landing-clearance.png`, `14-upper-landing-turn.png`, `16-roof-stair-ascent.png`, and `17-roof-hatch-exit.png`. Confirm those images capture distinct phases at the intended coordinates and that route assertions pass before continuing.
+- **Scope:** No new decorations, assets or dependencies; no merge and no manual Vercel deployment.
+
+
+## Loop 088 — Save phase screenshots at the matched camera frame
+
+**State:** Capture-timing follow-up committed; full CI and new Chromium review pending. PR #7 remains open and unmerged.
+
+- **Loop 087 outcome:** The pre-armed watchers now found the lower-stair clearance phase (its state was recorded around route progress 22/56), but the saved image had already advanced to the side bridge. The upper-side-landing watcher also matched but saved at the beginning of the roof-flight turn. Roof-flight and hatch-clear watchers timed out at 45 seconds and captured late frames.
+- **Change:** Keep concurrent pre-armed watchers, remove the extra screenshot queue that allowed matched phases to become stale, and request each phase screenshot directly from its watcher. Give each watcher up to 90 seconds, matching the overall stair-route arrival limit, so the roof-flight and hatch-clear phases are not timed out merely because they occur late in the route.
+- **QA integrity:** The route still records each camera position and direction at screenshot time, and all required direction/arrival/mobile/runtime assertions remain active. A missing phase still produces a review note and fails the visual gate; no assertions are removed or relaxed.
+- **Scope:** No camera path, room footprint, stair geometry, props, or decoration changes. No dependencies, main merge, or manual Vercel deployment.
+- **Next action:** Confirm that `13b-stair-ascent-landing-clearance.png`, `14-upper-landing-turn.png`, `16-roof-stair-ascent.png`, and `17-roof-hatch-exit.png` show distinct, correctly aimed positions in the latest screenshot artifact.
+
+
+## Loop 089 — Freeze the matched camera pose while recording stair stills
+
+**State:** Visual-review synchronization and phase-window correction committed; CI and fresh Chromium review pending. PR #7 remains open and unmerged.
+
+- **Loop 088 evidence:** The capture recorded `13b-stair-ascent-landing-clearance.png` at X=0.925, Y=4.65, Z=-3.84 with direction-Y -0.227, although the clearance phase rule requires X≈0 and the browser gate requires upward/rightward direction. `14-upper-landing-turn.png` reused the same position, proving the two phase windows overlapped and the image was not recorded at the matched pose. `17-roof-hatch-exit.png` eventually landed in the hatch-clear coordinate window but the watcher had timed out, another sign of a race between phase matching, camera motion, and screenshot capture.
+- **Change:** Add a browser-review-only camera hold flag. The phase watcher sets it synchronously inside the same page evaluation that confirms a match; the camera rig skips movement updates while held, and the capture helper releases the hold only after the screenshot has been written. Normal user movement is unchanged unless the test harness sets this flag.
+- **Phase separation:** Narrow the upper-side-landing Z band to the actual upper-bridge waypoint near Z=-2.8 so it cannot fire at the final stair tread. Add unit tests that top-tread clearance and upper-landing windows are mutually exclusive and that roof-flight and hatch-clear phases remain distinct.
+- **QA integrity:** Keep the existing 90-second phase limits, route-arrival conditions, direction-Y / direction-X gates, runtime-error requirements, room-arrival checks, WebGL detection and mobile overflow checks. A missing phase still fails review; no visual assertion is removed or weakened.
+- **Scope:** No stair or room geometry, no prop or decoration changes, no dependencies, no main merge and no manual Vercel deployment.
+- **Next action:** Inspect the newly captured clearance, landing, roof-flight and hatch-exit images from the exact revision before continuing architectural changes.
+
+
+## Loop 090 — Stable camera-phase capture and accurate stair frames
+
+- **State:** Source checkpoint committed; CI/visual capture pending.
+- **Scope:** Fix the Playwright visual-review harness's shared boolean camera hold. Phase screenshots are concurrent, so a single capture releasing a boolean could resume the camera while another still is being recorded. Each capture now owns a unique hold token; the camera remains pinned until every active token is released, including timeout cleanup.
+- **Phase windows:** Move the lower-stair clearance still later into the final treads so it can actually test the upward look-ahead; match the upper landing at the right-side bridge's real coordinates; start the roof-flight window at the first visible treads and end it before the hatch-clear window.
+- **Regression coverage:** Added checks for the real upper-bridge coordinate, an early lower-stair frame that must not count as clearance, and the initial roof treads.
+- **User boundaries:** No new furniture, wall art, rugs, garden/rooftop props, ornaments, paid assets, or dependencies. Neighborhood and cloud changes remain architectural/sky context only. No manual Vercel deployment.
+- **Validation evidence:** Prior commit `528b8f2` passed typecheck, unit tests and production build but the Chromium visual review failed because three transition phases timed out and reused the same frozen frame. The new commit must pass a fresh Foundation checks run before this repair is treated as validated.
+
+
+## Loop 090 — Validation outcome
+
+- **Source commit:** `5dac21368616957aea3513c304de63cf97960d2e`.
+- **CI:** [Foundation checks run 39166944037](https://github.com/teyyara/darboussedra/actions/runs/39166944037) passed typecheck, unit tests, production build, Chromium installation, and the rendered browser capture.
+- **Browser evidence:** 14/14 room arrivals settled; 21 screenshots uploaded; no runtime errors or review notes. The measured phases now correctly captured stair midflight, upper landing, roof-stair flight, roof-hatch clearance, and lower-stair descent.
+- **Remaining observed defect:** the late ascent screenshot still looked mostly into the opaque stair fascia despite the camera's upward pitch. Loop 091 addresses that sightline only; the route positions and room geometry are unchanged.
+
+## Loop 091 — Aim the final stair ascent across the open upper landing
+
+- **State:** source checkpoint committed; CI pending.
+- **Evidence:** Loop 090 artifact from run 39166944037 shows `13b-stair-ascent-landing-clearance.png` at camera position `[0, 4.321, -3.782]`, looking `[0.386, 0.128, -0.914]`. The gaze was still dominated by negative-Z stair travel and the frame was almost entirely blocked by the landing fascia/wall.
+- **Change:** during only the last-tread clearance band, redirect the gaze horizontally toward the right-hand bridge and positive-Z open landing, with a slightly stronger upward aim. The physical stair route, room footprints, props, and all layout dimensions stay unchanged.
+- **Regression test:** require every sampled late-ascent clearance pose to aim into positive Z, across the open landing rather than back along the opaque fascia.
+- **User constraints:** no new decorations, paid dependencies, assets, manual Vercel deployment, or merge to `main`.
+
+
+## Loop 091 — Late-ascent sightline follow-up
+
+- Source commit `a0c617a1834b591878b73eb91bb3a4f30338129c` redirected the final-tread camera vector toward the open bridge and added a regression invariant for the positive-Z landing sightline.
+- TypeScript, unit tests, and production build passed. The PR visual-review run [39167374123](https://github.com/teyyara/darboussedra/actions/runs/39167374123) remained in progress with no new artifact available when the next root-cause inspection began. The earlier Loop 090 screenshot is still evidence of the original wall obstruction, not proof of the new gaze.
+- Root-cause inspection found that stair waypoints use a 1.51m camera offset for head clearance, while camera-zone classification always subtracted 1.65m. This underestimates the tread/floor height by 14cm and keeps the lower-storey rendering active one tread too long.
+
+## Loop 092 — Use actual stair camera height for level visibility
+
+- **State:** source checkpoint committed; CI pending.
+- **Change:** estimate camera floor height from the actual authored stair flight only when X/Z position and expected stair elevation match that flight. Use the stair's 1.51m eye offset there, retaining the normal 1.65m offset in rooms/halls. Apply to both stair flights so level visibility switches at the true tread height while preserving the roof-hatch safety guard.
+- **Regression test:** top approach to the lower stair must switch to the upper visibility zone while mid-flight remains ground-level.
+- **Guardrails:** no room dimensions, wall geometry, stair path, furnishings, decorations, assets, or dependencies changed. No merge to `main` or manual Vercel deployment.
+
+
+## Loop 093 — Look into the upper landing at the top of the lower stairs
+
+- **State:** source checkpoint committed; CI and fresh rendered review pending.
+- **Evidence:** The available Loop 091 capture (13b-stair-ascent-landing-clearance.png) shows the camera facing a large opaque ceiling/wall surface during the ascent. The following camera waypoint at the exact stair endpoint previously derived its heading from the lateral turn, causing the camera to look sideways/back into the rear landing boundary instead of toward the open bridge.
+- **Change:** At the exact top-of-stair pose, explicitly face along the open bridge (+Z) with a shallow downward gaze. Keep this heading while the camera steps off the final tread and begins the lateral turn; the reverse route retains its dedicated downward stairwell gaze.
+- **Regression test:** Assert that the route to an upper private room reaches the exact lower-stair landing and that the view points forward into the bridge, slightly downward, without a lateral wall-facing target.
+- **Scope and guardrails:** No room footprint, wall or stair geometry, furnishings, decorations, assets or dependencies changed. Main remains untouched; no manual Vercel deployment. A fresh browser artifact is required before calling the visual issue resolved.
+
+
+## Loop 093 — Validation outcome
+- Run 39168325383 completed with failure. Typecheck, unit tests, and production build passed, but the Chromium visual-review gate failed.
+- The late-ascent capture measured camera direction X=0.808 / Y=0.098, outside the intended camera-direction gate, and remained dominated by stair fascia/wall. Roof-stair captures timed out; upper-landing and roof-flight capture windows overlapped.
+- Do not describe the stair-top visual fix as accepted. The next source loop must change geometry/camera based on new visual evidence and produce fresh screenshots.
+- Run: https://github.com/teyyara/darboussedra/actions/runs/39168325383
+
+## Loop 094 — Persistent architecture/rendering roadmap
+- Added `docs/architecture-and-rendering-repair-roadmap.md` with ordered P0 physical architecture, P1 no-pop-in rendering, and P2 Moroccan visual realism tasks.
+- The roadmap explicitly prioritizes continuous floors, guarded drops, removing the tunnel-like entrance sightline, checking wall/room/ceiling coherence, believable stairs/landings, and scene/shader prewarming.
+- No decoration, merge to main, or manual deployment was performed.
+- This loop records the work as TODOs; it does not claim that the architectural defects are already fixed.
+
+
+## Loop 095 — Continuous ground-floor substrate
+- Added a structural slab beneath the room-specific finish floors, spanning the interior footprint. It remains below the finish tiles and is rendered only while the ground-floor interior is visible.
+- Purpose: close the uncovered ground-level stair/circulation footprint so the floor cannot appear to end abruptly or expose the outdoor ground plane through a registry gap.
+- Scope remains architecture only; no decorative props or new dependencies.
+- Validation: source checkpoint created; typecheck, tests, build, and fresh browser screenshots must pass before visual acceptance.
+
+
+## Loop 096 — Upper-floor structural substrate
+- Added a structural substrate beneath upper-level finish tiles to bridge unassigned perimeter strips while leaving the central stairwell opening empty.
+- Geometry is split into four panels around the opening; the substrate sits below room finish floors to avoid z-fighting.
+- Validation remains pending: unit tests, typecheck, build, and fresh screenshots must confirm the opening/landing is correct. No decorative additions, merge, or deployment.
+
+
+## Loop 097 — Align upper-floor opening with stair passage
+- Corrected the upper substrate opening to derive its Z bounds from the actual ground staircase flight, with a small clearance at each end, instead of borrowing the roof hatch bounds.
+- Updated geometry tests to assert the opening tracks the staircase path.
+- This is a source-level geometry correction; visual validation remains pending. No decorations, merge, or deployment.
+
+
+## Loop 098 — Reframe the entrance destination away from a tunnel
+
+- **Goal:** make the first-person entrance destination read as a small vestibule opening into shared family circulation, rather than looking directly along stacked doorway frames.
+- **Change:** move the entrance destination camera sideways within the entrance footprint and aim diagonally into the existing Family Table room. Room dimensions, door openings, stair geometry, neighborhood, assets and existing objects are unchanged.
+- **Regression coverage:** assert the camera stays inside the entrance bounds, its target is within the connected Family Table footprint, and its gaze is meaningfully off-axis.
+- **Cold-start check:** PASS. The v4.1 strategy, current branch, approved constraints, latest validation failure and next action were reconstructed from committed repository memory. Required files are present; JSON state parses. The check found a stale checkpoint reference, corrected in the accompanying memory checkpoint.
+- **Validation:** PENDING on the final PR branch commit. No visual pass is claimed until a fresh browser artifact is inspected.
+- **Scope:** No new decorations, dependencies, paid services, manual deployment or main merge.
+
+
+## Loop 099 — Reconcile entrance sightline test contract
+
+- **Observed:** workflow 39181779811 checked branch head 1d9f0cdb5d5bd8bb2e2081501e9cec15dea9d72e. Type-check passed; unit tests failed (131 passed, 2 failed across 22 test files). The existing camera-path suite still required the entrance target to remain centered on the Z axis and inside the vestibule bounds, directly contradicting the approved diagonal gaze into the connected Family Table. Production build and browser capture were skipped.
+- **Correction:** replace those obsolete expectations with explicit assertions that the camera stays inside the entrance, the focus lands inside Family Table, and the diagonal sightline crosses the shared doorway opening. All other room focus points remain constrained to their own footprints.
+- **Validation:** pending a fresh CI run. No visual result exists for this revision; the entrance and stair issues remain open.
+- **Scope:** no room geometry, decorations, assets, dependencies, merge or deployment.
+
+
+## Loop 100 — Bound browser-review camera holds
+
+- **Evidence:** visual artifact 12156503344 from workflow 39181992857 passed all source checks and the overall workflow, but the roof-stair-flight and roof-hatch-clear captures both timed out and saved the same stale upper-landing frame (routeProgress 27/56, camera position [0.249, 4.65, 0.923]). The roof/hatch views were therefore not actually captured.
+- **Cause assessment:** the camera is intentionally paused while a matched screenshot is captured. If cleanup fails to release a review hold, it can freeze later phase watchers. This is plausible, not yet proven from the report.
+- **Change:** give review-only holds a 50-second expiry (just beyond the 45-second screenshot bound), clear expired tokens in the animation loop, and record hold-state telemetry. Normal navigation is unaffected when the review flag is absent.
+- **Tests:** added unit coverage for active, expired, absent and invalid-deadline hold states.
+- **Validation:** pending new typecheck, full tests, build and browser capture. No visual pass claimed until new stair/hatch frames are inspected.
+- **Scope:** no architectural geometry, decorations, dependencies, main merge or deployment.
+
+
+## Loop 101 — Make review-hold expiry genuinely one-shot
+
+- **Evidence:** workflow 39182940594 failed its browser step after source gates passed (typecheck, 22 test files / 137 tests, production build, Chromium install). Artifact 12157625304 (SHA-256 f70e6f673979f213d1f3566d6877dc2c69b89ec55a9884c656f5a886490a7386) timed out on roof-stair-flight and roof-hatch-clear. Both fallback frames used the same upper-side landing position [0.925, 4.65, -2.98], progress 22/56, with one hold token and roughly 43.7 seconds remaining.
+- **Root cause:** the phase predicate refreshed one shared 50-second deadline every time the same token's match remained true. This could renew a stuck hold indefinitely. One shared deadline also couples independent screenshot phases.
+- **Correction:** store expiry per token and set it only on the token's first match (guarded by a matched-token list). HouseScene keeps only tokens whose own deadline is live; cleanup removes only its token/deadline. Browser report records per-token expiry.
+- **Tests:** replace global-deadline cases with per-token expiry tests, including one stale token expiring while another remains live.
+- **Validation:** pending a fresh run. Do not accept the stair/hatch walkthrough until screenshots 16 and 17 exist at true, distinct camera positions.
+- **Scope:** no architectural geometry or decor changes, dependencies, merge or deployment.
+
+
+## Loop 101a — Fix per-token helper type-check regression
+
+- **Observed:** workflow 39183973522 stopped at type-check with TS1128/TS1434 errors at src/house/cameraTiming.ts lines 41–47.
+- **Cause:** the scripted replacement changed the old helper signature but left its trailing legacy return/body block after the new function.
+- **Correction:** remove the orphaned suffix; intended per-token expiry logic is unchanged.
+- **Validation:** rerun type-check, unit tests, build and browser review on the updated candidate.
+
+
+## Loop 101b — Restore the helper's closing brace
+
+- **Observed:** workflow 39184079432 failed type-check at src/house/cameraTiming.ts(41,1) with TS1005, expected '}'.
+- **Cause:** the prior suffix-removal also removed the new helper's closing brace.
+- **Correction:** restore the function closure after the per-token filter. No behavioral change beyond completing the intended helper.
+- **Validation:** new source run required.
+
+
+## Loop 102 — Sequence camera phase captures instead of timing them concurrently
+
+- **Evidence:** workflow 39184178983 failed the browser step after typecheck, all tests, build and Chromium setup passed. Artifact 12157498087 (SHA-256 a53e368cd993b25a2cb61e18702396c10d3e78171fd86effd98b2d8716ad6cd5) saved 19 screenshots but still timed out on roof-stair-flight and roof-hatch-clear; images 16/17 were absent. The report showed the upper-side landing hold token at 45.3s remaining while later phase watchers timed out. The lower-landing/upper-passage screenshots remain visually obstructed.
+- **Root cause:** all phase watchers were started together, so their 90-second timers ran while an earlier phase held the camera for screenshot capture. Later watchers could time out just as the prior phase completed. Multiple tasks also attempted screenshots on one Playwright page concurrently.
+- **Correction:** start the first watcher before the route click; after each phase screenshot finishes, arm only the next watcher while the current token still holds the camera, then release the current token. The next matcher ignores an overlapping window until the prior token is removed. Each phase keeps its original timeout; no timeout is widened.
+- **Validation:** pending. Fresh browser evidence must show images 16 and 17 successfully captured at actual, distinct roof-stair/hatch positions. Stair camera/geometry defects remain open.
+- **Scope:** no house geometry, decorations, assets, paid services, merge or deployment.
+
+
+## Loop 103 — Smooth late-ascent turn and inward landing gaze
+
+- **Evidence:** workflow 39185169298 (head 29869009735dde78339acc5f5f1c19439d89f0be) passed type-check, 22 test files / 138 tests, build and Chromium. Artifact 12157699074 (SHA-256 a53e368cd993b25a2cb61e18702396c10d3e78171fd86effd98b2d8716ad6cd5) successfully captured all 21 screenshots, including real, distinct roof-stair and hatch-clear positions, with no runtime errors. The browser gate still failed because late-ascent clearance and upper-landing camera predicates were false.
+- **Visual root cause:** screenshot 13b showed a wall/fascia covering nearly all the frame as the camera turned abruptly from looking down the flight to facing toward the landing. Screenshot 14 shows a large wall on the bridge view; the side-lane gaze pointed outward (+X), contrary to the intended inward sightline toward the open stair shaft.
+- **Correction:** blend the last-tread look gradually over 1.6m, glance up/right while retaining a forward-along-flight Z component, and save the turn toward the hall for the open landing. Aim the side-lane camera inward (-X), and narrow the clearance capture to the last few treads so the report measures the intended pose.
+- **Tests:** add a path continuity check limiting yaw change between late treads, plus a clearance-pose check for moderate right/up/flight-directed gaze.
+- **Validation:** pending a fresh run and artifact inspection. No structural geometry, decorations or dependencies changed.
+
+
+## Loop 103a — Reconcile inward gaze and the full late-clearance band
+
+- **Evidence:** Loop 103 type-check passed but cameraPath.test.ts failed 8 assertions. Six reflected stale expectations that the upper-lane gaze must remain outward/neutral even though screenshot 14 showed the exterior wall blocking nearly half the frame. One was a real flaw: the new late-ascent upward blend began too late for every pose in the existing clearance band. The remaining heading-alignment failure occurred on a clearance/look-ahead pose.
+- **Correction:** align bridge tests with the intended bounded inward gaze (target X 0.2–0.6m toward the shaft) while still requiring forward +Z bridge focus and safe camera position. Start the easing 2.45m before the last tread, keep the blend active until 2cm before the flight endpoint, and use a shallow 0.20 vertical blend so the full near-top band clears the fascia without over-pitching.
+- **Validation:** pending. Keep route geometry and position-clearance checks intact. Browser predicates and real images must pass before acceptance.
+- **Scope:** camera path, tests, and phase rules only; no structural geometry, decor, new assets or dependencies.
+
+
+## Loop 103b — Match the route tests to the intentional clearance trajectory
+
+- **Evidence:** run 39186716661 reached tests after type-check passed. 137 tests passed and only two assertions failed. One demanded +Z gaze while the feet were still on the last stair treads, contradicting the newly smoothed route that intentionally keeps the stair flight ahead until the camera reaches the clear landing. The other was a tangent-alignment check at waypoint 22 with cosine 0.9747; it fell just outside the 0.98 bound because the test's exception condition began too late for the widened 2.45m look-ahead.
+- **Correction:** assert the final tread gaze remains along the flight (-Z), while the separate upper-landing test still explicitly requires the top landing to look forward into the bridge (+Z). Define the tangent-alignment exception from the actual late-ascent clearance band (position height and Z range), not from whether the resulting target already crosses a second upward-look threshold.
+- **Validation:** pending fresh typecheck, 139 tests, build and browser review.
+- **Scope:** regression test corrections only; no runtime or geometry changes.
+
+
+## Loop 104 — Retain the flight view and align the upper-bridge gaze
+
+- **Evidence:** workflow 39186902422, artifact 12158258421, SHA-256 2d392ab1cc39bb9613ec40fc8c2df8aafc8ee037f6f9cad5cec9842800b087b6. Typecheck, tests, and build passed; the browser captured all 21 frames, 14/14 room arrivals settled, no runtime errors and no mobile overflow. The browser gate still failed because `upperLandingAiming.looksAlongBridge=false`. Direction was [-0.339,-0.227,0.913], outside the permitted X band. Frame 13b remained mostly near-field wall, and frame 14 was aimed too far into the stair underside.
+- **Correction:** reduce the late-ascent lateral glance factor from 0.45 to 0.20 so the camera keeps the stair run in front through the last treads. Change the four side-lane camera hints from [-0.35,0.94] to [-0.08,0.99] for a much smaller inward glance that should stay aligned with the open bridge rather than looking directly at the stair underside.
+- **Tests:** bridge-gaze assertions require a bounded inward target offset of 0.02–0.20m, still keep the bridge target forward (+Z), and retain all camera position / route bounds and landing aim assertions.
+- **Validation:** pending fresh full CI and screenshot inspection. Do not claim acceptance unless both upper-landing aiming checks pass and images 13b/14 are visually clear.
+- **Scope:** camera path and regression tests only. No architecture, decorations, assets, or dependencies changed.
+
+
+## Loop 105 — Fix phase-window starvation and make screenshot validity explicit
+
+- **Evidence:** workflow 39187622415 / artifact 12158767554 passed typecheck, existing 139 tests, and build, but browser review timed out for lower-stair-clearance and then all following phases. The report had 13b/14/16/17 all at the final rooftop position [3.45,7.2,0.5], route 56/56, proving these were stale fallback frames rather than the requested camera phases.
+- **Root cause found in code review:** the lower-clearance window had been narrowed to y=[4.4,4.68], z=[-4.12,-3.84]. This is narrower than the older test's expected [0,4.65,-4.2] match and allows the moving camera to pass between samples. The phase timeout was 90 seconds per phase, so one missed capture cascaded into several minutes of stale captures.
+- **Correction:** restore a catchable sampled clearance band y=[4.25,4.93], z=[-4.38,-3.3]; cap each phase wait to 30 seconds by default; on a missed phase mark all downstream phases skipped with explicit statuses and fallback images; expose phaseCaptureResults and fail acceptance for any status other than matched. Include existing scripts phase tests in Vitest so rules are actually covered by npm test.
+- **Validation:** pending fresh typecheck, enlarged suite, build, and browser evidence. Do not use fallback frames to infer camera geometry.
+- **Scope:** visual-review instrumentation and phase-window test coverage only. No camera runtime logic, structural geometry, decorations, or dependencies changed.
+
+
+## Loop 105a — Fix newly activated roof-hatch phase test
+
+- **Evidence:** run 39190470096 correctly started executing the previously excluded scripts phase tests. Type-check passed; 144 tests passed and one failed: the roof-hatch phase test expected a camera at X=0.12m (still centered over the hatch) to be a valid roof-deck exit, while the actual phase rule requires X>0.9m after stepping sideways clear of the opening.
+- **Correction:** change only the positive fixture to X=1.05m, consistent with the phase rule and distinct negative tests for a camera above the opening or too near the hatch.
+- **Validation:** pending. Do not weaken the actual hatch-clear phase rule.
+
+
+## Loop 106 — Arm phase watchers only after route readiness
+
+- **Evidence:** Loop 105a run 39190695353 correctly failed fast and labeled fallback frames. Its first phase timed out while frame state still reported destination "family-table" and routeProgress "0/0" at [1,1.65,2.05]. Later fallback screenshots then advanced through the route (13b progress 3/56, 14 progress 19/56, 16 progress 27/56, 17 progress 43/56), proving the watcher was armed before the target's camera route became active. The descent phase similarly timed out at rooftop position with routeProgress 0/56 just as its route began.
+- **Correction:** start the first phase watcher only after the selector click and URL transition, then wait for canvas.dataset.destination to equal the requested room and routeProgress to show a populated path (for example 0/56). Add an exported pure readiness predicate and regression tests for destination mismatch, empty route and populated route.
+- **Validation:** pending fresh typecheck, 149-ish unit tests, build, and browser review. All phaseCaptureResults must match before any camera framing judgement.
+- **Scope:** browser-review harness and tests only; runtime camera and house geometry unchanged.
+
+
+## Loop 106a — Correct route-progress regex escaping
+
+- **Found before validation:** Loop 106 source generation emitted double backslashes in the regex literals in both the pure route-readiness helper and Playwright route readiness predicate. Those patterns would reject normal route progress strings such as 0/56.
+- **Correction:** use JavaScript regex literals matching digits, a literal slash, and the numeric route length.
+- **Validation:** pending; run the expanded unit suite and browser review on the complete checkpoint.
+
+
+## Loop 107 — Match broad stair/landing phases under slow rendering
+
+- **Evidence:** run 39191552660 / artifact 12160745173 passed type-check, the expanded 145-test suite, and build; browser failed only on phase-matching requirements. The first phase was timed out at route position [0.662,1.65,1.341], route 0/56; after fallback screenshots began, a real route sample appeared at [0,2.862,-1.924], progress 8/56. The existing lower-stair-midflight rule excluded that actual intermediate stair position (Y started at 3.04, Z ended at -2.1), indicating the window was overly narrow for software-rendered frame sampling. The upper-side-landing fallback reached [0.925,4.65,-3.368], progress 22/56, just outside its previous Z minimum -3.2.
+- **Correction:** broaden the lower-stair mid-flight window to X±0.25, Y 2.7–3.95, Z -3.4 to -1.2; broaden upper-side landing Z to -4.5 through -2.25. Use 100ms polling instead of RAF-only polling for both route readiness and phase matching. Give the midflight phase 90s and each following ascent/roof phase 60s (each still bounded, within the workflow's 15-minute job timeout).
+- **Tests:** require the previously observed midflight fallback position and the upper side-lane position to match their intended phases, while keeping the doorway/base and top landing distinct.
+- **Validation:** pending fresh test/build/browser run. Acceptance still requires every phaseCaptureResults entry matched, not a fallback/skipped screenshot.
+- **Scope:** test and browser-review harness only; no runtime camera or house geometry changed.
+
+
+## Loop 108 — Keep the renderer ticking during camera travel
+
+- **Evidence:** workflow 39192199546 on head 3c88cc91e8922f5a793d9e33e43206cbe0f2c21a passed type-check, the expanded unit suite and production build, but browser review failed. The lower-stair-midflight watcher timed out despite the reported 56-waypoint route; the fallback position was [0.989, 1.65, 2.027], routeProgress 0/56, walkSpeed 0.301. Only after fallback screenshots were requested did the reported camera move to routeProgress 4, 19, 26, 40 and 56. The descent phase also timed out, and only 13 of 14 room arrivals settled. These are invalid frames for evaluating the camera; they suggest the demand-driven renderer is not reliably advancing the path while the review waits.
+- **Correction:** use the already-computed scene transition state to switch the React Three Fiber canvas to continuous frame-loop mode while transitioning, then restore demand rendering when the camera settles. This preserves idle efficiency while allowing movement to progress independently of screenshot calls.
+- **Tests:** add a pure timing helper test: navigating => "always"; settled => "demand".
+- **Validation:** pending fresh full browser run. Require every phaseCaptureResults status to be matched, 14/14 room arrivals, no fallback/skipped phase, and actual distinct frame positions before judging camera framing.
+- **Scope:** frame-loop scheduling only; no camera vectors, room geometry, decorations, or dependencies changed.
+
+
+## Loop 109 — Reduce render cost during camera travel
+
+- **Evidence:** run39346813018 / artifact12232020376 passes typecheck, all unit tests and build, but browser review still fails. The midflight phase times out with position [0.659,1.65,1.335], progress0/56 and walkSpeed1.587 after the long wait; other frames only advance to progress8/56,22/56,29/56 and 46/56 during fallback screenshot writes. 13/14 arrivals settle. This is invalid phase evidence and points to an extremely starved render loop under the software renderer.
+- **Correction:** keep DPR at 1 during visualTransition, reduce the directional shadow map from 2048² to 1024² during motion, and set shadow-map autoUpdate=false while the camera moves. Trigger one shadow refresh when the transition state or camera visibility zone changes, and restore 2048², normal DPR and automatic shadow updates once settled. This targets the expensive static lighting work while preserving sharper idle views.
+- **Tests:** pure policy tests cover frame-loop mode, shadow auto-update mode and shadow map size.
+- **Validation:** pending fresh full review. Require every phase matched and 14/14 arrivals settled before evaluating camera aim.
+- **Scope:** performance/runtime only; no geometry, camera vectors, decorations, assets or dependencies changed.

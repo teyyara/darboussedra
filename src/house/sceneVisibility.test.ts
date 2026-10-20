@@ -17,8 +17,32 @@ describe("level-aware house rendering", () => {
     expect(getCameraZoneForPosition({x: 0, y: 1.65, z: outsideFace + 0.12})).toBe("outside");
     expect(getCameraZoneForPosition({x: 0, y: 1.65, z: frontZ - 0.2})).toBe("ground");
     expect(getCameraZoneForPosition({x: 0, y: HOUSE_LAYOUT.upperY + 1.65, z: 0})).toBe("upper");
-    expect(getCameraZoneForPosition({x: 0, y: HOUSE_LAYOUT.roofY + 1.2, z: 0})).toBe("roof");
+    // At z=0 the camera is still above the extended hatch; this point clears its front edge.
+    expect(getCameraZoneForPosition({x: 0, y: HOUSE_LAYOUT.roofY + 1.2, z: 1.7})).toBe("roof");
     expect(getCameraZoneForPosition({x: 0, y: HOUSE_LAYOUT.roofY + 0.95, z: 0})).toBe("upper");
+  });
+
+  it("classifies the upper end of the lower stair flight from the actual tread height", () => {
+    const flight = HOUSE_LAYOUT.stairs.groundFlight;
+    const index = 13;
+    const stepY = (flight.to[1] - flight.from[1]) / flight.steps;
+    const stepZ = (flight.to[2] - flight.from[2]) / flight.steps;
+    const onUpperApproach = {
+      x: flight.from[0],
+      y: flight.from[1] + stepY * (index + 1) + 1.51,
+      z: flight.from[2] + stepZ * (index + 0.5),
+    };
+    const onMidFlight = {
+      x: flight.from[0],
+      y: flight.from[1] + stepY * 9 + 1.51,
+      z: flight.from[2] + stepZ * 8.5,
+    };
+
+    // A normal 1.65m offset underestimates the floor at the top treads by 14cm.
+    // The camera should switch to the upper visibility zone on the actual upper approach.
+    expect(onUpperApproach.y - 1.65).toBeLessThan(HOUSE_LAYOUT.upperY - 0.25);
+    expect(getCameraZoneForPosition(onUpperApproach)).toBe("upper");
+    expect(getCameraZoneForPosition(onMidFlight)).toBe("ground");
   });
 
   it("keeps the interior visible until the camera clears the roof hatch horizontally", () => {
@@ -39,13 +63,23 @@ describe("level-aware house rendering", () => {
     expect(getCameraZoneForPosition(onDeckBesideHatch)).toBe("roof");
   });
 
-  it("shows only the ground storey for a settled ground-floor room", () => {
+  it("shows the stair flight and head landing from the family-table stair-hall doorway only", () => {
     const visibility = getHouseSceneVisibility("family-table", "family-table", false);
     expect(visibility.showGroundRooms).toBe(true);
     expect(visibility.showUpperRooms).toBe(false);
-    expect(visibility.showUpperCirculation).toBe(false);
+    expect(visibility.showUpperCirculation).toBe(true);
+    expect(visibility.showGroundStairs).toBe(true);
+    expect(visibility.showRoofStairs).toBe(false);
     expect(visibility.showRoofDeck).toBe(false);
     expect(visibility.showGarden).toBe(false);
+  });
+
+  it("does not reveal stairwell geometry in settled ground rooms without a stair-hall opening", () => {
+    for (const slug of ["entrance", "living-room", "kitchen", "library", "pets-corner", "prayer-room"] as const) {
+      const visibility = getHouseSceneVisibility(slug, slug, false);
+      expect(visibility.showGroundStairs, slug + " should not reveal the ground stairs").toBe(false);
+      expect(visibility.showUpperCirculation, slug + " should not reveal upper circulation").toBe(false);
+    }
   });
 
   it("keeps the upper landing visible without exposing stair flights inside a private-room view", () => {

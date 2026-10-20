@@ -19,6 +19,7 @@ const RESERVED_WALLS_BY_ROOM: Readonly<Record<string, readonly WallSide[]>> = {
   kitchen: ["back"], // fridge and tall appliance cluster
   library: ["left"], // full-height shelving
   "living-room": ["back"], // the shared library doorway makes this wall read as a corridor, cropping art at the frame edge
+  "prayer-room": ["front"], // keep the entry opening clear and avoid placing art beside the destination camera
 };
 
 function wallPosition(room: Room, side: WallSide, along: number, y: number): Vector3Tuple {
@@ -66,7 +67,7 @@ export function getRoomWallDecor(room: Room): RoomWallDecor[] {
 
   const rearWindowWall = room.scenePosition[2] - room.footprint[1] / 2 <= -3.8;
   const reservedWalls = RESERVED_WALLS_BY_ROOM[room.slug] ?? [];
-  const y = HOUSE_LAYOUT.floorThickness + 1.36;
+  const y = HOUSE_LAYOUT.floorThickness + (room.slug === "prayer-room" ? 1.21 : 1.36);
   const candidates = SIDES.flatMap((side) => {
     if ((rearWindowWall && side === "back") || reservedWalls.includes(side)) return [];
     return getRoomWallRuns(room, side)
