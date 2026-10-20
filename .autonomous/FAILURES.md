@@ -66,3 +66,9 @@ Run39190695353 / artifact12159956771. First ascent phase timed out with destinat
 
 ## F-014 — Camera phase windows too narrow for slow rendered sampling
 Run39191552660 / artifact12160745173: source gates pass (145 tests, build), browser phase 1 times out and later images are explicitly skipped. The initial route readiness is correct; the first fallback has destination rooftop and route 0/56. During subsequent fallback screenshot captures, the route reaches [0,2.862,-1.924] at progress8/56 (outside the old y≥3.04,z≤-2.1 window) and [0.925,4.65,-3.368] at progress22/56 (outside prior upper landing z>-3.2). Loop107 widens the sampled ranges, uses 100ms polling, and lengthens only the relevant waits. Validation pending; do not resolve until actual phase matches.
+
+
+## F-011 — Camera route stalls while demand loop waits
+Class RENDER LOOP / BROWSER HARNESS; Loop108 mitigation committed, validation pending.
+Run39192199546/artifact12160731750: typecheck/tests/build pass but first target phase timed out; route was at [0.989,1.65,2.027], progress0/56, speed0.301. Later fallbacks advanced to 4,19,26,40,56. Upper-clearance and roof phases were skipped; descent phase timed out; 13/14 arrivals settled. Do not accept these frames.
+Loop108 uses always frameloop while visualTransition is active and demand at rest, with pure test. Revalidate fully before resolution.

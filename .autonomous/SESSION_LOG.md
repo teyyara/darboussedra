@@ -106,3 +106,9 @@
 - Run39191552660 / artifact12160745173: typecheck, expanded 145 tests and build passed; browser gate failed because lower-stair-midflight timed out; downstream ascent/roof phases correctly marked skipped.
 - Fallback report had destination rooftop and a populated route, so Loop106 route readiness is working. The old phase window excluded the observed midflight [0,2.862,-1.924] at progress8/56. The upper side-lane pose [0.925,4.65,-3.368] at progress22/56 was just outside its old Z lower bound.
 - Source ff06bf663adff19640fd5b967deda0e2d499fbd8 widens both windows, changes waits to 100ms polling and gives slow rendered zones longer bounded timeouts. Fresh validation pending.
+
+
+## 2026-10-20 — Loop108 / render continuously while navigating
+- Run39192199546 (head 3c88cc91e8922f5a793d9e33e43206cbe0f2c21a) passed typecheck, expanded unit tests and build but failed browser review.
+- Lower-stair-midflight timed out with fallback frame [0.989,1.65,2.027], routeProgress0/56, speed0.301; subsequent fallback frames showed progress4,19,26,40,56. Downstream upper clearance and roof phases were skipped, descent timed out, and 13/14 arrivals settled.
+- This artifact cannot validate camera framing. Loop108 commit 2d1a43a3d92315add7129b4211e5af1de9af4b50 switches the Canvas to always-render only while visualTransition is active and back to demand at rest; unit test added. Fresh validation pending.

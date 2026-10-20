@@ -111,3 +111,11 @@ Latest candidate visual quality is not certified; a preview Ready status may ref
 - Run 39191552660: https://github.com/teyyara/darboussedra/actions/runs/39191552660
 - Artifact 12160745173: type-check, tests and build passed; browser phase status invalid. First ascent phase timed out; rest were skipped. Fallback positions show active route but missed phase windows.
 - Source commit ff06bf663adff19640fd5b967deda0e2d499fbd8 widens lower midflight and upper side landing windows, uses 100ms polling, and longer bounded phase waits. Fresh run/artifact required.
+
+
+## Loop107 invalid browser evidence / Loop108
+- Run39192199546: https://github.com/teyyara/darboussedra/actions/runs/39192199546
+- Artifact12160731750: https://github.com/teyyara/darboussedra/actions/runs/39192199546/artifacts/12160731750
+- Source gates passed; phase timeout on lower-stair-midflight; four later ascent/roof phases skipped; descent phase timed out; 13/14 arrivals.
+- Frames are invalid for framing assessment: starting pose [0.989,1.65,2.027], progress0/56 then fallback screenshots show 4/56,19/56,26/56,40/56,56/56.
+- Loop108 commit 2d1a43a3d92315add7129b4211e5af1de9af4b50 switches render loop to always while navigating and demand when settled.

@@ -1,24 +1,23 @@
 # Handoff — Dar Boussedra
 
-**STATUS: CHECKPOINTED / IN PROGRESS. Loop107 phase-window improvement committed; validation pending.**
+**STATUS: CHECKPOINTED / IN PROGRESS. Loop108 render-loop fix committed; validation pending.**
 
 ## Candidate
 - Branch: fix/loop-064-moroccan-exterior-and-layout
-- Source commit: ff06bf663adff19640fd5b967deda0e2d499fbd8
+- Loop108 source commit: 2d1a43a3d92315add7129b4211e5af1de9af4b50
 - PR #7: https://github.com/teyyara/darboussedra/pull/7
-- Main stays unchanged; AEOS v4.1 remains canonical.
+- Main unchanged; AEOS v4.1 remains canonical.
 
-## Loop106a evidence
-Workflow 39191552660: https://github.com/teyyara/darboussedra/actions/runs/39191552660
-Artifact 12160745173: https://github.com/teyyara/darboussedra/actions/runs/39191552660/artifacts/12160745173
-Type-check, expanded 145-test suite and build passed. Browser gate failed because the midflight capture timed out; later screenshots were explicitly skipped. Those frames are not valid camera evidence.
-Actual reported fallback samples: phase 13 start [0.662,1.65,1.341], progress 0/56; position [0,2.862,-1.924], progress 8/56; upper side-lane [0.925,4.65,-3.368], progress 22/56. The latter two positions demonstrate the old phase windows excluded valid positions on the route.
+## Latest validation baseline
+Workflow 39192199546: https://github.com/teyyara/darboussedra/actions/runs/39192199546
+Artifact 12160731750: https://github.com/teyyara/darboussedra/actions/runs/39192199546/artifacts/12160731750
+Typecheck, expanded tests and build passed, but browser review failed. The first midflight capture timed out with a 56-waypoint route at [0.989,1.65,2.027], progress 0/56 and walkSpeed 0.301. Later fallback screenshots showed progress 4, 19, 26, 40 and 56. Clearance/upper-landing/roof-flight/hatch phases were skipped, descent timed out, and only 13/14 arrivals settled. These are invalid camera-framing screenshots.
 
-## Loop107 correction
-Source commit ff06bf663adff19640fd5b967deda0e2d499fbd8 broadens the midflight camera window to X [-0.25,0.25], Y [2.7,3.95], Z [-3.4,-1.2] and broadens the upper side-lane Z window to [-4.5,-2.25]. Both route readiness and phase matching now use 100ms polling rather than RAF-only polling. Timeout values: 90 seconds for lower midflight and 60 seconds for each subsequent ascent/roof phase, still bounded by the 15-minute workflow job limit. Tests assert the observed positions fit the intended windows.
+## Loop108 correction
+Commit 2d1a43a3d92315add7129b4211e5af1de9af4b50 changes the Canvas frame loop from fixed demand-only to a mode based on the existing visualTransition state: continuous rendering while transitioning, demand rendering after settle. Unit coverage checks "always" while navigating and "demand" when idle. No camera path, geometry, decor, or dependency changed.
 
 ## Exact next action
-Run full source/script tests, build and browser review. Require every phaseCaptureResults entry to be matched; no timeout/skip. Confirm screenshot positions/progress match their intended phase before evaluating the camera framing.
+Validate on the final branch head. Require typecheck, all tests, build, and a browser report where every phaseCaptureResults item is matched, 14/14 arrivals settle, runtimeErrors is empty, mobile overflow is false, and images 13/13b/14/16/17 reflect their named camera positions/progress. Do not judge camera vectors from fallback frames.
 
 ## Constraints
-No decor, no paid dependencies, no main merge while acceptance is failing/unknown, no manual Vercel deployment.
+No decorations, no new dependencies, no main merge while visual acceptance is unknown/failing, and no manual Vercel deployment.
