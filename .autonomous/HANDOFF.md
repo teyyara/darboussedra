@@ -1,23 +1,28 @@
 # Handoff — Dar Boussedra
 
-**STATUS: CHECKPOINTED / IN PROGRESS. Loop108 render-loop fix committed; validation pending.**
+**STATUS: CHECKPOINTED / IN PROGRESS. Loop109 render-cost optimization committed; validation pending.**
 
 ## Candidate
 - Branch: fix/loop-064-moroccan-exterior-and-layout
-- Loop108 source commit: 2d1a43a3d92315add7129b4211e5af1de9af4b50
+- Loop109 source commit: 46503a0e292e7389b5e8e47916ba2e08b470e3a2
 - PR #7: https://github.com/teyyara/darboussedra/pull/7
 - Main unchanged; AEOS v4.1 remains canonical.
 
-## Latest validation baseline
-Workflow 39192199546: https://github.com/teyyara/darboussedra/actions/runs/39192199546
-Artifact 12160731750: https://github.com/teyyara/darboussedra/actions/runs/39192199546/artifacts/12160731750
-Typecheck, expanded tests and build passed, but browser review failed. The first midflight capture timed out with a 56-waypoint route at [0.989,1.65,2.027], progress 0/56 and walkSpeed 0.301. Later fallback screenshots showed progress 4, 19, 26, 40 and 56. Clearance/upper-landing/roof-flight/hatch phases were skipped, descent timed out, and only 13/14 arrivals settled. These are invalid camera-framing screenshots.
+## Loop108 evidence
+Workflow 39346813018: https://github.com/teyyara/darboussedra/actions/runs/39346813018
+Artifact 12232020376: https://github.com/teyyara/darboussedra/actions/runs/39346813018/artifacts/12232020376
+SHA-256: 98dca1d627dc715e130d2c6410ca472d8674a0f881052439a7b6a0837650ad1b
+Typecheck, expanded tests, build and Chromium passed. Browser review failed: the lower-stair-midflight phase timed out; clearance, upper side-lane, roof flight and hatch phases were skipped; descent timed out; 13/14 arrivals settled. Fallback frame at timeout [0.659,1.65,1.335], routeProgress 0/56, speed1.587, remaining distance28.329, distance1.534 to first waypoint. Later fallback frames recorded 8/56, 22/56, 29/56, 46/56, then arrival56/56. The frames are not valid target-phase evidence.
 
-## Loop108 correction
-Commit 2d1a43a3d92315add7129b4211e5af1de9af4b50 changes the Canvas frame loop from fixed demand-only to a mode based on the existing visualTransition state: continuous rendering while transitioning, demand rendering after settle. Unit coverage checks "always" while navigating and "demand" when idle. No camera path, geometry, decor, or dependency changed.
+## Loop109 correction
+Commit 46503a0e292e7389b5e8e47916ba2e08b470e3a2 targets renderer cost rather than changing camera geometry:
+- DPR becomes 1 during navigation; higher device-pixel ratio is restored when settled.
+- Directional shadow map drops from 2048² to 1024² during motion.
+- Shadow-map autoUpdate is disabled while the camera travels, and the shadow map is refreshed when the transition or camera visibility zone changes. Normal automatic updates resume at rest.
+- Pure unit tests verify the shadow and frame-loop policy.
 
 ## Exact next action
-Validate on the final branch head. Require typecheck, all tests, build, and a browser report where every phaseCaptureResults item is matched, 14/14 arrivals settle, runtimeErrors is empty, mobile overflow is false, and images 13/13b/14/16/17 reflect their named camera positions/progress. Do not judge camera vectors from fallback frames.
+Run full CI on the final memory-aware head. Require all source gates and then a browser report with every phase marked matched, all 14 arrivals settled, no runtime errors, mobile overflow false and valid frames 13/13b/14/16/17 at their actual positions/progress. Do not judge framing from a fallback frame.
 
 ## Constraints
-No decorations, no new dependencies, no main merge while visual acceptance is unknown/failing, and no manual Vercel deployment.
+No decoration, new dependency, main merge while validation is failing/unknown, or manual Vercel deployment.

@@ -3,10 +3,10 @@
   "strategy_version": "4.1",
   "project_status": "IN_PROGRESS",
   "current_phase": "STAIR_TRAVERSAL_AND_VISUAL_VALIDATION",
-  "current_goal": "Validate continuous render-loop mode during camera travel, so browser phase frames correspond to actual traversal poses.",
+  "current_goal": "Validate lower-cost rendering during camera navigation so all browser review phase frames are captured from actual traversal, not fallback screenshots.",
   "current_candidate_branch": "fix/loop-064-moroccan-exterior-and-layout",
-  "current_candidate_commit": "2d1a43a3d92315add7129b4211e5af1de9af4b50",
-  "last_checkpoint_commit": "2d1a43a3d92315add7129b4211e5af1de9af4b50",
+  "current_candidate_commit": "46503a0e292e7389b5e8e47916ba2e08b470e3a2",
+  "last_checkpoint_commit": "46503a0e292e7389b5e8e47916ba2e08b470e3a2",
   "last_known_good_commit": "e06af00a049eb72b173295438bbeb8e384c6fef5",
   "last_known_good_release": null,
   "active_operation_id": null,
@@ -52,30 +52,33 @@
     "Artifact 12160745173 showed route readiness was no longer the cause: the first fallback had destination rooftop, route progress 0/56. Later fallback positions revealed a real midflight point [0,2.862,-1.924] at progress 8/56 and upper-side-lane point [0.925,4.65,-3.368] at progress 22/56. The former was outside the old narrow midflight window and the latter just outside the old landing Z window.",
     "Loop 107 source commit broadens these two phase windows around actual observed positions, uses 100ms polling for phase and route readiness predicates, gives lower midflight 90s and each following ascent/roof phase 60s; all waits remain bounded by workflow 15-minute limit.",
     "Loop107 run 39192199546 (head 3c88cc91e8922f5a793d9e33e43206cbe0f2c21a): typecheck, expanded tests and build passed. Browser failed because lower-stair-midflight timed out on a populated 56-waypoint route. Fallback position was [0.989,1.65,2.027], progress0/56, speed0.301; later fallback screenshots recorded progress4, 19, 26, 40 and 56. Only 13/14 room arrivals settled; frames are invalid for judging camera framing.",
-    "Loop108 source commit created: switch React Three Fiber Canvas to always rendering only while the existing visualTransition state is active, then back to demand rendering when settled. A unit test covers the two frame-loop modes."
+    "Loop108 source commit created: switch React Three Fiber Canvas to always rendering only while the existing visualTransition state is active, then back to demand rendering when settled. A unit test covers the two frame-loop modes.",
+    "Loop108 run39346813018 / artifact12232020376 (SHA-256 98dca1d627dc715e130d2c6410ca472d8674a0f881052439a7b6a0837650ad1b): typecheck, expanded unit tests, build and Chromium passed, but browser review failed. lower-stair-midflight timed out; downstream clearance, upper landing, roof flight and hatch phases were skipped; descent also timed out. Only 13/14 arrivals settled.",
+    "Loop108 report frame after timeout showed [0.659,1.65,1.335], progress0/56, speed1.587, remaining distance28.329 and distance1.534 to the first waypoint. Later fallback captures showed progress8,22,29,46 and final56; these are not valid phase captures.",
+    "Loop109 source commit created: DPR drops to1 while visualTransition is active; directional shadow map size drops 2048 to1024; shadow map autoUpdate is disabled while camera moves and explicitly refreshed at transition or zone changes; full idle quality restored when settled. Tests assert the performance policy."
   ],
   "pending_work": [
-    "Validate Loop108 on exact branch head with typecheck, full unit tests, production build and Chromium review.",
-    "Require every phaseCaptureResults status matched; no timeout or skipped entries; all 14/14 room arrivals settled; no runtime errors and no mobile overflow.",
-    "Confirm frame13 actual midflight, 13b upper-tread clearance, 14 upper side lane, 16 roof stair, 17 past hatch; all have correct, distinct camera locations/progress.",
-    "Only after valid captures, evaluate actual camera framing and determine whether physical wall/fascia changes are still necessary.",
-    "Then revisit entrance framing and rendering readiness/pop-in."
+    "Validate Loop109 at the final PR head: typecheck, all tests, build and browser review.",
+    "Require every phaseCaptureResults status matched, no timeout/skipped/fallback, 14/14 arrivals, no runtime errors and no mobile overflow.",
+    "Verify frames 13/13b/14/16/17 show correct distinct positions and progress; only then evaluate camera aim and visual occlusion.",
+    "If navigation still stalls, instrument frame timestamps and frame deltas and reduce/segment expensive geometry/material work next.",
+    "Then revisit entrance framing and pop-in."
   ],
   "known_blockers": [
-    "Run39192199546/artifact12160731750 failed browser review. First midflight phase timed out; clearance, upper side-lane, roof-flight and hatch phases were skipped; descent phase timed out. Only 13/14 arrivals settled.",
-    "First fallback frame was [0.989,1.65,2.027], progress0/56, walkSpeed0.301. Later fallback screenshot writes recorded progress4,19,26,40,56. This suggests a rendering/animation scheduling issue; those frames are not target-phase evidence.",
-    "Loop108 changes Canvas frameloop to always only while visualTransition is active and demand when settled; fresh validation pending."
+    "Run39346813018 / artifact12232020376 failed browser phase gate. Only 13/14 arrivals settled. First midflight phase timed out, downstream clearance/upper-landing/roof-flight/hatch phases skipped, descent timed out.",
+    "Captured fallback telemetry: first phase [0.659,1.65,1.335], progress0/56, walkSpeed1.587, remainingPathDistance28.329, currentWaypointDistance1.534; later fallbacks 8/56,22/56,29/56,46/56 and arrival56/56. These should not be used to accept camera framing.",
+    "Loop109 performance change is not yet validated; avoid geometry changes until the route phases are sampled correctly."
   ],
   "latest_validation_status": "NOT_RUN",
   "latest_validation": {
-    "candidate_source_commit": "2d1a43a3d92315add7129b4211e5af1de9af4b50",
+    "candidate_source_commit": "46503a0e292e7389b5e8e47916ba2e08b470e3a2",
     "source_checks": "PENDING",
     "browser_review": "PENDING",
     "result": "NOT_RUN"
   },
   "latest_release_status": "NOT_RELEASED",
-  "next_action": "Inspect Foundation checks against final memory-aware branch head. Source gates first, then require every camera phase matched and 14/14 arrivals before evaluating screenshots.",
-  "updated_at": "2026-10-20T00:20:00Z",
+  "next_action": "Inspect Foundation checks for final branch head. Source gates first; then require every phaseCaptureResults matched and all 14/14 arrivals before checking camera framing.",
+  "updated_at": "2026-10-20T00:26:00Z",
   "previous_candidate_validation_status": "FAIL",
   "previous_candidate_validation": {
     "workflow_run": 39184178983,

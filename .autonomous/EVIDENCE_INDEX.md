@@ -119,3 +119,12 @@ Latest candidate visual quality is not certified; a preview Ready status may ref
 - Source gates passed; phase timeout on lower-stair-midflight; four later ascent/roof phases skipped; descent phase timed out; 13/14 arrivals.
 - Frames are invalid for framing assessment: starting pose [0.989,1.65,2.027], progress0/56 then fallback screenshots show 4/56,19/56,26/56,40/56,56/56.
 - Loop108 commit 2d1a43a3d92315add7129b4211e5af1de9af4b50 switches render loop to always while navigating and demand when settled.
+
+
+## Loop108 baseline / Loop109
+- Workflow 39346813018: https://github.com/teyyara/darboussedra/actions/runs/39346813018
+- Artifact 12232020376: https://github.com/teyyara/darboussedra/actions/runs/39346813018/artifacts/12232020376
+- SHA-256: 98dca1d627dc715e130d2c6410ca472d8674a0f881052439a7b6a0837650ad1b
+- Source gates passed; browser failed: midflight and descent phase timeouts, four skipped phases, 13/14 arrivals.
+- First fallback frame [0.659,1.65,1.335] at 0/56 with 1.534m to first waypoint; later fallback positions advanced through 8/56,22/56,29/56,46/56 and 56/56. This is not acceptable framing evidence.
+- Loop109 commit 46503a0e292e7389b5e8e47916ba2e08b470e3a2 adds dynamic DPR and shadow update policy; validate fresh artifact.

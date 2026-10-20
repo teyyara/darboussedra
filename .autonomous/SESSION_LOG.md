@@ -112,3 +112,9 @@
 - Run39192199546 (head 3c88cc91e8922f5a793d9e33e43206cbe0f2c21a) passed typecheck, expanded unit tests and build but failed browser review.
 - Lower-stair-midflight timed out with fallback frame [0.989,1.65,2.027], routeProgress0/56, speed0.301; subsequent fallback frames showed progress4,19,26,40,56. Downstream upper clearance and roof phases were skipped, descent timed out, and 13/14 arrivals settled.
 - This artifact cannot validate camera framing. Loop108 commit 2d1a43a3d92315add7129b4211e5af1de9af4b50 switches the Canvas to always-render only while visualTransition is active and back to demand at rest; unit test added. Fresh validation pending.
+
+
+## 2026-10-20 — Loop109 / lower render cost while travelling
+- Run39346813018 / artifact12232020376, SHA-256 98dca1d627dc715e130d2c6410ca472d8674a0f881052439a7b6a0837650ad1b: typecheck/tests/build/Chromium pass; browser review failed on phase sampling. Midflight and descent timed out, four downstream phases skipped, only 13/14 arrivals.
+- The first fallback frame showed [0.659,1.65,1.335], progress0/56 and only 1.534m to the first waypoint after a 90s phase wait; later fallback images showed progress8/56,22/56,29/56,46/56 and final arrival. These are invalid phase frames.
+- Loop109 source commit 46503a0e292e7389b5e8e47916ba2e08b470e3a2 lowers DPR and shadow map resolution during travel, freezes shadow-map regeneration per frame with one refresh at zone/transition changes, restores normal idle settings. Unit tests added; fresh full validation pending.

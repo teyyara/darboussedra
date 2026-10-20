@@ -72,3 +72,9 @@ Run39191552660 / artifact12160745173: source gates pass (145 tests, build), brow
 Class RENDER LOOP / BROWSER HARNESS; Loop108 mitigation committed, validation pending.
 Run39192199546/artifact12160731750: typecheck/tests/build pass but first target phase timed out; route was at [0.989,1.65,2.027], progress0/56, speed0.301. Later fallbacks advanced to 4,19,26,40,56. Upper-clearance and roof phases were skipped; descent phase timed out; 13/14 arrivals settled. Do not accept these frames.
 Loop108 uses always frameloop while visualTransition is active and demand at rest, with pure test. Revalidate fully before resolution.
+
+
+## F-011 — Camera route still starved during demand-render review
+Class RENDER PERFORMANCE / BROWSER VALIDATION; Loop108 mitigation insufficient; Loop109 in validation.
+Run39346813018/artifact12232020376. Source tests/build pass, but phase capture times out at [0.659,1.65,1.335], progress0/56, distance1.534m from the first waypoint. Downstream phases skipped; descent phase timed out; 13/14 arrivals. Frames remain invalid evidence.
+Loop108 enabled always loop during transitions but only partial progress appeared before timeout. Loop109 further reduces motion cost: DPR1, 1024² shadow map, shadow autoUpdate false during motion with explicit refresh on zone/transition changes, restore normal idle quality. Revalidate before resolution.

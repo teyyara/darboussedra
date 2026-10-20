@@ -1,11 +1,10 @@
 # Memory Validation
 
-## Canonical strategy/state
-- AEOS v4.1 is retained in .autonomous/STRATEGY.md.
-- .autonomous/STATE.json is the canonical current project state. Legacy .aeos/state.json is historical.
-- Cold-start recovery previously passed.
+## Canonical strategy
+- AEOS v4.1 retained in .autonomous/STRATEGY.md.
+- .autonomous/STATE.json is current project state; .aeos/state.json is a historical snapshot.
 
-## Loop107 / Loop108
-- Run39192199546 / artifact12160731750: source gates passed; browser failed with first phase timeout and four skipped phase captures; descent also timed out; only 13/14 arrivals settled.
-- Fallback position at first phase timeout was [0.989,1.65,2.027], progress0/56, speed0.301; later fallbacks recorded progress4,19,26,40,56. These are not valid target-phase images.
-- Loop108 source commit 2d1a43a3d92315add7129b4211e5af1de9af4b50 switches frameloop to always during transitions and demand when settled. Fresh full validation pending.
+## Loop108 and Loop109
+- Run39346813018/artifact12232020376: source gates passed; browser review failed on route-phase timeouts/skips and 13/14 arrivals. Artifact SHA-256 98dca1d627dc715e130d2c6410ca472d8674a0f881052439a7b6a0837650ad1b.
+- Loop108 always-render mode during transition showed some movement but did not sufficiently advance through the first phase; fallback screenshot writes then advanced the route. Camera framing is not accepted.
+- Loop109 commit 46503a0e292e7389b5e8e47916ba2e08b470e3a2 switches to DPR1, 1024² shadow map and non-auto-updating shadows while moving, refreshes shadow map at state/zone changes, and restores normal idle quality. Fresh validation pending.
