@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import {
   getCameraFrameDeltas,
   getCameraFrameLoopMode,
+  shouldAutoUpdateShadowMap,
+  getDirectionalShadowMapSize,
   MAX_CAMERA_MOVEMENT_DELTA_SECONDS,
   MAX_CAMERA_ROTATION_DELTA_SECONDS,
   MAX_VISUAL_REVIEW_HOLD_MS,
@@ -12,6 +14,13 @@ describe("camera movement timing", () => {
   it("renders continuously during camera navigation and idles on demand", () => {
     expect(getCameraFrameLoopMode(true)).toBe("always");
     expect(getCameraFrameLoopMode(false)).toBe("demand");
+  });
+
+  it("caches shadow maps and lowers their resolution only while travelling", () => {
+    expect(shouldAutoUpdateShadowMap(true)).toBe(false);
+    expect(shouldAutoUpdateShadowMap(false)).toBe(true);
+    expect(getDirectionalShadowMapSize(true)).toBe(1024);
+    expect(getDirectionalShadowMapSize(false)).toBe(2048);
   });
 
   it("preserves normal frame timing at interactive frame rates", () => {

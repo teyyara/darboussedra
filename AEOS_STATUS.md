@@ -1088,3 +1088,12 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 - **Tests:** add a pure timing helper test: navigating => "always"; settled => "demand".
 - **Validation:** pending fresh full browser run. Require every phaseCaptureResults status to be matched, 14/14 room arrivals, no fallback/skipped phase, and actual distinct frame positions before judging camera framing.
 - **Scope:** frame-loop scheduling only; no camera vectors, room geometry, decorations, or dependencies changed.
+
+
+## Loop 109 — Reduce render cost during camera travel
+
+- **Evidence:** run39346813018 / artifact12232020376 passes typecheck, all unit tests and build, but browser review still fails. The midflight phase times out with position [0.659,1.65,1.335], progress0/56 and walkSpeed1.587 after the long wait; other frames only advance to progress8/56,22/56,29/56 and 46/56 during fallback screenshot writes. 13/14 arrivals settle. This is invalid phase evidence and points to an extremely starved render loop under the software renderer.
+- **Correction:** keep DPR at 1 during visualTransition, reduce the directional shadow map from 2048² to 1024² during motion, and set shadow-map autoUpdate=false while the camera moves. Trigger one shadow refresh when the transition state or camera visibility zone changes, and restore 2048², normal DPR and automatic shadow updates once settled. This targets the expensive static lighting work while preserving sharper idle views.
+- **Tests:** pure policy tests cover frame-loop mode, shadow auto-update mode and shadow map size.
+- **Validation:** pending fresh full review. Require every phase matched and 14/14 arrivals settled before evaluating camera aim.
+- **Scope:** performance/runtime only; no geometry, camera vectors, decorations, assets or dependencies changed.

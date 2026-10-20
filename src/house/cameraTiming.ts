@@ -30,6 +30,16 @@ export function getCameraFrameLoopMode(isNavigating: boolean): "always" | "deman
   return isNavigating ? "always" : "demand";
 }
 
+/** Keep expensive shadow-map regeneration out of each moving-camera frame. */
+export function shouldAutoUpdateShadowMap(isNavigating: boolean): boolean {
+  return !isNavigating;
+}
+
+/** Lower shadow-map cost during motion; restore crisp shadows after arrival. */
+export function getDirectionalShadowMapSize(isNavigating: boolean): 1024 | 2048 {
+  return isNavigating ? 1024 : 2048;
+}
+
 /**
  * Return only holds whose own deadline remains live. Deadlines are per token so
  * a later screenshot cannot renew an older screenshot's stuck hold.

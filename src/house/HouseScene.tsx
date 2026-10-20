@@ -18,7 +18,7 @@ import { ROOF_SEATING_RUG, ROOF_TEA_STOOLS, ROOF_TEA_TABLE } from "./roofTerrace
 import { getRoofDeckTileJoints } from "./roofDeckTiles";
 import { getStructuralFloorPanels } from "./structuralFloors";
 import { getRoofHatchGuardRails } from "./roofHatchRails";
-import { getCameraFrameDeltas, getActiveVisualReviewHoldTokens, getCameraFrameLoopMode } from "./cameraTiming";
+import { getCameraFrameDeltas, getActiveVisualReviewHoldTokens, getCameraFrameLoopMode, shouldAutoUpdateShadowMap, getDirectionalShadowMapSize } from "./cameraTiming";
 import { RealisticMaterialPass } from "./realisticMaterials";
 import { getCameraZoneForPosition, getHouseSceneVisibility, shouldRenderInteriorPerimeterShell, type CameraZone } from "./sceneVisibility";
 import {
@@ -1329,6 +1329,38 @@ function HouseArchitecture({ location, visualLocation, transitioning, exteriorSh
   </>;
 }
 
+/**
+ * Walking changes the camera every frame but not most scene geometry. Cache the
+ * static shadow map during travel; refresh it when travel/visibility zones change,
+ * then resume normal shadow-map updates at rest.
+ */
+function ShadowMapMotionPolicy({ transitioning, cameraZone }: {
+  transitioning: boolean;
+  cameraZone: CameraZone;
+}) {
+  const { gl, invalidate } = useThree();
+
+  useEffect(() => {
+    const previousAutoUpdate = gl.shadowMap.autoUpdate;
+    gl.shadowMap.autoUpdate = shouldAutoUpdateShadowMap(transitioning);
+    gl.shadowMap.needsUpdate = true;
+    invalidate();
+    return () => {
+      gl.shadowMap.autoUpdate = previousAutoUpdate;
+      gl.shadowMap.needsUpdate = true;
+      invalidate();
+    };
+  }, [gl, invalidate, transitioning]);
+
+  useEffect(() => {
+    // Storey/zone visibility changes affect occluders, so refresh once per zone.
+    gl.shadowMap.needsUpdate = true;
+    invalidate();
+  }, [cameraZone, gl, invalidate]);
+
+  return null;
+}
+
 export function HouseScene({ location, settledLocation, reducedMotion, onArrive, onTransitionChange: onNavigationChange, onDoorActivate, onSelect }: {
   location: HouseLocation;
   settledLocation: HouseLocation;
@@ -1354,7 +1386,7 @@ export function HouseScene({ location, settledLocation, reducedMotion, onArrive,
   const visualTransition = transitioning || settledLocation !== location;
   const sceneFov = 66;
   return <Canvas camera={{ position: EXTERIOR_CAMERA.position, fov: sceneFov, near: 0.1, far: 120 }}
-    gl={{ antialias: true, powerPreference: "high-performance" }} dpr={reducedMotion ? 1 : ([1, 1.6] as [number, number])}
+    gl={{ antialias: true, powerPreference: "high-performance" }} dpr={reducedMotion || visualTransition ? 1 : ([1, 1.6] as [number, number])}
     frameloop={getCameraFrameLoopMode(visualTransition)} shadows
     onCreated={({ gl, scene }) => {
       // Set the clear color explicitly as a final safety net: even if any architecture
@@ -1364,13 +1396,14 @@ export function HouseScene({ location, settledLocation, reducedMotion, onArrive,
       gl.toneMapping = ACESFilmicToneMapping;
       gl.toneMappingExposure = 1;
     }}>
+    <ShadowMapMotionPolicy transitioning={visualTransition} cameraZone={cameraZone} />
     <color attach="background" args={["#8fc9ed"]} /><fog attach="fog" args={["#e8dfcf", 28, 76]} />
     <SkyEnvironment />
     {cameraZone === "outside" && <MoroccanNeighborhood />}
     <RealisticMaterialPass revision={`${location}:${settledLocation}:${transitioning}:${cameraZone}`} />
     <ambientLight intensity={0.42} /><hemisphereLight args={["#fff2db", "#7e866e", 0.58]} />
     <directionalLight color="#fff0d9" position={[8, 15, 9]} intensity={2.35} castShadow
-      shadow-mapSize-width={2048} shadow-mapSize-height={2048}
+      shadow-mapSize-width={getDirectionalShadowMapSize(visualTransition)} shadow-mapSize-height={getDirectionalShadowMapSize(visualTransition)}
       shadow-camera-left={-14} shadow-camera-right={14} shadow-camera-top={14} shadow-camera-bottom={-14}
       shadow-camera-near={0.1} shadow-camera-far={48}
       shadow-bias={-0.00015} shadow-normalBias={0.02} />
