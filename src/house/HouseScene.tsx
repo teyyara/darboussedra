@@ -18,7 +18,7 @@ import { ROOF_SEATING_RUG, ROOF_TEA_STOOLS, ROOF_TEA_TABLE } from "./roofTerrace
 import { getRoofDeckTileJoints } from "./roofDeckTiles";
 import { getStructuralFloorPanels } from "./structuralFloors";
 import { getRoofHatchGuardRails } from "./roofHatchRails";
-import { getCameraFrameDeltas, getActiveVisualReviewHoldTokens } from "./cameraTiming";
+import { getCameraFrameDeltas, getActiveVisualReviewHoldTokens, getCameraFrameLoopMode } from "./cameraTiming";
 import { RealisticMaterialPass } from "./realisticMaterials";
 import { getCameraZoneForPosition, getHouseSceneVisibility, shouldRenderInteriorPerimeterShell, type CameraZone } from "./sceneVisibility";
 import {
@@ -1355,7 +1355,7 @@ export function HouseScene({ location, settledLocation, reducedMotion, onArrive,
   const sceneFov = 66;
   return <Canvas camera={{ position: EXTERIOR_CAMERA.position, fov: sceneFov, near: 0.1, far: 120 }}
     gl={{ antialias: true, powerPreference: "high-performance" }} dpr={reducedMotion ? 1 : ([1, 1.6] as [number, number])}
-    frameloop="demand" shadows
+    frameloop={getCameraFrameLoopMode(visualTransition)} shadows
     onCreated={({ gl, scene }) => {
       // Set the clear color explicitly as a final safety net: even if any architecture
       // is temporarily out of view, a camera frame can never fall back to page beige.

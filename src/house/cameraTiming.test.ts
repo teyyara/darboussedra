@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   getCameraFrameDeltas,
+  getCameraFrameLoopMode,
   MAX_CAMERA_MOVEMENT_DELTA_SECONDS,
   MAX_CAMERA_ROTATION_DELTA_SECONDS,
   MAX_VISUAL_REVIEW_HOLD_MS,
@@ -8,6 +9,11 @@ import {
 } from "./cameraTiming";
 
 describe("camera movement timing", () => {
+  it("renders continuously during camera navigation and idles on demand", () => {
+    expect(getCameraFrameLoopMode(true)).toBe("always");
+    expect(getCameraFrameLoopMode(false)).toBe("demand");
+  });
+
   it("preserves normal frame timing at interactive frame rates", () => {
     expect(getCameraFrameDeltas(1 / 60)).toEqual({
       movementDelta: 1 / 60,

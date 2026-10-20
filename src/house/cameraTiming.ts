@@ -23,6 +23,14 @@ export function getCameraFrameDeltas(deltaSeconds: number): {
 export const MAX_VISUAL_REVIEW_HOLD_MS = 50_000;
 
 /**
+ * Render continuously only while the camera is travelling. A demand-only loop can
+ * otherwise stall a multi-waypoint camera path on software-rendered browsers.
+ */
+export function getCameraFrameLoopMode(isNavigating: boolean): "always" | "demand" {
+  return isNavigating ? "always" : "demand";
+}
+
+/**
  * Return only holds whose own deadline remains live. Deadlines are per token so
  * a later screenshot cannot renew an older screenshot's stuck hold.
  */

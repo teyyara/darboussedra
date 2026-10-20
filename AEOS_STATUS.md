@@ -1079,3 +1079,12 @@ Inspect run 39072491627's fresh artifact and report. Verify that the garden came
 - **Tests:** require the previously observed midflight fallback position and the upper side-lane position to match their intended phases, while keeping the doorway/base and top landing distinct.
 - **Validation:** pending fresh test/build/browser run. Acceptance still requires every phaseCaptureResults entry matched, not a fallback/skipped screenshot.
 - **Scope:** test and browser-review harness only; no runtime camera or house geometry changed.
+
+
+## Loop 108 — Keep the renderer ticking during camera travel
+
+- **Evidence:** workflow 39192199546 on head 3c88cc91e8922f5a793d9e33e43206cbe0f2c21a passed type-check, the expanded unit suite and production build, but browser review failed. The lower-stair-midflight watcher timed out despite the reported 56-waypoint route; the fallback position was [0.989, 1.65, 2.027], routeProgress 0/56, walkSpeed 0.301. Only after fallback screenshots were requested did the reported camera move to routeProgress 4, 19, 26, 40 and 56. The descent phase also timed out, and only 13 of 14 room arrivals settled. These are invalid frames for evaluating the camera; they suggest the demand-driven renderer is not reliably advancing the path while the review waits.
+- **Correction:** use the already-computed scene transition state to switch the React Three Fiber canvas to continuous frame-loop mode while transitioning, then restore demand rendering when the camera settles. This preserves idle efficiency while allowing movement to progress independently of screenshot calls.
+- **Tests:** add a pure timing helper test: navigating => "always"; settled => "demand".
+- **Validation:** pending fresh full browser run. Require every phaseCaptureResults status to be matched, 14/14 room arrivals, no fallback/skipped phase, and actual distinct frame positions before judging camera framing.
+- **Scope:** frame-loop scheduling only; no camera vectors, room geometry, decorations, or dependencies changed.
